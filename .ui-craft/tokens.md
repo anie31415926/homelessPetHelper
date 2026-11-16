@@ -1,0 +1,11 @@
+# Visual Tokens
+- Colors: leaf #638b73, mint #e7f2e9, coral #d78484, petal #f5dfdf, ink #43584d, paper #fffdf7, lilac #b5a6cc, honey #efc574.
+- Neutral text: #43584d primary, #77857b secondary. White and pale mint compose the page; coral marks affection and the primary care task.
+- Type: Microsoft YaHei / PingFang SC for clear Chinese body copy; YouYuan / Yuanti SC for the brand and pet name; Georgia for small diary numerals. Letter spacing is always 0.
+- Spacing: 4, 8, 12, 16, 24, 32, 48px.
+- Geometry: repeated cards 8px, controls 8px, modals 16px, circular icon controls. The illustrated game room is unframed.
+- Motion: 150ms controls, 280ms panels, 900ms care effects; gentle pet breathing and blinking, all disabled with reduced motion.
+- Signature: a hand-illustrated ragdoll kitten / spaniel puppy with removable mud and messy-fur layers inside a mint storybook room.
+- 3D extension: rounded clay/plush proportions, cream fur with cocoa points, pale blue eyes, mint walls, salmon upholstery, honey wood and lilac accessories. Soft daylight and real contact shadows; no remote assets or HDRI dependencies. A single full-bleed room canvas reuses the existing scene footprint.
+- 3D controls: segmented 3D / 2D view selector, icon camera turn / reset controls, raycast pet interaction, accessible DOM care controls. Idle animation is capped near 30fps and pauses outside the viewport; reduced motion renders on demand.
+- Rescue prototype: use the existing palette and rounded Chinese brand type; a full-bleed 390 x 580 illustrated scene, compact status band, fixed-size directional pad and coral net action. Background #e7eee5, grass #dfebd2, muted paving #e9e8d9. SVG is gameplay art, not a marketing illustration. Keep each scene in proportion at all viewport sizes.
