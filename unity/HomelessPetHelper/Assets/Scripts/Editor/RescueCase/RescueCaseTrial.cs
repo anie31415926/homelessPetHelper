@@ -92,11 +92,15 @@ namespace HomelessPetHelper.Editor.RescueCase
 
             FoodRemaining -= action == CaseAction.Food ? 1 : 0;
             LastResponse = _animal.Respond(action);
-            bool withinReach = LastResponse == CaseResponse.Accepted || LastResponse == CaseResponse.CameCloser;
-            Stage = withinReach ? CaseStage.Approachable : CaseStage.Responding;
-            if (withinReach)
+            if (_animal.Placement == CasePlacement.Accepted)
             {
+                Stage = CaseStage.ReadyForRescue;
                 _hand.Close();
+            }
+            else
+            {
+                Stage = _animal.IsWithinReach && _animal.Placement == CasePlacement.NotOffered ?
+                    CaseStage.Approachable : CaseStage.Responding;
             }
 
             return true;
@@ -133,8 +137,8 @@ namespace HomelessPetHelper.Editor.RescueCase
                 return false;
             }
 
-            LastResponse = CaseResponse.AcceptedPreparation;
-            Stage = CaseStage.ReadyForRescue;
+            LastResponse = _animal.PreparePlacement();
+            Stage = CaseStage.Responding;
             return true;
         }
 
@@ -206,21 +210,47 @@ namespace HomelessPetHelper.Editor.RescueCase
             }
 
             action = CaseActions.Parse(option.Definition.Id);
-            if (action == CaseAction.Food && FoodRemaining == 0)
+            failure = GetActionFailure(action);
+            return failure == CaseFailure.None;
+        }
+
+        // Applicability only; command context (stage, pause and turn) is checked on submission.
+        public CaseFailure GetOptionFailure(long instanceId)
+        {
+            RescueOption option = Options.FirstOrDefault(item => item.InstanceId == instanceId);
+            return option == null ? CaseFailure.UnknownOption :
+                GetActionFailure(CaseActions.Parse(option.Definition.Id));
+        }
+
+        private CaseFailure GetActionFailure(CaseAction action)
+        {
+            if (action == CaseAction.Food)
             {
-                failure = CaseFailure.NoFood;
-                return false;
+                if (FoodRemaining == 0)
+                {
+                    return CaseFailure.NoFood;
+                }
+
+                if (!_animal.IsHungry)
+                {
+                    return CaseFailure.AlreadyFed;
+                }
+
+                if (_animal.HasFoodOnGround)
+                {
+                    return CaseFailure.FoodAlreadyPlaced;
+                }
             }
 
-            failure = CaseFailure.None;
-            return true;
+            return action == CaseAction.Approach && _animal.IsWithinReach ?
+                CaseFailure.AlreadyWithinReach : CaseFailure.None;
         }
 
         private void SupplyTurn()
         {
             var retained = Options.Where(option => option.IsLocked).Select(option => option.Definition.Id).ToList();
             var candidates = Enum.GetValues(typeof(CaseAction)).Cast<CaseAction>()
-                .Where(action => action != CaseAction.Food || FoodRemaining > 0).ToList();
+                .Where(action => GetActionFailure(action) == CaseFailure.None).ToList();
             var safe = candidates.Where(_animal.IsStabilizing).Select(CaseActions.Id).ToArray();
             var available = candidates.Select(CaseActions.Id).Where(id => !retained.Contains(id)).ToList();
             for (int index = available.Count - 1; index > 0; index--)

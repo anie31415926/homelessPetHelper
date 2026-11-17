@@ -42,14 +42,16 @@ namespace HomelessPetHelper.Tests.RescueCase
         [Test]
         public void OrdinaryMistakeAfterEatingPreservesFoodAndDoesNotInventAcuteStress()
         {
-            using (var trial = Offering(CaseStart.Normal, "give-space", "food"))
+            using (var trial = Offering(CaseStart.Normal, "give-space", "food", "approach"))
             {
+                long approach = trial.Options.Single(option => option.Definition.Id == "approach").InstanceId;
+                Assert.That(trial.TrySetLocked(trial.CurrentTurn, approach, true, out _), Is.True);
                 Submit(trial, "give-space");
                 Continue(trial);
                 UseWhenOffered(trial, "food");
                 UseWhenOffered(trial, "wait");
                 Assert.That(trial.Animal.IsHungry, Is.False);
-                CaseAnimalSnapshot fed = UseWhenOffered(trial, "approach", "food");
+                CaseAnimalSnapshot fed = UseWhenOffered(trial, "approach");
                 Assert.That(trial.LastResponse, Is.EqualTo(CaseResponse.Retreated));
                 Assert.That(trial.Animal.IsHungry, Is.False);
                 Assert.That(trial.Animal.HasFoodOnGround, Is.EqualTo(fed.HasFoodOnGround));
@@ -78,11 +80,17 @@ namespace HomelessPetHelper.Tests.RescueCase
                 Assert.That(recovered.Stress, Is.EqualTo(CaseStress.None));
                 Assert.That(recovered.IsHungry, Is.False);
                 Assert.That(trial.TryPrepareRescue(trial.CurrentTurn, out _), Is.True);
-                AssertAnimal(trial.Animal, recovered);
+                Assert.That(trial.Animal.AnimalId, Is.EqualTo(recovered.AnimalId));
+                Assert.That(trial.Animal.Placement, Is.EqualTo(CasePlacement.Inspecting));
+                Assert.That(trial.TryFinishRescue(trial.CurrentTurn, out _), Is.False);
+                Continue(trial);
+                UseWhenOffered(trial, "wait");
+                CaseAnimalSnapshot accepted = trial.Animal;
+                Assert.That(accepted.Placement, Is.EqualTo(CasePlacement.Accepted));
                 Assert.That(trial.TryFinishRescue(trial.CurrentTurn, out _), Is.True);
-                AssertAnimal(trial.Animal, recovered);
+                AssertAnimal(trial.Animal, accepted);
                 Assert.That(trial.TryReturnToStation(trial.CurrentTurn, out _), Is.True);
-                AssertAnimal(trial.Animal, recovered);
+                AssertAnimal(trial.Animal, accepted);
                 Assert.That(trial.TryInteract(trial.CurrentTurn, out _), Is.True);
                 Assert.That(trial.Animal.AnimalId, Is.EqualTo(initial.AnimalId));
                 Assert.That(trial.Animal.IsHungry, Is.False);
@@ -234,6 +242,8 @@ namespace HomelessPetHelper.Tests.RescueCase
             Assert.That(actual.IsHungry, Is.EqualTo(expected.IsHungry));
             Assert.That(actual.HasSpace, Is.EqualTo(expected.HasSpace));
             Assert.That(actual.HasFoodOnGround, Is.EqualTo(expected.HasFoodOnGround));
+            Assert.That(actual.IsWithinReach, Is.EqualTo(expected.IsWithinReach));
+            Assert.That(actual.Placement, Is.EqualTo(expected.Placement));
             Assert.That(actual.Emotion, Is.EqualTo(expected.Emotion));
             Assert.That(actual.Stress, Is.EqualTo(expected.Stress));
             Assert.That(actual.Behavior, Is.EqualTo(expected.Behavior));

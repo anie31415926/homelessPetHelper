@@ -8,6 +8,8 @@ namespace HomelessPetHelper.Editor.RescueCase
         Playing = 3,
         Retreating = 4,
         Approaching = 5,
-        Settled = 6
+        Settled = 6,
+        InspectingPlacement = 7,
+        SettlingInPlacement = 8
     }
 }

@@ -45,11 +45,11 @@ namespace HomelessPetHelper.Modules.Rescue.UI
             _artwork.gameObject.SetActive(_artwork.sprite != null);
         }
 
-        public void Refresh(bool selected, bool retained, bool canRetain, bool interactable)
+        public void Refresh(bool selected, bool retained, bool canRetain, bool interactable, bool selectable = true)
         {
             _selection.SetIsOnWithoutNotify(selected);
             _retention.SetIsOnWithoutNotify(retained);
-            _selection.interactable = interactable;
+            _selection.interactable = interactable && selectable;
             _retention.interactable = interactable && (retained || canRetain);
             _surface.color = selected ? _selectedColor : _normalColor;
         }

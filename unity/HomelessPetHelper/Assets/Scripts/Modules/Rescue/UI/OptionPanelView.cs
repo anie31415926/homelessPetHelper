@@ -25,6 +25,7 @@ namespace HomelessPetHelper.Modules.Rescue.UI
 
         private readonly List<OptionCardView> _cards = new List<OptionCardView>();
         private readonly List<long> _selectedIds = new List<long>();
+        private readonly HashSet<long> _unavailableIds = new HashSet<long>();
         private ObjectPool<OptionCardView> _pool;
         private IReadOnlyList<RescueOption> _options = Array.Empty<RescueOption>();
         private int _selectionLimit;
@@ -58,9 +59,11 @@ namespace HomelessPetHelper.Modules.Rescue.UI
             gameObject.SetActive(true);
         }
 
-        public void Refresh(IReadOnlyList<RescueOption> options, IReadOnlyList<string> titles, Font font)
+        public void Refresh(IReadOnlyList<RescueOption> options, IReadOnlyList<string> titles, Font font,
+            IReadOnlyList<string> unavailableReasons = null)
         {
-            if (!_isOpen || options == null || titles == null || options.Count != titles.Count || font == null)
+            if (!_isOpen || options == null || titles == null || options.Count != titles.Count || font == null ||
+                (unavailableReasons != null && unavailableReasons.Count != options.Count))
             {
                 throw new InvalidOperationException("Open the view and supply matching options, labels and a font.");
             }
@@ -69,19 +72,26 @@ namespace HomelessPetHelper.Modules.Rescue.UI
             float scrollPosition = _scroll.verticalNormalizedPosition;
             ReleaseCards();
             _options = options;
+            _unavailableIds.Clear();
             var visibleIds = new HashSet<long>();
-            foreach (RescueOption option in options)
+            for (int index = 0; index < options.Count; index++)
             {
-                visibleIds.Add(option.InstanceId);
+                visibleIds.Add(options[index].InstanceId);
+                if (unavailableReasons != null && !string.IsNullOrEmpty(unavailableReasons[index]))
+                {
+                    _unavailableIds.Add(options[index].InstanceId);
+                }
             }
 
-            _selectedIds.RemoveAll(id => !visibleIds.Contains(id));
+            _selectedIds.RemoveAll(id => !visibleIds.Contains(id) || _unavailableIds.Contains(id));
             for (int index = 0; index < options.Count; index++)
             {
                 OptionCardView card = _pool.Get();
                 card.transform.SetAsLastSibling();
                 card.gameObject.SetActive(true);
-                card.Bind(options[index].InstanceId, titles[index], "#" + options[index].InstanceId, font);
+                string identity = _unavailableIds.Contains(options[index].InstanceId) ? unavailableReasons[index] :
+                    "#" + options[index].InstanceId;
+                card.Bind(options[index].InstanceId, titles[index], identity, font);
                 card.SelectionChanged += OnSelectionChanged;
                 card.RetentionChanged += OnRetentionRequested;
                 _cards.Add(card);
@@ -110,6 +120,7 @@ namespace HomelessPetHelper.Modules.Rescue.UI
             ReleaseCards();
             _options = Array.Empty<RescueOption>();
             _selectedIds.Clear();
+            _unavailableIds.Clear();
             _feedback.text = string.Empty;
             _pause.SetIsOnWithoutNotify(false);
             _use.interactable = false;
@@ -158,6 +169,12 @@ namespace HomelessPetHelper.Modules.Rescue.UI
 
         private void OnSelectionChanged(long id, bool selected)
         {
+            if (!_interactable || _unavailableIds.Contains(id))
+            {
+                RefreshControls();
+                return;
+            }
+
             _selectedIds.Remove(id);
             if (selected)
             {
@@ -184,7 +201,7 @@ namespace HomelessPetHelper.Modules.Rescue.UI
             {
                 RescueOption option = _options[index];
                 _cards[index].Refresh(_selectedIds.Contains(option.InstanceId), option.IsLocked,
-                    lockedCount < _lockLimit, _interactable);
+                    lockedCount < _lockLimit, _interactable, !_unavailableIds.Contains(option.InstanceId));
             }
 
             _use.interactable = _isOpen && _interactable && _selectedIds.Count > 0;
