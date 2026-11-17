@@ -3,9 +3,10 @@ namespace HomelessPetHelper.Modules.Rescue
     public enum RescueStage
     {
         Station = 0,
-        Approach = 1,
-        Negotiation = 2,
-        Rescued = 3,
-        Care = 4
+        Map = 1,
+        Approach = 2,
+        Negotiation = 3,
+        Rescued = 4,
+        Care = 5
     }
 }

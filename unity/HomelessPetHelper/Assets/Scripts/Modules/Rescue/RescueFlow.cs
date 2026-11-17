@@ -50,6 +50,9 @@ namespace HomelessPetHelper.Modules.Rescue
             switch (stage)
             {
                 case RescueStage.Station when signal == RescueSignal.LeaveStation:
+                    nextStage = RescueStage.Map;
+                    return true;
+                case RescueStage.Map when signal == RescueSignal.Depart:
                     nextStage = RescueStage.Approach;
                     return true;
                 case RescueStage.Approach when signal == RescueSignal.ApproachCompleted:

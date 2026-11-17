@@ -17,21 +17,23 @@ namespace HomelessPetHelper.Tests.EditMode
         public void CompleteLoopCanStartAgain()
         {
             var flow = new RescueFlow();
-            Advance(flow, RescueSignal.LeaveStation, RescueStage.Approach);
+            Advance(flow, RescueSignal.LeaveStation, RescueStage.Map);
+            Advance(flow, RescueSignal.Depart, RescueStage.Approach);
             Advance(flow, RescueSignal.ApproachCompleted, RescueStage.Negotiation);
             Advance(flow, RescueSignal.NegotiationCompleted, RescueStage.Rescued);
             Advance(flow, RescueSignal.ReturnToStation, RescueStage.Care);
             Advance(flow, RescueSignal.CareCompleted, RescueStage.Station);
-            Advance(flow, RescueSignal.LeaveStation, RescueStage.Approach);
+            Advance(flow, RescueSignal.LeaveStation, RescueStage.Map);
+            Advance(flow, RescueSignal.Depart, RescueStage.Approach);
         }
 
         [Test]
         public void EveryStageRejectsEveryUnrelatedSignalWithoutMutation()
         {
-            for (int stageIndex = 0; stageIndex < 5; stageIndex++)
+            for (int stageIndex = 0; stageIndex < 6; stageIndex++)
             {
                 var flow = CreateFlowAt(stageIndex);
-                for (int signalIndex = 0; signalIndex < 5; signalIndex++)
+                for (int signalIndex = 0; signalIndex < 6; signalIndex++)
                 {
                     if (stageIndex == signalIndex)
                     {
@@ -46,7 +48,7 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [TestCase(-1)]
-        [TestCase(5)]
+        [TestCase(6)]
         [TestCase(int.MaxValue)]
         public void UnknownSignalIsRejected(int signal)
         {
@@ -59,7 +61,7 @@ namespace HomelessPetHelper.Tests.EditMode
         [Test]
         public void DuplicateCompletionDoesNotAdvanceTwice()
         {
-            var flow = CreateFlowAt(1);
+            var flow = CreateFlowAt(2);
             Advance(flow, RescueSignal.ApproachCompleted, RescueStage.Negotiation);
             Assert.That(flow.TryAdvance(RescueSignal.ApproachCompleted, out var failure), Is.False);
             Assert.That(failure, Is.EqualTo(TransitionFailure.UnexpectedSignal));
@@ -71,6 +73,7 @@ namespace HomelessPetHelper.Tests.EditMode
         [TestCase(2)]
         [TestCase(3)]
         [TestCase(4)]
+        [TestCase(5)]
         public void SuspensionBlocksTransitionAndResumeKeepsProgress(int stageIndex)
         {
             var flow = CreateFlowAt(stageIndex);
