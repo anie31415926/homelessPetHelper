@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [ValidateSet('Initialize', 'PreviewAssets', 'PreviewLayout', 'CaseAssets', 'CaseLayout',
-        'StationAssets', 'StationArt',
+        'StationAssets', 'StationArt', 'ResourceAudit',
         'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
     [string]$Task = 'EditMode',
     [string]$EditorPath = $env:UNITY_EDITOR_PATH,
@@ -118,6 +118,11 @@ switch ($Task)
     {
         $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.DesktopBuild.Build')
     }
+    'ResourceAudit'
+    {
+        $unityArguments += @('-quit', '-executeMethod',
+            'HomelessPetHelper.Editor.ResourceAudit.ImageResourceAudit.WriteReport')
+    }
     'BuildDevelopment'
     {
         $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.DesktopBuild.BuildDevelopment')
@@ -182,4 +187,15 @@ if ($isTestRun)
     }
 
     Write-Output "Tests: $($run.passed)/$($run.total) passed. Report: $resultPath"
+}
+
+if ($Task -eq 'ResourceAudit')
+{
+    foreach ($extension in @('json', 'md'))
+    {
+        $source = Join-Path $projectPath "Library\ResourceAudit\image-resources.$extension"
+        $destination = Join-Path $reportPath "$reportName.$extension"
+        Copy-Item -LiteralPath $source -Destination $destination -Force
+        Write-Output "Image resource report: $destination"
+    }
 }

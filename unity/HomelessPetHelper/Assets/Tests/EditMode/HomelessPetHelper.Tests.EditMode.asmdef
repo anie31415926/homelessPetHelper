@@ -1,7 +1,7 @@
 {
   "name": "HomelessPetHelper.Tests.EditMode",
   "rootNamespace": "HomelessPetHelper.Tests.EditMode",
-  "references": ["HomelessPetHelper.Modules.Rescue", "HomelessPetHelper.Modules.Rescue.UI", "UnityEngine.UI", "HomelessPetHelper.Modules.Station", "HomelessPetHelper.Modules.WorldTime", "HomelessPetHelper.Modules.Station.UI"],
+  "references": ["HomelessPetHelper.Modules.Rescue", "HomelessPetHelper.Modules.Rescue.UI", "UnityEngine.UI", "HomelessPetHelper.Modules.Station", "HomelessPetHelper.Modules.WorldTime", "HomelessPetHelper.Modules.Station.UI", "HomelessPetHelper.Editor"],
   "includePlatforms": ["Editor"],
   "optionalUnityReferences": ["TestAssemblies"],
   "autoReferenced": false

@@ -57,6 +57,8 @@ Framework、Config、Network、Art、Prefabs 等在确有实现或资源时再�
 
 ## 打开与验证
 
+轻量图片资源检查已提供菜单和隔离命令：`Homeless Pet Helper > Tools > Check Image Resources` 或 `powershell.exe -NoProfile -File tools/unity.ps1 -Task ResourceAudit -Isolated -ReportSuffix MyRun`。按需只读扫描，不改导入设置或绑定、不自动打图集；范围、报告解释及最新验证见[工具记录](轻量资源检查工具.md)。
+
 Unity Hub 添加 `unity/HomelessPetHelper`，使用同版本编辑器打开 Main 场景即可。
 Play 后暂时只显示纯色背景；后续图片 UI 和场景表现会逐模块加入。
 
