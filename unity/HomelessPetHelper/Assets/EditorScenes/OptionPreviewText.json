@@ -1,0 +1,23 @@
+{
+    "entries": [
+        { "key": "title", "value": "回合救助 · 选项验证" },
+        { "key": "section", "value": "本轮行动" },
+        { "key": "turn", "value": "回合 {0}" },
+        { "key": "retained", "value": "已保留 {0}/{1}" },
+        { "key": "ready", "value": "行动已就绪" },
+        { "key": "paused", "value": "已暂停" },
+        { "key": "used", "value": "已使用：{0}" },
+        { "key": "rejected", "value": "操作未执行：{0}" },
+        { "key": "select", "value": "选择" },
+        { "key": "retain", "value": "保留" },
+        { "key": "use", "value": "使用选项" },
+        { "key": "pause", "value": "暂停" },
+        { "key": "restart", "value": "重新开始" },
+        { "key": "give-space", "value": "退开留出空间" },
+        { "key": "wait", "value": "安静等候" },
+        { "key": "food", "value": "放下食物" },
+        { "key": "toy", "value": "展示玩具" },
+        { "key": "remove-noise", "value": "移除现场干扰" },
+        { "key": "approach", "value": "慢慢接近" }
+    ]
+}

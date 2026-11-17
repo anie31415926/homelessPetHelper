@@ -1,0 +1,7 @@
+unity/**/*.cs text eol=lf
+unity/**/*.asmdef text eol=lf
+unity/**/*.meta text eol=lf
+unity/**/*.unity text eol=lf
+unity/**/*.asset text eol=lf
+unity/**/Packages/*.json text eol=lf
+tools/*.ps1 text eol=lf

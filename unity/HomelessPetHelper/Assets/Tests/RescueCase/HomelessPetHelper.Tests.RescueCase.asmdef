@@ -1,0 +1,8 @@
+{
+  "name": "HomelessPetHelper.Tests.RescueCase",
+  "rootNamespace": "HomelessPetHelper.Tests.RescueCase",
+  "references": ["HomelessPetHelper.Editor", "HomelessPetHelper.Modules.Rescue"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}

@@ -1,0 +1,7 @@
+{
+  "name": "HomelessPetHelper.Modules.WorldTime",
+  "rootNamespace": "HomelessPetHelper.Modules.WorldTime",
+  "references": [],
+  "autoReferenced": false,
+  "noEngineReferences": true
+}

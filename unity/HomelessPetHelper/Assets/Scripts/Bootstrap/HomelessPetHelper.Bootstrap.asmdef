@@ -1,0 +1,6 @@
+{
+  "name": "HomelessPetHelper.Bootstrap",
+  "rootNamespace": "HomelessPetHelper.Bootstrap",
+  "references": ["HomelessPetHelper.Modules.Rescue"],
+  "autoReferenced": false
+}
