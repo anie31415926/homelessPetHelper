@@ -9,6 +9,8 @@ namespace HomelessPetHelper.Editor.RescueCase
         internal bool IsHungry { get; private set; } = true;
         internal bool HasSpace { get; private set; }
         internal bool HasFoodOnGround { get; private set; }
+        internal bool IsWithinReach { get; private set; }
+        internal CasePlacement Placement { get; private set; }
         internal CaseEmotion Emotion { get; private set; } = CaseEmotion.Nervous;
         internal CaseBehavior Behavior { get; private set; } = CaseBehavior.Watching;
         internal CaseStress Stress { get; private set; }
@@ -16,6 +18,7 @@ namespace HomelessPetHelper.Editor.RescueCase
         internal CaseIntent Intent => !HasSpace || Emotion == CaseEmotion.Startled ? CaseIntent.SeekSpace :
             Stress == CaseStress.Acute ? CaseIntent.Recover :
             IsHungry && HasFoodOnGround ? CaseIntent.WatchFood :
+            Placement == CasePlacement.Inspecting ? CaseIntent.InspectPlacement :
             Emotion == CaseEmotion.Relaxed ? CaseIntent.Explore : CaseIntent.Observe;
 
         internal CaseAnimal(CaseStart start)
@@ -42,6 +45,11 @@ namespace HomelessPetHelper.Editor.RescueCase
                 case CaseAction.GiveSpace:
                     HasSpace = true;
                     Emotion = Emotion == CaseEmotion.Startled ? CaseEmotion.Nervous : Emotion;
+                    if (TryAcceptPlacement())
+                    {
+                        return CaseResponse.AcceptedPreparation;
+                    }
+
                     Behavior = CaseBehavior.Watching;
                     return Stress == CaseStress.Acute ? CaseResponse.SpaceGivenUnderStress : CaseResponse.SpaceGiven;
                 case CaseAction.Wait:
@@ -62,6 +70,13 @@ namespace HomelessPetHelper.Editor.RescueCase
         internal void Settle()
         {
             Behavior = CaseBehavior.Settled;
+        }
+
+        internal CaseResponse PreparePlacement()
+        {
+            Placement = CasePlacement.Inspecting;
+            Behavior = CaseBehavior.InspectingPlacement;
+            return CaseResponse.InspectingPlacement;
         }
 
         private CaseResponse Wait()
@@ -93,8 +108,14 @@ namespace HomelessPetHelper.Editor.RescueCase
                 return CaseResponse.Waiting;
             }
 
+            if (TryAcceptPlacement())
+            {
+                return CaseResponse.AcceptedPreparation;
+            }
+
             if (Emotion == CaseEmotion.Relaxed)
             {
+                IsWithinReach = true;
                 Behavior = CaseBehavior.Approaching;
                 return CaseResponse.CameCloser;
             }
@@ -120,11 +141,13 @@ namespace HomelessPetHelper.Editor.RescueCase
         {
             if (CanApproach())
             {
+                IsWithinReach = true;
                 Behavior = CaseBehavior.Approaching;
                 return CaseResponse.Accepted;
             }
 
             HasSpace = false;
+            IsWithinReach = false;
             Emotion = CaseEmotion.Startled;
             Behavior = CaseBehavior.Retreating;
             return CaseResponse.Retreated;
@@ -133,6 +156,19 @@ namespace HomelessPetHelper.Editor.RescueCase
         private bool CanApproach()
         {
             return HasSpace && !IsHungry && Emotion == CaseEmotion.Relaxed && Stress == CaseStress.None;
+        }
+
+        private bool TryAcceptPlacement()
+        {
+            // This cautious-cat fixture accepts a quiet, open placement, not proximity alone.
+            if (Placement != CasePlacement.Inspecting || !IsWithinReach || !CanApproach())
+            {
+                return false;
+            }
+
+            Placement = CasePlacement.Accepted;
+            Behavior = CaseBehavior.SettlingInPlacement;
+            return true;
         }
     }
 }

@@ -119,6 +119,43 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator AvailabilityRefreshClearsSelectionWithoutDisablingRetentionAndReopenResetsIt()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Prefabs/Panels/Panel_OptionWhiteboard.prefab");
+            GameObject root = UnityEngine.Object.Instantiate(prefab);
+            var panel = root.GetComponent<OptionPanelView>();
+            var hand = new RescueOptionHand(Guid.NewGuid(), new RescueOptionRules(3, 1, 2));
+            var definitions = Enumerable.Range(0, 3).Select(index =>
+                new RescueActionDefinition("test." + index)).ToArray();
+            Assert.That(hand.TryRefresh(new OptionTurnId(hand.CurrentTurn.SessionId, 1), definitions,
+                new[] { "test.0" }, out _), Is.True);
+            Font font = UnityEngine.Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            string[] titles = definitions.Select(definition => definition.Id).ToArray();
+            panel.Open(1, 2);
+            panel.Refresh(hand.Options, titles, font);
+            panel.SetStatus("Turn 1", "0/2", "Ready", false);
+            ToggleNamed(Cards(panel)[0], "Selection").isOn = true;
+            Assert.That(panel.SelectedIds.Count, Is.EqualTo(1));
+            panel.Refresh(hand.Options, titles, font, new[] { "Unavailable", "", "" });
+            Assert.That(panel.SelectedIds, Is.Empty);
+            Assert.That(ToggleNamed(Cards(panel)[0], "Selection").interactable, Is.False);
+            Assert.That(ToggleNamed(Cards(panel)[0], "Retention").interactable, Is.True);
+            Assert.That(ButtonNamed(panel, "Use").interactable, Is.False);
+            ToggleNamed(Cards(panel)[1], "Selection").isOn = true;
+            Assert.That(ButtonNamed(panel, "Use").interactable, Is.True);
+            panel.Close();
+            panel.Open(1, 2);
+            panel.Refresh(hand.Options, titles, font);
+            panel.SetStatus("Turn 1", "0/2", "Ready", false);
+            Assert.That(panel.SelectedIds, Is.Empty);
+            Assert.That(Cards(panel).All(card => ToggleNamed(card, "Selection").interactable), Is.True);
+            panel.Close();
+            UnityEngine.Object.Destroy(root);
+            yield return null;
+        }
+
+        [UnityTest]
         public IEnumerator LargerOfferReusesCellsAndReopeningResetsSelectionAndListeners()
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(

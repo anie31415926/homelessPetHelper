@@ -183,9 +183,11 @@ namespace HomelessPetHelper.Editor.RescueCase
         private void Render()
         {
             CaseAnimalSnapshot animal = Trial.Animal;
-            var titles = Trial.Options.Select(option => _text.Get(option.Definition.Id) +
-                (option.Definition.Id == "food" && Trial.FoodRemaining == 0 ? _text.Get("empty") : "")).ToArray();
-            _view.Options.Refresh(Trial.Options, titles, _font);
+            var titles = Trial.Options.Select(option => _text.Get(option.Definition.Id)).ToArray();
+            var reasons = Trial.Options.Select(option => Trial.GetOptionFailure(option.InstanceId))
+                .Select(failure => failure == CaseFailure.None ? string.Empty : _text.Get("unavailable." + failure))
+                .ToArray();
+            _view.Options.Refresh(Trial.Options, titles, _font, reasons);
             string responseKey = Trial.LastResponse == CaseResponse.None && Trial.Start == CaseStart.StressRecovery ?
                 "response.StressStart" : "response." + Trial.LastResponse;
             string feedback = string.IsNullOrEmpty(_error) ? _text.Get(responseKey) : _error;

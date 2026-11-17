@@ -12,6 +12,9 @@ namespace HomelessPetHelper.Editor.RescueCase
         UnknownOption = 7,
         NoFood = 8,
         HandRejected = 9,
-        AlreadyInteracted = 10
+        AlreadyInteracted = 10,
+        FoodAlreadyPlaced = 11,
+        AlreadyFed = 12,
+        AlreadyWithinReach = 13
     }
 }

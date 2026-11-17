@@ -6,6 +6,7 @@ namespace HomelessPetHelper.Editor.RescueCase
         WatchFood = 1,
         Observe = 2,
         Explore = 3,
-        Recover = 4
+        Recover = 4,
+        InspectPlacement = 5
     }
 }

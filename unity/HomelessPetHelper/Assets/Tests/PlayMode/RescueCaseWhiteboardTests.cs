@@ -56,6 +56,11 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(Button("Advance").GetComponentInChildren<Text>().text,
                 Is.EqualTo(Text("advance.Approachable")));
             Button("Advance").onClick.Invoke();
+            Assert.That(Label("Feedback").text, Is.EqualTo(Text("response.InspectingPlacement")));
+            Assert.That(Button("Advance").GetComponentInChildren<Text>().text,
+                Is.EqualTo(Text("advance.Responding")));
+            Button("Advance").onClick.Invoke();
+            Use("wait");
             Assert.That(Button("Advance").GetComponentInChildren<Text>().text,
                 Is.EqualTo(Text("advance.ReadyForRescue")));
             Assert.That(_view.Options.GetComponentsInChildren<OptionCardView>(), Is.Empty);
@@ -110,11 +115,14 @@ namespace HomelessPetHelper.Tests.PlayMode
             Use("wait");
             Assert.That(Label("Animal").text, Does.Contain(Text("fed")));
             Assert.That(Label("Animal").text, Does.Contain(Text("stress.None")));
-            Assert.That(Label("Turn").text, Does.Contain(Text("turn", 4, 2)));
+            Assert.That(Label("Turn").text, Is.EqualTo(Text("turn", 5, 2)));
             Use("wait");
             Use("wait");
             Assert.That(Label("Section").text, Does.Contain(Text("stage.Approachable")));
             Button("Advance").onClick.Invoke();
+            Assert.That(Label("Feedback").text, Is.EqualTo(Text("response.InspectingPlacement")));
+            Button("Advance").onClick.Invoke();
+            Use("give-space");
             Button("Advance").onClick.Invoke();
             Button("Advance").onClick.Invoke();
             Assert.That(Label("Animal").text, Does.Contain(Text("fed")));
@@ -124,6 +132,41 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(EditorApplication.ExecuteMenuItem("Homeless Pet Helper/Preview/Open Rescue Case"), Is.True);
             Assert.That(Label("Animal").text, Does.Contain(Text("hungry")));
             Assert.That(Label("Animal").text, Does.Contain(Text("stress.None")));
+            yield return SceneManager.LoadSceneAsync("Assets/Scenes/Main.unity");
+        }
+
+        [UnityTest]
+        public IEnumerator UnavailableLockedActionCannotBeSelectedButCanBeUnlockedWithoutReroll()
+        {
+            yield return Load();
+            ReachInspectionWithLockedApproach();
+            OptionCardView card = Card("approach");
+            Assert.That(CardToggle(card, "Selection").interactable, Is.False);
+            Assert.That(CardToggle(card, "Retention").isOn, Is.True);
+            Assert.That(CardToggle(card, "Retention").interactable, Is.True);
+            Assert.That(card.GetComponentsInChildren<Text>().Single(label => label.name == "Identity").text,
+                Is.EqualTo(Text("unavailable.AlreadyWithinReach")));
+            CardToggle(card, "Selection").isOn = true;
+            Assert.That(_view.Options.SelectedIds, Is.Empty);
+            Assert.That(Button("Use").interactable, Is.False);
+            string turn = Label("Turn").text;
+            var pause = _view.GetComponentsInChildren<Toggle>().Single(toggle => toggle.name == "Pause");
+            pause.isOn = true;
+            Assert.That(CardToggle(Card("approach"), "Retention").interactable, Is.False);
+            pause.isOn = false;
+            CardToggle(Card("approach"), "Retention").isOn = false;
+            Assert.That(CardToggle(Card("approach"), "Retention").isOn, Is.False);
+            Assert.That(Label("Turn").text, Is.EqualTo(turn));
+            Use("toy");
+            Assert.That(Cards().Any(item => item.GetComponentsInChildren<Text>()
+                .Any(label => label.name == "Title" && label.text == Text("approach"))), Is.False);
+            Assert.That(Label("Animal").text, Does.Contain(Text("behavior.Playing")));
+            Assert.That(Button("Advance", true).gameObject.activeSelf, Is.False);
+            Use("wait");
+            Assert.That(Label("Feedback").text, Is.EqualTo(Text("response.AcceptedPreparation")));
+            Assert.That(Label("Animal").text, Does.Contain(Text("behavior.SettlingInPlacement")));
+            Assert.That(Button("Advance").GetComponentInChildren<Text>().text,
+                Is.EqualTo(Text("advance.ReadyForRescue")));
             yield return SceneManager.LoadSceneAsync("Assets/Scenes/Main.unity");
         }
 
@@ -166,6 +209,11 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Canvas.ForceUpdateCanvases();
                 AssertControlsInBounds(canvas);
                 Capture(camera, target, Path.Combine(folder, $"stress-{size.x}x{size.y}.png"));
+                ReachInspectionWithLockedApproach();
+                Canvas.ForceUpdateCanvases();
+                AssertControlsInBounds(canvas);
+                AssertLabelsFit();
+                Capture(camera, target, Path.Combine(folder, $"inspection-{size.x}x{size.y}.png"));
                 Assert.That(EditorApplication.ExecuteMenuItem("Homeless Pet Helper/Preview/Open Rescue Case"), Is.True);
                 camera.targetTexture = null;
                 target.Release();
@@ -183,6 +231,12 @@ namespace HomelessPetHelper.Tests.PlayMode
             Canvas.ForceUpdateCanvases();
             Capture(camera, stageTarget, Path.Combine(folder, "case-approachable.png"));
             Button("Advance").onClick.Invoke();
+            Canvas.ForceUpdateCanvases();
+            Capture(camera, stageTarget, Path.Combine(folder, "case-inspecting.png"));
+            Button("Advance").onClick.Invoke();
+            Use("wait");
+            Canvas.ForceUpdateCanvases();
+            Capture(camera, stageTarget, Path.Combine(folder, "case-accepted.png"));
             Button("Advance").onClick.Invoke();
             Canvas.ForceUpdateCanvases();
             AssertControlsInBounds(canvas);
@@ -227,6 +281,31 @@ namespace HomelessPetHelper.Tests.PlayMode
             }
         }
 
+        private void ReachInspectionWithLockedApproach()
+        {
+            Assert.That(EditorApplication.ExecuteMenuItem(
+                "Homeless Pet Helper/Preview/Open Stress Recovery Case"), Is.True);
+            Find("approach");
+            CardToggle(Card("approach"), "Retention").isOn = true;
+            Use("give-space");
+            for (int index = 0; index < 6 && !Label("Section").text.Contains(Text("stage.Approachable")); index++)
+            {
+                Use("wait");
+            }
+
+            Assert.That(Label("Section").text, Does.Contain(Text("stage.Approachable")));
+            Button("Advance").onClick.Invoke();
+            Assert.That(Label("Feedback").text, Is.EqualTo(Text("response.InspectingPlacement")));
+            Button("Advance").onClick.Invoke();
+            Assert.That(CardToggle(Card("approach"), "Selection").interactable, Is.False);
+        }
+
+        private OptionCardView Card(string action) => Cards().Single(item => item.GetComponentsInChildren<Text>()
+            .Any(label => label.name == "Title" && label.text == Text(action)));
+
+        private static Toggle CardToggle(OptionCardView card, string name) =>
+            card.GetComponentsInChildren<Toggle>().Single(toggle => toggle.name == name);
+
         private void Find(string action)
         {
             for (int index = 0; index < 100; index++)
@@ -237,9 +316,10 @@ namespace HomelessPetHelper.Tests.PlayMode
                     return;
                 }
 
-                var safe = Cards().First(card => card.GetComponentsInChildren<Text>()
-                    .Any(label => label.name == "Title" && (label.text == Text("wait") ||
-                        label.text == Text("give-space") || label.text == Text("toy"))));
+                var safe = new[] { "give-space", "toy", "wait" }
+                    .Select(id => Cards().FirstOrDefault(card => card.GetComponentsInChildren<Text>()
+                        .Any(label => label.name == "Title" && label.text == Text(id))))
+                    .First(card => card != null && CardToggle(card, "Selection").interactable);
                 safe.GetComponentsInChildren<Toggle>().Single(toggle => toggle.name == "Selection").isOn = true;
                 Button("Use").onClick.Invoke();
                 Button("Advance").onClick.Invoke();
@@ -280,6 +360,24 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(dark, Is.GreaterThan(target.width * target.height / 1000), "Blank trial render.");
             File.WriteAllBytes(path, image.EncodeToPNG());
             UnityEngine.Object.Destroy(image);
+        }
+
+        private void AssertLabelsFit()
+        {
+            foreach (Text label in _view.GetComponentsInChildren<Text>())
+            {
+                if (string.IsNullOrEmpty(label.text))
+                {
+                    continue;
+                }
+
+                var settings = label.GetGenerationSettings(label.rectTransform.rect.size);
+                settings.fontSize = label.cachedTextGenerator.fontSizeUsedForBestFit;
+                settings.resizeTextForBestFit = false;
+                var generator = new TextGenerator();
+                float height = generator.GetPreferredHeight(label.text, settings) / label.pixelsPerUnit;
+                Assert.That(height, Is.LessThanOrEqualTo(label.rectTransform.rect.height + 2), label.name);
+            }
         }
 
         private string Text(string key, params object[] args) =>

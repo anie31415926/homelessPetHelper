@@ -8,6 +8,8 @@ namespace HomelessPetHelper.Editor.RescueCase
         public bool IsHungry { get; }
         public bool HasSpace { get; }
         public bool HasFoodOnGround { get; }
+        public bool IsWithinReach { get; }
+        public CasePlacement Placement { get; }
         public CaseEmotion Emotion { get; }
         public CaseBehavior Behavior { get; }
         public CaseStress Stress { get; }
@@ -18,6 +20,8 @@ namespace HomelessPetHelper.Editor.RescueCase
             IsHungry = animal.IsHungry;
             HasSpace = animal.HasSpace;
             HasFoodOnGround = animal.HasFoodOnGround;
+            IsWithinReach = animal.IsWithinReach;
+            Placement = animal.Placement;
             Emotion = animal.Emotion;
             Behavior = animal.Behavior;
             Stress = animal.Stress;

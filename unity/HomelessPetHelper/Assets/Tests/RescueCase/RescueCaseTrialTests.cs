@@ -27,12 +27,17 @@ namespace HomelessPetHelper.Tests.RescueCase
                 }
 
                 Use(trial, "wait");
-                Use(trial, trial.Options.Any(option => option.Definition.Id == "toy") ? "toy" : "wait");
+                Use(trial, useToy ? "toy" : "wait");
                 Use(trial, useToy && trial.Options.Any(option => option.Definition.Id == "approach") ?
                     "approach" : "wait");
                 Assert.That(trial.Stage, Is.EqualTo(CaseStage.Approachable));
                 Assert.That(trial.TryFinishRescue(trial.CurrentTurn, out _), Is.False);
                 Assert.That(trial.TryPrepareRescue(trial.CurrentTurn, out _), Is.True);
+                Assert.That(trial.Animal.Placement, Is.EqualTo(CasePlacement.Inspecting));
+                Assert.That(trial.LastResponse, Is.EqualTo(CaseResponse.InspectingPlacement));
+                Assert.That(trial.TryFinishRescue(trial.CurrentTurn, out _), Is.False);
+                Assert.That(trial.TryContinue(trial.CurrentTurn, out _), Is.True);
+                Use(trial, "wait");
                 Assert.That(trial.Stage, Is.EqualTo(CaseStage.ReadyForRescue));
                 Assert.That(trial.Options, Is.Empty);
                 Assert.That(trial.TryFinishRescue(trial.CurrentTurn, out _), Is.True);
@@ -68,6 +73,9 @@ namespace HomelessPetHelper.Tests.RescueCase
                 Use(trial, "wait");
                 Assert.That(trial.Stage, Is.EqualTo(CaseStage.Approachable));
                 Assert.That(trial.TryPrepareRescue(trial.CurrentTurn, out _), Is.True);
+                Assert.That(trial.Stage, Is.EqualTo(CaseStage.Responding));
+                Assert.That(trial.TryContinue(trial.CurrentTurn, out _), Is.True);
+                Use(trial, "give-space");
                 Assert.That(trial.Stage, Is.EqualTo(CaseStage.ReadyForRescue));
             }
         }
@@ -75,12 +83,11 @@ namespace HomelessPetHelper.Tests.RescueCase
         [Test]
         public void ExhaustedSuppliesLeaveExistingFoodAndAssistanceAvailable()
         {
-            using (var trial = NewTrial())
+            using (var trial = new RescueCaseTrial(Guid.NewGuid(), 1731, 1))
             {
                 Find(trial, "food");
                 RescueOption food = trial.Options.Single(option => option.Definition.Id == "food");
                 Assert.That(trial.TrySetLocked(trial.CurrentTurn, food.InstanceId, true, out _), Is.True);
-                Use(trial, "food");
                 Use(trial, "food");
                 Assert.That(trial.FoodRemaining, Is.Zero);
                 Assert.That(trial.Animal.HasFoodOnGround, Is.True);
@@ -90,6 +97,101 @@ namespace HomelessPetHelper.Tests.RescueCase
                 Assert.That(trial.Animal.IsHungry, Is.False);
                 Assert.That(trial.TryRequestAssistance(trial.CurrentTurn, out _), Is.True);
                 Assert.That(trial.Stage, Is.EqualTo(CaseStage.AssistanceRequested));
+            }
+        }
+
+        [Test]
+        public void ExistingFoodStopsFurtherOffersBeforeAndAfterEating()
+        {
+            using (var trial = NewTrial())
+            {
+                Use(trial, "food");
+                int remaining = trial.FoodRemaining;
+                for (int index = 0; index < 12; index++)
+                {
+                    Assert.That(trial.Options.Any(option => option.Definition.Id == "food"), Is.False);
+                    Use(trial, "toy");
+                    Assert.That(trial.Animal.HasFoodOnGround, Is.True);
+                    Assert.That(trial.FoodRemaining, Is.EqualTo(remaining));
+                }
+
+                Use(trial, "give-space");
+                Use(trial, "wait");
+                Assert.That(trial.Animal.IsHungry, Is.False);
+                for (int index = 0; index < 12; index++)
+                {
+                    Assert.That(trial.Options.Any(option => option.Definition.Id == "food"), Is.False);
+                    Assert.That(trial.FoodRemaining, Is.EqualTo(remaining));
+                    Use(trial, "give-space");
+                }
+            }
+        }
+
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(42)]
+        [TestCase(1731)]
+        [TestCase(int.MaxValue)]
+        public void ObsoleteLockedApproachStaysRejectedAndUnlockableDuringInspection(int seed)
+        {
+            using (var trial = new RescueCaseTrial(Guid.NewGuid(), seed, start: CaseStart.StressRecovery))
+            {
+                Find(trial, "approach");
+                long approach = trial.Options.Single(option => option.Definition.Id == "approach").InstanceId;
+                Assert.That(trial.TrySetLocked(trial.CurrentTurn, approach, true, out _), Is.True);
+                Find(trial, "toy");
+                long toy = trial.Options.Single(option => option.Definition.Id == "toy").InstanceId;
+                Assert.That(trial.TrySetLocked(trial.CurrentTurn, toy, true, out _), Is.True);
+                if (!trial.Animal.HasSpace)
+                {
+                    Use(trial, "give-space");
+                }
+                for (int index = 0; index < 30 && trial.Stage == CaseStage.Choosing; index++)
+                {
+                    AssertOffer(trial);
+                    Use(trial, "wait");
+                }
+
+                Assert.That(trial.Stage, Is.EqualTo(CaseStage.Approachable));
+                Assert.That(trial.Animal.IsWithinReach, Is.True);
+                Assert.That(trial.Animal.Placement, Is.EqualTo(CasePlacement.NotOffered));
+                var beforePlacement = trial.Animal;
+                string hand = string.Join(",", trial.Options.Select(option => option.InstanceId));
+                Assert.That(trial.TryPrepareRescue(trial.CurrentTurn, out _), Is.True);
+                Assert.That(trial.Animal.Behavior, Is.EqualTo(CaseBehavior.InspectingPlacement));
+                Assert.That(beforePlacement.Placement, Is.EqualTo(CasePlacement.NotOffered));
+                Assert.That(string.Join(",", trial.Options.Select(option => option.InstanceId)), Is.EqualTo(hand));
+                string before = Fingerprint(trial);
+                trial.SetSuspended(true);
+                Assert.That(trial.TryContinue(trial.CurrentTurn, out _), Is.False);
+                Assert.That(trial.TryPrepareRescue(trial.CurrentTurn, out _), Is.False);
+                Assert.That(Fingerprint(trial), Is.EqualTo(before));
+                trial.SetSuspended(false);
+                Assert.That(trial.TryContinue(trial.CurrentTurn, out _), Is.True);
+                AssertOffer(trial);
+                Assert.That(trial.Options.Single(option => option.InstanceId == approach).IsLocked, Is.True);
+                Assert.That(trial.GetOptionFailure(approach), Is.EqualTo(CaseFailure.AlreadyWithinReach));
+                before = Fingerprint(trial);
+                Assert.That(trial.TrySubmit(trial.CurrentTurn, new[] { approach }, out var failure), Is.False);
+                Assert.That(failure, Is.EqualTo(CaseFailure.AlreadyWithinReach));
+                Assert.That(Fingerprint(trial), Is.EqualTo(before));
+                Assert.That(trial.TrySetLocked(trial.CurrentTurn, approach, false, out _), Is.True);
+                Assert.That(trial.Options.Any(option => option.InstanceId == approach), Is.True);
+                Use(trial, "toy");
+                for (int index = 0; index < 8; index++)
+                {
+                    AssertOffer(trial);
+                    Assert.That(trial.Options.Any(option => option.Definition.Id == "approach"), Is.False);
+                    Assert.That(trial.Animal.Placement, Is.EqualTo(CasePlacement.Inspecting));
+                    Assert.That(trial.TryFinishRescue(trial.CurrentTurn, out _), Is.False);
+                    Use(trial, "toy");
+                }
+
+                Use(trial, "wait");
+                Assert.That(trial.Animal.Placement, Is.EqualTo(CasePlacement.Accepted));
+                Assert.That(trial.Animal.Behavior, Is.EqualTo(CaseBehavior.SettlingInPlacement));
+                Assert.That(trial.Stage, Is.EqualTo(CaseStage.ReadyForRescue));
             }
         }
 
@@ -130,6 +232,7 @@ namespace HomelessPetHelper.Tests.RescueCase
                     }
 
                     Assert.That(trial.Options.Count, Is.EqualTo(3));
+                    Assert.That(trial.Options.Select(option => option.Definition.Id).Distinct().Count(), Is.EqualTo(3));
                     Assert.That(trial.Options.All(option => option.Definition.Id != "food"), Is.True);
                     RescueOption safe = trial.Options.First(option => option.Definition.Id != "approach");
                     bool hungry = trial.Animal.IsHungry;
@@ -156,6 +259,7 @@ namespace HomelessPetHelper.Tests.RescueCase
                 var wrong = new OptionTurnId(Guid.NewGuid(), oldTurn.TurnNumber);
                 Assert.That(trial.TrySubmit(wrong, new[] { trial.Options[0].InstanceId }, out _), Is.False);
                 Assert.That(trial.TryReturnToStation(oldTurn, out _), Is.False);
+                Assert.That(trial.TryPrepareRescue(oldTurn, out _), Is.False);
                 Assert.That(Fingerprint(trial), Is.EqualTo(before));
                 trial.SetSuspended(true);
                 Assert.That(trial.TrySubmit(oldTurn, new[] { trial.Options[0].InstanceId }, out _), Is.False);
@@ -236,8 +340,9 @@ namespace HomelessPetHelper.Tests.RescueCase
                     return;
                 }
 
-                RescueOption safe = trial.Options.First(option => option.Definition.Id == "wait" ||
-                    option.Definition.Id == "give-space" || option.Definition.Id == "toy");
+                RescueOption safe = new[] { "give-space", "toy", "wait" }
+                    .Select(id => trial.Options.FirstOrDefault(option => option.Definition.Id == id))
+                    .First(option => option != null && trial.GetOptionFailure(option.InstanceId) == CaseFailure.None);
                 Assert.That(trial.TrySubmit(trial.CurrentTurn, new[] { safe.InstanceId }, out _), Is.True);
                 trial.TryContinue(trial.CurrentTurn, out _);
             }
@@ -250,10 +355,20 @@ namespace HomelessPetHelper.Tests.RescueCase
             CaseAnimalSnapshot animal = trial.Animal;
             return string.Join("/", trial.Stage, trial.CurrentTurn.TurnNumber, trial.FoodRemaining,
                 animal.IsHungry, animal.HasSpace, animal.HasFoodOnGround,
-                animal.Emotion, animal.Behavior, animal.Stress,
+                animal.Emotion, animal.Behavior, animal.Stress, animal.IsWithinReach, animal.Placement,
                 trial.LastResponse, trial.HasInteracted,
                 string.Join(",", trial.Options.Select(option =>
                     option.InstanceId + ":" + option.Definition.Id + ":" + option.IsLocked)));
+        }
+
+        private static void AssertOffer(RescueCaseTrial trial)
+        {
+            Assert.That(trial.Options.Count, Is.EqualTo(3));
+            Assert.That(trial.Options.Select(option => option.Definition.Id).Distinct().Count(), Is.EqualTo(3));
+            Assert.That(trial.Options.Any(option => trial.GetOptionFailure(option.InstanceId) == CaseFailure.None &&
+                (option.Definition.Id == "give-space" || option.Definition.Id == "wait")), Is.True);
+            Assert.That(trial.Options.Where(option => !option.IsLocked)
+                .All(option => trial.GetOptionFailure(option.InstanceId) == CaseFailure.None), Is.True);
         }
     }
 }
