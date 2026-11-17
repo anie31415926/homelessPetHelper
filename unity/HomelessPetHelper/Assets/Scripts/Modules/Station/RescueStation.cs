@@ -69,7 +69,7 @@ namespace HomelessPetHelper.Modules.Station
             out StationReturnSummary summary, out StationFailure failure)
         {
             summary = null;
-            if (!ValidateSession(stationSessionId, out failure) || !ValidateArrival(arrival, out failure))
+            if (!CanReceive(stationSessionId, arrival, out failure))
             {
                 return false;
             }
@@ -81,6 +81,12 @@ namespace HomelessPetHelper.Modules.Station
             _animals = nextAnimals.AsReadOnly();
             summary = nextSummary;
             return true;
+        }
+
+        /// <summary>Read-only admission gate. Valid until another operation mutates this station.</summary>
+        public bool CanReceive(Guid stationSessionId, StationAnimalIntake arrival, out StationFailure failure)
+        {
+            return ValidateSession(stationSessionId, out failure) && ValidateArrival(arrival, out failure);
         }
 
         /// <summary>

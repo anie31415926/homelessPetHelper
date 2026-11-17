@@ -10,7 +10,7 @@ namespace HomelessPetHelper.Tests.EditMode
 {
     public sealed class OutingCoordinatorTests
     {
-        private const string Parking = "parking";
+        internal const string Parking = "parking";
         private const string Courtyard = "courtyard";
         private const string Porch = "porch";
 
@@ -55,7 +55,7 @@ namespace HomelessPetHelper.Tests.EditMode
                 out var summary, out var failure), Is.True);
             Assert.That(failure, Is.EqualTo(OutingAssemblyFailure.None));
 
-            Assert.That(f.Flow.Stage, Is.EqualTo(RescueStage.Station));
+            Assert.That(f.Flow.Stage, Is.EqualTo(RescueStage.Care));
             Assert.That(f.Station.Animals.Count, Is.EqualTo(1));
             Assert.That(f.Clock.Current.ElapsedMinutes, Is.EqualTo(before + 30));
             Assert.That(coordinator.Session.IsSettled, Is.True);
@@ -189,6 +189,7 @@ namespace HomelessPetHelper.Tests.EditMode
                 var sessionId = RunToRescued(coordinator, f, 100 + i);
                 var arrival = MakeArrival(sessionId, Guid.NewGuid());
                 Assert.That(coordinator.TryReturnAndSettle(sessionId, arrival, 15, out _, out _), Is.True);
+                Assert.That(coordinator.TryCompleteCare(sessionId, out _), Is.True);
             }
 
             Assert.That(f.Station.Animals.Count, Is.EqualTo(2));
@@ -207,7 +208,7 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(failure, Is.EqualTo(OutingAssemblyFailure.SessionAlreadySettled));
         }
 
-        private static Guid RunToRescued(OutingCoordinator coordinator, Fixture f, int seed = 7)
+        internal static Guid RunToRescued(OutingCoordinator coordinator, Fixture f, int seed = 7)
         {
             var sessionId = Guid.NewGuid();
             Assert.That(coordinator.TryBeginOuting(sessionId, seed, out var beginFailure), Is.True,
@@ -221,16 +222,16 @@ namespace HomelessPetHelper.Tests.EditMode
             return sessionId;
         }
 
-        private static StationAnimalIntake MakeArrival(Guid outingId, Guid animalId)
+        internal static StationAnimalIntake MakeArrival(Guid outingId, Guid animalId)
         {
             var condition = new AnimalIntakeCondition(StationHealthAssessment.Unchecked, 0,
                 Array.Empty<string>());
             return new StationAnimalIntake(outingId, animalId, "cat.shy", condition);
         }
 
-        private static Fixture CreateFixture(out OutingCoordinator coordinator, out Guid parkingRequestId,
+        internal static Fixture CreateFixture(out OutingCoordinator coordinator, out Guid parkingRequestId,
             out RequestPoolState pool, out RescueFlow flow, out ActionWorldClock clock,
-            int capacity = 3)
+            int capacity = 3, long initialMinutes = 0)
         {
             var points = new[]
             {
@@ -255,14 +256,14 @@ namespace HomelessPetHelper.Tests.EditMode
             var worldSessionId = Guid.NewGuid();
             var stationSessionId = Guid.NewGuid();
             var station = new RescueStation(stationSessionId, capacity);
-            clock = new ActionWorldClock(worldSessionId, 1440);
+            clock = new ActionWorldClock(worldSessionId, 1440, initialMinutes);
 
             coordinator = new OutingCoordinator(flow, station, stationSessionId, clock,
                 worldSessionId, rules, pool);
-            return new Fixture(flow, station, stationSessionId, clock, worldSessionId, pool);
+            return new Fixture(flow, station, stationSessionId, clock, worldSessionId, pool, rules);
         }
 
-        private sealed class Fixture
+        internal sealed class Fixture
         {
             public readonly RescueFlow Flow;
             public readonly RescueStation Station;
@@ -270,9 +271,10 @@ namespace HomelessPetHelper.Tests.EditMode
             public readonly ActionWorldClock Clock;
             public readonly Guid WorldSessionId;
             public readonly RequestPoolState Pool;
+            public readonly CityMapRules Rules;
 
             public Fixture(RescueFlow flow, RescueStation station, Guid stationSessionId,
-                ActionWorldClock clock, Guid worldSessionId, RequestPoolState pool)
+                ActionWorldClock clock, Guid worldSessionId, RequestPoolState pool, CityMapRules rules)
             {
                 Flow = flow;
                 Station = station;
@@ -280,6 +282,7 @@ namespace HomelessPetHelper.Tests.EditMode
                 Clock = clock;
                 WorldSessionId = worldSessionId;
                 Pool = pool;
+                Rules = rules;
             }
         }
     }

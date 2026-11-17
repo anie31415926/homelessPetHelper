@@ -42,10 +42,12 @@ namespace HomelessPetHelper.Tests.PlayMode
             _bootstrap.SendMessage("OnApplicationPause", true);
             _bootstrap.SendMessage("OnApplicationFocus", true);
             Assert.That(_bootstrap.Flow.IsSuspended, Is.True);
-            Assert.That(_bootstrap.Flow.TryAdvance(RescueSignal.ApproachCompleted, out var failure), Is.False);
+            Assert.That(_bootstrap.Flow.TryAdvance(RescueSignal.Depart, out var failure), Is.False);
             Assert.That(failure, Is.EqualTo(TransitionFailure.Suspended));
             _bootstrap.SendMessage("OnApplicationPause", false);
             Assert.That(_bootstrap.Flow.IsSuspended, Is.False);
+            Assert.That(_bootstrap.Flow.Stage, Is.EqualTo(RescueStage.Map));
+            Assert.That(_bootstrap.Flow.TryAdvance(RescueSignal.Depart, out _), Is.True);
             Assert.That(_bootstrap.Flow.Stage, Is.EqualTo(RescueStage.Approach));
             yield return null;
         }

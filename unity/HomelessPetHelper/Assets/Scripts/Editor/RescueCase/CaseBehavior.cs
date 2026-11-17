@@ -10,6 +10,7 @@ namespace HomelessPetHelper.Editor.RescueCase
         Approaching = 5,
         Settled = 6,
         InspectingPlacement = 7,
-        SettlingInPlacement = 8
+        SettlingInPlacement = 8,
+        PermittingApproach = 9
     }
 }

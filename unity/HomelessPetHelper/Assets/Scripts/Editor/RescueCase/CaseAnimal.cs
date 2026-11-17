@@ -43,6 +43,7 @@ namespace HomelessPetHelper.Editor.RescueCase
             switch (action)
             {
                 case CaseAction.GiveSpace:
+                    bool alreadyHasSpace = HasSpace;
                     HasSpace = true;
                     Emotion = Emotion == CaseEmotion.Startled ? CaseEmotion.Nervous : Emotion;
                     if (TryAcceptPlacement())
@@ -51,6 +52,12 @@ namespace HomelessPetHelper.Editor.RescueCase
                     }
 
                     Behavior = CaseBehavior.Watching;
+                    if (alreadyHasSpace)
+                    {
+                        return Stress == CaseStress.Acute ?
+                            CaseResponse.SpaceMaintainedUnderStress : CaseResponse.SpaceMaintained;
+                    }
+
                     return Stress == CaseStress.Acute ? CaseResponse.SpaceGivenUnderStress : CaseResponse.SpaceGiven;
                 case CaseAction.Wait:
                     return Wait();
@@ -142,7 +149,7 @@ namespace HomelessPetHelper.Editor.RescueCase
             if (CanApproach())
             {
                 IsWithinReach = true;
-                Behavior = CaseBehavior.Approaching;
+                Behavior = CaseBehavior.PermittingApproach;
                 return CaseResponse.Accepted;
             }
 

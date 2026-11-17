@@ -42,6 +42,28 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [Test]
+        public void SessionPrechecksAreReadOnlyAndSuspendedSettlementIsRejected()
+        {
+            var id = Guid.NewGuid();
+            var requestId = Guid.NewGuid();
+            var session = new OutingSession(id, 1, TimeMark);
+            Assert.That(session.CanDepart(id, "parking", requestId, out _), Is.True);
+            Assert.That(session.Stage, Is.EqualTo(OutingStage.MapSelecting));
+            Assert.That(session.AcceptedRequestId, Is.EqualTo(Guid.Empty));
+            Assert.That(session.TryDepart(id, "parking", requestId, out _), Is.True);
+            Assert.That(session.CanSettle(id, out _), Is.True);
+            Assert.That(session.Stage, Is.EqualTo(OutingStage.Departed));
+            session.SetSuspended(true);
+            Assert.That(session.CanSettle(id, out var precheckFailure), Is.False);
+            Assert.That(session.TrySettle(id, out var commitFailure), Is.False);
+            Assert.That(precheckFailure, Is.EqualTo(OutingFailure.Suspended));
+            Assert.That(commitFailure, Is.EqualTo(precheckFailure));
+            Assert.That(session.Stage, Is.EqualTo(OutingStage.Departed));
+            session.SetSuspended(false);
+            Assert.That(session.TrySettle(id, out _), Is.True);
+        }
+
+        [Test]
         public void DepartTwiceIsRejectedWithoutOverwrite()
         {
             var sessionId = Guid.NewGuid();

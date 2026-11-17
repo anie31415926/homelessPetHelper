@@ -74,7 +74,7 @@ namespace HomelessPetHelper.Modules.Outing
                 return false;
             }
 
-            if (!TryGetAvailableRequest(pointId, out request))
+            if (!TryGetAvailableRequest(pointId, out request, out _))
             {
                 failure = OutingFailure.PointHasNoRequest;
                 return false;
@@ -93,8 +93,7 @@ namespace HomelessPetHelper.Modules.Outing
                     PointDisplayState.Locked, null);
             }
 
-            if (TryGetAvailableRequest(point.PointId, out var request) &&
-                _templatesById.TryGetValue(request.TemplateId, out var template))
+            if (TryGetAvailableRequest(point.PointId, out _, out var template))
             {
                 return new MapPointView(point.PointId, point.DisplayNameKey, point.RegionId,
                     PointDisplayState.HasHelpRequest, template.TextKey);
@@ -104,14 +103,17 @@ namespace HomelessPetHelper.Modules.Outing
                 PointDisplayState.NoRequest, null);
         }
 
-        private bool TryGetAvailableRequest(string pointId, out HelpRequest found)
+        private bool TryGetAvailableRequest(string pointId, out HelpRequest found, out HelpRequestTemplate template)
         {
             found = null;
+            template = null;
             foreach (var request in _requestPool.Requests)
             {
-                if (request.State == RequestState.Available && request.PointId == pointId)
+                if (request.State == RequestState.Available && request.PointId == pointId &&
+                    _templatesById.TryGetValue(request.TemplateId, out var candidate) && candidate.AllowsPoint(pointId))
                 {
                     found = request;
+                    template = candidate;
                     return true;
                 }
             }

@@ -20,6 +20,8 @@ namespace HomelessPetHelper.Editor.RescueCase
         AcceptedPreparation = 15,
         SpaceGivenUnderStress = 16,
         StressEased = 17,
-        InspectingPlacement = 18
+        InspectingPlacement = 18,
+        SpaceMaintained = 19,
+        SpaceMaintainedUnderStress = 20
     }
 }

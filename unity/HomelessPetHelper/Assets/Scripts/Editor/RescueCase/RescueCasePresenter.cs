@@ -183,7 +183,9 @@ namespace HomelessPetHelper.Editor.RescueCase
         private void Render()
         {
             CaseAnimalSnapshot animal = Trial.Animal;
-            var titles = Trial.Options.Select(option => _text.Get(option.Definition.Id)).ToArray();
+            var titles = Trial.Options.Select(option => _text.Get(
+                animal.HasSpace && option.Definition.Id == "give-space" ? "maintain-space" : option.Definition.Id))
+                .ToArray();
             var reasons = Trial.Options.Select(option => Trial.GetOptionFailure(option.InstanceId))
                 .Select(failure => failure == CaseFailure.None ? string.Empty : _text.Get("unavailable." + failure))
                 .ToArray();

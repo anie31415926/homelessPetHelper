@@ -53,6 +53,20 @@ namespace HomelessPetHelper.Modules.Outing
         /// </summary>
         public bool TryTransition(Guid requestId, RequestSignal signal, out OutingFailure failure)
         {
+            if (!CanTransition(requestId, signal, out failure))
+            {
+                return false;
+            }
+
+            var request = _requestsById[requestId];
+            TryGetNextState(request.State, signal, out var nextState);
+            request.State = nextState;
+            return true;
+        }
+
+        /// <summary>Read-only transition gate; shares the mutation entry's complete validation.</summary>
+        public bool CanTransition(Guid requestId, RequestSignal signal, out OutingFailure failure)
+        {
             if (signal != RequestSignal.Accept && signal != RequestSignal.Resolve)
             {
                 failure = OutingFailure.InvalidSignal;
@@ -65,13 +79,12 @@ namespace HomelessPetHelper.Modules.Outing
                 return false;
             }
 
-            if (!TryGetNextState(request.State, signal, out var nextState))
+            if (!TryGetNextState(request.State, signal, out _))
             {
                 failure = OutingFailure.UnexpectedSignal;
                 return false;
             }
 
-            request.State = nextState;
             failure = OutingFailure.None;
             return true;
         }

@@ -28,6 +28,7 @@ namespace HomelessPetHelper.Bootstrap
         TimeRejected = 18,
         InvalidArrival = 19,
         IdentityMismatch = 20,
-        InternalInconsistent = 21
+        InternalInconsistent = 21,
+        SessionIdReused = 22
     }
 }

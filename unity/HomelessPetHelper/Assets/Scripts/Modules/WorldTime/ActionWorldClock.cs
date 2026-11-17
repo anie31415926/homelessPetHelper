@@ -58,6 +58,21 @@ namespace HomelessPetHelper.Modules.WorldTime
             out WorldTimeChange change, out WorldTimeFailure failure)
         {
             change = null;
+            if (!CanAdvance(expectedVersion, durationMinutes, out failure))
+            {
+                return false;
+            }
+
+            var version = new WorldTimeVersion(_sessionId, Current.ElapsedMinutes + durationMinutes);
+            var nextTime = new WorldTimeSnapshot(version, _minutesPerDay);
+            change = new WorldTimeChange(Current, nextTime);
+            Current = nextTime;
+            return true;
+        }
+
+        /// <summary>Read-only time gate, including identity, version and numeric bounds.</summary>
+        public bool CanAdvance(WorldTimeVersion expectedVersion, long durationMinutes, out WorldTimeFailure failure)
+        {
             if (!ValidateVersion(expectedVersion, out failure))
             {
                 return false;
@@ -75,10 +90,6 @@ namespace HomelessPetHelper.Modules.WorldTime
                 return false;
             }
 
-            var version = new WorldTimeVersion(_sessionId, Current.ElapsedMinutes + durationMinutes);
-            var nextTime = new WorldTimeSnapshot(version, _minutesPerDay);
-            change = new WorldTimeChange(Current, nextTime);
-            Current = nextTime;
             return true;
         }
 

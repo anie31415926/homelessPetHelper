@@ -51,6 +51,18 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [Test]
+        public void TimePrecheckDoesNotAdvanceAndMustBeRevalidatedAfterMutation()
+        {
+            var before = _clock.Current;
+            Assert.That(_clock.CanAdvance(before.Version, 45, out var failure), Is.True);
+            Assert.That(failure, Is.EqualTo(WorldTimeFailure.None));
+            Assert.That(_clock.Current, Is.SameAs(before));
+            Assert.That(_clock.TryAdvance(before.Version, 45, out _, out _), Is.True);
+            Assert.That(_clock.CanAdvance(before.Version, 45, out failure), Is.False);
+            Assert.That(failure, Is.EqualTo(WorldTimeFailure.StaleVersion));
+        }
+
+        [Test]
         public void RepeatedCompletionWithCapturedVersionIsRejectedWithoutSecondAdvance()
         {
             var version = _clock.Current.Version;

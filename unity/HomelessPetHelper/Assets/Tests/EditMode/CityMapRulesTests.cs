@@ -88,6 +88,42 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(Find(snapshot, Parking).DisplayState, Is.EqualTo(PointDisplayState.HasHelpRequest));
         }
 
+        [TestCase("missing.template")]
+        [TestCase("help.parking")]
+        public void InvalidTemplateCannotBeDisplayedOrSelected(string templateId)
+        {
+            var rules = CreateRules(out _, out var pool, out _);
+            var invalid = new HelpRequest(Guid.NewGuid(), templateId, Courtyard, 1);
+            Assert.That(pool.TryAdd(invalid, out _), Is.True);
+            Assert.That(Find(rules.BuildSnapshot(), Courtyard).DisplayState, Is.EqualTo(PointDisplayState.NoRequest));
+            Assert.That(rules.TrySelectPoint(Courtyard, out var request, out var failure), Is.False);
+            Assert.That(failure, Is.EqualTo(OutingFailure.PointHasNoRequest));
+            Assert.That(request, Is.Null);
+            Assert.That(invalid.State, Is.EqualTo(RequestState.Available));
+        }
+
+        [Test]
+        public void InvalidFirstRequestDoesNotHideLaterValidRequest()
+        {
+            var definition = new CityMapDefinition("city_base", new[] { "north" }, new[]
+            {
+                new MapPointDefinition(Parking, "point.parking", "north", true, new[] { "shed" })
+            });
+            var pool = new RequestPoolState();
+            var invalid = new HelpRequest(Guid.NewGuid(), "missing", Parking, 1);
+            var valid = new HelpRequest(Guid.NewGuid(), "help.parking", Parking, 1);
+            Assert.That(pool.TryAdd(invalid, out _), Is.True);
+            Assert.That(pool.TryAdd(valid, out _), Is.True);
+            var rules = new CityMapRules(definition, new PointUnlockState(), pool, new[]
+            {
+                new HelpRequestTemplate("help.parking", "request.help.parking", "cat.shy", new[] { Parking })
+            });
+            Assert.That(Find(rules.BuildSnapshot(), Parking).RequestTextKey, Is.EqualTo("request.help.parking"));
+            Assert.That(rules.TrySelectPoint(Parking, out var request, out _), Is.True);
+            Assert.That(request, Is.SameAs(valid));
+            Assert.That(invalid.State, Is.EqualTo(RequestState.Available));
+        }
+
         private static CityMapRules CreateRules(out PointUnlockState unlock, out RequestPoolState pool,
             out Guid parkingRequestId)
         {

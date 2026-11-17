@@ -61,6 +61,19 @@ namespace HomelessPetHelper.Modules.Outing
         /// </summary>
         public bool TryDepart(Guid sessionId, string pointId, Guid requestId, out OutingFailure failure)
         {
+            if (!CanDepart(sessionId, pointId, requestId, out failure))
+            {
+                return false;
+            }
+
+            SelectedPointId = pointId;
+            AcceptedRequestId = requestId;
+            Stage = OutingStage.Departed;
+            return true;
+        }
+
+        public bool CanDepart(Guid sessionId, string pointId, Guid requestId, out OutingFailure failure)
+        {
             failure = OutingFailure.None;
             if (sessionId != SessionId)
             {
@@ -92,9 +105,6 @@ namespace HomelessPetHelper.Modules.Outing
                 return false;
             }
 
-            SelectedPointId = pointId;
-            AcceptedRequestId = requestId;
-            Stage = OutingStage.Departed;
             return true;
         }
 
@@ -102,6 +112,17 @@ namespace HomelessPetHelper.Modules.Outing
         /// Completes this outing once. Repeated settlement is rejected so time is committed once.
         /// </summary>
         public bool TrySettle(Guid sessionId, out OutingFailure failure)
+        {
+            if (!CanSettle(sessionId, out failure))
+            {
+                return false;
+            }
+
+            Stage = OutingStage.Settled;
+            return true;
+        }
+
+        public bool CanSettle(Guid sessionId, out OutingFailure failure)
         {
             failure = OutingFailure.None;
             if (sessionId != SessionId)
@@ -116,13 +137,18 @@ namespace HomelessPetHelper.Modules.Outing
                 return false;
             }
 
+            if (IsSuspended)
+            {
+                failure = OutingFailure.Suspended;
+                return false;
+            }
+
             if (Stage != OutingStage.Departed)
             {
                 failure = OutingFailure.NotDeparted;
                 return false;
             }
 
-            Stage = OutingStage.Settled;
             return true;
         }
     }

@@ -8,6 +8,48 @@ namespace HomelessPetHelper.Tests.RescueCase
 {
     public sealed class RescueCaseTrialTests
     {
+        [TestCase(CaseStart.Normal, CaseResponse.SpaceGiven, CaseResponse.SpaceMaintained)]
+        [TestCase(CaseStart.StressRecovery, CaseResponse.SpaceGivenUnderStress,
+            CaseResponse.SpaceMaintainedUnderStress)]
+        public void RepeatedSpaceMaintainsDistanceWithoutInventingProgress(CaseStart start,
+            CaseResponse initial, CaseResponse repeated)
+        {
+            using (var trial = new RescueCaseTrial(Guid.NewGuid(), 1731, start: start))
+            {
+                Use(trial, "give-space");
+                Assert.That(trial.LastResponse, Is.EqualTo(initial));
+                var before = trial.Animal;
+                int food = trial.FoodRemaining;
+                Use(trial, "give-space");
+                Assert.That(trial.LastResponse, Is.EqualTo(repeated));
+                Assert.That(trial.Animal.AnimalId, Is.EqualTo(before.AnimalId));
+                Assert.That(trial.Animal.HasSpace, Is.True);
+                Assert.That(trial.Animal.IsHungry, Is.EqualTo(before.IsHungry));
+                Assert.That(trial.Animal.Emotion, Is.EqualTo(before.Emotion));
+                Assert.That(trial.Animal.Stress, Is.EqualTo(before.Stress));
+                Assert.That(trial.Animal.IsWithinReach, Is.EqualTo(before.IsWithinReach));
+                Assert.That(trial.Animal.Placement, Is.EqualTo(before.Placement));
+                Assert.That(trial.FoodRemaining, Is.EqualTo(food));
+            }
+        }
+
+        [Test]
+        public void PlayerApproachIsNotReportedAsVoluntaryAnimalMovement()
+        {
+            using (var trial = NewTrial())
+            {
+                Use(trial, "give-space");
+                Use(trial, "food");
+                Use(trial, "wait");
+                Use(trial, "toy");
+                Use(trial, "approach");
+                Assert.That(trial.LastResponse, Is.EqualTo(CaseResponse.Accepted));
+                Assert.That(trial.Animal.IsWithinReach, Is.True);
+                Assert.That(trial.Animal.Behavior, Is.EqualTo(CaseBehavior.PermittingApproach));
+                Assert.That(trial.Stage, Is.EqualTo(CaseStage.Approachable));
+            }
+        }
+
         [TestCase(false)]
         [TestCase(true)]
         public void DifferentPathsReachSummaryThenStationWithSameAnimal(bool useToy)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using HomelessPetHelper.Modules.Outing;
 using HomelessPetHelper.Modules.Rescue;
 using HomelessPetHelper.Modules.Station;
@@ -28,6 +29,7 @@ namespace HomelessPetHelper.Bootstrap
         private readonly Guid _worldSessionId;
         private readonly CityMapRules _mapRules;
         private readonly RequestPoolState _requestPool;
+        private readonly HashSet<Guid> _usedSessionIds = new HashSet<Guid>();
 
         private OutingSession _session;
         private OutingSummary _lastSummary;
@@ -78,6 +80,12 @@ namespace HomelessPetHelper.Bootstrap
                 return false;
             }
 
+            if (_usedSessionIds.Contains(sessionId))
+            {
+                failure = OutingAssemblyFailure.SessionIdReused;
+                return false;
+            }
+
             if (seed < 0)
             {
                 failure = OutingAssemblyFailure.InvalidSeed;
@@ -103,6 +111,12 @@ namespace HomelessPetHelper.Bootstrap
                 return false;
             }
 
+            if (_clock.Current.Version.SessionId != _worldSessionId)
+            {
+                failure = OutingAssemblyFailure.WrongSession;
+                return false;
+            }
+
             // Commit: all preconditions above are guaranteed.
             var mark = new OutingTimeMark(_worldSessionId, _clock.Current.Version.ElapsedMinutes);
             var session = new OutingSession(sessionId, seed, mark);
@@ -113,6 +127,7 @@ namespace HomelessPetHelper.Bootstrap
             }
 
             _session = session;
+            _usedSessionIds.Add(sessionId);
             _lastSummary = null;
             return true;
         }
@@ -146,23 +161,26 @@ namespace HomelessPetHelper.Bootstrap
                 return false;
             }
 
-            // Commit: point open + request available + correct stages already verified.
-            if (!_requestPool.TryTransition(request.RequestId, RequestSignal.Accept, out var acceptFailure))
+            if (!_requestPool.TryGet(request.RequestId, out var ownedRequest) ||
+                !ReferenceEquals(ownedRequest, request))
+            {
+                failure = OutingAssemblyFailure.RequestNotAvailable;
+                return false;
+            }
+
+            if (!_requestPool.CanTransition(request.RequestId, RequestSignal.Accept, out var acceptFailure) ||
+                !_session.CanDepart(sessionId, pointId, request.RequestId, out acceptFailure))
             {
                 failure = MapOutingFailure(acceptFailure);
                 return false;
             }
 
-            if (!_session.TryDepart(sessionId, pointId, request.RequestId, out var departFailure))
+            // No callbacks or interleaving between validation and commit on the gameplay thread.
+            if (!_requestPool.TryTransition(request.RequestId, RequestSignal.Accept, out _) ||
+                !_session.TryDepart(sessionId, pointId, request.RequestId, out _) ||
+                !_flow.TryAdvance(RescueSignal.Depart, out _))
             {
-                failure = MapOutingFailure(departFailure);
-                return false;
-            }
-
-            if (!_flow.TryAdvance(RescueSignal.Depart, out var flowFailure))
-            {
-                failure = MapFlowFailure(flowFailure);
-                return false;
+                throw new InvalidOperationException("Validated departure commit failed.");
             }
 
             return true;
@@ -266,68 +284,99 @@ namespace HomelessPetHelper.Bootstrap
                 return false;
             }
 
-            // Pre-validate every commit-side module so no step can fail midway.
+            // Module-owned gates include duplicate identities, actual session IDs and overflow.
+            if (!_station.CanReceive(_stationSessionId, arrival, out var stationFailure))
+            {
+                failure = MapStationFailure(stationFailure);
+                return false;
+            }
+
+            var mark = _session.TimeMark;
+            var expectedVersion = new WorldTimeVersion(mark.TimeSessionId, mark.EnteredMinutes);
+            if (!_clock.CanAdvance(expectedVersion, durationMinutes, out var timeFailure))
+            {
+                failure = MapTimeFailure(timeFailure);
+                return false;
+            }
+
+            if (!_requestPool.TryGet(_session.AcceptedRequestId, out var request) ||
+                request.PointId != _session.SelectedPointId)
+            {
+                failure = OutingAssemblyFailure.RequestNotAvailable;
+                return false;
+            }
+
+            if (!_requestPool.CanTransition(request.RequestId, RequestSignal.Resolve, out _))
+            {
+                failure = OutingAssemblyFailure.RequestNotAvailable;
+                return false;
+            }
+
+            if (!_session.CanSettle(sessionId, out var settleFailure))
+            {
+                failure = MapOutingFailure(settleFailure);
+                return false;
+            }
+
+            // Synchronous commit only. An invariant violation is a technical error, not a clean refusal.
+            if (!_session.TrySettle(sessionId, out _) ||
+                !_requestPool.TryTransition(request.RequestId, RequestSignal.Resolve, out _) ||
+                !_station.TryReceive(_stationSessionId, arrival, out _, out _) ||
+                !_clock.TryAdvance(expectedVersion, durationMinutes, out _, out _) ||
+                !_flow.TryAdvance(RescueSignal.ReturnToStation, out _))
+            {
+                throw new InvalidOperationException("Validated return settlement commit failed.");
+            }
+
+            summary = new OutingSummary(sessionId, _session.SelectedPointId,
+                _session.AcceptedRequestId, "rescued", durationMinutes);
+            _lastSummary = summary;
+            return true;
+        }
+
+        /// <summary>
+        /// Consumes an already-validated care completion for the returned outing. The caller
+        /// certifies actual care objectives; returning alone never manufactures this signal.
+        /// </summary>
+        public bool TryCompleteCare(Guid sessionId, out OutingAssemblyFailure failure)
+        {
+            failure = OutingAssemblyFailure.None;
+            if (_session == null)
+            {
+                failure = OutingAssemblyFailure.NoActiveSession;
+                return false;
+            }
+
+            if (sessionId != _session.SessionId)
+            {
+                failure = OutingAssemblyFailure.WrongSession;
+                return false;
+            }
+
+            if (_session.IsSuspended || _flow.IsSuspended)
+            {
+                failure = OutingAssemblyFailure.Suspended;
+                return false;
+            }
+
+            if (!_session.IsSettled || _lastSummary == null || _flow.Stage != RescueStage.Care)
+            {
+                failure = OutingAssemblyFailure.WrongStage;
+                return false;
+            }
+
             if (_station.IsSuspended || _station.IsClosed)
             {
                 failure = OutingAssemblyFailure.StationRejected;
                 return false;
             }
 
-            if (_station.IsFull)
+            if (!_flow.TryAdvance(RescueSignal.CareCompleted, out var flowFailure))
             {
-                failure = OutingAssemblyFailure.StationFull;
+                failure = MapFlowFailure(flowFailure);
                 return false;
             }
 
-            if (_clock.IsSuspended || _clock.IsClosed)
-            {
-                failure = OutingAssemblyFailure.TimeRejected;
-                return false;
-            }
-
-            var expectedVersion = new WorldTimeVersion(_worldSessionId, _session.TimeMark.EnteredMinutes);
-            if (expectedVersion.SessionId != _worldSessionId ||
-                expectedVersion.ElapsedMinutes != _clock.Current.Version.ElapsedMinutes)
-            {
-                failure = OutingAssemblyFailure.TimeVersionStale;
-                return false;
-            }
-
-            // Commit: session seal is the first irreversible gate, then downstream modules.
-            if (!_session.TrySettle(sessionId, out var settleFailure))
-            {
-                failure = MapOutingFailure(settleFailure);
-                return false;
-            }
-
-            if (!_requestPool.TryTransition(_session.AcceptedRequestId, RequestSignal.Resolve, out var resolveFailure))
-            {
-                failure = MapOutingFailure(resolveFailure);
-                return false;
-            }
-
-            if (!_station.TryReceive(_stationSessionId, arrival, out _, out var stationFailure))
-            {
-                failure = MapStationFailure(stationFailure);
-                return false;
-            }
-
-            if (!_clock.TryAdvance(expectedVersion, durationMinutes, out _, out var timeFailure))
-            {
-                failure = MapTimeFailure(timeFailure);
-                return false;
-            }
-
-            if (!_flow.TryAdvance(RescueSignal.ReturnToStation, out var returnFailure) ||
-                !_flow.TryAdvance(RescueSignal.CareCompleted, out var careFailure))
-            {
-                failure = OutingAssemblyFailure.InternalInconsistent;
-                return false;
-            }
-
-            summary = new OutingSummary(sessionId, _session.SelectedPointId,
-                _session.AcceptedRequestId, "rescued", durationMinutes);
-            _lastSummary = summary;
             return true;
         }
 

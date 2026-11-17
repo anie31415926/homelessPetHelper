@@ -18,6 +18,20 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [Test]
+        public void TransitionPrecheckDoesNotChangeRequestAndSharesMutationGate()
+        {
+            var pool = new RequestPoolState();
+            var request = CreateRequest();
+            Assert.That(pool.TryAdd(request, out _), Is.True);
+            Assert.That(pool.CanTransition(request.RequestId, RequestSignal.Accept, out var failure), Is.True);
+            Assert.That(failure, Is.EqualTo(OutingFailure.None));
+            Assert.That(request.State, Is.EqualTo(RequestState.Available));
+            Assert.That(pool.TryTransition(request.RequestId, RequestSignal.Accept, out _), Is.True);
+            Assert.That(pool.CanTransition(request.RequestId, RequestSignal.Accept, out failure), Is.False);
+            Assert.That(failure, Is.EqualTo(OutingFailure.UnexpectedSignal));
+        }
+
+        [Test]
         public void AcceptThenResolveReachesTerminalState()
         {
             var pool = new RequestPoolState();

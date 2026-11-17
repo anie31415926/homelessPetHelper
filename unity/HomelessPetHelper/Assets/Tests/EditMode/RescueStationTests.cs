@@ -54,6 +54,20 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [Test]
+        public void AdmissionPrecheckDoesNotReserveOrReceiveAnimal()
+        {
+            var arrival = CreateArrival();
+            var roster = _station.Animals;
+            Assert.That(_station.CanReceive(_sessionId, arrival, out var failure), Is.True);
+            Assert.That(failure, Is.EqualTo(StationFailure.None));
+            Assert.That(_station.Animals, Is.SameAs(roster));
+            Assert.That(_station.TryGetAnimal(arrival.AnimalId, out _), Is.False);
+            Assert.That(_station.TryReceive(_sessionId, arrival, out _, out _), Is.True);
+            Assert.That(_station.CanReceive(_sessionId, arrival, out failure), Is.False);
+            Assert.That(failure, Is.EqualTo(StationFailure.DuplicateOuting));
+        }
+
+        [Test]
         public void UncheckedArrivalIsNotAutomaticallyDiagnosedOrCleaned()
         {
             var arrival = CreateArrival(new AnimalIntakeCondition(StationHealthAssessment.Unchecked,

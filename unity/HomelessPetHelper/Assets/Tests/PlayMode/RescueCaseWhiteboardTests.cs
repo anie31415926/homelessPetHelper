@@ -199,6 +199,13 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Canvas.ForceUpdateCanvases();
                 AssertControlsInBounds(canvas);
                 Capture(camera, target, Path.Combine(folder, $"case-{size.x}x{size.y}.png"));
+                Use("give-space");
+                Use("give-space");
+                Assert.That(Label("Feedback").text, Is.EqualTo(Text("response.SpaceMaintained")));
+                Canvas.ForceUpdateCanvases();
+                AssertControlsInBounds(canvas);
+                AssertLabelsFit();
+                Capture(camera, target, Path.Combine(folder, $"maintain-space-{size.x}x{size.y}.png"));
                 Button("Handbook").onClick.Invoke();
                 Canvas.ForceUpdateCanvases();
                 AssertControlsInBounds(canvas);
@@ -266,11 +273,33 @@ namespace HomelessPetHelper.Tests.PlayMode
             _view.GetComponentsInChildren<Toggle>().Single(item => item.name == "Pause").isOn = false;
         }
 
+        [UnityTest]
+        public IEnumerator ExistingSpaceChangesActionTitleAndResponseWithoutClaimingAnotherRetreat()
+        {
+            yield return Load();
+            Use("give-space");
+            Assert.That(Label("Feedback").text, Is.EqualTo(Text("response.SpaceGiven")));
+            Find("give-space");
+            Assert.That(Card("give-space").GetComponentsInChildren<Text>()
+                .Single(label => label.name == "Title").text, Is.EqualTo(Text("maintain-space")));
+            Use("give-space");
+            Assert.That(Label("Feedback").text, Is.EqualTo(Text("response.SpaceMaintained")));
+            Canvas.ForceUpdateCanvases();
+            AssertLabelsFit();
+            Use("food");
+            Use("wait");
+            Use("toy");
+            Use("approach");
+            Assert.That(Label("Animal").text, Does.Contain(Text("behavior.PermittingApproach")));
+            Assert.That(Label("Animal").text, Does.Not.Contain(Text("behavior.Approaching")));
+            Assert.That(Label("Feedback").text, Is.EqualTo(Text("response.Accepted")));
+            yield return SceneManager.LoadSceneAsync("Assets/Scenes/Main.unity");
+        }
+
         private void Use(string action)
         {
             Find(action);
-            var card = Cards().First(item => item.GetComponentsInChildren<Text>()
-                .Any(label => label.name == "Title" && label.text == Text(action)));
+            var card = Card(action);
             card.GetComponentsInChildren<Toggle>().Single(toggle => toggle.name == "Selection").isOn = true;
             Assert.That(Button("Use").interactable, Is.True);
             Button("Use").onClick.Invoke();
@@ -301,7 +330,10 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         private OptionCardView Card(string action) => Cards().Single(item => item.GetComponentsInChildren<Text>()
-            .Any(label => label.name == "Title" && label.text == Text(action)));
+            .Any(label => label.name == "Title" && MatchesAction(label.text, action)));
+
+        private bool MatchesAction(string title, string action) => title == Text(action) ||
+            (action == "give-space" && title == Text("maintain-space"));
 
         private static Toggle CardToggle(OptionCardView card, string name) =>
             card.GetComponentsInChildren<Toggle>().Single(toggle => toggle.name == name);
@@ -311,14 +343,14 @@ namespace HomelessPetHelper.Tests.PlayMode
             for (int index = 0; index < 100; index++)
             {
                 if (Cards().Any(card => card.GetComponentsInChildren<Text>()
-                    .Any(label => label.name == "Title" && label.text == Text(action))))
+                    .Any(label => label.name == "Title" && MatchesAction(label.text, action))))
                 {
                     return;
                 }
 
                 var safe = new[] { "give-space", "toy", "wait" }
                     .Select(id => Cards().FirstOrDefault(card => card.GetComponentsInChildren<Text>()
-                        .Any(label => label.name == "Title" && label.text == Text(id))))
+                        .Any(label => label.name == "Title" && MatchesAction(label.text, id))))
                     .First(card => card != null && CardToggle(card, "Selection").interactable);
                 safe.GetComponentsInChildren<Toggle>().Single(toggle => toggle.name == "Selection").isOn = true;
                 Button("Use").onClick.Invoke();
