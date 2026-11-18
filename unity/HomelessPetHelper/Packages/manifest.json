@@ -1,9 +1,11 @@
 {
   "dependencies": {
     "com.coplaydev.unity-mcp": "https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity#d49ae2953580f3481beb1e084a1da2682f0b5610",
+    "com.qq.weixin.minigame": "https://github.com/wechat-miniprogram/minigame-tuanjie-transform-sdk.git#915d4bf4f60ef0cd1c29316a8d67257185d609a7",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.test-framework": "1.1.33",
     "com.unity.ugui": "1.0.0",
+    "com.unity.modules.assetbundle": "1.0.0",
     "com.unity.modules.imageconversion": "1.0.0",
     "com.unity.modules.jsonserialize": "1.0.0",
     "com.unity.modules.ui": "1.0.0",

@@ -9,6 +9,8 @@ namespace HomelessPetHelper.Modules.Station.UI
         Clean,
         Finish,
         History,
-        Restart
+        Restart,
+        Groom,
+        QuietSpace
     }
 }

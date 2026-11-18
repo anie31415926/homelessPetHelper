@@ -14,7 +14,9 @@
     "test:playlab": "node --test tests/playlab.test.js",
     "test:playlab:browser": "node tests/playlab-browser.mjs",
     "test:outing": "node --test tests/outing.test.js",
-    "test:outing:browser": "node tests/outing-browser.mjs"
+    "test:outing:browser": "node tests/outing-browser.mjs",
+    "assets:check": "node tools/resource-catalog.mjs",
+    "test:assets": "node --test tests/resource-catalog.test.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

@@ -23,7 +23,13 @@ namespace HomelessPetHelper.Modules.Outing
 
         public Guid AcceptedRequestId { get; private set; }
 
-        public bool HasDeparted => Stage != OutingStage.MapSelecting;
+        public MapDeparturePlan DeparturePlan { get; private set; }
+
+        public OutingReturnProgress Progress { get; private set; }
+
+        public bool HasOpenedRoute { get; private set; }
+
+        public bool HasDeparted => SelectedPointId != null;
 
         public bool IsSettled => Stage == OutingStage.Settled;
 
@@ -68,11 +74,18 @@ namespace HomelessPetHelper.Modules.Outing
 
             SelectedPointId = pointId;
             AcceptedRequestId = requestId;
+            Progress = OutingReturnProgress.Exploring;
             Stage = OutingStage.Departed;
             return true;
         }
 
         public bool CanDepart(Guid sessionId, string pointId, Guid requestId, out OutingFailure failure)
+        {
+            return CanDepartCore(sessionId, pointId, requestId, true, out failure);
+        }
+
+        private bool CanDepartCore(Guid sessionId, string pointId, Guid requestId,
+            bool requiresRequest, out OutingFailure failure)
         {
             failure = OutingFailure.None;
             if (sessionId != SessionId)
@@ -99,13 +112,74 @@ namespace HomelessPetHelper.Modules.Outing
                 return false;
             }
 
-            if (requestId == Guid.Empty)
+            if (requiresRequest && requestId == Guid.Empty)
             {
                 failure = OutingFailure.InvalidRequest;
                 return false;
             }
 
             return true;
+        }
+
+        /// <summary>Commits a revalidated plan, including request-free exploration.</summary>
+        public bool TryDepart(Guid sessionId, MapDeparturePlan plan, out OutingFailure failure)
+        {
+            if (!CanDepart(sessionId, plan, out failure)) return false;
+            DeparturePlan = plan;
+            SelectedPointId = plan.PointId;
+            AcceptedRequestId = plan.RequestId;
+            Progress = OutingReturnProgress.Exploring;
+            Stage = OutingStage.Departed;
+            return true;
+        }
+
+        public bool CanDepart(Guid sessionId, MapDeparturePlan plan, out OutingFailure failure)
+        {
+            if (plan == null)
+            {
+                failure = OutingFailure.InvalidDefinition;
+                return false;
+            }
+
+            return CanDepartCore(sessionId, plan.PointId, plan.RequestId,
+                plan.EntryKind != MapEntryKind.Exploration, out failure);
+        }
+
+        /// <summary>Caller supplies a validated stage entry, never a UI click or wall-time tick.</summary>
+        public bool TryRecordProgress(Guid sessionId, OutingReturnProgress progress, out OutingFailure failure)
+        {
+            if (!CanRecordProgress(sessionId, progress, out failure)) return false;
+            Progress = progress;
+            if (progress == OutingReturnProgress.OpeningRoute) HasOpenedRoute = true;
+            return true;
+        }
+
+        public bool CanRecordProgress(Guid sessionId, OutingReturnProgress progress, out OutingFailure failure)
+        {
+            if (!CanSettle(sessionId, out failure)) return false;
+            if (progress <= Progress || progress > OutingReturnProgress.HandingOver)
+            {
+                failure = OutingFailure.InvalidProgress;
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>Ends a validated unresolved return or a free map cancellation once.</summary>
+        public bool TryEndUnresolved(Guid sessionId, out OutingFailure failure)
+        {
+            if (!CanEndUnresolved(sessionId, out failure)) return false;
+            Stage = OutingStage.Settled;
+            return true;
+        }
+
+        public bool CanEndUnresolved(Guid sessionId, out OutingFailure failure)
+        {
+            failure = sessionId != SessionId ? OutingFailure.WrongSession :
+                IsSuspended ? OutingFailure.Suspended :
+                IsSettled ? OutingFailure.AlreadySettled : OutingFailure.None;
+            return failure == OutingFailure.None;
         }
 
         /// <summary>

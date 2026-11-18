@@ -6,6 +6,7 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
     public sealed class DirtField
     {
         private readonly byte[] _samples;
+        private readonly byte[] _allowedMask;
 
         public int Width { get; }
         public int Height { get; }
@@ -29,6 +30,7 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
             Width = width;
             Height = height;
             _samples = new byte[dirt.Length];
+            _allowedMask = (byte[])allowedMask.Clone();
             for (int index = 0; index < dirt.Length; index++)
             {
                 _samples[index] = allowedMask[index] == 0 ? (byte)0 : dirt[index];
@@ -44,10 +46,15 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
         }
 
         /// <summary>Invalid brushes are rejected without mutation. A brush can only remove existing dirt.</summary>
-        public bool TryErase(float x, float y, float radius, int strength)
+        public bool TryErase(float x, float y, float radius, int strength, DirtField blocker = null)
         {
             if (!IsFinite(x) || !IsFinite(y) || !IsFinite(radius) || x < 0 || x > 1 || y < 0 || y > 1 ||
                 radius <= 0 || radius > 1 || strength < 1 || strength > 255)
+            {
+                return false;
+            }
+
+            if (blocker != null && (blocker.Width != Width || blocker.Height != Height))
             {
                 return false;
             }
@@ -69,6 +76,11 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
                     }
 
                     int index = row * Width + column;
+                    if (blocker != null && blocker.Sample(index) > 0)
+                    {
+                        continue;
+                    }
+
                     int removed = Math.Min(strength, _samples[index]);
                     _samples[index] -= (byte)removed;
                     RemainingAmount -= removed;
@@ -77,6 +89,26 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
             }
 
             return changed;
+        }
+
+        public bool ContainsCoat(float x, float y)
+        {
+            if (!IsFinite(x) || !IsFinite(y) || x < 0 || x > 1 || y < 0 || y > 1)
+            {
+                return false;
+            }
+
+            int column = (int)Math.Round(x * (Width - 1));
+            int row = (int)Math.Round(y * (Height - 1));
+            return _allowedMask[row * Width + column] != 0;
+        }
+
+        public bool HasResidueAt(float x, float y)
+        {
+            if (!ContainsCoat(x, y)) return false;
+            int column = (int)Math.Round(x * (Width - 1));
+            int row = (int)Math.Round(y * (Height - 1));
+            return _samples[row * Width + column] > 0;
         }
 
         public void ClearResidue()

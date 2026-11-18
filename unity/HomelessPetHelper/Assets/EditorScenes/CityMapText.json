@@ -1,0 +1,28 @@
+{
+  "entries": [
+    { "key": "title", "value": "救助站周边" },
+    { "key": "pause", "value": "暂停" },
+    { "key": "status", "value": "空余安置位 {0}    ·    已用时 {1} 分钟" },
+    { "key": "parking", "value": "单车棚" },
+    { "key": "yard", "value": "居民小院" },
+    { "key": "porch", "value": "临街门廊" },
+    { "key": "parking.detail", "value": "居民提供了流浪猫线索。\n需要预留一个安置位。" },
+    { "key": "yard.detail", "value": "暂无线索，可以去周边看看。\n需要预留一个安置位。" },
+    { "key": "porch.detail", "value": "收到寻宠线索，已确认原主人可安全接回。\n不占用救助站安置位。" },
+    { "key": "depart", "value": "前往这里" },
+    { "key": "return", "value": "返回救助站" },
+    { "key": "reopen", "value": "查看周边地图" },
+    { "key": "arrived", "value": "已抵达 · {0}" },
+    { "key": "arrived.detail", "value": "本次外出仍在进行中。\n返回后，这条线索仍可由其他人接手。" },
+    { "key": "arrived.exploring", "value": "本次外出仍在进行中。\n可以在需要时返回救助站。" },
+    { "key": "station", "value": "已回到救助站" },
+    { "key": "returned", "value": "本次外出用时 {0} 分钟。\n尚未完成的求助已重新开放。" },
+    { "key": "returned.exploring", "value": "本次外出用时 {0} 分钟。\n已结束周边探索。" },
+    { "key": "cancelled", "value": "尚未出发，本次未消耗时间。" },
+    { "key": "paused", "value": "已暂停" },
+    { "key": "ready", "value": "选择想前往的地点" },
+    { "key": "full", "value": "安置位已满，请先腾出位置，或选择可直接送还原主人的寻宠。" },
+    { "key": "failure", "value": "当前无法继续，请稍后重试。" },
+    { "key": "shelter", "value": "救助站" }
+  ]
+}

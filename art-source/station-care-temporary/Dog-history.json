@@ -1,0 +1,164 @@
+{
+  "prompt": [
+    0,
+    "bb937f36-2708-4a5e-aba3-c658b3076736",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "station-reference-Dog.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "prompt": "Create one full body small pale yellow floppy-eared puppy sitting, front view, for a gentle mobile animal shelter game. Use the attached animal only as a visual style reference: simple healing doodle illustration, slightly irregular thick charcoal outlines, extremely simple small dot eyes and tiny mouth, large round head and small body, soft pastel flat colors, almost no shading, no realistic fur texture. Preserve the charming minimal hand drawn style. Center the whole animal with all ears, paws and tail visible and 10 percent empty margin. Clean healthy coat, no dirt, no tools, no accessories, no lettering, no UI. Isolated cutout on a fully transparent background, true alpha, no floor shadow, no checkerboard.",
+          "negative_prompt": "photorealism, 3d, complex fur, gradients, text, watermark, checkerboard, background scene, cropped paws, extra limbs",
+          "resolution": 768,
+          "images.image_1": [
+            "4",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026111801,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "station-care-temporary/Dog"
+        }
+      }
+    },
+    {
+      "create_time": 1794986308077
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "Dog_00001_.png",
+          "subfolder": "station-care-temporary",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "bb937f36-2708-4a5e-aba3-c658b3076736",
+          "timestamp": 1794986308078
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "bb937f36-2708-4a5e-aba3-c658b3076736",
+          "timestamp": 1794986308089
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "bb937f36-2708-4a5e-aba3-c658b3076736",
+          "timestamp": 1794986326532
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

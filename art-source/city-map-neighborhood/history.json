@@ -1,0 +1,164 @@
+{
+  "prompt": [
+    0,
+    "04cc62bb-134a-4eb1-8024-244437380793",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "city-map-style-reference.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "prompt": "Draw a new portrait neighborhood city map for a gentle animal rescue mobile game, 768 by 1344. The attached picture is ONLY a drawing-style reference, NOT the subject or composition. Match its thick slightly wobbly charcoal outlines, simple flat pastel fills and very minimal shading. Do NOT draw the cat or any animal. The new image must be a full-bleed opaque illustrated small Chinese residential neighborhood seen from a high oblique bird's-eye view, with connected gently winding pedestrian roads and modest low-rise homes. Clear, readable map, not a decorative island. A small aqua-roof rescue shelter near bottom left, an open bicycle parking shed at middle left, a leafy residential courtyard at upper middle right, and a coral-roof house with a porch at lower right. Landmarks are spaced apart with clear grassy space around each for separate game markers. Mint green lawns, pale sky blue and coral roofs, white walls, a few round green trees, muted pale paths. Keep the top 15 percent and bottom 20 percent visually calm for separate UI, all key landmarks within the central area. Flat hand-drawn animation background with confident simple silhouettes, cheerful daylight. No characters, no animals, no map pins, no text, no labels, no numbers, no logos, no border, no UI, no paper texture, no realistic shading, no shadows hiding landmarks.",
+          "negative_prompt": "cat, dog, animal, person, letters, text, watermark, realistic, 3d render, photographic, dense buildings, island, UI, interface, blur",
+          "resolution": 0,
+          "images.image_1": [
+            "4",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026111811,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "city-map-neighborhood/map"
+        }
+      }
+    },
+    {
+      "create_time": 1794992795404
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "map_00001_.png",
+          "subfolder": "city-map-neighborhood",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "04cc62bb-134a-4eb1-8024-244437380793",
+          "timestamp": 1794992795406
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "04cc62bb-134a-4eb1-8024-244437380793",
+          "timestamp": 1794992795420
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "04cc62bb-134a-4eb1-8024-244437380793",
+          "timestamp": 1794992836525
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

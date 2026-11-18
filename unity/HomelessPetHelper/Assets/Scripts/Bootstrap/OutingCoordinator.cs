@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using HomelessPetHelper.Modules.Animals;
 using HomelessPetHelper.Modules.Outing;
 using HomelessPetHelper.Modules.Rescue;
 using HomelessPetHelper.Modules.Station;
@@ -15,8 +16,8 @@ namespace HomelessPetHelper.Bootstrap
     /// Every operation is split into a read-only validation part (which may reject without
     /// mutation) and a commit part whose preconditions are already guaranteed. The on-site
     /// phase is not generated here: callers inject already-validated field signals, so no
-    /// success is fabricated. Unconfirmed branches (defer / expire / cancel / full-capacity
-    /// consequences) carry no default behaviour.
+    /// success is fabricated. Explicit unresolved return releases the accepted request, but
+    /// unconfirmed event scheduling, owner handoff and rewards carry no default behaviour.
     ///
     /// Pure C#, no Unity dependency; use on one gameplay thread.
     /// </summary>
@@ -29,17 +30,21 @@ namespace HomelessPetHelper.Bootstrap
         private readonly Guid _worldSessionId;
         private readonly CityMapRules _mapRules;
         private readonly RequestPoolState _requestPool;
+        private readonly OutingTimePolicy _timePolicy;
         private readonly HashSet<Guid> _usedSessionIds = new HashSet<Guid>();
 
         private OutingSession _session;
         private OutingSummary _lastSummary;
+        private Guid _returnedAnimalId;
+        private IRescueAnimalSource _animalSource;
+        private AnimalIndividual _boundIndividual;
 
         public OutingSession Session => _session;
         public OutingSummary LastSummary => _lastSummary;
 
         public OutingCoordinator(RescueFlow flow, RescueStation station, Guid stationSessionId,
             ActionWorldClock clock, Guid worldSessionId, CityMapRules mapRules,
-            RequestPoolState requestPool)
+            RequestPoolState requestPool, OutingTimePolicy timePolicy = null)
         {
             _flow = flow ?? throw new ArgumentNullException(nameof(flow));
             _station = station ?? throw new ArgumentNullException(nameof(station));
@@ -56,14 +61,14 @@ namespace HomelessPetHelper.Bootstrap
 
             _mapRules = mapRules ?? throw new ArgumentNullException(nameof(mapRules));
             _requestPool = requestPool ?? throw new ArgumentNullException(nameof(requestPool));
+            _timePolicy = timePolicy;
             _stationSessionId = stationSessionId;
             _worldSessionId = worldSessionId;
         }
 
         /// <summary>
-        /// Starts one outing: capacity pre-check (G-section reminder), then fixes the session,
-        /// captures the gameplay-time version and moves the flow into the map phase.
-        /// A full station is refused with no default consequence; the caller decides what to do.
+        /// Opens the map without departing or charging time. Capacity is rechecked for the
+        /// selected destination at actual departure, so a full station can still view reunions.
         /// </summary>
         public bool TryBeginOuting(Guid sessionId, int seed, out OutingAssemblyFailure failure)
         {
@@ -98,10 +103,9 @@ namespace HomelessPetHelper.Bootstrap
                 return false;
             }
 
-            // G-section: full station blocks departure. Consequence is the caller's decision.
-            if (_station.IsFull || _station.IsSuspended || _station.IsClosed)
+            if (_station.IsSuspended || _station.IsClosed)
             {
-                failure = _station.IsFull ? OutingAssemblyFailure.StationFull : OutingAssemblyFailure.StationRejected;
+                failure = OutingAssemblyFailure.StationRejected;
                 return false;
             }
 
@@ -129,13 +133,48 @@ namespace HomelessPetHelper.Bootstrap
             _session = session;
             _usedSessionIds.Add(sessionId);
             _lastSummary = null;
+            _returnedAnimalId = Guid.Empty;
+            _animalSource = null;
+            _boundIndividual = null;
+            return true;
+        }
+
+        /// <summary>Binds the real rule owner during negotiation, before rescue completion.</summary>
+        public bool TryBindRescueAnimal(Guid sessionId, IRescueAnimalSource source,
+            out OutingAssemblyFailure failure)
+        {
+            if (!TryRequireActiveSession(sessionId, out failure))
+            {
+                return false;
+            }
+
+            if (_session.IsSuspended || _flow.IsSuspended)
+            {
+                failure = OutingAssemblyFailure.Suspended;
+                return false;
+            }
+
+            if (_flow.Stage != RescueStage.Negotiation || _session.IsSettled)
+            {
+                failure = OutingAssemblyFailure.WrongStage;
+                return false;
+            }
+
+            if (source == null || source.SessionId != sessionId || source.Individual == null ||
+                source.IsRescueComplete || _animalSource != null)
+            {
+                failure = OutingAssemblyFailure.IdentityMismatch;
+                return false;
+            }
+
+            _animalSource = source;
+            _boundIndividual = source.Individual;
             return true;
         }
 
         /// <summary>
-        /// Selects a point, accepts its available request, binds both to the session and
-        /// moves the flow to the on-site phase. Point behaviour for no-request points is a
-        /// B-group decision; this layer only reports the fact.
+        /// Revalidates the destination and capacity at departure; accepts a request only if
+        /// present. Exploration has no fabricated request or guaranteed animal.
         /// </summary>
         public bool TrySelectAndDepart(Guid sessionId, string pointId, out OutingAssemblyFailure failure)
         {
@@ -155,34 +194,73 @@ namespace HomelessPetHelper.Bootstrap
             }
 
             // Read-only gate first: no mutation on refusal.
-            if (!_mapRules.TrySelectPoint(pointId, out var request, out var selectFailure))
+            if (_station.IsSuspended || _station.IsClosed)
+            {
+                failure = OutingAssemblyFailure.StationRejected;
+                return false;
+            }
+
+            if (!_mapRules.TryPlanDeparture(pointId, _station.AvailableTemporaryPlaces,
+                out var plan, out var selectFailure))
             {
                 failure = MapOutingFailure(selectFailure);
                 return false;
             }
 
-            if (!_requestPool.TryGet(request.RequestId, out var ownedRequest) ||
-                !ReferenceEquals(ownedRequest, request))
+            if (plan.RequestId != Guid.Empty &&
+                (!_mapRules.TrySelectPoint(pointId, out var request, out _) ||
+                    !_requestPool.TryGet(plan.RequestId, out var ownedRequest) ||
+                    !ReferenceEquals(ownedRequest, request) ||
+                    !_requestPool.CanTransition(plan.RequestId, RequestSignal.Accept, out _)))
             {
                 failure = OutingAssemblyFailure.RequestNotAvailable;
                 return false;
             }
 
-            if (!_requestPool.CanTransition(request.RequestId, RequestSignal.Accept, out var acceptFailure) ||
-                !_session.CanDepart(sessionId, pointId, request.RequestId, out acceptFailure))
+            if (!_session.CanDepart(sessionId, plan, out var acceptFailure))
             {
                 failure = MapOutingFailure(acceptFailure);
                 return false;
             }
 
             // No callbacks or interleaving between validation and commit on the gameplay thread.
-            if (!_requestPool.TryTransition(request.RequestId, RequestSignal.Accept, out _) ||
-                !_session.TryDepart(sessionId, pointId, request.RequestId, out _) ||
+            if ((plan.RequestId != Guid.Empty &&
+                    !_requestPool.TryTransition(plan.RequestId, RequestSignal.Accept, out _)) ||
+                !_session.TryDepart(sessionId, plan, out _) ||
                 !_flow.TryAdvance(RescueSignal.Depart, out _))
             {
                 throw new InvalidOperationException("Validated departure commit failed.");
             }
 
+            return true;
+        }
+
+        /// <summary>Called only when the actual route activity starts, not when viewing its entry.</summary>
+        public bool TryStartOpeningRoute(Guid sessionId, out OutingAssemblyFailure failure)
+        {
+            if (!TryRequireActiveSession(sessionId, out failure)) return false;
+            if (_flow.Stage != RescueStage.Approach || _flow.IsSuspended)
+            {
+                failure = _flow.IsSuspended ? OutingAssemblyFailure.Suspended : OutingAssemblyFailure.WrongStage;
+                return false;
+            }
+
+            if (!_session.TryRecordProgress(sessionId, OutingReturnProgress.OpeningRoute, out var rejected))
+            {
+                failure = MapOutingFailure(rejected);
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool TryEndUnresolved(Guid sessionId, out OutingSummary summary, out OutingAssemblyFailure failure)
+        {
+            summary = null;
+            if (!TryRequireActiveSession(sessionId, out failure)) return false;
+            if (!UnresolvedOutingSettlement.TryEnd(_session, _flow, _requestPool, _clock, _timePolicy,
+                out summary, out failure)) return false;
+            _lastSummary = summary;
             return true;
         }
 
@@ -225,8 +303,33 @@ namespace HomelessPetHelper.Bootstrap
                 return false;
             }
 
+            if (signal == RescueSignal.NegotiationCompleted && _animalSource != null)
+            {
+                if (!HasValidAnimalSource())
+                {
+                    failure = OutingAssemblyFailure.IdentityMismatch;
+                    return false;
+                }
+
+                if (!_animalSource.IsRescueComplete)
+                {
+                    failure = OutingAssemblyFailure.RescueNotComplete;
+                    return false;
+                }
+            }
+
+            var progress = signal == RescueSignal.ApproachCompleted ?
+                OutingReturnProgress.Negotiating : OutingReturnProgress.HandingOver;
+            if (!_session.CanRecordProgress(sessionId, progress, out var progressFailure))
+            {
+                failure = MapOutingFailure(progressFailure);
+                return false;
+            }
+
             if (_flow.TryAdvance(signal, out var flowFailure))
             {
+                if (!_session.TryRecordProgress(sessionId, progress, out _))
+                    throw new InvalidOperationException("Validated field progress commit failed.");
                 failure = OutingAssemblyFailure.None;
                 return true;
             }
@@ -272,7 +375,21 @@ namespace HomelessPetHelper.Bootstrap
                 return false;
             }
 
+            if (_session.DeparturePlan?.EntryKind == MapEntryKind.OwnerReunion)
+            {
+                failure = OutingAssemblyFailure.DirectHandoffRequired;
+                return false;
+            }
+
             if (arrival.OutingId != sessionId)
+            {
+                failure = OutingAssemblyFailure.IdentityMismatch;
+                return false;
+            }
+
+            if ((_animalSource == null && arrival.AnimalAtArrival != null) ||
+                (_animalSource != null && (!HasValidAnimalSource() || !_animalSource.IsRescueComplete ||
+                    !arrival.MatchesCurrentIndividual(_boundIndividual))))
             {
                 failure = OutingAssemblyFailure.IdentityMismatch;
                 return false;
@@ -299,14 +416,10 @@ namespace HomelessPetHelper.Bootstrap
                 return false;
             }
 
-            if (!_requestPool.TryGet(_session.AcceptedRequestId, out var request) ||
-                request.PointId != _session.SelectedPointId)
-            {
-                failure = OutingAssemblyFailure.RequestNotAvailable;
-                return false;
-            }
-
-            if (!_requestPool.CanTransition(request.RequestId, RequestSignal.Resolve, out _))
+            if (_session.AcceptedRequestId != Guid.Empty &&
+                (!_requestPool.TryGet(_session.AcceptedRequestId, out var request) ||
+                    request.PointId != _session.SelectedPointId ||
+                    !_requestPool.CanTransition(request.RequestId, RequestSignal.Resolve, out _)))
             {
                 failure = OutingAssemblyFailure.RequestNotAvailable;
                 return false;
@@ -320,7 +433,8 @@ namespace HomelessPetHelper.Bootstrap
 
             // Synchronous commit only. An invariant violation is a technical error, not a clean refusal.
             if (!_session.TrySettle(sessionId, out _) ||
-                !_requestPool.TryTransition(request.RequestId, RequestSignal.Resolve, out _) ||
+                (_session.AcceptedRequestId != Guid.Empty &&
+                    !_requestPool.TryTransition(_session.AcceptedRequestId, RequestSignal.Resolve, out _)) ||
                 !_station.TryReceive(_stationSessionId, arrival, out _, out _) ||
                 !_clock.TryAdvance(expectedVersion, durationMinutes, out _, out _) ||
                 !_flow.TryAdvance(RescueSignal.ReturnToStation, out _))
@@ -330,13 +444,14 @@ namespace HomelessPetHelper.Bootstrap
 
             summary = new OutingSummary(sessionId, _session.SelectedPointId,
                 _session.AcceptedRequestId, "rescued", durationMinutes);
+            _returnedAnimalId = arrival.AnimalId;
             _lastSummary = summary;
             return true;
         }
 
         /// <summary>
-        /// Consumes an already-validated care completion for the returned outing. The caller
-        /// certifies actual care objectives; returning alone never manufactures this signal.
+        /// Completes initial care only after the returned animal's assistant assessment and
+        /// necessary safe handoffs. Returning, closing a panel or optional grooming cannot replace them.
         /// </summary>
         public bool TryCompleteCare(Guid sessionId, out OutingAssemblyFailure failure)
         {
@@ -365,9 +480,9 @@ namespace HomelessPetHelper.Bootstrap
                 return false;
             }
 
-            if (_station.IsSuspended || _station.IsClosed)
+            if (!_station.CanCompleteNecessaryCare(_stationSessionId, _returnedAnimalId, out var careFailure))
             {
-                failure = OutingAssemblyFailure.StationRejected;
+                failure = MapStationFailure(careFailure);
                 return false;
             }
 
@@ -404,6 +519,12 @@ namespace HomelessPetHelper.Bootstrap
             return true;
         }
 
+        private bool HasValidAnimalSource()
+        {
+            return _animalSource.SessionId == _session.SessionId &&
+                ReferenceEquals(_animalSource.Individual, _boundIndividual);
+        }
+
         private static OutingAssemblyFailure MapOutingFailure(OutingFailure failure)
         {
             switch (failure)
@@ -418,6 +539,8 @@ namespace HomelessPetHelper.Bootstrap
                 case OutingFailure.AlreadyDeparted: return OutingAssemblyFailure.AlreadyDeparted;
                 case OutingFailure.AlreadySettled: return OutingAssemblyFailure.SessionAlreadySettled;
                 case OutingFailure.NotDeparted: return OutingAssemblyFailure.NotDeparted;
+                case OutingFailure.CapacityNotAvailable: return OutingAssemblyFailure.StationFull;
+                case OutingFailure.InvalidProgress: return OutingAssemblyFailure.WrongStage;
                 default: return OutingAssemblyFailure.InternalInconsistent;
             }
         }
@@ -430,6 +553,8 @@ namespace HomelessPetHelper.Bootstrap
                 case StationFailure.DuplicateOuting: return OutingAssemblyFailure.SessionAlreadySettled;
                 case StationFailure.InvalidArrival: return OutingAssemblyFailure.InvalidArrival;
                 case StationFailure.WrongSession: return OutingAssemblyFailure.WrongSession;
+                case StationFailure.BasicAssessmentRequired: return OutingAssemblyFailure.BasicAssessmentRequired;
+                case StationFailure.NecessaryCarePending: return OutingAssemblyFailure.NecessaryCarePending;
                 default: return OutingAssemblyFailure.StationRejected;
             }
         }

@@ -26,6 +26,11 @@ namespace HomelessPetHelper.Modules.Outing
         InvalidDefinition = 16,
         DuplicatePointId = 17,
         DuplicateRequestId = 18,
-        CapacityNotAvailable = 19
+        CapacityNotAvailable = 19,
+        InvalidCapacity = 20,
+        InvalidTime = 21,
+        InvalidClutterLevel = 22,
+        ClutterNotReduced = 23,
+        InvalidProgress = 24
     }
 }

@@ -8,7 +8,7 @@ namespace HomelessPetHelper.Editor.ResourceAudit
     [Serializable]
     public sealed class ImageAuditReport
     {
-        public int SchemaVersion = 1;
+        public int SchemaVersion = 2;
         public string ActiveBuildTarget;
         public int LargeDimensionReviewThreshold = 2048;
         public List<TextureEntry> Textures = new List<TextureEntry>();
@@ -22,6 +22,8 @@ namespace HomelessPetHelper.Editor.ResourceAudit
             "Imported dimensions/format describe the active editor build target, not a WeChat device.",
             "WebGL fields are importer settings only; they do not verify WeChat SDK output or GPU support.",
             "Atlas membership is declared input, not measured packed pages or duplicate bundle bytes.",
+            "Source file bytes are not exported package or first-download bytes.",
+            "RGBA32 reference bytes are width * height * 4, not actual compressed GPU or resident memory.",
             "Review findings are candidates, not confirmed defects; no references does not mean unused.",
             "No frame time, draw calls, download size or device memory has been measured."
         };
@@ -34,9 +36,11 @@ namespace HomelessPetHelper.Editor.ResourceAudit
             public bool IsSprite;
             public int SourceWidth;
             public int SourceHeight;
+            public long SourceFileBytes;
             public int ImportedWidth;
             public int ImportedHeight;
             public string ImportedFormat;
+            public long ImportedRgba32ReferenceBytes;
             public bool ReadWrite;
             public bool Mipmaps;
             public int DefaultMaxSize;
@@ -81,6 +85,16 @@ namespace HomelessPetHelper.Editor.ResourceAudit
             text.AppendLine($"Active target: {ActiveBuildTarget}. " +
                 $"Textures: {Textures.Count}. Atlases: {Atlases.Count}.");
             text.AppendLine($"Large imported dimension review threshold: > {LargeDimensionReviewThreshold} px.");
+            long sourceBytes = 0;
+            long rgba32Bytes = 0;
+            foreach (TextureEntry texture in Textures)
+            {
+                sourceBytes += texture.SourceFileBytes;
+                rgba32Bytes += texture.ImportedRgba32ReferenceBytes;
+            }
+
+            text.AppendLine($"All scanned source files: {sourceBytes} bytes. " +
+                $"RGBA32 reference sum: {rgba32Bytes} bytes; not a package size or a resident set.");
             foreach (string limitation in Limitations)
             {
                 text.AppendLine("- " + limitation);
@@ -103,6 +117,8 @@ namespace HomelessPetHelper.Editor.ResourceAudit
                 text.AppendLine($"### {texture.Path}\n");
                 text.AppendLine($"Source: {texture.SourceWidth} x {texture.SourceHeight} px. " +
                     $"Imported: {texture.ImportedWidth} x {texture.ImportedHeight} px ({texture.ImportedFormat}).");
+                text.AppendLine($"Source file: {texture.SourceFileBytes} bytes (not exported/download size). " +
+                    $"RGBA32 reference: {texture.ImportedRgba32ReferenceBytes} bytes (not measured GPU memory).");
                 text.AppendLine($"Read/write: {texture.ReadWrite}. Mipmaps: {texture.Mipmaps}. " +
                     $"Enabled build scene dependency: {texture.InEnabledBuildSceneDependencies}.");
                 text.AppendLine($"Default max: {texture.DefaultMaxSize}. Compression: {texture.DefaultCompression}.");

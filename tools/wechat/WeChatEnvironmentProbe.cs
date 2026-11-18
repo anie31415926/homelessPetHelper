@@ -1,0 +1,106 @@
+using System;
+using System.IO;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.Build.Reporting;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public static class WeChatEnvironmentProbe
+{
+    [Serializable]
+    private sealed class InstallationReport
+    {
+        public string UnityVersion;
+        public bool WebGlSupported;
+        public string SdkPackage;
+        public string SdkSource;
+        public bool RuntimeAssemblyLoaded;
+        public bool EditorAssemblyLoaded;
+        public bool AssetBundleModuleLoaded;
+        public string PluginVersion;
+        public bool AppIdConfigured;
+    }
+
+    public static void Verify()
+    {
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        var sdk = UnityEditor.PackageManager.PackageInfo.GetAllRegisteredPackages()
+            .Single(item => item.name == "com.qq.weixin.minigame");
+        var plugin = assemblies.Single(item => item.GetName().Name == "WxEditor")
+            .GetType("WeChatWASM.WXPluginVersion", true);
+        var config = AssetDatabase.LoadAssetAtPath<ScriptableObject>(
+            "Packages/com.qq.weixin.minigame/Editor/MiniGameConfig.asset");
+        var appId = config == null ? null : new SerializedObject(config).FindProperty("ProjectConf.Appid");
+        var report = new InstallationReport
+        {
+            UnityVersion = Application.unityVersion,
+            WebGlSupported = BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.WebGL, BuildTarget.WebGL),
+            SdkPackage = sdk.packageId,
+            SdkSource = sdk.source.ToString(),
+            RuntimeAssemblyLoaded = assemblies.Any(item => item.GetName().Name == "Wx"),
+            EditorAssemblyLoaded = assemblies.Any(item => item.GetName().Name == "WxEditor"),
+            AssetBundleModuleLoaded = typeof(AssetBundle).Assembly.GetName().Name == "UnityEngine.AssetBundleModule",
+            PluginVersion = (string)plugin.GetField("pluginVersion").GetValue(null),
+            AppIdConfigured = !string.IsNullOrWhiteSpace(appId?.stringValue)
+        };
+        Directory.CreateDirectory("ProbeReports");
+        File.WriteAllText("ProbeReports/installation.json", JsonUtility.ToJson(report, true) + "\n");
+        if (!report.WebGlSupported || !report.RuntimeAssemblyLoaded || !report.EditorAssemblyLoaded ||
+            !report.AssetBundleModuleLoaded)
+        {
+            throw new InvalidOperationException("WeChat environment verification failed.");
+        }
+
+        Debug.Log("WECHAT_ENVIRONMENT_VERIFIED: " + JsonUtility.ToJson(report));
+    }
+
+    public static void BuildWebGl()
+    {
+        Verify();
+        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        var camera = new GameObject("ProbeCamera").AddComponent<Camera>();
+        camera.clearFlags = CameraClearFlags.SolidColor;
+        camera.backgroundColor = new Color(0.25f, 0.55f, 0.42f);
+        Directory.CreateDirectory("Assets/ProbeScenes");
+        const string scenePath = "Assets/ProbeScenes/EnvironmentProbe.unity";
+        EditorSceneManager.SaveScene(scene, scenePath);
+        PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
+        PlayerSettings.WebGL.threadsSupport = false;
+        var options = new BuildPlayerOptions
+        {
+            scenes = new[] { scenePath },
+            locationPathName = "ProbeBuild/WebGL",
+            target = BuildTarget.WebGL,
+            options = BuildOptions.Development
+        };
+        BuildReport report = BuildPipeline.BuildPlayer(options);
+        File.WriteAllText("ProbeReports/webgl-build.json", JsonUtility.ToJson(new BuildResult
+        {
+            Result = report.summary.result.ToString(),
+            TotalBytes = report.summary.totalSize,
+            Errors = report.summary.totalErrors,
+            Warnings = report.summary.totalWarnings,
+            WarningMessages = report.steps.SelectMany(step => step.messages)
+                .Where(message => message.type == LogType.Warning)
+                .Select(message => message.content).Distinct().ToArray()
+        }, true) + "\n");
+        if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded)
+        {
+            throw new InvalidOperationException("WebGL probe build failed.");
+        }
+
+        Debug.Log("WECHAT_WEBGL_PROBE_SUCCEEDED: " + report.summary.totalSize + " bytes. Not a WeChat export.");
+    }
+
+    [Serializable]
+    private sealed class BuildResult
+    {
+        public string Result;
+        public ulong TotalBytes;
+        public int Errors;
+        public int Warnings;
+        public string[] WarningMessages;
+    }
+}

@@ -17,6 +17,7 @@ namespace HomelessPetHelper.Editor.StationPreview
         public const string PanelPath = "Assets/Prefabs/Panels/Panel_StationWhiteboard.prefab";
         public const string TextPath = "Assets/EditorScenes/StationPreviewText.json";
         public const string ArtFolder = "Assets/EditorScenes/StationArt";
+        public const string CareArtFolder = "Assets/EditorScenes/StationCareArt";
 
         [MenuItem("Homeless Pet Helper/Preview/Open Station Whiteboard")]
         public static void OpenScene()
@@ -217,8 +218,11 @@ namespace HomelessPetHelper.Editor.StationPreview
             GameObject commands = Row("CareCommands", page.transform, 104);
             Bind(view, "_check", Button("Check", commands.transform, text.Get("check")));
             Bind(view, "_pet", Button("Pet", commands.transform, text.Get("pet")));
-            Bind(view, "_clean", Button("Clean", commands.transform, text.Get("clean"), true));
-            Button finish = Button("Finish", commands.transform, text.Get("finish"), true);
+            Bind(view, "_quietSpace", Button("QuietSpace", commands.transform, text.Get("quietSpace")));
+            GameObject tools = Row("CareTools", page.transform, 104);
+            Bind(view, "_clean", Button("Clean", tools.transform, text.Get("clean"), true));
+            Bind(view, "_groom", Button("Groom", tools.transform, text.Get("groom")));
+            Button finish = Button("Finish", tools.transform, text.Get("finish"), true);
             Bind(view, "_finish", finish);
             finish.gameObject.SetActive(false);
             Bind(view, "_back", Button("Back", page.transform, text.Get("back")));
@@ -231,18 +235,28 @@ namespace HomelessPetHelper.Editor.StationPreview
             Stretch((RectTransform)root.transform);
             var fit = root.AddComponent<AspectRatioFitter>();
             fit.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
-            fit.aspectRatio = 300f / 320;
+            fit.aspectRatio = 1;
             var surface = root.AddComponent<DirtSurfaceView>();
             GameObject animal = Rect("Animal", root.transform);
             Stretch((RectTransform)animal.transform);
             var image = animal.AddComponent<Image>();
             image.raycastTarget = false;
+            GameObject fur = Rect("MessyFur", root.transform);
+            Stretch((RectTransform)fur.transform);
+            var coat = fur.AddComponent<RawImage>();
+            coat.raycastTarget = false;
             GameObject dirt = Rect("Dirt", root.transform);
             Stretch((RectTransform)dirt.transform);
             var overlay = dirt.AddComponent<RawImage>();
             overlay.raycastTarget = false;
             Bind(surface, "_animal", image);
             Bind(surface, "_dirt", overlay);
+            Bind(surface, "_fur", coat);
+            GameObject bubbles = Rect("Bubbles", root.transform);
+            Stretch((RectTransform)bubbles.transform);
+            var feedback = bubbles.AddComponent<CareBubbleView>();
+            feedback.raycastTarget = false;
+            Bind(surface, "_bubbles", feedback);
             return surface;
         }
     }

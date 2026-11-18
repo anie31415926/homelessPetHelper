@@ -20,7 +20,10 @@
 | Unity 生命周期、异步/协程、事件订阅、取消、对象池清理 | [生命周期与异步](docs/conventions/topics/lifecycle-async.md) |
 | 面板/弹窗、绑定、列表、适配、文案与交互 | [UI](docs/conventions/topics/ui.md) |
 | schema/源表、配置生成、远程覆盖与校验 | [配置](docs/conventions/topics/config.md) |
+| 图片分辨率、各模块图片总量、首包/下载预算 | [项目图片规格](docs/图片资源规格与首包预算.md) |
+| ComfyUI 生图/选图、图片台账、首批与后续加载清单、正式入库 | [图片台账流程](art-source/README.md) |
 | 资源命名/导入、Prefab/场景、图集、资源加载与分包 | [资源资产](docs/conventions/topics/assets.md) |
+| 微信开发工具、WebGL 模块、SDK 安装与本地编译检查 | [微信本地环境](docs/微信小游戏本地环境搭建.md) |
 | 每帧代码、GC、内存、渲染、启动耗时 | [性能](docs/conventions/topics/performance.md) |
 | 配置/资源/代码更新方案、HybridCLR、旧包升级/恢复 | [更新系统](docs/conventions/topics/updates.md) |
 | 网络、存档、领取/扣费、广告/内购、日志、凭证与调试 | [数据与安全](docs/conventions/topics/data-security.md) |

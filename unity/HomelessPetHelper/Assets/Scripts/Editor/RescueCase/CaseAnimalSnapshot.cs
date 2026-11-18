@@ -1,4 +1,5 @@
 using System;
+using HomelessPetHelper.Modules.Animals;
 
 namespace HomelessPetHelper.Editor.RescueCase
 {
@@ -13,6 +14,7 @@ namespace HomelessPetHelper.Editor.RescueCase
         public CaseEmotion Emotion { get; }
         public CaseBehavior Behavior { get; }
         public CaseStress Stress { get; }
+        public AnimalSnapshot Individual { get; }
 
         internal CaseAnimalSnapshot(CaseAnimal animal)
         {
@@ -25,6 +27,7 @@ namespace HomelessPetHelper.Editor.RescueCase
             Emotion = animal.Emotion;
             Behavior = animal.Behavior;
             Stress = animal.Stress;
+            Individual = animal.Individual.Current;
         }
     }
 }

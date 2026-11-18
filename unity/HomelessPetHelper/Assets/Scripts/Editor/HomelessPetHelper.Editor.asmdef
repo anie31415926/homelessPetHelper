@@ -2,7 +2,9 @@
   "name": "HomelessPetHelper.Editor",
   "rootNamespace": "HomelessPetHelper.Editor",
   "references": ["HomelessPetHelper.Bootstrap", "HomelessPetHelper.Modules.Rescue",
-    "HomelessPetHelper.Modules.Rescue.UI", "UnityEngine.UI"],
+    "HomelessPetHelper.Modules.Rescue.UI", "HomelessPetHelper.Modules.Animals",
+    "HomelessPetHelper.Modules.Station", "HomelessPetHelper.Modules.Outing",
+    "HomelessPetHelper.Modules.Outing.UI", "HomelessPetHelper.Modules.WorldTime", "UnityEngine.UI"],
   "includePlatforms": ["Editor"],
   "autoReferenced": false
 }

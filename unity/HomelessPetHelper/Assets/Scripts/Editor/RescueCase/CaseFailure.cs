@@ -15,6 +15,9 @@ namespace HomelessPetHelper.Editor.RescueCase
         AlreadyInteracted = 10,
         FoodAlreadyPlaced = 11,
         AlreadyFed = 12,
-        AlreadyWithinReach = 13
+        AlreadyWithinReach = 13,
+        StationRejected = 14,
+        AssessmentUnavailable = 15,
+        FlavorAlreadyUsed = 16
     }
 }

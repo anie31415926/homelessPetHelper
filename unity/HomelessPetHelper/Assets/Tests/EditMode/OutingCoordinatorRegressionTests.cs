@@ -94,16 +94,22 @@ namespace HomelessPetHelper.Tests.EditMode
         {
             var f = CreateFixture(out var coordinator, out _, out _, out _, out _);
             var firstId = RunToRescued(coordinator, f);
-            Assert.That(coordinator.TryReturnAndSettle(firstId, MakeArrival(firstId, Guid.NewGuid()),
+            var firstArrival = MakeArrival(firstId, Guid.NewGuid());
+            Assert.That(coordinator.TryReturnAndSettle(firstId, firstArrival,
                 1, out _, out _), Is.True);
+            Assert.That(f.Station.TryCompleteBasicAssessment(f.StationSessionId, firstArrival.AnimalId,
+                Array.Empty<string>(), out _), Is.True);
             Assert.That(coordinator.TryCompleteCare(firstId, out _), Is.True);
             Assert.That(coordinator.TryBeginOuting(firstId, 8, out var failure), Is.False);
             Assert.That(failure, Is.EqualTo(OutingAssemblyFailure.SessionIdReused));
 
             Assert.That(f.Pool.TryAdd(new HelpRequest(Guid.NewGuid(), "help.parking", Parking, 1), out _), Is.True);
             var secondId = RunToRescued(coordinator, f);
-            Assert.That(coordinator.TryReturnAndSettle(secondId, MakeArrival(secondId, Guid.NewGuid()),
+            var secondArrival = MakeArrival(secondId, Guid.NewGuid());
+            Assert.That(coordinator.TryReturnAndSettle(secondId, secondArrival,
                 1, out _, out _), Is.True);
+            Assert.That(f.Station.TryCompleteBasicAssessment(f.StationSessionId, secondArrival.AnimalId,
+                Array.Empty<string>(), out _), Is.True);
             Assert.That(coordinator.TryCompleteCare(secondId, out _), Is.True);
             var summary = coordinator.LastSummary;
             Assert.That(coordinator.TryBeginOuting(firstId, 9, out failure), Is.False);
@@ -142,6 +148,10 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(failure, Is.EqualTo(OutingAssemblyFailure.StationRejected));
             f.Station.SetSuspended(false);
             Assert.That(f.Flow.Stage, Is.EqualTo(RescueStage.Care));
+            Assert.That(coordinator.TryCompleteCare(id, out failure), Is.False);
+            Assert.That(failure, Is.EqualTo(OutingAssemblyFailure.BasicAssessmentRequired));
+            Assert.That(f.Station.TryCompleteBasicAssessment(f.StationSessionId, f.Station.Animals[0].AnimalId,
+                Array.Empty<string>(), out _), Is.True);
             Assert.That(coordinator.TryCompleteCare(id, out _), Is.True);
             Assert.That(coordinator.TryCompleteCare(id, out _), Is.False);
             Assert.That(f.Flow.Stage, Is.EqualTo(RescueStage.Station));

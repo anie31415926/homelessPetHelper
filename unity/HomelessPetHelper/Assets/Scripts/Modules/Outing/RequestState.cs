@@ -1,15 +1,14 @@
 namespace HomelessPetHelper.Modules.Outing
 {
     /// <summary>
-    /// Lifecycle of one help request. Only the transitions confirmed so far are exposed:
-    /// Available -Accept-> Accepted -Resolve-> Resolved (the single terminal state).
-    /// Defer / expire / cancel branches remain unconfirmed and are deliberately absent
-    /// until the B group signs them off; no implicit default behaviour is provided.
+    /// A request may be completed by the player or helped elsewhere. Neither terminal state
+    /// generates a station intake or rewards here. Returned unresolved outings become available.
     /// </summary>
     public enum RequestState
     {
         Available = 0,
         Accepted = 1,
-        Resolved = 2
+        Resolved = 2,
+        HelpedElsewhere = 3
     }
 }

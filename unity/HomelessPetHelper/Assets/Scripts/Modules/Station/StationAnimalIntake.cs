@@ -1,4 +1,5 @@
 using System;
+using HomelessPetHelper.Modules.Animals;
 
 namespace HomelessPetHelper.Modules.Station
 {
@@ -11,6 +12,25 @@ namespace HomelessPetHelper.Modules.Station
         public string AnimalDefinitionId { get; }
 
         public AnimalIntakeCondition Condition { get; }
+        public AnimalSnapshot AnimalAtArrival { get; }
+        internal AnimalIndividual Individual { get; }
+
+        public StationAnimalIntake(Guid outingId, AnimalIndividual individual, AnimalIntakeCondition condition)
+            : this(outingId, (individual ?? throw new ArgumentNullException(nameof(individual))).Current.AnimalId,
+                individual.Current.DefinitionId, condition)
+        {
+            Individual = individual;
+            AnimalAtArrival = individual.Current;
+        }
+
+        /// <summary>
+        /// Checks owner identity and frozen arrival against the latest state without exposing mutation.
+        /// </summary>
+        public bool MatchesCurrentIndividual(AnimalIndividual individual)
+        {
+            return individual != null && ReferenceEquals(Individual, individual) &&
+                ReferenceEquals(AnimalAtArrival, individual.Current);
+        }
 
         public StationAnimalIntake(Guid outingId, Guid animalId, string animalDefinitionId,
             AnimalIntakeCondition condition)

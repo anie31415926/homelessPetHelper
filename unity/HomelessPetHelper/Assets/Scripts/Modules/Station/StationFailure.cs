@@ -11,6 +11,14 @@ namespace HomelessPetHelper.Modules.Station
         DuplicateAnimal = 6,
         TemporaryCapacityFull = 7,
         InvalidCapacity = 8,
-        CapacityNotIncreased = 9
+        CapacityNotIncreased = 9,
+        AnimalNotFound = 10,
+        BasicAssessmentRequired = 11,
+        BasicAssessmentAlreadyCompleted = 12,
+        InvalidCareAssessment = 13,
+        CareProblemNotFound = 14,
+        UnexpectedCareStatus = 15,
+        NecessaryCarePending = 16,
+        AssessmentSourceUnavailable = 17
     }
 }

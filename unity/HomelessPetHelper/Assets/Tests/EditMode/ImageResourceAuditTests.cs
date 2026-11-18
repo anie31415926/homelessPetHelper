@@ -80,6 +80,20 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [Test]
+        public void SourceFileBytesAndRgbaReferenceAreSeparateFromPackageSize()
+        {
+            string path = CreateTexture(Art, "ByteUnits", 256, 256);
+            ImageAuditReport report = ImageResourceAudit.Scan();
+            ImageAuditReport.TextureEntry texture = report.Textures.Single(item => item.Path == path);
+            Assert.That(report.SchemaVersion, Is.EqualTo(2));
+            Assert.That(texture.SourceFileBytes, Is.EqualTo(new FileInfo(path).Length));
+            Assert.That(texture.ImportedRgba32ReferenceBytes, Is.EqualTo(262144));
+            Assert.That(texture.SourceFileBytes, Is.LessThan(texture.ImportedRgba32ReferenceBytes));
+            Assert.That(report.ToMarkdown(), Does.Contain("not exported/download size")
+                .And.Contain("not measured GPU memory").And.Contain("not a package size or a resident set"));
+        }
+
+        [Test]
         public void NonSpriteMipmapsAreNotTreatedAsScreenSpaceUi()
         {
             string path = CreateTexture(Art, "WorldTexture", 16);
@@ -233,10 +247,10 @@ namespace HomelessPetHelper.Tests.EditMode
                 Is.EqualTo(report.Textures.Count));
         }
 
-        private static string CreateTexture(string folder, string name, int width)
+        private static string CreateTexture(string folder, string name, int width, int height = 16)
         {
             string path = folder + "/T_Audit_" + name + ".png";
-            var texture = new Texture2D(width, 16, TextureFormat.RGBA32, false);
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
             try
             {
                 File.WriteAllBytes(path, texture.EncodeToPNG());

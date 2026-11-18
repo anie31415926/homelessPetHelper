@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using HomelessPetHelper.Editor.OptionPreview;
 using HomelessPetHelper.Modules.Rescue.UI;
+using HomelessPetHelper.Modules.Station;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,7 @@ namespace HomelessPetHelper.Editor.RescueCase
     {
         private readonly RescueCaseView _view;
         private readonly OptionPreviewText _text;
+        private readonly RescueOptionContentLoader _content;
         private readonly Font _font;
         private bool _manualPause;
         private bool _focusPause;
@@ -21,12 +23,14 @@ namespace HomelessPetHelper.Editor.RescueCase
 
         public RescueCaseTrial Trial { get; private set; }
 
-        public RescueCasePresenter(RescueCaseView view, TextAsset text, CaseStart start = CaseStart.Normal)
+        public RescueCasePresenter(RescueCaseView view, TextAsset text, RescueOptionContentLoader content,
+            CaseStart start = CaseStart.Normal)
         {
             ValidateStart(start);
             _start = start;
             _view = view != null ? view : throw new ArgumentNullException(nameof(view));
             _text = new OptionPreviewText(text);
+            _content = content ?? throw new ArgumentNullException(nameof(content));
             _font = Font.CreateDynamicFontFromOSFont(new[] { "Microsoft YaHei", "Arial" }, 36);
             foreach (Text label in _view.GetComponentsInChildren<Text>(true))
             {
@@ -75,7 +79,7 @@ namespace HomelessPetHelper.Editor.RescueCase
         private void Restart()
         {
             Trial?.Dispose();
-            Trial = new RescueCaseTrial(Guid.NewGuid(), 1731, start: _start);
+            Trial = new RescueCaseTrial(Guid.NewGuid(), 1731, start: _start, catalog: _content.Catalog);
             _manualPause = false;
             _handbookOpen = false;
             _error = string.Empty;
@@ -134,7 +138,14 @@ namespace HomelessPetHelper.Editor.RescueCase
                     Trial.TryReturnToStation(Trial.CurrentTurn, out failure);
                     break;
                 case CaseStage.Station:
-                    Trial.TryInteract(Trial.CurrentTurn, out failure);
+                    if (Trial.StationCare.BasicAssessment == StationHealthAssessment.Unchecked)
+                    {
+                        Trial.TryCheckAtStation(Trial.CurrentTurn, out failure);
+                    }
+                    else
+                    {
+                        Trial.TryInteract(Trial.CurrentTurn, out failure);
+                    }
                     break;
                 default:
                     failure = CaseFailure.UnexpectedStage;
@@ -183,8 +194,8 @@ namespace HomelessPetHelper.Editor.RescueCase
         private void Render()
         {
             CaseAnimalSnapshot animal = Trial.Animal;
-            var titles = Trial.Options.Select(option => _text.Get(
-                animal.HasSpace && option.Definition.Id == "give-space" ? "maintain-space" : option.Definition.Id))
+            var titles = Trial.Options.Select(option => animal.HasSpace && option.Definition.Id == "give-space" ?
+                _text.Get("maintain-space") : _content.GetText(_content.Catalog.Get(option.Definition.Id).TitleKey))
                 .ToArray();
             var reasons = Trial.Options.Select(option => Trial.GetOptionFailure(option.InstanceId))
                 .Select(failure => failure == CaseFailure.None ? string.Empty : _text.Get("unavailable." + failure))
@@ -192,7 +203,7 @@ namespace HomelessPetHelper.Editor.RescueCase
             _view.Options.Refresh(Trial.Options, titles, _font, reasons);
             string responseKey = Trial.LastResponse == CaseResponse.None && Trial.Start == CaseStart.StressRecovery ?
                 "response.StressStart" : "response." + Trial.LastResponse;
-            string feedback = string.IsNullOrEmpty(_error) ? _text.Get(responseKey) : _error;
+            string feedback = string.IsNullOrEmpty(_error) ? GetFeedback(responseKey) : _error;
             _view.Options.SetStatus(_text.Get("turn", Trial.CurrentTurn.TurnNumber, Trial.FoodRemaining),
                 _text.Get("retained", Trial.Options.Count(option => option.IsLocked)),
                 Trial.IsSuspended ? _text.Get("paused") : feedback,
@@ -203,13 +214,35 @@ namespace HomelessPetHelper.Editor.RescueCase
                 _text.Get("scenario." + Trial.Start) + " · " + _text.Get("stage." + Trial.Stage) + "\n" +
                 (Trial.Stage == CaseStage.Choosing ? _text.Get("intent." + Trial.Intent) : string.Empty));
             string details = _handbookOpen ? _text.Get("handbook.body") : _text.Get("details." + Trial.Stage);
+            if (!_handbookOpen && Trial.Stage == CaseStage.Station)
+            {
+                details = _text.Get(Trial.StationCare.NecessaryCareIsArranged ?
+                    "station.ready" : "station.unchecked");
+            }
+
             _view.SetDetails(details == "-" ? string.Empty : details);
-            string advance = _text.Get("advance." + Trial.Stage);
+            string advance = _text.Get(Trial.Stage == CaseStage.Station &&
+                Trial.StationCare.BasicAssessment == StationHealthAssessment.Unchecked ?
+                "advance.CheckAtStation" : "advance." + Trial.Stage);
             _view.SetCommands(advance == "-" ? string.Empty : advance,
                 !Trial.IsSuspended && !Trial.HasInteracted,
                 !Trial.IsSuspended && (Trial.Stage == CaseStage.Choosing || Trial.Stage == CaseStage.Responding ||
                     Trial.Stage == CaseStage.ReadyForRescue || Trial.Stage == CaseStage.Approachable),
                 Trial.Stage == CaseStage.Choosing);
+        }
+
+        private string GetFeedback(string responseKey)
+        {
+            CaseTurnResult result = Trial.LastTurnResult;
+            if (result == null || string.IsNullOrEmpty(result.FeedbackKey) ||
+                (Trial.Stage != CaseStage.Responding && Trial.Stage != CaseStage.Choosing))
+            {
+                return _text.Get(responseKey);
+            }
+
+            string prompt = _content.GetText(result.FeedbackKey);
+            return result.AnimalResponse == CaseResponse.NoNewResponse ? prompt :
+                prompt + "\n" + _text.Get(responseKey);
         }
     }
 }

@@ -1,0 +1,23 @@
+{
+  "source": "art-source/city-map-neighborhood/simplified-master.png",
+  "reason": "Remove leaked reference cat, retain all generated landmarks and paths.",
+  "grassSource": {
+    "left": 300,
+    "top": 0,
+    "width": 194,
+    "height": 255
+  },
+  "destination": {
+    "left": 294,
+    "top": 580
+  },
+  "featherPixels": 10,
+  "colorMatch": "Per-row RGB mean matched to unchanged grass x495..519 at the destination y.",
+  "runtime": {
+    "width": 768,
+    "height": 1344,
+    "format": "jpeg",
+    "quality": 82,
+    "mozjpeg": true
+  }
+}

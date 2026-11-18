@@ -15,12 +15,13 @@ namespace HomelessPetHelper.Modules.Station.UI
 
         public event Action<int> Selected;
 
-        public void Refresh(int index, string name, string status, Sprite art, DirtField dirt, bool interactive)
+        public void Refresh(int index, string name, string status, Sprite art, DirtField dirt, bool interactive,
+            DirtField fur = null)
         {
             _index = index;
             _name.text = name;
             _status.text = status;
-            _surface.Refresh(art, dirt);
+            _surface.Refresh(art, dirt, fur);
             _surface.SetCleaning(false);
             _select.interactable = interactive;
         }

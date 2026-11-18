@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "options": [
+    { "id": "give-space", "groupId": "give-space", "kind": "Rescue", "titleKey": "give-space", "feedbackKey": "" },
+    { "id": "wait", "groupId": "wait", "kind": "Rescue", "titleKey": "wait", "feedbackKey": "" },
+    { "id": "food", "groupId": "food", "kind": "Rescue", "titleKey": "food", "feedbackKey": "" },
+    { "id": "toy", "groupId": "toy", "kind": "Rescue", "titleKey": "toy", "feedbackKey": "" },
+    { "id": "approach", "groupId": "approach", "kind": "Rescue", "titleKey": "approach", "feedbackKey": "" },
+    {
+      "id": "phone.reply", "groupId": "phone-message", "kind": "Flavor",
+      "titleKey": "option.phone.reply.title", "feedbackKey": "option.phone.reply.feedback"
+    },
+    {
+      "id": "phone.photo", "groupId": "phone-photo", "kind": "Flavor",
+      "titleKey": "option.phone.photo.title", "feedbackKey": "option.phone.photo.feedback"
+    }
+  ]
+}

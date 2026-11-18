@@ -25,6 +25,8 @@ namespace HomelessPetHelper.Modules.Station.UI
         [SerializeField] private Button _check;
         [SerializeField] private Button _pet;
         [SerializeField] private Button _clean;
+        [SerializeField] private Button _groom;
+        [SerializeField] private Button _quietSpace;
         [SerializeField] private Button _finish;
         [SerializeField] private Button _history;
         [SerializeField] private Button _restart;
@@ -70,25 +72,33 @@ namespace HomelessPetHelper.Modules.Station.UI
             _feedback.text = feedback;
         }
 
+        public void SetFeedback(string feedback) => _feedback.text = feedback;
+
         public void ShowDetail(string name, string condition, string progress, Sprite art, DirtField dirt,
-            bool cleaning, bool canFinish, bool checkedHealth, bool suspended)
+            bool cleaning, bool canFinish, bool checkedHealth, bool suspended, DirtField fur = null)
         {
             _name.text = name;
             _condition.text = condition;
             _progress.text = progress;
-            _surface.Refresh(art, dirt);
+            _surface.Refresh(art, dirt, fur);
             _surface.SetCleaning(cleaning && !suspended);
-            _check.gameObject.SetActive(!cleaning);
-            _pet.gameObject.SetActive(!cleaning);
-            _clean.gameObject.SetActive(!cleaning);
+            _check.gameObject.SetActive(true);
+            _pet.gameObject.SetActive(true);
+            _check.interactable = !cleaning;
+            _pet.interactable = !cleaning;
+            _clean.gameObject.SetActive(true);
+            _groom.gameObject.SetActive(true);
+            _quietSpace.gameObject.SetActive(true);
+            _quietSpace.interactable = !cleaning;
             _clean.interactable = checkedHealth;
-            _finish.gameObject.SetActive(cleaning);
-            _finish.interactable = canFinish && !suspended;
+            _groom.interactable = checkedHealth;
+            _finish.gameObject.SetActive(true);
+            _finish.interactable = cleaning && canFinish && !suspended;
         }
 
-        public void RefreshDirt(Sprite art, DirtField dirt, string progress, bool canFinish)
+        public void RefreshDirt(Sprite art, DirtField dirt, string progress, bool canFinish, DirtField fur = null)
         {
-            _surface.Refresh(art, dirt);
+            _surface.Refresh(art, dirt, fur);
             _progress.text = progress;
             _finish.interactable = canFinish;
         }
@@ -107,6 +117,8 @@ namespace HomelessPetHelper.Modules.Station.UI
             _check.onClick.AddListener(Check);
             _pet.onClick.AddListener(Pet);
             _clean.onClick.AddListener(Clean);
+            _groom.onClick.AddListener(Groom);
+            _quietSpace.onClick.AddListener(QuietSpace);
             _finish.onClick.AddListener(Finish);
             _history.onClick.AddListener(History);
             _restart.onClick.AddListener(Restart);
@@ -126,6 +138,8 @@ namespace HomelessPetHelper.Modules.Station.UI
             _check.onClick.RemoveListener(Check);
             _pet.onClick.RemoveListener(Pet);
             _clean.onClick.RemoveListener(Clean);
+            _groom.onClick.RemoveListener(Groom);
+            _quietSpace.onClick.RemoveListener(QuietSpace);
             _finish.onClick.RemoveListener(Finish);
             _history.onClick.RemoveListener(History);
             _restart.onClick.RemoveListener(Restart);
@@ -145,6 +159,8 @@ namespace HomelessPetHelper.Modules.Station.UI
         private void Check() => Request(StationCommand.Check);
         private void Pet() => Request(StationCommand.Pet);
         private void Clean() => Request(StationCommand.Clean);
+        private void Groom() => Request(StationCommand.Groom);
+        private void QuietSpace() => Request(StationCommand.QuietSpace);
         private void Finish() => Request(StationCommand.Finish);
         private void History() => Request(StationCommand.History);
         private void Restart() => Request(StationCommand.Restart);

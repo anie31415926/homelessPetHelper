@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 1,
+  "firstPlayableScope": {
+    "status": "draft",
+    "notes": "首个可玩入口、必需图片及后续内容边界尚未逐项确认。1.4 MiB 仅为容量估算示例，不是获批的首批清单；加载时机不等于等级解锁。"
+  },
+  "budgets": {
+    "firstPlaySourcePlanningBytes": 1572864,
+    "firstPlayDownloadTargetBytes": 2097152,
+    "moduleSourceReviewBytes": {
+      "CommonUI": 262144,
+      "CityMap": 786432,
+      "Rescue": 1048576,
+      "Station": 1572864,
+      "ArchiveHandbook": 524288
+    }
+  },
+  "assets": [
+    {
+      "id": "city-map.neighborhood",
+      "name": "街区外出地图",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "首版三个地点均开放；本轮有图地图验证，不新增等级解锁条件",
+      "use": "768×1344 不透明竖版地图，三处地标与道路；无动物、文字或交互烘焙，独立叠加标记",
+      "plannedBytes": 204800,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/T_CityMap_Neighborhood.jpg" },
+        { "role": "master", "path": "art-source/city-map-neighborhood/selected-master.png" },
+        { "role": "reference", "path": "art-source/city-map-neighborhood/style-reference.png" },
+        { "role": "reference", "path": "art-source/city-map-neighborhood/master.png" },
+        { "role": "reference", "path": "art-source/city-map-neighborhood/simplified-master.png" },
+        { "role": "reference", "path": "art-source/city-map-neighborhood/simplified.jpg" },
+        { "role": "reference", "path": "art-source/city-map-neighborhood/clean-master.png" },
+        { "role": "reference", "path": "art-source/city-map-neighborhood/clean.jpg" },
+        { "role": "workflow", "path": "art-source/city-map-neighborhood/workflow.json" },
+        { "role": "workflow", "path": "art-source/city-map-neighborhood/simplified-workflow.json" },
+        { "role": "workflow", "path": "art-source/city-map-neighborhood/clean-workflow.json" },
+        { "role": "workflow", "path": "art-source/city-map-neighborhood/postprocess.json" },
+        { "role": "generation-record", "path": "art-source/city-map-neighborhood/history.json" },
+        { "role": "generation-record", "path": "art-source/city-map-neighborhood/simplified-history.json" },
+        { "role": "generation-record", "path": "art-source/city-map-neighborhood/clean-history.json" }
+      ],
+      "generation": {
+        "tool": "本地 ComfyUI；tools/city-map-art.mjs",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026111812,
+        "record": "art-source/city-map-neighborhood/README.md",
+        "notes": "本机 Qwen Image 2.1，三次生成 seed 2026111811/12/13；选第二版布局，原地草坪修补移除参考猫，未挪动地标。脚本 city-map-art.mjs / city-map-derive.mjs、完整工作流及后处理记录均保留。768×1344 JPEG quality82，无放大、无动物、无烘焙文案；仍为待人工审核临时图，不代表商业授权或微信链路通过。"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "animal.cat-calico.map",
+      "name": "三花猫地图角标",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "Editor 临时验证；不代表正式动物种类或解锁进度",
+      "use": "256×256 透明动物角标，UI 状态独立叠加",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/Animals/T_Animal_CatCalico.png" }
+      ],
+      "generation": {
+        "tool": "ComfyUI + BiRefNet + 后处理",
+        "model": "NoobAI-XL-v1.1.safetensors",
+        "seed": 20261153,
+        "record": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/README-临时图说明.md",
+        "notes": "旧记录追溯；母图与完整工作流未在仓库归档，不声称可完整复现。"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "animal.cat-orange.map",
+      "name": "橘猫地图角标",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "Editor 临时验证；不代表正式动物种类或解锁进度",
+      "use": "256×256 透明动物角标，UI 状态独立叠加",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/Animals/T_Animal_CatOrange.png" }
+      ],
+      "generation": {
+        "tool": "ComfyUI + BiRefNet + 后处理",
+        "model": "NoobAI-XL-v1.1.safetensors",
+        "seed": 20261181,
+        "record": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/README-临时图说明.md",
+        "notes": "旧记录追溯；母图与完整工作流未在仓库归档，不声称可完整复现。"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "animal.dog-white.map",
+      "name": "白狗地图角标",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "Editor 临时验证；不代表正式动物种类或解锁进度",
+      "use": "256×256 透明动物角标，UI 状态独立叠加",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/Animals/T_Animal_DogWhite.png" }
+      ],
+      "generation": {
+        "tool": "ComfyUI + BiRefNet + 后处理",
+        "model": "NoobAI-XL-v1.1.safetensors",
+        "seed": 20261152,
+        "record": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/README-临时图说明.md",
+        "notes": "旧记录追溯；母图与完整工作流未在仓库归档，不声称可完整复现。"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "animal.rabbit.map",
+      "name": "兔子地图角标",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "Editor 临时验证；兔子是否进入正式首版尚未确认",
+      "use": "256×256 透明动物角标，UI 状态独立叠加",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/Animals/T_Animal_Rabbit.png" }
+      ],
+      "generation": {
+        "tool": "ComfyUI + BiRefNet + 后处理",
+        "model": "NoobAI-XL-v1.1.safetensors",
+        "seed": 20261174,
+        "record": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/README-临时图说明.md",
+        "notes": "旧记录追溯；母图与完整工作流未在仓库归档，不声称可完整复现。"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "animal.cat.station-sample",
+      "name": "旧站内猫样例",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "已有救助站 Editor 白板使用；不作为正式首批",
+      "use": "600×640 旧样例，仅保留历史 Prefab 默认图与原图测试；护理试玩已改用 station-care 临时图，不作正式交付",
+      "plannedBytes": 153600,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/StationArt/T_Station_cat.png" }
+      ],
+      "generation": { "tool": "仓库既有绘图栅格化", "notes": "沿用白板记录；不是本轮 ComfyUI 新图，正式来源/许可仍需审查。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "animal.dog.station-sample",
+      "name": "旧站内狗样例",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "已有救助站 Editor 白板使用；不作为正式首批",
+      "use": "600×640 旧样例，仅保留历史 Prefab 默认图与原图测试；护理试玩已改用 station-care 临时图，不作正式交付",
+      "plannedBytes": 153600,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/StationArt/T_Station_dog.png" }
+      ],
+      "generation": { "tool": "仓库既有绘图栅格化", "notes": "沿用白板记录；不是本轮 ComfyUI 新图，正式来源/许可仍需审查。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "animal.dog.station-care",
+      "name": "站内护理临时狗图",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "同期护理试做临时图；不批准正式资源、动作或解锁规则",
+      "use": "512×512 透明护理主图；已接站内 Editor 试玩，深浅底边缘与六比例初筛，不作为正式资产审核",
+      "plannedBytes": 153600,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/StationCareArt/T_Station_DogTemporary.png" },
+        { "role": "master", "path": "art-source/station-care-temporary/Dog-master.png" },
+        { "role": "workflow", "path": "art-source/station-care-temporary/Dog-workflow.json" },
+        { "role": "generation-record", "path": "art-source/station-care-temporary/Dog-history.json" },
+        { "role": "reference", "path": "art-source/station-care-temporary/Dog-light.png" },
+        { "role": "reference", "path": "art-source/station-care-temporary/Dog-dark.png" }
+      ],
+      "generation": {
+        "tool": "本地 ComfyUI；tools/station-care-art.mjs",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026111801,
+        "notes": "参数以保存的工作流和历史为准；参考工程 T_Animal_DogWhite.png。tools/station-care-art-process.mjs 去除 alpha<24 的透明杂点、缩至512并从同图派生128遮罩；未裁边或放大256参考图充当成图。light/dark 为边缘检查图。线条略带颗粒，正式版仍需统一。模型/参考图商用许可及微信未审核。Mask.bytes 不计图片字节。"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "animal.cat.station-care",
+      "name": "站内护理临时猫图",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "同期护理试做临时图；不批准正式资源、动作或解锁规则",
+      "use": "512×512 透明护理主图；两个猫样本共用基础图，脏污/梳理独立叠加，已接站内 Editor 试玩",
+      "plannedBytes": 153600,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/StationCareArt/T_Station_CatTemporary.png" },
+        { "role": "master", "path": "art-source/station-care-temporary/Cat-master.png" },
+        { "role": "workflow", "path": "art-source/station-care-temporary/Cat-workflow.json" },
+        { "role": "generation-record", "path": "art-source/station-care-temporary/Cat-history.json" },
+        { "role": "reference", "path": "art-source/station-care-temporary/Cat-light.png" },
+        { "role": "reference", "path": "art-source/station-care-temporary/Cat-dark.png" }
+      ],
+      "generation": {
+        "tool": "本地 ComfyUI；tools/station-care-art.mjs",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026111802,
+        "notes": "护理任务本地生成并接入；参考工程 T_Animal_CatOrange.png，完整提示/模型/seed见工作流。tools/station-care-art-process.mjs 去除 alpha<24 的透明杂点、缩至512并派生128遮罩，未裁边。light/dark 仅边缘检查图；正式画风、商用来源许可与微信仍待审。Mask.bytes 不计图片字节。"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    }
+  ]
+}

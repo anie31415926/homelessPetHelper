@@ -29,6 +29,11 @@ namespace HomelessPetHelper.Bootstrap
         InvalidArrival = 19,
         IdentityMismatch = 20,
         InternalInconsistent = 21,
-        SessionIdReused = 22
+        SessionIdReused = 22,
+        BasicAssessmentRequired = 23,
+        NecessaryCarePending = 24,
+        RescueNotComplete = 25,
+        DirectHandoffRequired = 26,
+        DurationPolicyRequired = 27
     }
 }

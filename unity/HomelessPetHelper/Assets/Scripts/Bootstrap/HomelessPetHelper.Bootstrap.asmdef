@@ -1,6 +1,7 @@
 {
   "name": "HomelessPetHelper.Bootstrap",
   "rootNamespace": "HomelessPetHelper.Bootstrap",
-  "references": ["HomelessPetHelper.Modules.Rescue", "HomelessPetHelper.Modules.Outing", "HomelessPetHelper.Modules.Station", "HomelessPetHelper.Modules.WorldTime"],
+  "references": ["HomelessPetHelper.Modules.Rescue", "HomelessPetHelper.Modules.Outing",
+    "HomelessPetHelper.Modules.Station", "HomelessPetHelper.Modules.WorldTime", "HomelessPetHelper.Modules.Animals"],
   "autoReferenced": false
 }

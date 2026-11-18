@@ -67,6 +67,9 @@ namespace HomelessPetHelper.Editor.RescueCase
                 {
                     _presenter = new RescueCasePresenter(view,
                         AssetDatabase.LoadAssetAtPath<TextAsset>(RescueCaseAssets.TextPath),
+                        new RescueOptionContentLoader(
+                            AssetDatabase.LoadAssetAtPath<TextAsset>(RescueCaseAssets.OptionsPath),
+                            AssetDatabase.LoadAssetAtPath<TextAsset>(RescueCaseAssets.OptionTextPath)),
                         (CaseStart)SessionState.GetInt(StartKey, (int)CaseStart.Normal));
                     return;
                 }

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    { "key": "give-space", "value": "往后站一点" },
+    { "key": "wait", "value": "安静等一会儿" },
+    { "key": "food", "value": "放点吃的" },
+    { "key": "toy", "value": "拿出玩具试试" },
+    { "key": "approach", "value": "慢慢接近" },
+    { "key": "option.phone.reply.title", "value": "女友来消息了，先回一下" },
+    { "key": "option.phone.reply.feedback", "value": "回完消息，收起手机。" },
+    { "key": "option.phone.photo.title", "value": "拍张照片发抖音" },
+    { "key": "option.phone.photo.feedback", "value": "照片拍好了。文案还没想好。" }
+  ]
+}

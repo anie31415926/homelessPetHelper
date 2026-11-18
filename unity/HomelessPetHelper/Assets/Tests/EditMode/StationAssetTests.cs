@@ -8,6 +8,30 @@ namespace HomelessPetHelper.Tests.EditMode
 {
     public sealed class StationAssetTests
     {
+        [TestCase("Cat")]
+        [TestCase("Dog")]
+        public void TemporaryCareArtRespectsPreviewImageBudgetAndAlignedMask(string kind)
+        {
+            string path = "Assets/EditorScenes/StationCareArt/T_Station_" + kind + "Temporary";
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path + ".png");
+            var importer = (TextureImporter)AssetImporter.GetAtPath(path + ".png");
+            Assert.That(sprite, Is.Not.Null);
+            Assert.That(sprite.texture.width, Is.EqualTo(512));
+            Assert.That(sprite.texture.height, Is.EqualTo(512));
+            Assert.That(new System.IO.FileInfo(path + ".png").Length, Is.LessThanOrEqualTo(150 * 1024));
+            Assert.That(importer.isReadable, Is.False);
+            Assert.That(importer.mipmapEnabled, Is.False);
+            Assert.That(importer.alphaIsTransparency, Is.True);
+            Assert.That(importer.GetDefaultPlatformTextureSettings().maxTextureSize, Is.EqualTo(512));
+            var settings = new TextureImporterSettings();
+            importer.ReadTextureSettings(settings);
+            Assert.That(settings.spriteMeshType, Is.EqualTo(SpriteMeshType.FullRect));
+            byte[] mask = AssetDatabase.LoadAssetAtPath<TextAsset>(path + "Mask.bytes").bytes;
+            Assert.That(mask.Length, Is.EqualTo(128 * 128));
+            Assert.That(mask.Any(value => value == 0) && mask.Any(value => value == 255), Is.True);
+            Assert.That(mask[0], Is.Zero);
+        }
+
         [Test]
         public void AllStationBindingsAreSavedAndSceneIsExcludedFromBuild()
         {
@@ -37,6 +61,11 @@ namespace HomelessPetHelper.Tests.EditMode
             }
 
             Assert.That(root.GetComponentsInChildren<StationAnimalView>(true).Length, Is.EqualTo(3));
+            foreach (CareBubbleView bubbles in root.GetComponentsInChildren<CareBubbleView>(true))
+            {
+                Assert.That(bubbles.GetComponent<CanvasRenderer>(), Is.Not.Null,
+                    "Bubble state can be live without rendering when the saved CanvasRenderer is missing.");
+            }
             Assert.That(EditorBuildSettings.scenes.Any(scene => scene.path.Contains("EditorScenes")), Is.False);
         }
 

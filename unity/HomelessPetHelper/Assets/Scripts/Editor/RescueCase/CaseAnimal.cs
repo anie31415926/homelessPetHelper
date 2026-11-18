@@ -1,19 +1,37 @@
 using System;
+using HomelessPetHelper.Modules.Animals;
 
 namespace HomelessPetHelper.Editor.RescueCase
 {
     // This one healthy-animal trial deliberately does not model injury, death or medical outcomes.
     internal sealed class CaseAnimal
     {
-        internal Guid AnimalId { get; } = Guid.NewGuid();
-        internal bool IsHungry { get; private set; } = true;
+        internal AnimalIndividual Individual { get; }
+        internal Guid AnimalId => Individual.Current.AnimalId;
+        internal bool IsHungry
+        {
+            get => Individual.Current.Disposition.IsHungry;
+            private set => SetDisposition(isHungry: value);
+        }
         internal bool HasSpace { get; private set; }
         internal bool HasFoodOnGround { get; private set; }
         internal bool IsWithinReach { get; private set; }
         internal CasePlacement Placement { get; private set; }
-        internal CaseEmotion Emotion { get; private set; } = CaseEmotion.Nervous;
-        internal CaseBehavior Behavior { get; private set; } = CaseBehavior.Watching;
-        internal CaseStress Stress { get; private set; }
+        internal CaseEmotion Emotion
+        {
+            get => (CaseEmotion)Individual.Current.Disposition.Emotion;
+            private set => SetDisposition(emotion: (AnimalEmotion)value);
+        }
+        internal CaseBehavior Behavior
+        {
+            get => (CaseBehavior)Individual.Current.Disposition.Behavior;
+            private set => SetDisposition(behavior: (AnimalBehavior)value);
+        }
+        internal CaseStress Stress
+        {
+            get => (CaseStress)Individual.Current.Disposition.Stress;
+            private set => SetDisposition(stress: (AnimalStress)value);
+        }
 
         internal CaseIntent Intent => !HasSpace || Emotion == CaseEmotion.Startled ? CaseIntent.SeekSpace :
             Stress == CaseStress.Acute ? CaseIntent.Recover :
@@ -23,6 +41,9 @@ namespace HomelessPetHelper.Editor.RescueCase
 
         internal CaseAnimal(CaseStart start)
         {
+            Individual = new AnimalIndividual(Guid.NewGuid(), "cat.shy",
+                new AnimalDisposition(true, AnimalEmotion.Nervous, AnimalStress.None, AnimalBehavior.Watching),
+                new AnimalHealthSnapshot(Array.Empty<AnimalHealthProblem>()));
             if (start == CaseStart.StressRecovery)
             {
                 // This fixture represents an already-fed animal startled before this trial begins.
@@ -30,6 +51,19 @@ namespace HomelessPetHelper.Editor.RescueCase
                 Emotion = CaseEmotion.Startled;
                 Behavior = CaseBehavior.Retreating;
                 Stress = CaseStress.Acute;
+            }
+        }
+
+        private void SetDisposition(bool? isHungry = null, AnimalEmotion? emotion = null,
+            AnimalStress? stress = null, AnimalBehavior? behavior = null)
+        {
+            AnimalSnapshot current = Individual.Current;
+            AnimalDisposition previous = current.Disposition;
+            var next = new AnimalDisposition(isHungry ?? previous.IsHungry, emotion ?? previous.Emotion,
+                stress ?? previous.Stress, behavior ?? previous.Behavior);
+            if (!Individual.TryApplyDisposition(current, next))
+            {
+                throw new InvalidOperationException("Case disposition changed during synchronous rule execution.");
             }
         }
 
@@ -79,6 +113,13 @@ namespace HomelessPetHelper.Editor.RescueCase
             Behavior = CaseBehavior.Settled;
         }
 
+        internal CaseResponse RespondToQuietAction()
+        {
+            // Ordinary feeding can continue; a phone prompt is not a shortcut to calming or placement.
+            return HasSpace && Stress == CaseStress.None && IsHungry && HasFoodOnGround ?
+                EatPlacedFood() : CaseResponse.NoNewResponse;
+        }
+
         internal CaseResponse PreparePlacement()
         {
             Placement = CasePlacement.Inspecting;
@@ -103,11 +144,7 @@ namespace HomelessPetHelper.Editor.RescueCase
 
             if (IsHungry && HasFoodOnGround)
             {
-                IsHungry = false;
-                HasFoodOnGround = false;
-                Emotion = CaseEmotion.Watchful;
-                Behavior = CaseBehavior.Eating;
-                return CaseResponse.Ate;
+                return EatPlacedFood();
             }
 
             if (IsHungry)
@@ -130,6 +167,15 @@ namespace HomelessPetHelper.Editor.RescueCase
             Emotion = Emotion == CaseEmotion.Nervous ? CaseEmotion.Watchful : CaseEmotion.Relaxed;
             Behavior = CaseBehavior.Watching;
             return CaseResponse.Calming;
+        }
+
+        private CaseResponse EatPlacedFood()
+        {
+            IsHungry = false;
+            HasFoodOnGround = false;
+            Emotion = CaseEmotion.Watchful;
+            Behavior = CaseBehavior.Eating;
+            return CaseResponse.Ate;
         }
 
         private CaseResponse Play()

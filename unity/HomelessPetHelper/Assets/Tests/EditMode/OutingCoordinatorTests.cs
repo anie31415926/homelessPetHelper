@@ -29,7 +29,7 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [Test]
-        public void BeginRefusesFullStationWithoutMutatingFlow()
+        public void FullStationCanViewMapButCannotDepartForOrdinaryRequest()
         {
             var f = CreateFixture(out var coordinator, out _, out _, out _, out _,
                 capacity: 1);
@@ -37,10 +37,12 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(f.Station.TryReceive(f.StationSessionId, animal, out _, out _), Is.True);
             Assert.That(f.Station.IsFull, Is.True);
 
-            Assert.That(coordinator.TryBeginOuting(Guid.NewGuid(), 1, out var failure), Is.False);
+            Assert.That(coordinator.TryBeginOuting(Guid.NewGuid(), 1, out _), Is.True);
+            Assert.That(coordinator.TrySelectAndDepart(coordinator.Session.SessionId, Parking,
+                out var failure), Is.False);
             Assert.That(failure, Is.EqualTo(OutingAssemblyFailure.StationFull));
-            Assert.That(f.Flow.Stage, Is.EqualTo(RescueStage.Station));
-            Assert.That(coordinator.Session, Is.Null);
+            Assert.That(f.Flow.Stage, Is.EqualTo(RescueStage.Map));
+            Assert.That(coordinator.Session.HasDeparted, Is.False);
         }
 
         [Test]
@@ -103,16 +105,16 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [Test]
-        public void NoRequestPointCannotDepart()
+        public void NoRequestPointCanDepartForExplorationWithoutAcceptingARequest()
         {
             var f = CreateFixture(out var coordinator, out _, out _, out _, out _);
             Assert.That(coordinator.TryBeginOuting(Guid.NewGuid(), 1, out _), Is.True);
 
             Assert.That(coordinator.TrySelectAndDepart(coordinator.Session.SessionId, Courtyard,
-                out var failure), Is.False);
-            Assert.That(failure, Is.EqualTo(OutingAssemblyFailure.PointHasNoRequest));
-            Assert.That(f.Flow.Stage, Is.EqualTo(RescueStage.Map));
-            Assert.That(coordinator.Session.HasDeparted, Is.False);
+                out var failure), Is.True);
+            Assert.That(failure, Is.EqualTo(OutingAssemblyFailure.None));
+            Assert.That(f.Flow.Stage, Is.EqualTo(RescueStage.Approach));
+            Assert.That(coordinator.Session.AcceptedRequestId, Is.EqualTo(Guid.Empty));
         }
 
         [Test]
@@ -189,6 +191,8 @@ namespace HomelessPetHelper.Tests.EditMode
                 var sessionId = RunToRescued(coordinator, f, 100 + i);
                 var arrival = MakeArrival(sessionId, Guid.NewGuid());
                 Assert.That(coordinator.TryReturnAndSettle(sessionId, arrival, 15, out _, out _), Is.True);
+                Assert.That(f.Station.TryCompleteBasicAssessment(f.StationSessionId, arrival.AnimalId,
+                    Array.Empty<string>(), out _), Is.True);
                 Assert.That(coordinator.TryCompleteCare(sessionId, out _), Is.True);
             }
 

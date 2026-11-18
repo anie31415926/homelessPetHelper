@@ -2,7 +2,8 @@
   "name": "HomelessPetHelper.Tests.PlayMode",
   "rootNamespace": "HomelessPetHelper.Tests.PlayMode",
   "references": ["HomelessPetHelper.Bootstrap", "HomelessPetHelper.Modules.Rescue",
-    "HomelessPetHelper.Modules.Rescue.UI", "HomelessPetHelper.Modules.Station.UI", "UnityEngine.UI"],
+    "HomelessPetHelper.Modules.Rescue.UI", "HomelessPetHelper.Modules.Station.UI",
+    "HomelessPetHelper.Modules.Outing.UI", "UnityEngine.UI"],
   "optionalUnityReferences": ["TestAssemblies"],
   "autoReferenced": false
 }

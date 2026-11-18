@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using HomelessPetHelper.Editor.OptionPreview;
 using HomelessPetHelper.Modules.Station;
 using HomelessPetHelper.Modules.Station.Cleaning;
@@ -17,15 +18,21 @@ namespace HomelessPetHelper.Editor.StationPreview
         private readonly Font _font;
         private readonly Sprite[] _art = new Sprite[3];
         private readonly DirtField[] _dirt = new DirtField[3];
-        private readonly bool[] _checked = new bool[3];
+        private readonly DirtField[] _fur = new DirtField[3];
+        private readonly CareWorkMeter[] _washWork = new CareWorkMeter[3];
+        private readonly CareWorkMeter[] _groomWork = new CareWorkMeter[3];
+        private readonly StationContactSample[] _contact = new StationContactSample[3];
+        private readonly Dictionary<Guid, IReadOnlyList<string>> _sampleAssessments =
+            new Dictionary<Guid, IReadOnlyList<string>>();
         private readonly string[] _names = new string[3];
         private RescueStation _station;
         private ActionWorldClock _clock;
         private StationReturnSummary _summary;
+        private Guid _stationSessionId;
         private WorldTimeVersion _cleaningVersion;
         private int _selected = -1;
         private bool _showSummary;
-        private bool _cleaning;
+        private StationCareTool _tool;
         private bool _suspended;
         private string _feedback;
 
@@ -47,18 +54,23 @@ namespace HomelessPetHelper.Editor.StationPreview
             _station?.Close();
             _clock?.Close();
             Guid session = Guid.NewGuid();
+            _stationSessionId = session;
             _station = new RescueStation(session, 4);
             _clock = new ActionWorldClock(session, 1440, 540);
+            _sampleAssessments.Clear();
             for (int index = 0; index < 3; index++)
             {
                 string kind = index == 0 ? "dog" : "cat";
-                _art[index] = AssetDatabase.LoadAssetAtPath<Sprite>(StationPreviewAssets.ArtFolder +
-                    "/T_Station_" + kind + ".png");
-                byte[] mask = AssetDatabase.LoadAssetAtPath<TextAsset>(StationPreviewAssets.ArtFolder +
-                    "/T_Station_" + kind + "Mask.bytes").bytes;
+                string artPath = StationPreviewAssets.CareArtFolder + "/T_Station_" +
+                    (index == 0 ? "Dog" : "Cat") + "Temporary";
+                _art[index] = AssetDatabase.LoadAssetAtPath<Sprite>(artPath + ".png");
+                byte[] mask = AssetDatabase.LoadAssetAtPath<TextAsset>(artPath + "Mask.bytes").bytes;
                 _dirt[index] = CreateDirt(mask, index);
+                _fur[index] = CreateFur(mask, index);
+                _washWork[index] = new CareWorkMeter(_dirt[index], 20);
+                _groomWork[index] = new CareWorkMeter(_fur[index], 12, 100);
+                _contact[index] = new StationContactSample(index == 1, index != 1, index == 2, index == 0);
                 _names[index] = _text.Get("name" + index);
-                _checked[index] = false;
                 var arrival = new StationAnimalIntake(Guid.NewGuid(), Guid.NewGuid(), "preview." + kind,
                     new AnimalIntakeCondition(StationHealthAssessment.Unchecked, index == 1 ? 0 : 65,
                         Array.Empty<string>()));
@@ -66,13 +78,32 @@ namespace HomelessPetHelper.Editor.StationPreview
                 {
                     throw new InvalidOperationException("Invalid station fixture: " + failure);
                 }
+
+                // These three fixtures explicitly have no urgent problems; missing results are never healthy.
+                _sampleAssessments.Add(arrival.AnimalId, Array.Empty<string>());
             }
 
             _selected = -1;
             _showSummary = true;
-            _cleaning = false;
+            _tool = StationCareTool.None;
             _feedback = _text.Get("welcome");
             Refresh();
+        }
+
+        private static DirtField CreateFur(byte[] mask, int index)
+        {
+            var fur = new byte[mask.Length];
+            for (int y = 0; y < 128; y++)
+            {
+                for (int x = 0; x < 128; x++)
+                {
+                    float noise = Mathf.PerlinNoise(x * 0.07f + index * 13, y * 0.07f + 43);
+                    fur[y * 128 + x] = (x + y * 2) % 11 < 2 && y % 9 < 6 ?
+                        (byte)(Mathf.Clamp01((noise - 0.38f) * 4) * 200) : (byte)0;
+                }
+            }
+
+            return new DirtField(128, 128, mask, fur);
         }
 
         private static DirtField CreateDirt(byte[] mask, int index)
@@ -116,9 +147,8 @@ namespace HomelessPetHelper.Editor.StationPreview
                     break;
                 case StationCommand.Back:
                     if (_selected < 0 || _showSummary) return;
-                    _feedback = _text.Get(_cleaning ? "unfinished" : "stationReady", _names[_selected]);
+                    if (_tool != StationCareTool.None && !EndCare()) break;
                     _selected = -1;
-                    _cleaning = false;
                     break;
                 default:
                     if (_selected < 0 || _showSummary) return;
@@ -131,45 +161,110 @@ namespace HomelessPetHelper.Editor.StationPreview
 
         private void HandleCare(StationCommand command)
         {
-            if (command == StationCommand.Finish)
+            if (command == StationCommand.Finish && _tool != StationCareTool.None)
             {
-                Finish();
+                EndCare();
             }
-            else if (!_cleaning && command == StationCommand.Check)
+            else if (_tool == StationCareTool.None && command == StationCommand.Check)
             {
-                _checked[_selected] = true;
-                _feedback = _text.Get("checked", _names[_selected]);
+                CheckSelectedAnimal();
             }
-            else if (!_cleaning && command == StationCommand.Pet)
+            else if (_tool == StationCareTool.None && command == StationCommand.Pet)
             {
-                _feedback = _text.Get("petted", _names[_selected]);
+                _feedback = _text.Get(_contact[_selected].Pet(), _names[_selected]);
             }
-            else if (!_cleaning && command == StationCommand.Clean && _checked[_selected])
+            else if (_tool == StationCareTool.None && command == StationCommand.QuietSpace)
             {
-                _cleaning = true;
+                _contact[_selected].ArrangeQuietSpace(_clock.Current.ElapsedMinutes);
+                _feedback = _text.Get("quietArranged", _names[_selected]);
+            }
+            else if (command == StationCommand.Clean || command == StationCommand.Groom)
+            {
+                if (!CanCleanSample(_selected))
+                {
+                    _feedback = _text.Get(_contact[_selected].CoatRestricted ? "careRestricted" : "careSpace");
+                    return;
+                }
+
+                StationCareTool next = command == StationCommand.Clean ? StationCareTool.Wash : StationCareTool.Groom;
+                if (_tool == next || (_tool != StationCareTool.None && !EndCare())) return;
+                _tool = next;
                 _cleaningVersion = _clock.Current.Version;
-                _feedback = _text.Get("cleaning", _names[_selected]);
+                _feedback = _text.Get(next == StationCareTool.Wash ? "cleaning" : "grooming", _names[_selected]);
             }
         }
 
-        private void Finish()
+        private void CheckSelectedAnimal()
         {
-            if (!_cleaning || _dirt[_selected].RemovedFraction < 0.97)
+            StationCareSnapshot care = Care(_selected);
+            if (care.BasicAssessment == StationHealthAssessment.Unchecked)
             {
-                return;
+                if (!_sampleAssessments.TryGetValue(care.AnimalId, out var problems) ||
+                    !_station.TryCompleteBasicAssessment(_stationSessionId, care.AnimalId, problems, out _))
+                {
+                    _feedback = _text.Get("assessmentUnavailable");
+                    return;
+                }
             }
 
-            if (_clock.TryAdvance(_cleaningVersion, 20, out _, out _))
+            _feedback = _text.Get("checked", _names[_selected], _text.Get(HealthKey(_selected)));
+        }
+
+        private StationCareSnapshot Care(int index)
+        {
+            Guid animalId = _station.Animals[index].AnimalId;
+            if (!_station.TryGetCareSnapshot(animalId, out var care))
             {
-                _dirt[_selected].ClearResidue();
-                _feedback = _text.Get("finished", _names[_selected]);
+                throw new InvalidOperationException("Station fixture has no care record: " + animalId);
             }
-            else
+
+            return care;
+        }
+
+        private bool CanCleanSample(int index)
+        {
+            // No urgent problem is not blanket permission: current willingness and coat restrictions still apply.
+            return Care(index).BasicAssessment == StationHealthAssessment.NoUrgentCareRequired &&
+                _contact[index].CanCare;
+        }
+
+        private string HealthKey(int index)
+        {
+            switch (Care(index).BasicAssessment)
+            {
+                case StationHealthAssessment.Unchecked: return "unchecked";
+                case StationHealthAssessment.NoUrgentCareRequired: return "healthy";
+                case StationHealthAssessment.UrgentCareRequired: return "urgent";
+                default: throw new InvalidOperationException("Unknown station assessment.");
+            }
+        }
+
+        private bool EndCare()
+        {
+            CareWorkMeter work = _tool == StationCareTool.Wash ? _washWork[_selected] : _groomWork[_selected];
+            long minutes = work.PendingMinutes;
+            if (minutes > 0 && !_clock.TryAdvance(_cleaningVersion, minutes, out _, out _))
             {
                 _feedback = _text.Get("stale");
+                return false;
             }
 
-            _cleaning = false;
+            work.ConfirmSettlement();
+            if (_tool == StationCareTool.Wash && _dirt[_selected].RemovedFraction >= 0.97)
+            {
+                _dirt[_selected].ClearResidue();
+                // Completing the last small residue is included in the same capped duration.
+                work.ConfirmSettlement();
+            }
+
+            foreach (StationContactSample contact in _contact)
+            {
+                contact.ObserveSettledTime(_clock.Current.ElapsedMinutes);
+            }
+
+            _feedback = _text.Get("careSettled", _names[_selected], minutes);
+            _tool = StationCareTool.None;
+            return true;
         }
 
         private void Select(int index)
@@ -180,23 +275,34 @@ namespace HomelessPetHelper.Editor.StationPreview
             }
 
             _selected = index;
-            _feedback = _text.Get(_checked[index] ? "stationReady" : "checkFirst");
+            _feedback = _text.Get(Care(index).BasicAssessment == StationHealthAssessment.Unchecked ?
+                "checkFirst" : "stationReady");
             Refresh();
         }
 
         private void Stroke(Vector2 point, int strength)
         {
-            if (_suspended || !_cleaning || _selected < 0 || _showSummary)
+            if (_suspended || _tool == StationCareTool.None || _selected < 0 || _showSummary)
             {
                 return;
             }
 
-            DirtField dirt = _dirt[_selected];
-            if (dirt.TryErase(point.x, point.y, 0.12f, strength))
+            DirtField field = ActiveField();
+            if (!field.ContainsCoat(point.x, point.y)) return;
+            DirtField blocker = _tool == StationCareTool.Groom ? _dirt[_selected] : null;
+            if (field.TryErase(point.x, point.y, 0.12f, strength, blocker))
             {
-                _view.RefreshDirt(_art[_selected], dirt, Progress(dirt), dirt.RemovedFraction >= 0.97);
+                _view.RefreshDirt(_art[_selected], _dirt[_selected], Progress(field), true, _fur[_selected]);
+                if (_tool == StationCareTool.Wash) _view.Surface.ShowCleaningContact(point);
+            }
+            else if (_tool == StationCareTool.Groom && blocker.HasResidueAt(point.x, point.y))
+            {
+                _feedback = _text.Get("groomBlocked");
+                _view.SetFeedback(_feedback);
             }
         }
+
+        private DirtField ActiveField() => _tool == StationCareTool.Groom ? _fur[_selected] : _dirt[_selected];
 
         private void Suspend(bool suspended)
         {
@@ -211,15 +317,16 @@ namespace HomelessPetHelper.Editor.StationPreview
 
         private string Progress(DirtField dirt)
         {
-            return dirt.RemovedFraction >= 0.97 ? _text.Get("careReady") :
-                _text.Get("progress", dirt.RemovedFraction * 100);
+            string key = _tool == StationCareTool.Groom ? "groomProgress" : "progress";
+            return _text.Get(key, dirt.RemovedFraction * 100);
         }
 
         private string Condition(int index)
         {
             string dirt = _dirt[index].RemainingAmount == 0 ? "cleaned" :
                 _dirt[index].RemovedFraction > 0 ? "partial" : "dirty";
-            return _text.Get("animalStatus", _text.Get(_checked[index] ? "healthy" : "unchecked"), _text.Get(dirt));
+            return _text.Get("animalStatus", _text.Get(HealthKey(index)), _text.Get(dirt),
+                _text.Get(_contact[index].SignalKey));
         }
 
         private void Refresh()
@@ -240,16 +347,16 @@ namespace HomelessPetHelper.Editor.StationPreview
                 for (int index = 0; index < animals.Length; index++)
                 {
                     animals[index].Refresh(index, _names[index], Condition(index), _art[index],
-                        _dirt[index], !_suspended);
+                        _dirt[index], !_suspended, _fur[index]);
                 }
             }
             else
             {
                 DirtField dirt = _dirt[_selected];
-                string progress = _cleaning ? Progress(dirt) :
-                    _text.Get(dirt.RemainingAmount == 0 ? "cleaned" : "dirty");
+                string progress = _tool != StationCareTool.None ? Progress(ActiveField()) :
+                    _text.Get("bothProgress", dirt.RemovedFraction * 100, _fur[_selected].RemovedFraction * 100);
                 _view.ShowDetail(_names[_selected], Condition(_selected), progress, _art[_selected], dirt,
-                    _cleaning, dirt.RemovedFraction >= 0.97, _checked[_selected], _suspended);
+                    _tool != StationCareTool.None, true, CanCleanSample(_selected), _suspended, _fur[_selected]);
             }
         }
 

@@ -22,6 +22,8 @@ namespace HomelessPetHelper.Editor.RescueCase
         StressEased = 17,
         InspectingPlacement = 18,
         SpaceMaintained = 19,
-        SpaceMaintainedUnderStress = 20
+        SpaceMaintainedUnderStress = 20,
+        CheckedAtStation = 21,
+        NoNewResponse = 22
     }
 }

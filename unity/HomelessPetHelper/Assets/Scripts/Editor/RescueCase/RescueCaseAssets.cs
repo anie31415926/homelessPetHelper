@@ -14,6 +14,8 @@ namespace HomelessPetHelper.Editor.RescueCase
         public const string ScenePath = "Assets/EditorScenes/SC_RescueCase.unity";
         public const string PanelPath = "Assets/Prefabs/Panels/Panel_RescueCase.prefab";
         public const string TextPath = "Assets/EditorScenes/RescueCaseText.json";
+        public const string OptionsPath = "Assets/Settings/Rescue/RescueOptions.json";
+        public const string OptionTextPath = "Assets/Settings/Rescue/RescueOptionText.zh-CN.json";
 
         [MenuItem("Homeless Pet Helper/Preview/Open Rescue Case")]
         public static void OpenScene()

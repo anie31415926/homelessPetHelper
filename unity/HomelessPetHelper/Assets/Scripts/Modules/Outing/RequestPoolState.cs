@@ -6,9 +6,9 @@ namespace HomelessPetHelper.Modules.Outing
 {
     /// <summary>
     /// Owns the request set and is the single transition entry point for request state.
-    /// Only the confirmed lifecycle (Available -Accept-> Accepted -Resolve-> Resolved) exists.
-    /// Defer / expire / cancel are unconfirmed and have no implicit implementation.
-    /// Supply and capacity matching are decided by the caller, not here.
+    /// Accepted requests are protected from external rescue until the caller explicitly releases
+    /// them after an unresolved return. Supply, timing and outing identity checks belong to the
+    /// caller; this pool never advances time, fabricates success or pays rewards.
     /// </summary>
     public sealed class RequestPoolState
     {
@@ -67,7 +67,8 @@ namespace HomelessPetHelper.Modules.Outing
         /// <summary>Read-only transition gate; shares the mutation entry's complete validation.</summary>
         public bool CanTransition(Guid requestId, RequestSignal signal, out OutingFailure failure)
         {
-            if (signal != RequestSignal.Accept && signal != RequestSignal.Resolve)
+            if (signal != RequestSignal.Accept && signal != RequestSignal.Resolve &&
+                signal != RequestSignal.ReleaseAfterReturn && signal != RequestSignal.HelpedElsewhere)
             {
                 failure = OutingFailure.InvalidSignal;
                 return false;
@@ -99,6 +100,12 @@ namespace HomelessPetHelper.Modules.Outing
                     return true;
                 case RequestState.Accepted when signal == RequestSignal.Resolve:
                     nextState = RequestState.Resolved;
+                    return true;
+                case RequestState.Accepted when signal == RequestSignal.ReleaseAfterReturn:
+                    nextState = RequestState.Available;
+                    return true;
+                case RequestState.Available when signal == RequestSignal.HelpedElsewhere:
+                    nextState = RequestState.HelpedElsewhere;
                     return true;
                 default:
                     return false;

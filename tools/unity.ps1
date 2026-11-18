@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [ValidateSet('Initialize', 'PreviewAssets', 'PreviewLayout', 'CaseAssets', 'CaseLayout',
-        'StationAssets', 'StationArt', 'ResourceAudit',
+        'StationAssets', 'StationArt', 'StationCareLayout', 'MapAssets', 'MapLayout', 'ResourceAudit',
         'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
     [string]$Task = 'EditMode',
     [string]$EditorPath = $env:UNITY_EDITOR_PATH,
@@ -80,6 +80,18 @@ if (-not $Graphics)
 
 switch ($Task)
 {
+    'MapLayout'
+    {
+        if (-not $Isolated) { throw 'MapLayout must run in an isolated saved-project snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod',
+            'HomelessPetHelper.Editor.CityMap.CityMapAssets.NormalizeLayout')
+    }
+    'MapAssets'
+    {
+        if (-not $Isolated) { throw 'MapAssets must run in an isolated saved-project snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod',
+            'HomelessPetHelper.Editor.CityMap.CityMapAssets.CreateAssets')
+    }
     'Initialize'
     {
         $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.ProjectSetup.Initialize')
@@ -113,6 +125,12 @@ switch ($Task)
     {
         $unityArguments += @('-quit', '-executeMethod',
             'HomelessPetHelper.Editor.StationPreview.StationPreviewAssets.NormalizeArt')
+    }
+    'StationCareLayout'
+    {
+        if (-not $Isolated) { throw 'StationCareLayout must run in an isolated saved-project snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod',
+            'HomelessPetHelper.Editor.StationPreview.StationCarePreviewUpgrade.UpgradeSavedPrefab')
     }
     'Build'
     {

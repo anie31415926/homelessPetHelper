@@ -15,6 +15,22 @@ namespace HomelessPetHelper.Modules.Rescue
             IsSuspended = isSuspended;
         }
 
+        /// <summary>No successful rescue or intake: cancel the map or explicitly return from the field.</summary>
+        public bool TryEndUnresolved(out TransitionFailure failure)
+        {
+            if (!CanEndUnresolved(out failure)) return false;
+            Stage = RescueStage.Station;
+            return true;
+        }
+
+        public bool CanEndUnresolved(out TransitionFailure failure)
+        {
+            failure = IsSuspended ? TransitionFailure.Suspended :
+                Stage == RescueStage.Map || Stage == RescueStage.Approach || Stage == RescueStage.Negotiation ?
+                    TransitionFailure.None : TransitionFailure.UnexpectedSignal;
+            return failure == TransitionFailure.None;
+        }
+
         /// <summary>
         /// Advances on an already validated gameplay signal. Rejection changes no state.
         /// Repeated completion signals are rejected after the first transition.

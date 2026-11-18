@@ -1,0 +1,108 @@
+{
+  "reference": "unity/HomelessPetHelper/Assets/EditorScenes/StationCareArt/T_Station_CatTemporary.png",
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "city-map-style-reference.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "Create a NEW illustrated portrait small-neighborhood map, 768 by 1344, using ONLY the drawing style of the reference cat. Do not draw any animal. Match the thick dark charcoal wobbly outline and clean solid pastel color blocks of that reference EXACTLY. Extremely simple cute 2D animation background, bold clear contours, smooth flat colors, no pencil texture or crosshatching. Sparse layout: only EIGHT buildings total in the whole image, each large and clearly separated by generous mint green grass. No distant town or repeated small houses. One aqua-roof animal shelter at bottom left, one open teal bicycle parking shed at middle left, a green square residential courtyard at upper right, one coral-roof porch house at lower right, and four small supporting white homes. Connect them with a gently winding pale gray footpath. Four rounded simple trees only. Top 15 percent and bottom 20 percent are quiet open grass, important places in the central 65 percent. Close high bird's-eye map, buildings seen at a slight angle, no horizon, no island outline. Mint grass, aqua and coral roofs, white walls, charcoal lines. Full-bleed opaque artwork. No lettering, labels, signage, pins, UI, people, cats, dogs, animals, shadows, photorealism or 3D rendering.",
+        "negative_prompt": "cat, dog, animal, person, letters, text, watermark, realistic, 3d render, photographic, dense buildings, island, UI, interface, blur",
+        "resolution": 0,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026111812,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "city-map-neighborhood/map"
+      }
+    }
+  }
+}

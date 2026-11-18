@@ -7,8 +7,8 @@ namespace HomelessPetHelper.Modules.Outing
     /// Pure rule-side coordinator over the static definition, unlock state and request pool.
     /// Builds immutable map snapshots and validates point selection without mutating state:
     /// the caller applies RequestPoolState.TryTransition and OutingSession.TryDepart afterwards.
-    /// No Unity, UI, clock or random dependency. Point behaviour for no-request points is a B-group
-    /// decision; this layer only reports the fact that no help request is available.
+    /// No Unity, UI, clock or random dependency. Departure planning also supports exploration
+    /// without a request, and safe direct reunions that do not need station space.
     /// </summary>
     public sealed class CityMapRules
     {
@@ -57,11 +57,68 @@ namespace HomelessPetHelper.Modules.Outing
         /// <summary>
         /// Validates that a point is open and carries an available request. Returns the request
         /// for the caller to accept; this method changes no state. No-request points are refused
-        /// here as a fact only — their eventual click behaviour belongs to the B group.
+        /// here for the legacy request-only coordinator. Use TryPlanDeparture for exploration.
         /// </summary>
         public bool TrySelectPoint(string pointId, out HelpRequest request, out OutingFailure failure)
         {
             request = null;
+            if (!TryRequireOpenPoint(pointId, out failure))
+            {
+                return false;
+            }
+
+            if (!TryGetAvailableRequest(pointId, out request, out _))
+            {
+                failure = OutingFailure.PointHasNoRequest;
+                return false;
+            }
+
+            failure = OutingFailure.None;
+            return true;
+        }
+
+        /// <summary>
+        /// Read-only departure gate. Unknown destinations and exploration require a free
+        /// temporary place; only a request-specific direct reunion arrangement is exempt.
+        /// Existing accepted requests cannot be bypassed as no-request exploration.
+        /// </summary>
+        public bool TryPlanDeparture(string pointId, int availableTemporarySpaces,
+            out MapDeparturePlan plan, out OutingFailure failure)
+        {
+            plan = null;
+            if (availableTemporarySpaces < 0)
+            {
+                failure = OutingFailure.InvalidCapacity;
+                return false;
+            }
+
+            if (!TryRequireOpenPoint(pointId, out failure))
+            {
+                return false;
+            }
+
+            if (!TryGetAvailableRequest(pointId, out var request, out _) &&
+                HasAcceptedRequest(pointId))
+            {
+                failure = OutingFailure.RequestNotAvailable;
+                return false;
+            }
+
+            var candidate = new MapDeparturePlan(pointId, request);
+            if (candidate.RequiresStationSpace && availableTemporarySpaces == 0)
+            {
+                failure = OutingFailure.CapacityNotAvailable;
+                return false;
+            }
+
+            plan = candidate;
+            failure = OutingFailure.None;
+            return true;
+        }
+
+        private bool TryRequireOpenPoint(string pointId, out OutingFailure failure)
+        {
+            failure = OutingFailure.None;
             if (!_definition.TryGetPoint(pointId, out var point))
             {
                 failure = OutingFailure.InvalidPoint;
@@ -74,14 +131,20 @@ namespace HomelessPetHelper.Modules.Outing
                 return false;
             }
 
-            if (!TryGetAvailableRequest(pointId, out request, out _))
+            return true;
+        }
+
+        private bool HasAcceptedRequest(string pointId)
+        {
+            foreach (var request in _requestPool.Requests)
             {
-                failure = OutingFailure.PointHasNoRequest;
-                return false;
+                if (request.PointId == pointId && request.State == RequestState.Accepted)
+                {
+                    return true;
+                }
             }
 
-            failure = OutingFailure.None;
-            return true;
+            return false;
         }
 
         private MapPointView BuildPointView(MapPointDefinition point)
