@@ -32,6 +32,12 @@ namespace HomelessPetHelper.Tests.EditMode
                 {
                     if (iterator.propertyType == SerializedPropertyType.ObjectReference)
                     {
+                        if (component is OptionCardView && iterator.propertyPath == "_hold")
+                        {
+                            Assert.That(iterator.objectReferenceValue, Is.Null,
+                                "Legacy selection cards must not opt in to hold confirmation.");
+                            continue;
+                        }
                         Assert.That(iterator.objectReferenceValue, Is.Not.Null,
                             path + ": " + iterator.propertyPath);
                     }

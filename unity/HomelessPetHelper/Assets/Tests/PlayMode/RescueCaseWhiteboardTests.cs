@@ -8,6 +8,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
@@ -32,6 +33,81 @@ namespace HomelessPetHelper.Tests.PlayMode
         private const string ScenePath = "Assets/EditorScenes/SC_RescueCase.unity";
         private RescueCaseView _view;
         private TextTable _text;
+
+        [UnityTest]
+        public IEnumerator PointerHoldCancelsOnReleaseExitDragFocusPauseAndRebind()
+        {
+            yield return Load();
+            string turn = Label("Turn").text;
+            string feedback = Label("Feedback").text;
+            foreach (string cancellation in new[]
+                { "release", "exit", "drag", "focus", "pause", "rebind", "second-pointer" })
+            {
+                HoldActionButton hold = Hold(Cards()[0]);
+                var pointer = Pointer(hold);
+                hold.OnPointerDown(pointer);
+                yield return new WaitForSecondsRealtime(0.12f);
+                Assert.That(Progress(hold), Is.GreaterThan(0), cancellation);
+                switch (cancellation)
+                {
+                    case "release": hold.OnPointerUp(pointer); break;
+                    case "exit": hold.OnPointerExit(pointer); break;
+                    case "drag":
+                        pointer.position += new Vector2(24, 0);
+                        hold.OnDrag(pointer);
+                        break;
+                    case "focus": hold.SendMessage("OnApplicationFocus", false); break;
+                    case "pause":
+                        Toggle pause = _view.GetComponentsInChildren<Toggle>().Single(item => item.name == "Pause");
+                        pause.isOn = true;
+                        pause.isOn = false;
+                        break;
+                    case "rebind":
+                        Button("Handbook").onClick.Invoke();
+                        Button("Handbook").onClick.Invoke();
+                        break;
+                    case "second-pointer":
+                        var other = Pointer(hold);
+                        other.pointerId = 7;
+                        hold.OnPointerDown(other);
+                        break;
+                }
+
+                yield return new WaitForSecondsRealtime(0.45f);
+                hold.OnPointerUp(pointer);
+                Assert.That(Progress(hold), Is.Zero, cancellation);
+                Assert.That(Label("Turn").text, Is.EqualTo(turn), cancellation);
+                Assert.That(Label("Feedback").text, Is.EqualTo(feedback), cancellation);
+                Assert.That(_view.Options.SelectedIds, Is.Empty, cancellation);
+            }
+
+            HoldActionButton action = Hold(Cards()[0]);
+            int confirmations = 0;
+            Action confirmed = () => confirmations++;
+            action.Confirmed += confirmed;
+            var completePointer = Pointer(action);
+            action.OnPointerDown(completePointer);
+            yield return new WaitForSecondsRealtime(0.55f);
+            Assert.That(confirmations, Is.EqualTo(1));
+            Assert.That(Cards(), Is.Empty);
+            Button("Advance").onClick.Invoke();
+            yield return new WaitForSecondsRealtime(0.5f);
+            Assert.That(confirmations, Is.EqualTo(1), "A held finger must not submit a newly rebound option.");
+            action.OnPointerUp(completePointer);
+            action.Confirmed -= confirmed;
+            Assert.That(Button("Use", true).gameObject.activeSelf, Is.False);
+            yield return SceneManager.LoadSceneAsync("Assets/Scenes/Main.unity");
+        }
+
+        private static PointerEventData Pointer(HoldActionButton hold) => new PointerEventData(EventSystem.current)
+        {
+            button = PointerEventData.InputButton.Left,
+            pointerId = 1,
+            position = RectTransformUtility.WorldToScreenPoint(null, hold.transform.position)
+        };
+
+        private static float Progress(HoldActionButton hold) => hold.GetComponentsInChildren<Image>(true)
+            .Single(item => item.name == "HoldProgress").fillAmount;
 
         [UnityTest]
         public IEnumerator FullRescueUsesActualSavedControlsAndSummaryBeforeInteraction()
@@ -152,14 +228,14 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return Load();
             ReachInspectionWithLockedApproach();
             OptionCardView card = Card("approach");
-            Assert.That(CardToggle(card, "Selection").interactable, Is.False);
+            Assert.That(Hold(card).interactable, Is.False);
             Assert.That(CardToggle(card, "Retention").isOn, Is.True);
             Assert.That(CardToggle(card, "Retention").interactable, Is.True);
             Assert.That(card.GetComponentsInChildren<Text>().Single(label => label.name == "Identity").text,
                 Is.EqualTo(Text("unavailable.AlreadyWithinReach")));
-            CardToggle(card, "Selection").isOn = true;
+            Submit(card);
             Assert.That(_view.Options.SelectedIds, Is.Empty);
-            Assert.That(Button("Use").interactable, Is.False);
+            Assert.That(Button("Use", true).gameObject.activeSelf, Is.False);
             string turn = Label("Turn").text;
             var pause = _view.GetComponentsInChildren<Toggle>().Single(toggle => toggle.name == "Pause");
             pause.isOn = true;
@@ -196,7 +272,8 @@ namespace HomelessPetHelper.Tests.PlayMode
             canvas.planeDistance = 10;
             var sizes = new[]
             {
-                new Vector2Int(540, 960), new Vector2Int(390, 844), new Vector2Int(768, 1024),
+                new Vector2Int(540, 960), new Vector2Int(320, 568), new Vector2Int(390, 844),
+                new Vector2Int(768, 1024),
                 new Vector2Int(540, 1080), new Vector2Int(540, 1170), new Vector2Int(540, 1200)
             };
             string folder = Path.GetFullPath("../../rescue-case-screenshots");
@@ -210,6 +287,24 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Canvas.ForceUpdateCanvases();
                 AssertControlsInBounds(canvas);
                 Capture(camera, target, Path.Combine(folder, $"case-{size.x}x{size.y}.png"));
+                if (size.x == 390)
+                {
+                    HoldActionButton hold = Hold(Cards()[0]);
+                    var pointer = Pointer(hold);
+                    hold.OnPointerDown(pointer);
+                    yield return new WaitForSecondsRealtime(0.14f);
+                    Capture(camera, target, Path.Combine(folder, "case-holding-390x844.png"));
+                    hold.OnPointerUp(pointer);
+                    var safe = (RectTransform)_view.GetComponentInChildren<SafeAreaView>().transform;
+                    safe.anchorMin = new Vector2(0.02f, 0.04f);
+                    safe.anchorMax = new Vector2(0.98f, 0.95f);
+                    Canvas.ForceUpdateCanvases();
+                    AssertControlsInBounds(canvas, safe);
+                    Capture(camera, target, Path.Combine(folder, "case-safe-390x844.png"));
+                    safe.anchorMin = Vector2.zero;
+                    safe.anchorMax = Vector2.one;
+                    Canvas.ForceUpdateCanvases();
+                }
                 Find("phone.reply");
                 Canvas.ForceUpdateCanvases();
                 AssertControlsInBounds(canvas);
@@ -230,6 +325,13 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Canvas.ForceUpdateCanvases();
                 AssertControlsInBounds(canvas);
                 Capture(camera, target, Path.Combine(folder, $"handbook-{size.x}x{size.y}.png"));
+                var details = _view.GetComponentsInChildren<ScrollRect>()
+                    .Single(item => item.name == "DetailsScroll");
+                Assert.That(details.content.rect.height, Is.GreaterThan(0));
+                AssertLabelsFit();
+                details.verticalNormalizedPosition = 0;
+                yield return null;
+                Capture(camera, target, Path.Combine(folder, $"handbook-end-{size.x}x{size.y}.png"));
                 Button("Handbook").onClick.Invoke();
                 Assert.That(EditorApplication.ExecuteMenuItem(
                     "Homeless Pet Helper/Preview/Open Stress Recovery Case"), Is.True);
@@ -324,8 +426,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Button("Handbook").onClick.Invoke();
                 Assert.That(CardToggle(Card(action), "Retention").isOn, Is.True);
                 Assert.That(Label("Turn").text, Is.EqualTo(turn));
-                CardToggle(Card(action), "Selection").isOn = true;
-                Button("Use").onClick.Invoke();
+                Submit(Card(action));
                 string feedback = Text("option." + action + ".feedback");
                 Assert.That(Label("Feedback").text, Is.EqualTo(feedback));
                 Assert.That(Label("Animal").text, Is.EqualTo(animal));
@@ -377,9 +478,8 @@ namespace HomelessPetHelper.Tests.PlayMode
         {
             Find(action);
             var card = Card(action);
-            card.GetComponentsInChildren<Toggle>().Single(toggle => toggle.name == "Selection").isOn = true;
-            Assert.That(Button("Use").interactable, Is.True);
-            Button("Use").onClick.Invoke();
+            Assert.That(Hold(card).interactable, Is.True);
+            Submit(card);
             Assert.That(Button("Use", true).interactable, Is.False);
             if (Button("Advance").GetComponentInChildren<Text>().text == Text("advance.Responding"))
             {
@@ -403,7 +503,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Button("Advance").onClick.Invoke();
             Assert.That(Label("Feedback").text, Is.EqualTo(Text("response.InspectingPlacement")));
             Button("Advance").onClick.Invoke();
-            Assert.That(CardToggle(Card("approach"), "Selection").interactable, Is.False);
+            Assert.That(Hold(Card("approach")).interactable, Is.False);
         }
 
         private OptionCardView Card(string action) => Cards().Single(item => item.GetComponentsInChildren<Text>()
@@ -433,18 +533,18 @@ namespace HomelessPetHelper.Tests.PlayMode
                 var available = fillers
                     .Select(id => Cards().FirstOrDefault(card => card.GetComponentsInChildren<Text>()
                         .Any(label => label.name == "Title" && MatchesAction(label.text, id))))
-                    .First(card => card != null && CardToggle(card, "Selection").interactable);
-                available.GetComponentsInChildren<Toggle>().Single(toggle => toggle.name == "Selection").isOn = true;
-                Button("Use").onClick.Invoke();
+                    .First(card => card != null && Hold(card).interactable);
+                Submit(available);
                 Button("Advance").onClick.Invoke();
             }
 
             Assert.Fail("Missing offered action: " + action);
         }
 
-        private void AssertControlsInBounds(Canvas canvas)
+        private void AssertControlsInBounds(Canvas canvas, RectTransform safe = null)
         {
-            Rect bounds = ((RectTransform)canvas.transform).rect;
+            RectTransform container = safe == null ? (RectTransform)canvas.transform : safe;
+            Rect bounds = container.rect;
             var corners = new Vector3[4];
             foreach (Button button in _view.GetComponentsInChildren<Button>())
             {
@@ -454,7 +554,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Assert.That(rect.rect.height, Is.LessThan(160), button.name);
                 foreach (Vector3 corner in corners)
                 {
-                    Vector3 local = canvas.transform.InverseTransformPoint(corner);
+                    Vector3 local = container.InverseTransformPoint(corner);
                     Assert.That(local.x, Is.InRange(bounds.xMin - 1, bounds.xMax + 1), button.name);
                     Assert.That(local.y, Is.InRange(bounds.yMin - 1, bounds.yMax + 1), button.name);
                 }
@@ -496,6 +596,8 @@ namespace HomelessPetHelper.Tests.PlayMode
 
         private string Text(string key, params object[] args) =>
             string.Format(_text.entries.Single(item => item.key == key).value, args);
+        private static HoldActionButton Hold(OptionCardView card) => card.GetComponentInChildren<HoldActionButton>();
+        private static void Submit(OptionCardView card) => Hold(card).OnSubmit(new BaseEventData(EventSystem.current));
         private OptionCardView[] Cards() => _view.Options.GetComponentsInChildren<OptionCardView>();
         private Button Button(string name, bool inactive = false) => _view.GetComponentsInChildren<Button>(inactive)
             .Single(button => button.name == name);

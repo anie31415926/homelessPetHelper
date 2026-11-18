@@ -31,6 +31,7 @@ namespace HomelessPetHelper.Editor.RescueCase
             _view = view != null ? view : throw new ArgumentNullException(nameof(view));
             _text = new OptionPreviewText(text);
             _content = content ?? throw new ArgumentNullException(nameof(content));
+            _view.SetHoldHint(_text.Get("holdHint"));
             _font = Font.CreateDynamicFontFromOSFont(new[] { "Microsoft YaHei", "Arial" }, 36);
             foreach (Text label in _view.GetComponentsInChildren<Text>(true))
             {

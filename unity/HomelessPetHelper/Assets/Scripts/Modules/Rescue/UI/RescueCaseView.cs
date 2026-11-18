@@ -17,6 +17,8 @@ namespace HomelessPetHelper.Modules.Rescue.UI
         [SerializeField] private Button _assistance;
         [SerializeField] private GameObject _choices;
         [SerializeField] private GameObject _use;
+        [SerializeField] private Text _holdHint;
+        [SerializeField] private ScrollRect _detailsScroll;
 
         public OptionPanelView Options => _options;
         public event Action AdvanceRequested;
@@ -45,9 +47,14 @@ namespace HomelessPetHelper.Modules.Rescue.UI
 
         public void SetDetails(string details)
         {
+            bool changed = _details.text != details;
             _details.text = details;
             _details.gameObject.SetActive(!string.IsNullOrEmpty(details));
+            _detailsScroll.gameObject.SetActive(!string.IsNullOrEmpty(details));
+            if (changed) _detailsScroll.verticalNormalizedPosition = 1;
         }
+
+        public void SetHoldHint(string hint) => _holdHint.text = hint;
 
         public void SetCommands(string advanceLabel, bool canAdvance, bool canAssist, bool choosing)
         {
@@ -56,7 +63,8 @@ namespace HomelessPetHelper.Modules.Rescue.UI
             _advance.interactable = canAdvance;
             _assistance.interactable = canAssist;
             _choices.SetActive(choosing);
-            _use.SetActive(choosing);
+            _use.SetActive(choosing && !_options.HoldToConfirm);
+            _holdHint.gameObject.SetActive(choosing && _options.HoldToConfirm);
         }
 
         private void OnAdvance() => AdvanceRequested?.Invoke();

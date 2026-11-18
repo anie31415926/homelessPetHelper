@@ -1,0 +1,19 @@
+{
+  "source": "master.png",
+  "output": "clean-master.png",
+  "operation": "Clone empty pavement from the left at identical y, feather boundary, no landmark relocation or enlargement.",
+  "patch": {
+    "x": 290,
+    "y": 335,
+    "width": 230,
+    "height": 230,
+    "sourceX": 42,
+    "feather": 18
+  },
+  "jpeg": {
+    "width": 768,
+    "height": 768,
+    "quality": 84,
+    "mozjpeg": true
+  }
+}

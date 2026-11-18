@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('Initialize', 'PreviewAssets', 'PreviewLayout', 'CaseAssets', 'CaseLayout',
+    [ValidateSet('Initialize', 'PreviewAssets', 'PreviewLayout', 'CaseAssets', 'CaseLayout', 'CaseCompactLayout',
+        'CaseCompactPolish',
         'StationAssets', 'StationArt', 'StationCareLayout', 'MapAssets', 'MapLayout', 'ResourceAudit',
         'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
     [string]$Task = 'EditMode',
@@ -80,6 +81,18 @@ if (-not $Graphics)
 
 switch ($Task)
 {
+    'CaseCompactPolish'
+    {
+        if (-not $Isolated) { throw 'CaseCompactPolish must run in an isolated saved-project snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod',
+            'HomelessPetHelper.Editor.RescueCase.RescueCompactLayoutUpgrade.RefineSavedPrefab')
+    }
+    'CaseCompactLayout'
+    {
+        if (-not $Isolated) { throw 'CaseCompactLayout must run in an isolated saved-project snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod',
+            'HomelessPetHelper.Editor.RescueCase.RescueCompactLayoutUpgrade.UpgradeSavedPrefab')
+    }
     'MapLayout'
     {
         if (-not $Isolated) { throw 'MapLayout must run in an isolated saved-project snapshot.' }

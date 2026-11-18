@@ -1,0 +1,158 @@
+{
+  "prompt": [
+    1,
+    "f71cf725-d799-442b-85c0-0e2f7b955449",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "rescue-layout-b-style (1).png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "prompt": "Edit this image. Remove the orange cat in the center COMPLETELY, including its ears, paws, tail, whiskers and shadow. Fill its entire area with the same empty light cool gray pavement as the surrounding floor. Keep the bicycle shelter, bicycle, roof, walls, bushes, colors, lines and composition unchanged. The central and lower area must be completely EMPTY pavement. No animal or person anywhere. No text or UI. Square 768 by 768 full-bleed background.",
+          "negative_prompt": "cat, dog, animal, person, UI, interface, button, text, watermark, 3D, photorealistic, clutter",
+          "resolution": 0,
+          "images.image_1": [
+            "4",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026111822,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "rescue-layout-b/backdrop"
+        }
+      }
+    },
+    {
+      "create_time": 1795001439538
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {},
+  "status": {
+    "status_str": "error",
+    "completed": false,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "f71cf725-d799-442b-85c0-0e2f7b955449",
+          "timestamp": 1795001439540
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6"
+          ],
+          "prompt_id": "f71cf725-d799-442b-85c0-0e2f7b955449",
+          "timestamp": 1795001439554
+        }
+      ],
+      [
+        "execution_interrupted",
+        {
+          "prompt_id": "f71cf725-d799-442b-85c0-0e2f7b955449",
+          "node_id": "7",
+          "node_type": "KSampler",
+          "executed": [
+            "5",
+            "4"
+          ],
+          "timestamp": 1795001715431
+        }
+      ]
+    ]
+  },
+  "meta": {}
+}

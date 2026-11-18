@@ -7,6 +7,7 @@
     { "key": "pause", "value": "暂停" },
     { "key": "restart", "value": "重新开始" },
     { "key": "use", "value": "使用行动" },
+    { "key": "holdHint", "value": "按住选项片刻确认，提前松手取消" },
     { "key": "handbook", "value": "救助手册" },
     { "key": "assistance", "value": "呼叫求援" },
     { "key": "paused", "value": "已暂停" },

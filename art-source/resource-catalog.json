@@ -197,7 +197,7 @@
       "status": "temporary",
       "loadTiming": "preview-only",
       "availability": "同期护理试做临时图；不批准正式资源、动作或解锁规则",
-      "use": "512×512 透明护理主图；两个猫样本共用基础图，脏污/梳理独立叠加，已接站内 Editor 试玩",
+      "use": "512×512 透明护理主图；两个猫样本共用基础图，脏污/梳理独立叠加，已接站内 Editor 试玩；B版 Web 与 Unity 救助案例复用同一 Sprite 为独立前景，不复制动物图，不修改原站内绑定",
       "plannedBytes": 153600,
       "files": [
         { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/StationCareArt/T_Station_CatTemporary.png" },
@@ -212,6 +212,39 @@
         "model": "qwen_image_2.1_int8_convrot.safetensors",
         "seed": 2026111802,
         "notes": "护理任务本地生成并接入；参考工程 T_Animal_CatOrange.png，完整提示/模型/seed见工作流。tools/station-care-art-process.mjs 去除 alpha<24 的透明杂点、缩至512并派生128遮罩，未裁边。light/dark 仅边缘检查图；正式画风、商用来源许可与微信仍待审。Mask.bytes 不计图片字节。"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "rescue.bicycle-shelter.layout-b",
+      "name": "B版布局停车棚观察区背景",
+      "module": "Rescue",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "仅供B版操作布局探索，不批准正式美术、玩法规则或首批资源",
+      "use": "768×768空停车棚背景；B版 Web 与 Unity 救助案例观察区复用，按视口等比裁切；动物、文案、控件独立叠加，放大不代表新增源细节",
+      "plannedBytes": 204800,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/RescueCaseArt/T_Rescue_ShelterTemporary.jpg" },
+        { "role": "reference", "path": "art-source/rescue-layout-b/clean-backdrop.jpg" },
+        { "role": "master", "path": "art-source/rescue-layout-b/clean-master.png" },
+        { "role": "reference", "path": "art-source/rescue-layout-b/master.png" },
+        { "role": "reference", "path": "art-source/rescue-layout-b/backdrop.jpg" },
+        { "role": "reference", "path": "art-source/rescue-layout-b/style-reference.png" },
+        { "role": "workflow", "path": "art-source/rescue-layout-b/workflow.json" },
+        { "role": "workflow", "path": "art-source/rescue-layout-b/empty-workflow.json" },
+        { "role": "workflow", "path": "art-source/rescue-layout-b/postprocess.json" },
+        { "role": "generation-record", "path": "art-source/rescue-layout-b/submission.json" },
+        { "role": "generation-record", "path": "art-source/rescue-layout-b/history.json" },
+        { "role": "generation-record", "path": "art-source/rescue-layout-b/empty-submission.json" },
+        { "role": "generation-record", "path": "art-source/rescue-layout-b/empty-history.json" }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI；tools/layout-b-art.mjs",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026111821,
+        "record": "art-source/rescue-layout-b/README.md",
+        "notes": "本地Qwen Image 2.1首图seed2026111821夹带参考猫；去猫重试2026111822初始化明显异常耗时，已定向取消，无成图。最终对首图空地做同高度铺面克隆与18px边缘羽化，完整坐标见postprocess.json；未移动地标，768² JPEG84，不放大。已人工查看无动物和烘焙UI，仍待用户观感、商用许可及目标链路审核。2026-11-18 用户允许接 Unity，按原文件字节导入 EditorScenes 的救助案例预览，不批准正式资源或首批；未进入 Main 场景依赖。"
       },
       "review": { "visual": "pending", "rights": "pending", "target": "pending" }
     }

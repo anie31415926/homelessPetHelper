@@ -22,6 +22,7 @@ namespace HomelessPetHelper.Modules.Rescue.UI
         [SerializeField] private ScrollRect _scroll;
         [SerializeField] private RectTransform _content;
         [SerializeField] private OptionCardView _cardPrefab;
+        [SerializeField] private bool _holdToConfirm;
 
         private readonly List<OptionCardView> _cards = new List<OptionCardView>();
         private readonly List<long> _selectedIds = new List<long>();
@@ -39,6 +40,7 @@ namespace HomelessPetHelper.Modules.Rescue.UI
         public event Action<long, bool> RetentionRequested;
 
         public IReadOnlyList<long> SelectedIds => _selectedIds.AsReadOnly();
+        public bool HoldToConfirm => _holdToConfirm;
 
         public void Open(int selectionLimit, int lockLimit)
         {
@@ -53,7 +55,8 @@ namespace HomelessPetHelper.Modules.Rescue.UI
             _pool = _pool ?? new ObjectPool<OptionCardView>(CreateCard, null, ReleaseCard, DestroyCard,
                 true, 3, 12);
             _isOpen = true;
-            _use.onClick.AddListener(OnUseRequested);
+            if (!_holdToConfirm) _use.onClick.AddListener(OnUseRequested);
+            _use.gameObject.SetActive(!_holdToConfirm);
             _restart.onClick.AddListener(OnRestartRequested);
             _pause.onValueChanged.AddListener(OnPauseRequested);
             gameObject.SetActive(true);
@@ -94,6 +97,7 @@ namespace HomelessPetHelper.Modules.Rescue.UI
                 card.Bind(options[index].InstanceId, titles[index], identity, font);
                 card.SelectionChanged += OnSelectionChanged;
                 card.RetentionChanged += OnRetentionRequested;
+                if (_holdToConfirm) card.HoldConfirmed += OnHoldConfirmed;
                 _cards.Add(card);
             }
 
@@ -169,7 +173,7 @@ namespace HomelessPetHelper.Modules.Rescue.UI
 
         private void OnSelectionChanged(long id, bool selected)
         {
-            if (!_interactable || _unavailableIds.Contains(id))
+            if (_holdToConfirm || !_interactable || _unavailableIds.Contains(id))
             {
                 RefreshControls();
                 return;
@@ -204,7 +208,20 @@ namespace HomelessPetHelper.Modules.Rescue.UI
                     lockedCount < _lockLimit, _interactable, !_unavailableIds.Contains(option.InstanceId));
             }
 
-            _use.interactable = _isOpen && _interactable && _selectedIds.Count > 0;
+            _use.interactable = !_holdToConfirm && _isOpen && _interactable && _selectedIds.Count > 0;
+        }
+
+        private void OnHoldConfirmed(long id)
+        {
+            if (!_holdToConfirm || !_isOpen || !_interactable || _unavailableIds.Contains(id)) return;
+            bool offered = false;
+            foreach (RescueOption option in _options) offered |= option.InstanceId == id;
+            if (!offered) return;
+            _selectedIds.Clear();
+            _selectedIds.Add(id);
+            _interactable = false;
+            RefreshControls();
+            UseRequested?.Invoke();
         }
 
         private bool HaveSameInstances(IReadOnlyList<RescueOption> options)

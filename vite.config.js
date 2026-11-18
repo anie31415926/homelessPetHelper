@@ -9,6 +9,7 @@ export default defineConfig({
         rescue: fileURLToPath(new URL('./rescue.html', import.meta.url)),
         playlab: fileURLToPath(new URL('./playlab.html', import.meta.url)),
         outing: fileURLToPath(new URL('./outing.html', import.meta.url)),
+        layoutB: fileURLToPath(new URL('./layout-b.html', import.meta.url)),
       },
     },
   },
