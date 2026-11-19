@@ -1,0 +1,178 @@
+{
+  "prompt": [
+    0,
+    "e88acb16-4d5b-4c4c-8608-563d0e7e38ec",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "pet-far-hind-edit-guide.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Image 1 is the EDIT TARGET, a partially visible far-side hind leg extracted from the exact kitten in image 2. Image 2 is a REFERENCE ONLY for the same kitten anatomy, apricot fur colours, ivory paw, thin peach outline and gentle soft shading. In image 1 the lower ivory paw and ankle already exist; the neutral GREY curved region above the ankle represents ONLY the missing upper leg previously hidden by the body. Replace ONLY that grey region with anatomically plausible upper hind leg fur that connects smoothly into the existing ankle and paw. Keep the exact image 1 canvas, placement, size, leg silhouette, existing lower paw and left-facing profile unchanged. Soft pale apricot upper thigh, subtle delicate orange stripes, white lower shin, warm thin outline. One complete bent hind leg, upper root at upper right and one paw at lower left, as already indicated by the target silhouette. Do not add a second paw, head, body, torso, tail, scarf, labels, shadows or background. Do not make a new independent character design. Transparent isolated leg. The upper leg should have a smooth rounded filled root for overlap under the body.",
+          "negative_prompt": "whole cat, head, torso, extra legs, extra paw, different paw, different layout, cut paw, realistic fur, black outline, lettering, watermark, checkerboard, grey unfinished area",
+          "resolution": 768,
+          "images.image_1": [
+            "4",
+            0
+          ],
+          "images.image_2": [
+            "10",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026111911,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "pet-layers/hidden-completion"
+        }
+      },
+      "10": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "pet-far-hind-original-cat.png"
+        }
+      }
+    },
+    {
+      "create_time": 1795080675956
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "hidden-completion_00001_.png",
+          "subfolder": "pet-layers",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "e88acb16-4d5b-4c4c-8608-563d0e7e38ec",
+          "timestamp": 1795080675957
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "e88acb16-4d5b-4c4c-8608-563d0e7e38ec",
+          "timestamp": 1795080675979
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "e88acb16-4d5b-4c4c-8608-563d0e7e38ec",
+          "timestamp": 1795080700325
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

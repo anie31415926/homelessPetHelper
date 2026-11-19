@@ -42,7 +42,8 @@ namespace HomelessPetHelper.Editor.CityMap
             {
                 if (!root.TryGetComponent(out CityMapView view)) continue;
                 _presenter = new CityMapPresenter(view,
-                    AssetDatabase.LoadAssetAtPath<TextAsset>(CityMapAssets.TextPath));
+                    AssetDatabase.LoadAssetAtPath<TextAsset>(CityMapAssets.TextPath),
+                    new CityMapPreviewConfig(AssetDatabase.LoadAssetAtPath<TextAsset>(CityMapAssets.ConfigPath)));
                 return;
             }
             throw new System.InvalidOperationException("Map scene has no saved map view.");

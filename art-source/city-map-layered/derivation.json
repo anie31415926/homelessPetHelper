@@ -1,0 +1,38 @@
+{
+  "source": "art-source/city-map-neighborhood/selected-master.png",
+  "width": 768,
+  "height": 1344,
+  "background": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/T_CityMap_Neighborhood.jpg",
+  "layers": [
+    {
+      "name": "Parking",
+      "asset": "T_CityPlace_Parking.png",
+      "bounds": [0, 722, 208, 190],
+      "polygon": [[0,860],[15,854],[15,786],[16,780],[119,731],[126,731],[185,750],[187,766],[180,774],[180,839],[198,846],[198,863],[74,904],[0,879]],
+      "grass": "Same-height robust lawn median"
+    },
+    {
+      "name": "Yard",
+      "asset": "T_CityPlace_Yard.png",
+      "bounds": [414, 396, 354, 211],
+      "polygon": [[418,433],[432,407],[466,400],[493,446],[575,400],[598,398],[749,454],[758,477],[758,546],[620,600],[420,521]],
+      "grass": "Same-height robust lawn median"
+    },
+    {
+      "name": "Porch",
+      "asset": "T_CityPlace_Porch.png",
+      "bounds": [514, 874, 250, 234],
+      "polygon": [[525,1018],[548,1007],[550,964],[547,954],[550,941],[581,895],[592,882],[603,883],[665,908],[687,914],[735,957],[738,970],[729,978],[729,1014],[741,1013],[751,1019],[757,1033],[754,1045],[758,1054],[751,1066],[738,1072],[730,1080],[712,1081],[698,1088],[680,1089],[663,1084],[643,1095],[626,1090],[614,1087],[598,1081],[584,1085],[573,1079],[568,1071],[546,1061],[523,1052],[521,1037]],
+      "grass": "Same-height robust lawn median"
+    },
+    {
+      "name": "Shelter",
+      "asset": "T_CityPlace_Shelter.png",
+      "bounds": [16, 936, 294, 218],
+      "polygon": [[32,988],[140,938],[158,940],[242,981],[271,977],[297,999],[302,1049],[286,1086],[250,1104],[178,1144],[24,1087]],
+      "grass": "Same-height robust lawn median"
+    }
+  ],
+  "method": "Source-pixel polygon cutouts with antialiased alpha and edge-connected lawn removal. Rebuild only landmark footprints and their cast shadows using same-height robust grass medians with a 14px fill margin and 6px outer feather. Four decorative houses stay in the terrain; adjacent yard/shelter trees travel with their layers. No model generation or resizing.",
+  "review": "Temporary assets; visual, rights and target-platform acceptance remain pending."
+}

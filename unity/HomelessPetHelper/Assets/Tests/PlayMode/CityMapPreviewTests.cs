@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HomelessPetHelper.Modules.Outing.UI;
@@ -9,6 +10,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
@@ -33,8 +35,18 @@ namespace HomelessPetHelper.Tests.PlayMode
         {
             yield return Load();
             string initialStatus = Label("Status").text;
+            Image terrain = Button("Parking").transform.parent.GetComponent<Image>();
+            Sprite terrainSprite = terrain.sprite;
+            Image[] artwork = new[] { Button("Parking").image, Button("Yard").image, Button("Porch").image };
+            Sprite[] originalSprites = artwork.Select(image => image.sprite).ToArray();
             Click("Yard");
             Click("Porch");
+            Assert.That(artwork.Select(image => image.sprite), Is.EqualTo(originalSprites));
+            Assert.That(artwork.All(image => image.color == Color.white), Is.True,
+                "Selection must highlight nameplates, not recolor the replaceable artwork.");
+            artwork[0].sprite = originalSprites[1];
+            Assert.That(terrain.sprite, Is.SameAs(terrainSprite));
+            artwork[0].sprite = originalSprites[0];
             Assert.That(Label("Status").text, Is.EqualTo(initialStatus));
             Assert.That(Label("Heading").text, Is.EqualTo(Copy("porch")));
             Toggle pause = _view.GetComponentInChildren<Toggle>();
@@ -97,8 +109,9 @@ namespace HomelessPetHelper.Tests.PlayMode
                 yield return null;
                 Canvas.ForceUpdateCanvases();
                 AssertLayout(canvas);
-                AssertMarkerAnchors();
+                AssertLayeredMarkers(camera);
                 Capture(camera, target, Path.Combine(folder, $"map-{size.x}x{size.y}.png"));
+                if (size == sizes[0]) CaptureTerrainOnly(camera, target, folder);
                 Click("Porch");
                 Click("Primary");
                 Canvas.ForceUpdateCanvases();
@@ -145,8 +158,10 @@ namespace HomelessPetHelper.Tests.PlayMode
             foreach (Selectable control in _view.GetComponentsInChildren<Selectable>())
             {
                 var rect = (RectTransform)control.transform;
+                bool isPlace = control.transform.parent.name == "MapArt";
+                Assert.That(rect.rect.width, Is.GreaterThanOrEqualTo(88), control.name);
                 Assert.That(rect.rect.height, Is.GreaterThanOrEqualTo(87), control.name);
-                Assert.That(rect.rect.height, Is.LessThanOrEqualTo(128), control.name);
+                if (!isPlace) Assert.That(rect.rect.height, Is.LessThanOrEqualTo(128), control.name);
                 rect.GetWorldCorners(corners);
                 foreach (Vector3 corner in corners)
                 {
@@ -163,17 +178,59 @@ namespace HomelessPetHelper.Tests.PlayMode
             }
         }
 
-        private void AssertMarkerAnchors()
+        private void AssertLayeredMarkers(Camera camera)
         {
-            var parking = (RectTransform)Button("Parking").transform;
-            var yard = (RectTransform)Button("Yard").transform;
-            var porch = (RectTransform)Button("Porch").transform;
-            Assert.That(parking.parent, Is.SameAs(yard.parent));
-            Assert.That(yard.parent, Is.SameAs(porch.parent));
-            Assert.That(parking.parent.GetComponent<Image>().sprite, Is.Not.Null);
-            Assert.That(parking.anchorMin, Is.EqualTo(new Vector2(0.16f, 0.405f)));
-            Assert.That(yard.anchorMin, Is.EqualTo(new Vector2(0.78f, 0.64f)));
-            Assert.That(porch.anchorMin, Is.EqualTo(new Vector2(0.81f, 0.245f)));
+            Transform terrain = Button("Parking").transform.parent;
+            Assert.That(terrain.GetComponent<Image>().sprite, Is.Not.Null);
+            foreach (Button button in _view.GetComponentsInChildren<Button>()
+                .Where(item => item.transform.parent == terrain))
+            {
+                Assert.That(button.transform.parent, Is.SameAs(terrain));
+                Assert.That(button.image.sprite, Is.Not.Null);
+                var rect = (RectTransform)button.transform;
+                Assert.That(rect.anchorMax.x, Is.GreaterThan(rect.anchorMin.x));
+                Assert.That(rect.anchorMax.y, Is.GreaterThan(rect.anchorMin.y));
+                Assert.That(rect.rect.width / rect.rect.height,
+                    Is.EqualTo(button.image.sprite.rect.width / button.image.sprite.rect.height).Within(0.01f));
+                Image plate = button.GetComponentsInChildren<Image>().Single(image => image.name == "Nameplate");
+                AssertHit(button, rect, camera);
+                AssertHit(button, plate.rectTransform, camera);
+            }
+        }
+
+        private void AssertHit(Button expected, RectTransform rect, Camera camera)
+        {
+            var pointer = new PointerEventData(EventSystem.current)
+            {
+                position = RectTransformUtility.WorldToScreenPoint(camera, rect.TransformPoint(rect.rect.center))
+            };
+            var hits = new List<RaycastResult>();
+            _view.GetComponent<GraphicRaycaster>().Raycast(pointer, hits);
+            Assert.That(hits.Count, Is.GreaterThan(0), expected.name);
+            Assert.That(hits[0].gameObject.GetComponentInParent<Button>(), Is.SameAs(expected), expected.name);
+        }
+
+        private void CaptureTerrainOnly(Camera camera, RenderTexture target, string folder)
+        {
+            Image terrain = Button("Parking").transform.parent.GetComponent<Image>();
+            Sprite original = terrain.sprite;
+            GameObject[] layers = terrain.GetComponentsInChildren<Image>()
+                .Where(image => image.transform.parent == terrain.transform)
+                .Select(image => image.gameObject).ToArray();
+            Assert.That(layers.Length, Is.GreaterThanOrEqualTo(_view.GetComponentsInChildren<Button>()
+                .Count(button => button.transform.parent == terrain.transform)));
+            try
+            {
+                foreach (GameObject layer in layers) layer.SetActive(false);
+                Canvas.ForceUpdateCanvases();
+                Assert.That(terrain.sprite, Is.SameAs(original));
+                Capture(camera, target, Path.Combine(folder, "map-terrain-only.png"));
+            }
+            finally
+            {
+                foreach (GameObject layer in layers) layer.SetActive(true);
+                Canvas.ForceUpdateCanvases();
+            }
         }
 
         private static void Capture(Camera camera, RenderTexture target, string path)

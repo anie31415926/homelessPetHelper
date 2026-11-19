@@ -1,0 +1,16 @@
+{
+  "source": "public/pet-mesh/cat-side.png",
+  "sourceSha256": "b1889c797e975a625a746ab530a4c7d9231a068ca387871b5306b2fedfd9b727",
+  "width": 452,
+  "height": 512,
+  "visiblePath": "M250 431 Q257 437 267 442 L282 453 Q287 456 278 463 Q267 470 265 479 L267 483 Q252 486 240 482 Q232 480 234 468 Q236 458 248 454 L255 450 Q248 440 250 431Z",
+  "completionPath": "M281 352 Q303 354 313 374 Q316 402 299 425 Q281 445 276 460 Q271 472 254 474 Q240 474 241 461 Q242 447 257 430 Q271 413 269 392 Q266 367 281 352Z",
+  "directPixels": 1384,
+  "completedPixels": 3618,
+  "donorMapping": {
+    "x": "round(281 + (x-255)*0.90)",
+    "y": "round(364 + (y-352)*0.92)"
+  },
+  "method": "Direct visible far hind paw cut to rear layer. Occluded upper portion completed with same-image near-hind donor, only under opaque foreground at rest. No new model generation, no original proportion change, no front-leg/body reconstruction.",
+  "provenance": "green=directly separated source pixels; coral=donor-completed hidden pixels"
+}

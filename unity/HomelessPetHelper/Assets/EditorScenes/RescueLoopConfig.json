@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "encounters": [
+    { "sceneTemplateId": "shed", "animalDefinitionId": "cat.shy", "activityId": "parking-healthy",
+      "routeFree": true }
+  ]
+}

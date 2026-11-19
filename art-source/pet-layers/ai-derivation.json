@@ -1,0 +1,21 @@
+{
+  "source": "public/pet-mesh/cat-side.png",
+  "sourceSha256": "b1889c797e975a625a746ab530a4c7d9231a068ca387871b5306b2fedfd9b727",
+  "model": "art-source/pet-layers/ai-completion-v2/master.png",
+  "modelSha256": "14601706acac130456449a006031248f61743082ab08f3c4545531d3a1d04147",
+  "output": "public/pet-layers/far-hind-ai.png",
+  "width": 452,
+  "height": 512,
+  "directPixels": 1384,
+  "generatedPixels": 3618,
+  "method": "Warm-colour model silhouette scanline-fit to original guide union; copy generated RGB only inside completion-mask; match generated join to nearby locked paw colours over 10px. Original visible RGBA copied verbatim. No model pixels used for foreground or visible paw.",
+  "targetExtent": [
+    352,
+    483
+  ],
+  "modelExtent": [
+    128,
+    855
+  ],
+  "limitations": "Post-decode compositing mask, not diffusion-level masked inpainting. Generated hidden anatomy is plausible invention, not recovered original pixels. One hind leg only."
+}

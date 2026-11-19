@@ -64,6 +64,12 @@ Play 后暂时只显示纯色背景；后续图片 UI 和场景表现会逐模�
 
 体验已完成选项功能：菜单 `Homeless Pet Helper > Preview > Open Option Whiteboard` 打开排除打包的白板场景再 Play。选择、保留、使用换轮、暂停与重开可操作；资源判断、可换图入口及样例/生产边界见[白板记录](白板UI与资源管理.md)。
 
+2026-11-19 新增共享闭环：`Homeless Pet Helper > Preview > Open Rescue Loop` 后 Play，空站外出、地图单车棚、真实救助、同一个体入站、检查/可选护理、再次外出。仅为独立 Editor 验证，Main 未接入，详情及当前边界见[闭环接入记录](救助闭环与动物数据接入.md)。原独立入口继续保留，后续编辑已保存 Prefab，不重复运行创建工具。
+
+2026-11-19 用户另行授权逆塔防 HTML 迁移：新增 `Homeless Pet Helper > Preview > Open Reverse Defense Trial` 后 Play。三路出兵/场上合体/双条暂停及守方加强已迁到独立纯C#规则和静态Prefab；不替代上述闭环、停车棚或Main。唯一配置源、试玩操作、测试/开发包和限制见[Unity逆塔防记录](逆塔防Unity试做记录.md)。`tools/unity.ps1` 新增隔离 `SiegeAssets`（仅首次创建、拒绝覆盖）、`SiegeLayout`（本轮已有Prefab局部编辑）和 `SiegeBuild`（只构建独立试玩）；常规迭代不重复运行创作工具。
+
+2026-11-19 动物动作样例接入：菜单 `Homeless Pet Helper > Preview > Open Animal Motion` 后 Play。原图/六动作/暂停/调速/进度/复位使用独立静态 Prefab 与原生蒙皮骨骼动画，不是序列帧，不改 Main 或闭环。8 张临时图逐字节沿用 HTML，当前仅直接切姿态，没有站坐卧过渡；大小、独立验证与制作命令见[接入与资源评估](动物动作Unity接入与资源评估.md)。不重复创建已有面板。
+
 仓库根目录执行，需 PowerShell 7、Node.js 与已授权的 Unity 编辑器。先关闭该工程的其他编辑器实例。
 
 若工程正在编辑器中打开，不必关闭用户应用：给以下命令加 `-Isolated`，在 `test-results/unity/` 的独立副本执行，避免同一工程双开。仅复制已保存的 Assets/Packages/ProjectSettings 和包缓存，不验证未保存的场景编辑；每次副本保留以便复核，不修改源工程设置。报告为 `<Task>-isolated.log/xml`，构建产物位于对应副本的 Builds；该目录已忽略，不入库。

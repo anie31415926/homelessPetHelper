@@ -20,14 +20,22 @@ namespace HomelessPetHelper.Editor.RescueCase
         private bool _disposed;
         private string _error = string.Empty;
         private CaseStart _start;
+        private readonly bool _integrated;
+
+        public event Action RescueCompleted;
+        public event Action ReturnRequested;
+        public event Action ExitRequested;
+        public event Action<bool> SuspensionChanged;
 
         public RescueCaseTrial Trial { get; private set; }
 
         public RescueCasePresenter(RescueCaseView view, TextAsset text, RescueOptionContentLoader content,
-            CaseStart start = CaseStart.Normal)
+            CaseStart start = CaseStart.Normal, RescueCaseTrial trial = null)
         {
             ValidateStart(start);
             _start = start;
+            _integrated = trial != null;
+            Trial = trial;
             _view = view != null ? view : throw new ArgumentNullException(nameof(view));
             _text = new OptionPreviewText(text);
             _content = content ?? throw new ArgumentNullException(nameof(content));
@@ -46,7 +54,8 @@ namespace HomelessPetHelper.Editor.RescueCase
             _view.HandbookRequested += ToggleHandbook;
             _view.AssistanceRequested += Assist;
             Application.focusChanged += Focus;
-            Restart();
+            if (_integrated) OpenTrial();
+            else Restart();
         }
 
         public void Dispose()
@@ -58,7 +67,7 @@ namespace HomelessPetHelper.Editor.RescueCase
 
             _disposed = true;
             Application.focusChanged -= Focus;
-            Trial.Dispose();
+            if (!_integrated) Trial.Dispose();
             if (_view != null)
             {
                 _view.Options.UseRequested -= Submit;
@@ -79,8 +88,18 @@ namespace HomelessPetHelper.Editor.RescueCase
 
         private void Restart()
         {
+            if (_integrated)
+            {
+                if (!Trial.IsSuspended) ExitRequested?.Invoke();
+                return;
+            }
             Trial?.Dispose();
             Trial = new RescueCaseTrial(Guid.NewGuid(), 1731, start: _start, catalog: _content.Catalog);
+            OpenTrial();
+        }
+
+        private void OpenTrial()
+        {
             _manualPause = false;
             _handbookOpen = false;
             _error = string.Empty;
@@ -123,6 +142,16 @@ namespace HomelessPetHelper.Editor.RescueCase
 
         private void Advance()
         {
+            if (_integrated && (Trial.Stage == CaseStage.Summary ||
+                Trial.Stage == CaseStage.AssistanceRequested))
+            {
+                if (!Trial.IsSuspended)
+                {
+                    if (Trial.IsRescueComplete) ReturnRequested?.Invoke();
+                    else ExitRequested?.Invoke();
+                }
+                return;
+            }
             CaseFailure failure;
             switch (Trial.Stage)
             {
@@ -154,6 +183,8 @@ namespace HomelessPetHelper.Editor.RescueCase
             }
 
             Report(failure);
+            if (_integrated && failure == CaseFailure.None && Trial.Stage == CaseStage.Summary)
+                RescueCompleted?.Invoke();
         }
 
         private void Assist()
@@ -183,12 +214,19 @@ namespace HomelessPetHelper.Editor.RescueCase
         private void ApplyPause()
         {
             Trial.SetSuspended(_manualPause || _focusPause);
+            SuspensionChanged?.Invoke(_manualPause || _focusPause);
             Render();
         }
 
         private void Report(CaseFailure failure)
         {
             _error = failure == CaseFailure.None ? string.Empty : _text.Get("failure." + failure);
+            Render();
+        }
+
+        public void ShowFeedback(string feedback)
+        {
+            _error = feedback ?? throw new ArgumentNullException(nameof(feedback));
             Render();
         }
 
@@ -230,6 +268,13 @@ namespace HomelessPetHelper.Editor.RescueCase
                 !Trial.IsSuspended && (Trial.Stage == CaseStage.Choosing || Trial.Stage == CaseStage.Responding ||
                     Trial.Stage == CaseStage.ReadyForRescue || Trial.Stage == CaseStage.Approachable),
                 Trial.Stage == CaseStage.Choosing);
+            if (_integrated)
+            {
+                _view.Options.SetSessionCommand(_text.Get("loop.return"), !Trial.IsSuspended &&
+                    !Trial.IsRescueComplete);
+                if (Trial.Stage == CaseStage.AssistanceRequested)
+                    _view.SetCommands(_text.Get("loop.return"), !Trial.IsSuspended, false, false);
+            }
         }
 
         private string GetFeedback(string responseKey)

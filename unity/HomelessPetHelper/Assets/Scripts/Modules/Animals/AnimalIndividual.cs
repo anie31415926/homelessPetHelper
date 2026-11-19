@@ -12,7 +12,8 @@ namespace HomelessPetHelper.Modules.Animals
         public AnimalSnapshot Current { get; private set; }
 
         public AnimalIndividual(Guid animalId, string definitionId,
-            AnimalDisposition disposition, AnimalHealthSnapshot health)
+            AnimalDisposition disposition, AnimalHealthSnapshot health, AnimalCarePermissions carePermissions = null,
+            AnimalCoatCondition coat = null)
         {
             if (animalId == Guid.Empty)
             {
@@ -33,7 +34,8 @@ namespace HomelessPetHelper.Modules.Animals
             {
                 throw new ArgumentNullException(nameof(health));
             }
-            Current = new AnimalSnapshot(animalId, definitionId, disposition, health);
+            Current = new AnimalSnapshot(animalId, definitionId, disposition, health,
+                carePermissions ?? new AnimalCarePermissions(false, false, false), coat);
         }
 
         /// <summary>Applies a rule result only to the expected latest snapshot; refusal changes nothing.</summary>
@@ -46,9 +48,28 @@ namespace HomelessPetHelper.Modules.Animals
 
             if (!ReferenceEquals(disposition, Current.Disposition))
             {
-                Current = new AnimalSnapshot(Current.AnimalId, Current.DefinitionId, disposition, Current.Health);
+                Current = new AnimalSnapshot(Current.AnimalId, Current.DefinitionId, disposition, Current.Health,
+                    Current.CarePermissions, Current.Coat);
             }
 
+            return true;
+        }
+
+        public bool TryApplyCarePermissions(AnimalSnapshot expected, AnimalCarePermissions permissions)
+        {
+            if (!ReferenceEquals(expected, Current) || permissions == null) return false;
+            if (!ReferenceEquals(permissions, Current.CarePermissions))
+                Current = new AnimalSnapshot(Current.AnimalId, Current.DefinitionId, Current.Disposition,
+                    Current.Health, permissions, Current.Coat);
+            return true;
+        }
+
+        public bool TryApplyCoatCondition(AnimalSnapshot expected, AnimalCoatCondition coat)
+        {
+            if (!ReferenceEquals(expected, Current) || coat == null) return false;
+            if (!ReferenceEquals(coat, Current.Coat))
+                Current = new AnimalSnapshot(Current.AnimalId, Current.DefinitionId, Current.Disposition,
+                    Current.Health, Current.CarePermissions, coat);
             return true;
         }
     }

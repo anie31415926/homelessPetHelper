@@ -1,0 +1,7 @@
+{
+  "name": "HomelessPetHelper.Editor.PetMotion",
+  "rootNamespace": "HomelessPetHelper.Editor.PetMotion",
+  "references": ["HomelessPetHelper.Modules.PetMotion", "HomelessPetHelper.Modules.Rescue.UI", "UnityEngine.UI"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": false
+}

@@ -39,19 +39,9 @@ namespace HomelessPetHelper.Editor.RescueCase
             Placement == CasePlacement.Inspecting ? CaseIntent.InspectPlacement :
             Emotion == CaseEmotion.Relaxed ? CaseIntent.Explore : CaseIntent.Observe;
 
-        internal CaseAnimal(CaseStart start)
+        internal CaseAnimal(CaseStart start, AnimalIndividual individual = null)
         {
-            Individual = new AnimalIndividual(Guid.NewGuid(), "cat.shy",
-                new AnimalDisposition(true, AnimalEmotion.Nervous, AnimalStress.None, AnimalBehavior.Watching),
-                new AnimalHealthSnapshot(Array.Empty<AnimalHealthProblem>()));
-            if (start == CaseStart.StressRecovery)
-            {
-                // This fixture represents an already-fed animal startled before this trial begins.
-                IsHungry = false;
-                Emotion = CaseEmotion.Startled;
-                Behavior = CaseBehavior.Retreating;
-                Stress = CaseStress.Acute;
-            }
+            Individual = individual ?? RescueCaseAnimalFixture.Create(start);
         }
 
         private void SetDisposition(bool? isHungry = null, AnimalEmotion? emotion = null,

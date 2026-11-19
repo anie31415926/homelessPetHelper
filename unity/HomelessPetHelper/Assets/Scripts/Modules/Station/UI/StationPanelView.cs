@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using HomelessPetHelper.Modules.Station.Cleaning;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +22,7 @@ namespace HomelessPetHelper.Modules.Station.UI
         [SerializeField] private Image _summaryAnimal;
         [SerializeField] private DirtSurfaceView _surface;
         [SerializeField] private StationAnimalView[] _animals;
+        [SerializeField] private RectTransform _rosterContent;
         [SerializeField] private Button _enter;
         [SerializeField] private Button _back;
         [SerializeField] private Button _check;
@@ -34,6 +37,7 @@ namespace HomelessPetHelper.Modules.Station.UI
         [SerializeField] private CanvasGroup _actions;
         private bool _focused = true;
         private bool _applicationPaused;
+        private readonly List<StationAnimalView> _extraAnimals = new List<StationAnimalView>();
 
         public event Action<StationCommand> CommandRequested;
         public event Action<int> AnimalSelected;
@@ -41,7 +45,29 @@ namespace HomelessPetHelper.Modules.Station.UI
         public event Action<bool> SuspensionChanged;
 
         public DirtSurfaceView Surface => _surface;
-        public StationAnimalView[] Animals => (StationAnimalView[])_animals.Clone();
+        public StationAnimalView[] Animals => _animals.Concat(_extraAnimals).ToArray();
+
+        public void EnsureRosterSize(int count)
+        {
+            if (count <= _animals.Length + _extraAnimals.Count) return;
+            if (_rosterContent == null)
+                throw new InvalidOperationException("An expandable station roster needs saved scroll content.");
+            while (count > _animals.Length + _extraAnimals.Count)
+            {
+                StationAnimalView cell = Instantiate(_animals[0], _rosterContent);
+                _extraAnimals.Add(cell);
+                if (isActiveAndEnabled) cell.Selected += Select;
+            }
+        }
+
+        public void SetSessionCommand(string label, bool interactive)
+        {
+            _restart.GetComponentInChildren<Text>().text = label;
+            _restart.interactable = interactive;
+        }
+
+        public void SetHistoryAvailable(bool available) => _history.interactable = available;
+        public void SetQuietSpaceAvailable(bool available) => _quietSpace.gameObject.SetActive(available);
 
         public void ApplyFont(Font font)
         {
@@ -74,8 +100,8 @@ namespace HomelessPetHelper.Modules.Station.UI
 
         public void SetFeedback(string feedback) => _feedback.text = feedback;
 
-        public void ShowDetail(string name, string condition, string progress, Sprite art, DirtField dirt,
-            bool cleaning, bool canFinish, bool checkedHealth, bool suspended, DirtField fur = null)
+        public void ShowDetail(string name, string condition, string progress, Sprite art, IReadOnlyDirtField dirt,
+            bool cleaning, bool canFinish, StationCareAvailability care, bool suspended, IReadOnlyDirtField fur = null)
         {
             _name.text = name;
             _condition.text = condition;
@@ -90,13 +116,14 @@ namespace HomelessPetHelper.Modules.Station.UI
             _groom.gameObject.SetActive(true);
             _quietSpace.gameObject.SetActive(true);
             _quietSpace.interactable = !cleaning;
-            _clean.interactable = checkedHealth;
-            _groom.interactable = checkedHealth;
+            _clean.interactable = care.CanWash && !suspended;
+            _groom.interactable = care.CanGroom && !suspended;
             _finish.gameObject.SetActive(true);
             _finish.interactable = cleaning && canFinish && !suspended;
         }
 
-        public void RefreshDirt(Sprite art, DirtField dirt, string progress, bool canFinish, DirtField fur = null)
+        public void RefreshDirt(Sprite art, IReadOnlyDirtField dirt, string progress, bool canFinish,
+            IReadOnlyDirtField fur = null)
         {
             _surface.Refresh(art, dirt, fur);
             _progress.text = progress;
@@ -124,7 +151,7 @@ namespace HomelessPetHelper.Modules.Station.UI
             _restart.onClick.AddListener(Restart);
             _pause.onValueChanged.AddListener(Pause);
             _surface.StrokeRequested += Stroke;
-            foreach (StationAnimalView animal in _animals)
+            foreach (StationAnimalView animal in Animals)
             {
                 animal.Selected += Select;
             }
@@ -145,7 +172,7 @@ namespace HomelessPetHelper.Modules.Station.UI
             _restart.onClick.RemoveListener(Restart);
             _pause.onValueChanged.RemoveListener(Pause);
             _surface.StrokeRequested -= Stroke;
-            foreach (StationAnimalView animal in _animals)
+            foreach (StationAnimalView animal in Animals)
             {
                 animal.Selected -= Select;
             }

@@ -32,11 +32,12 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(mask[0], Is.Zero);
         }
 
-        [Test]
-        public void AllStationBindingsAreSavedAndSceneIsExcludedFromBuild()
+        [TestCase("Panel_StationWhiteboard", false)]
+        [TestCase("Panel_StationLoop", true)]
+        public void AllStationBindingsAreSavedAndSceneIsExcludedFromBuild(string panel, bool expandable)
         {
             var root = AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Prefabs/Panels/Panel_StationWhiteboard.prefab");
+                "Assets/Prefabs/Panels/" + panel + ".prefab");
             Assert.That(root, Is.Not.Null);
             foreach (Transform node in root.GetComponentsInChildren<Transform>(true))
             {
@@ -53,6 +54,12 @@ namespace HomelessPetHelper.Tests.EditMode
                 SerializedProperty field = new SerializedObject(view).GetIterator();
                 while (field.NextVisible(true))
                 {
+                    if (view is StationPanelView && field.propertyPath == "_rosterContent")
+                    {
+                        Assert.That(field.objectReferenceValue != null, Is.EqualTo(expandable),
+                            "Only the expandable loop panel owns saved scroll content.");
+                        continue;
+                    }
                     if (field.propertyType == SerializedPropertyType.ObjectReference)
                     {
                         Assert.That(field.objectReferenceValue, Is.Not.Null, view.name + ": " + field.propertyPath);

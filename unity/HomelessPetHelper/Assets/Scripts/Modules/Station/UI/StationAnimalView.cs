@@ -15,8 +15,8 @@ namespace HomelessPetHelper.Modules.Station.UI
 
         public event Action<int> Selected;
 
-        public void Refresh(int index, string name, string status, Sprite art, DirtField dirt, bool interactive,
-            DirtField fur = null)
+        public void Refresh(int index, string name, string status, Sprite art, IReadOnlyDirtField dirt,
+            bool interactive, IReadOnlyDirtField fur = null)
         {
             _index = index;
             _name.text = name;

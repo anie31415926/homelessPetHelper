@@ -1,0 +1,7 @@
+{
+  "name": "HomelessPetHelper.Tests.Siege.PlayMode",
+  "rootNamespace": "HomelessPetHelper.Tests.Siege.PlayMode",
+  "references": ["HomelessPetHelper.Modules.Siege", "HomelessPetHelper.Modules.Siege.UI", "HomelessPetHelper.Modules.Rescue.UI", "UnityEngine.UI"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}

@@ -1,0 +1,130 @@
+{
+  "kind": "hind",
+  "source": "public/pet-mesh/cat-side.png",
+  "crop": {
+    "left": 216,
+    "top": 295,
+    "width": 153,
+    "height": 207
+  },
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "pet-complete-hind-guide.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Image 1 is an EDIT TARGET for the SAME kitten as image 2. Image 2 is identity, anatomy, proportion and paint-style REFERENCE ONLY. One entire FAR-SIDE HIND LEG, beginning with a broad rounded hip-root and thigh at the top, a forward-left knee, a backward-right hock bend, then the full metatarsus and ivory paw pointing left. Keep the knee-to-hock zigzag indicated in image 1. Not a front leg, not a short shin, and not a single sausage-shaped limb. The thigh is broad because it normally hides under the kitten body. The grey silhouette marks the entire missing/occluded surface. Existing ivory paw and narrow visible slivers belong to the original kitten: keep their scale and placement. Paint the grey area to complete this ONE connected entire limb, including the hidden side of the paw, without changing its silhouette or the first image canvas. Soft pale apricot upper fur, ivory lower fur, delicate peach outline, subtle watercolor-like shading and light orange stripes like the reference. Complete rounded shoulder or hip root with overlap margin; no cut flat stump, no exposed cross-section. Preserve EXACT image 1 footprint, root location, joint bends and paw placement. Keep the solid pale green background. Do not add a torso, another leg, head, scarf, tail, shadow, text or labels. No realistic fur or thick black contours. This must be a complete anatomical limb, not a foot with a small upper patch.",
+        "negative_prompt": "torso, head, scarf, tail, extra legs, extra paw, missing shoulder, amputated stump, short ankle patch, grey unfinished area, text, watermark, checkerboard, black outline, realistic anatomy rendering",
+        "resolution": 768,
+        "images.image_1": [
+          "4",
+          0
+        ],
+        "images.image_2": [
+          "10",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026111922,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "pet-limbs/complete-hind"
+      }
+    },
+    "10": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "pet-complete-limbs-original.png"
+      }
+    }
+  },
+  "method": "Local two-reference complete-occluded-limb edit. Visible original cores are locked during postprocessing, not by diffusion-level masking."
+}

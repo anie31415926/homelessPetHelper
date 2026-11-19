@@ -1,0 +1,20 @@
+{
+  "source": "art-source/pet-motion/side-rest/v2/master.png",
+  "sourceSha256": "2aad16fec1af3487c720a312e365aac2f3c5ad5608a6cbdc55291ea6f43366f2",
+  "crop": {
+    "left": 12,
+    "top": 235,
+    "width": 691,
+    "height": 403
+  },
+  "placement": {
+    "left": 21,
+    "top": 259
+  },
+  "scaled": {
+    "width": 410,
+    "height": 239
+  },
+  "output": "public/pet-motion/side-rest.png",
+  "operation": "Cyan chroma matte: boundary plus strong-chroma>40 enclosed seeds, flood min(G-R,B-R)>6, smooth alpha6..40; narrow edge RGB decontamination against175/231/232. Whole animal cropped uniformly to fit410x260 then placed on452x512, bottom498. No detached parts, no original standing-image overwrite."
+}

@@ -1,0 +1,62 @@
+{
+    "COLS": 5,
+    "ROWS": 4,
+    "TYPES": ["food", "space", "play", "home"],
+    "TOKENS": {
+        "food": { "name": "食物", "verb": "开饭了", "icon": "Fish", "color": "#b86568" },
+        "space": { "name": "空间", "verb": "松口气", "icon": "Leaf", "color": "#337c62" },
+        "play": { "name": "玩具", "verb": "有点意思", "icon": "Volleyball", "color": "#537e9e" },
+        "home": { "name": "安置", "verb": "自己看看", "icon": "House", "color": "#a77b2a" },
+        "noise": { "name": "干扰", "verb": "吵闹", "icon": "Volume2", "color": "#677079" }
+    },
+    "MODES": {
+        "read": { "name": "读招交锋", "short": "读招", "note": "顺着当前倾向，额外获得 2 点；手牌改造局面。" },
+        "chain": { "name": "顺势连锁", "short": "连锁", "note": "落下后连成 5 个会自动接消，最多 4 段。" },
+        "change": { "name": "现场变局", "short": "变局", "note": "每两手发生一次预告变化；可提前留牌应对。" }
+    },
+    "PROFILES": [
+        { "id": "snacker", "name": "饭点巡逻员", "kind": "cat", "goals": { "food": 13, "space": 9 },
+            "home": 8, "affinity": "food", "trait": "食物四连后，下次空间额外 +2", "quirk": "先顾肚子，再顾距离", "start": "它闻了闻食物，又退回了半步。" },
+        { "id": "explorer", "name": "纸箱调查员", "kind": "cat", "goals": { "space": 13, "play": 9 },
+            "home": 7, "affinity": "home", "trait": "提前熟悉入口，之后接受 +3", "quirk": "喜欢自己检查，不爱被催", "start": "它绕着安置处走，暂时不看你。" },
+        { "id": "player", "name": "球先归我", "kind": "dog", "goals": { "play": 14, "food": 8 },
+            "home": 8, "affinity": "play", "trait": "顺意的玩具四连，一次默契 +2", "quirk": "玩得投入时，先别催它走", "start": "它看着你的包。准确地说，是包里的球。" },
+        { "id": "watcher", "name": "保持一点距离", "kind": "dog", "goals": { "space": 15, "food": 7 },
+            "home": 7, "affinity": "space", "trait": "带走相邻干扰，每个安心 +2", "quirk": "安静的大空地比热闹更有用", "start": "它愿意停留，但仍留着自己的退路。" },
+        { "id": "curious", "name": "路过也要看看", "kind": "cat", "goals": { "play": 11, "space": 10 },
+            "home": 9, "affinity": "play", "trait": "与上一组不同类，额外推进 +2", "quirk": "有好奇心，但不会一直陪玩", "start": "它向前探了一步，又去看旁边的纸袋。" },
+        { "id": "traveler", "name": "今天走了很远", "kind": "dog", "goals": { "food": 11, "space": 12 },
+            "home": 6, "affinity": "home", "trait": "顺意的二到三连，额外推进 +2", "quirk": "吃点东西，再找个安静地方", "start": "它在阴影里坐下，终于不再四处张望。" }
+    ],
+    "INTENTS": {
+        "food": { "title": "鼻子先动了", "cue": "它正留意食物。", "thought": "先解决一下晚饭。" },
+        "space": { "title": "先别靠太近", "cue": "它想要一些安静空间。", "thought": "你站那儿就挺好。" },
+        "play": { "title": "注意力被勾走", "cue": "它开始盯着小玩具。", "thought": "那个，能动一下吗？" },
+        "home": { "title": "正在检查入口", "cue": "它想自己看看安置处。", "thought": "我先看看，不算答应。" }
+    },
+    "EVENTS": {
+        "quiet": { "name": "路人散去", "detail": "2 个干扰变为空间；没有干扰则增加空间机会。" },
+        "noise": { "name": "小推车经过", "detail": "2 格变成干扰，可用“请大家让一让”提前挡住。" },
+        "breeze": { "name": "风吹动纸袋", "detail": "中间一行向右移动一格，不改已有进展。" },
+        "interest": { "name": "球滚到旁边", "detail": "3 格变成玩具，相邻机会重新组合。" },
+        "opening": { "name": "安置处空下来", "detail": "3 格变成安置，出现新的检查机会。" }
+    },
+    "CARDS": {
+        "food": { "title": "放点吃的", "icon": "Fish", "type": "food", "detail": "把两格接到最大的食物组旁。", "count": 2 },
+        "play": { "title": "借个球玩玩", "icon": "Volleyball", "type": "play", "detail": "把两格接到最大的玩具组旁。", "count": 2 },
+        "space": { "title": "往后站一点", "icon": "Footprints", "type": "space", "detail": "把两格接到最大的空间组旁。", "count": 2 },
+        "home": { "title": "把安置处敞开", "icon": "House", "type": "home", "detail": "把两格接到最大的安置组旁。", "count": 2 },
+        "quiet": { "title": "请大家让一让", "icon": "VolumeX", "detail": "干扰变为空间，并挡住下一次小推车。" },
+        "gather": { "title": "顺着它的意思", "icon": "Move", "detail": "把两格变成它当前关注的机会。", "count": 2 },
+        "shuffle": { "title": "换个站位看看", "icon": "Shuffle", "detail": "重排当前棋盘，保留全部已获进展。" },
+        "reply": { "title": "回消息：马上就好", "icon": "MessageCircle", "flavor": true, "detail": "花一手回消息；动物照样有自己的打算。" },
+        "photo": { "title": "拍一张，先不发", "icon": "Camera", "flavor": true, "detail": "花一手拍照；不增加安置或互动进展。" }
+    },
+    "GOAL_NAMES": { "food": "吃饱一点", "space": "安心停留", "play": "自愿互动", "home": "接受安置" },
+    "RESPONSES": {
+        "food": ["它开始低头吃东西。", "这次，它没有叼着食物退远。"],
+        "space": ["它的身体松了一些，留在了原处。", "你没催它，它也没再后退。"],
+        "play": ["它伸爪碰了一下，决定再碰一下。", "它追上了玩具，暂时忘了保持严肃。"],
+        "home": ["它又往安置处走近了一点。", "它在入口嗅了嗅，没有立刻退开。"]
+    }
+}

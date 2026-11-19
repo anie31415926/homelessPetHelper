@@ -5,7 +5,7 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
     /// <summary>Cumulative effective work, not pointer time. Retains sub-minute work across exits.</summary>
     public sealed class CareWorkMeter
     {
-        private readonly DirtField _field;
+        private readonly IReadOnlyDirtField _field;
         private readonly int _fullDurationMinutes;
         private readonly int _completionPercent;
         private long _settledMinutes;
@@ -23,7 +23,7 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
             }
         }
 
-        public CareWorkMeter(DirtField field, int fullDurationMinutes, int completionPercent = 97)
+        public CareWorkMeter(IReadOnlyDirtField field, int fullDurationMinutes, int completionPercent = 97)
         {
             _field = field ?? throw new ArgumentNullException(nameof(field));
             if (fullDurationMinutes < 1 || fullDurationMinutes > 1440)

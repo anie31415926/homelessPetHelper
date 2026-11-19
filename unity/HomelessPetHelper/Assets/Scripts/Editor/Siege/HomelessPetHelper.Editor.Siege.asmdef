@@ -1,0 +1,7 @@
+{
+  "name": "HomelessPetHelper.Editor.Siege",
+  "rootNamespace": "HomelessPetHelper.Editor.Siege",
+  "references": ["HomelessPetHelper.Modules.Siege", "HomelessPetHelper.Modules.Siege.UI", "HomelessPetHelper.Modules.Rescue.UI", "UnityEngine.UI"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": false
+}

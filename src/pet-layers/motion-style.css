@@ -1,0 +1,5 @@
+.motion-app .settings-row { gap: 8px; }
+.motion-app .settings-row label { white-space: nowrap; gap: 4px; }
+.motion-app .settings-row > label:not(.amount) { flex-shrink: 0; }
+.motion-app .motion-view-tools { display: flex; flex: 0 0 auto; gap: 2px; }
+.motion-app .motion-view-tools .icon-button { width: 36px; height: 36px; flex-basis: 36px; }

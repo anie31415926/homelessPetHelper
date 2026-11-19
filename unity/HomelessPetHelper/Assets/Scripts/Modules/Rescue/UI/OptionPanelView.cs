@@ -42,6 +42,12 @@ namespace HomelessPetHelper.Modules.Rescue.UI
         public IReadOnlyList<long> SelectedIds => _selectedIds.AsReadOnly();
         public bool HoldToConfirm => _holdToConfirm;
 
+        public void SetSessionCommand(string label, bool interactive)
+        {
+            _restart.GetComponentInChildren<Text>().text = label;
+            _restart.interactable = interactive;
+        }
+
         public void Open(int selectionLimit, int lockLimit)
         {
             if (selectionLimit <= 0 || lockLimit < 0)

@@ -1,0 +1,12 @@
+{
+  "source": "art-source/pet-rig/turnaround-master.png",
+  "sourceSha256": "a8fc5c436487b0db98a11037e69a252233190ccd4cde3d4fdd99e7351f6efced",
+  "crop": {
+    "left": 660,
+    "top": 60,
+    "width": 600,
+    "height": 680
+  },
+  "operation": "One whole animal crop. Boundary-connected min RGB >=243 background removal, opacity normalized, uniform resize to height512, PNG256/dither0.5. No part cutting, compositing, inpainting, new generation or relative pixel relocation.",
+  "output": "public/pet-mesh/cat-side.png"
+}

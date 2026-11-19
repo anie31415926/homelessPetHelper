@@ -12,7 +12,7 @@ namespace HomelessPetHelper.Editor.RescueCase
     /// Editor-only trial, not production rescue rules. All commands run synchronously on the owner thread.
     /// Rejected commands preserve animal, supplies, hand and stage. No saves, rewards or world-time effects.
     /// </summary>
-    public sealed class RescueCaseTrial : IDisposable, IRescueAnimalSource
+    public sealed class RescueCaseTrial : IRescueActivity
     {
         // Field context and rules refer to one shared individual, including summary and station.
         private readonly CaseAnimal _animal;
@@ -38,22 +38,26 @@ namespace HomelessPetHelper.Editor.RescueCase
         public CaseStart Start { get; }
         public Guid SessionId => CurrentTurn.SessionId;
         public AnimalIndividual Individual => _animal.Individual;
+        public bool IsAssistanceRequested => Stage == CaseStage.AssistanceRequested;
+        public bool IsClosed => Stage == CaseStage.Closed;
         public bool IsRescueComplete => !IsSuspended &&
             (Stage == CaseStage.Summary || Stage == CaseStage.Station);
         public StationReturnSummary ReturnSummary { get; private set; }
         public bool CanLeaveStation => Stage == CaseStage.Station &&
+            _station != null &&
             _station.CanCompleteNecessaryCare(_stationSessionId, Individual.Current.AnimalId, out _);
         public StationCareSnapshot StationCare
         {
             get
             {
+                if (_station == null) return null;
                 _station.TryGetCareSnapshot(Individual.Current.AnimalId, out var care);
                 return care;
             }
         }
 
         public RescueCaseTrial(Guid sessionId, int seed, int foodCount = 2, CaseStart start = CaseStart.Normal,
-            RescueOptionCatalog catalog = null)
+            RescueOptionCatalog catalog = null, bool standaloneStation = true, AnimalIndividual individual = null)
         {
             if (foodCount < 0)
             {
@@ -68,8 +72,8 @@ namespace HomelessPetHelper.Editor.RescueCase
             Catalog = catalog ?? CaseActions.CreateSampleCatalog();
             CaseActions.ValidateCatalog(Catalog);
             _hand = new RescueOptionHand(sessionId, _rules);
-            _animal = new CaseAnimal(start);
-            _station = new RescueStation(_stationSessionId, 1);
+            _animal = new CaseAnimal(start, individual);
+            _station = standaloneStation ? new RescueStation(_stationSessionId, 1) : null;
             _random = new Random(seed);
             Start = start;
             FoodRemaining = foodCount;
@@ -79,13 +83,13 @@ namespace HomelessPetHelper.Editor.RescueCase
         public void SetSuspended(bool suspended)
         {
             _hand.SetSuspended(suspended);
-            _station.SetSuspended(suspended);
+            _station?.SetSuspended(suspended);
         }
 
         public void Dispose()
         {
             _hand.Close();
-            _station.Close();
+            _station?.Close();
             Stage = CaseStage.Closed;
         }
 
@@ -197,8 +201,15 @@ namespace HomelessPetHelper.Editor.RescueCase
                 return false;
             }
 
+            if (_station == null)
+            {
+                failure = CaseFailure.StationRejected;
+                return false;
+            }
+
             var arrival = new StationAnimalIntake(SessionId, Individual,
-                new AnimalIntakeCondition(StationHealthAssessment.Unchecked, 0, Array.Empty<string>()));
+                new AnimalIntakeCondition(StationHealthAssessment.Unchecked,
+                    Individual.Current.Coat.Dirtiness, Array.Empty<string>()));
             if (!_station.TryReceive(_stationSessionId, arrival, out var summary, out _))
             {
                 failure = CaseFailure.StationRejected;

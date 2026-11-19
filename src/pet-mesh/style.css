@@ -1,0 +1,12 @@
+.mesh-app .mesh-canvas { position: absolute; inset: 0; }
+.mesh-app .stage-top, .mesh-app .stage-tools { z-index: 1; }
+.mesh-app .stage-tools { top: 64px; bottom: auto; right: 16px; }
+.mesh-app a.icon-button { color: inherit; text-decoration: none; }
+.mesh-app a.icon-button:hover { background: #e0ebe4; }
+.mesh-app .settings-row { gap: 12px; margin: 0 0 12px; padding-top: 0; }
+.mesh-app .amount { flex: 1; min-width: 76px; white-space: nowrap; }
+.mesh-app .amount input { min-width: 30px; flex: 1; width: 0; }
+.mesh-app .settings-row > .icon-button { flex-shrink: 0; }
+.mesh-app button:disabled, .mesh-app select:disabled, .mesh-app input:disabled { opacity: .42; cursor: default; }
+.mesh-app .stage-message { z-index: 2; }
+@media(max-width: 440px) { .mesh-app .settings-row { gap: 8px; } .mesh-app .amount { gap: 4px; } .mesh-app .settings-row > .icon-button { width: 36px; flex-basis: 36px; } }

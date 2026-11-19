@@ -1,0 +1,108 @@
+{
+  "reference": "art-source/pet-rig/turnaround-master.png",
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "pet-rig-front-body-reference.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "Soft healing storybook illustration matching the reference kitten: pale apricot orange and ivory white coat, large glossy warm brown eyes, delicate warm peach outlines, subtle watercolor-like soft shading, tiny pink nose, small pink scarf. Not flat geometric vector, not thick black outline, not dot eyes. All parts belong to ONE identical kitten. No text, no labels, no watermark, no border, no checkerboard, no ground or shadow. Genuine transparent alpha background. Render exactly ONE detached animal TORSO sprite for a cutout puppet. Strict front view: a vertically oval fluffy kitten chest and belly, white central belly, orange sides. Pink scarf around the narrow top neck. Symmetric upright pear-shaped body. Completely REMOVE head, face, eyes, ears, all legs, all paws and tail. Only a smooth continuous torso shape, no limb stumps, no holes, no joints drawn. Complete the fur under removed limbs. A single isolated cutout body, centered, generous blank margin. Do not draw any other parts. This is a detached component, NOT a whole animal.",
+        "negative_prompt": "text, watermark, UI frames, checkerboard, background scene, extra limbs, duplicated parts, photorealism, 3d render, thick black outline, dot eyes",
+        "resolution": 1024,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026111904,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "pet-rig/front-body"
+      }
+    }
+  }
+}

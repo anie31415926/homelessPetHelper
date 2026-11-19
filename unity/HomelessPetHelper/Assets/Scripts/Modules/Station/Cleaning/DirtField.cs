@@ -3,7 +3,7 @@ using System;
 namespace HomelessPetHelper.Modules.Station.Cleaning
 {
     /// <summary>Owned, bounded dirt samples. Coordinates use a bottom-left origin, independent of the UI.</summary>
-    public sealed class DirtField
+    public sealed class DirtField : IReadOnlyDirtField
     {
         private readonly byte[] _samples;
         private readonly byte[] _allowedMask;
@@ -40,13 +40,26 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
             InitialAmount = RemainingAmount;
         }
 
+        private DirtField(DirtField source)
+        {
+            Width = source.Width;
+            Height = source.Height;
+            InitialAmount = source.InitialAmount;
+            RemainingAmount = source.RemainingAmount;
+            _samples = (byte[])source._samples.Clone();
+            _allowedMask = (byte[])source._allowedMask.Clone();
+        }
+
+        internal DirtField Copy() => new DirtField(this);
+        internal IReadOnlyDirtField AsReadOnly() => new ReadOnlyView(this);
+
         public byte Sample(int index)
         {
             return _samples[index];
         }
 
         /// <summary>Invalid brushes are rejected without mutation. A brush can only remove existing dirt.</summary>
-        public bool TryErase(float x, float y, float radius, int strength, DirtField blocker = null)
+        public bool TryErase(float x, float y, float radius, int strength, IReadOnlyDirtField blocker = null)
         {
             if (!IsFinite(x) || !IsFinite(y) || !IsFinite(radius) || x < 0 || x > 1 || y < 0 || y > 1 ||
                 radius <= 0 || radius > 1 || strength < 1 || strength > 255)
@@ -120,6 +133,21 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
         private static bool IsFinite(float value)
         {
             return !float.IsNaN(value) && !float.IsInfinity(value);
+        }
+
+        private sealed class ReadOnlyView : IReadOnlyDirtField
+        {
+            private readonly DirtField _owner;
+
+            internal ReadOnlyView(DirtField owner) => _owner = owner;
+            public int Width => _owner.Width;
+            public int Height => _owner.Height;
+            public long InitialAmount => _owner.InitialAmount;
+            public long RemainingAmount => _owner.RemainingAmount;
+            public double RemovedFraction => _owner.RemovedFraction;
+            public byte Sample(int index) => _owner.Sample(index);
+            public bool ContainsCoat(float x, float y) => _owner.ContainsCoat(x, y);
+            public bool HasResidueAt(float x, float y) => _owner.HasResidueAt(x, y);
         }
     }
 }

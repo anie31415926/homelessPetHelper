@@ -1,0 +1,67 @@
+{
+  "source": "public/pet-mesh/cat-side.png",
+  "sourceSha256": "b1889c797e975a625a746ab530a4c7d9231a068ca387871b5306b2fedfd9b727",
+  "records": {
+    "front": {
+      "path": "M127 322 C151 317 175 327 183 350 C190 369 194 391 190 409 L175 465 C172 487 163 497 136 498 C116 500 104 494 105 481 C105 470 114 462 121 455 C122 436 117 415 114 397 C107 378 105 356 111 340 C115 330 120 325 127 322Z",
+      "offset": [
+        -25,
+        -7
+      ],
+      "rootY": 322,
+      "sourceExtent": {
+        "left": 105,
+        "right": 191,
+        "top": 321,
+        "bottom": 495,
+        "width": 87,
+        "height": 175,
+        "pixels": 11724
+      },
+      "outputExtent": {
+        "left": 80,
+        "right": 166,
+        "top": 314,
+        "bottom": 488,
+        "width": 87,
+        "height": 175,
+        "pixels": 11724
+      },
+      "scale": [
+        1,
+        1
+      ]
+    },
+    "hind": {
+      "path": "M288 318 C321 315 352 343 357 375 C360 402 355 427 347 452 C338 480 328 497 301 499 C281 501 262 497 263 484 C263 473 274 464 283 457 C268 448 254 436 249 420 C243 402 247 382 255 364 C261 343 272 326 288 318Z",
+      "offset": [
+        -31,
+        -8
+      ],
+      "rootY": 318,
+      "sourceExtent": {
+        "left": 246,
+        "right": 357,
+        "top": 318,
+        "bottom": 495,
+        "width": 112,
+        "height": 178,
+        "pixels": 15153
+      },
+      "outputExtent": {
+        "left": 215,
+        "right": 326,
+        "top": 310,
+        "bottom": 487,
+        "width": 112,
+        "height": 178,
+        "pixels": 15153
+      },
+      "scale": [
+        1,
+        1
+      ]
+    }
+  },
+  "method": "Copy actual near front/hind legs from original cat with masked alpha, integer translation, scale exactly 1. No model, contour fitting, or original far-paw overlays. RGB shadow multiplier = .94 - .04 * max(0, 1 - (sourceY - rootY) / 150). Foreground reused unchanged."
+}

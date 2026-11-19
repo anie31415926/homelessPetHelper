@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "backgroundId": "neighborhood",
+  "regionIds": ["nearby"],
+  "initialPointId": "parking",
+  "initialCapacity": 2,
+  "minutesPerDay": 1440,
+  "seed": 20261118,
+  "timePolicy": {
+    "explorationMinutes": 5,
+    "openingMinutes": 10,
+    "negotiationMinutes": 15,
+    "handoverMinutes": 5
+  },
+  "points": [
+    { "id": "parking", "nameKey": "parking", "detailKey": "parking.detail", "regionId": "nearby",
+      "openByDefault": true, "sceneTemplateIds": ["shed"] },
+    { "id": "yard", "nameKey": "yard", "detailKey": "yard.detail", "regionId": "nearby",
+      "openByDefault": true, "sceneTemplateIds": ["yard"] },
+    { "id": "porch", "nameKey": "porch", "detailKey": "porch.detail", "regionId": "nearby",
+      "openByDefault": true, "sceneTemplateIds": ["porch"] }
+  ],
+  "requestTemplates": [
+    { "id": "ordinary", "textKey": "parking.detail", "animalDefinitionId": "cat.shy", "allowedPointIds": ["parking"] },
+    { "id": "reunion", "textKey": "porch.detail", "animalDefinitionId": "dog", "allowedPointIds": ["porch"] }
+  ],
+  "initialRequests": [
+    { "templateId": "ordinary", "pointId": "parking", "templateVersion": 1 },
+    { "templateId": "reunion", "pointId": "porch", "templateVersion": 1, "hasDirectReception": true,
+      "reunion": { "ownerId": "owner", "receivingArrangementId": "safe-receiving" } }
+  ]
+}

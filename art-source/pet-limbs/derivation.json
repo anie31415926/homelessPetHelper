@@ -1,0 +1,31 @@
+{
+  "source": "public/pet-mesh/cat-side.png",
+  "sourceSha256": "b1889c797e975a625a746ab530a4c7d9231a068ca387871b5306b2fedfd9b727",
+  "records": {
+    "front": {
+      "originalCorePixels": 230,
+      "modelOrEdgePixels": 6486,
+      "targetExtent": [
+        314,
+        487
+      ],
+      "modelExtent": [
+        121,
+        1017
+      ]
+    },
+    "hind": {
+      "originalCorePixels": 823,
+      "modelOrEdgePixels": 9829,
+      "targetExtent": [
+        317,
+        486
+      ],
+      "modelExtent": [
+        104,
+        815
+      ]
+    }
+  },
+  "method": "Two complete far-side limbs from shoulder/hip roots to entire paws. Eroded original visible cores copied verbatim, model-colour silhouette fitted into full guides only for missing extent/edges, nearby original fur blended into generated area over 10px, local pale edge colour repair. Foreground is original minus both visible far limbs. Post-decode masks, not diffusion-level masked inpaint."
+}

@@ -1,0 +1,203 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace HomelessPetHelper.Modules.Siege
+{
+    public sealed class SiegeCatalog
+    {
+        public SiegeRulesDefinition Rules { get; }
+        public SiegeTowerDefinition Tower { get; }
+        public IReadOnlyList<SiegeUnitDefinition> Units { get; }
+        public IReadOnlyList<SiegeProfileDefinition> Profiles { get; }
+        public IReadOnlyList<SiegeLane> Lanes { get; }
+        public IReadOnlyList<SiegePadDefinition> Pads { get; }
+        public double Width { get; }
+        public double Height { get; }
+
+        public SiegeCatalog(SiegeCatalogData data)
+        {
+            Require(
+                data != null && data.schemaVersion == 1 && data.rules != null && data.tower != null && data.map != null,
+                "header"
+            );
+            ValidateNumbers(data.rules);
+            var r = data.rules;
+            Require(
+                r.stepMs > 0
+                    && r.stepMs <= r.playerPeriodMs
+                    && r.durationMs >= r.playerPeriodMs
+                    && r.durationMs <= 3600000,
+                "clock"
+            );
+            Require(
+                r.handSize > 0 && r.handSize <= 20 && r.bagCopies > 0 && r.bagCopies <= 100 && r.maxLog > 0,
+                "supply"
+            );
+            Require(
+                r.energyCap > 0
+                    && r.energyCap <= 10000
+                    && r.openingEnergy >= 0
+                    && r.openingEnergy <= r.energyCap
+                    && r.turnEnergy > 0
+                    && r.turnEnergy <= r.energyCap,
+                "energy"
+            );
+            Require(
+                r.turnDraw > 0 && r.turnDraw <= r.handSize && r.mergeCost > 0 && r.mergeCost <= r.energyCap,
+                "cost"
+            );
+            Require(
+                r.guardStart > 0
+                    && r.guardStart < 1
+                    && r.sweepCenterAt > 0
+                    && r.sweepCenterAt < 1
+                    && r.repairThreshold > 0
+                    && r.repairThreshold < 1,
+                "fractions"
+            );
+            Require(
+                r.target > 0
+                    && r.relaxAtProgress > 0
+                    && r.relaxAtProgress <= 1
+                    && r.naturalMergeMinDistance > r.mergeRadius
+                    && r.mergeRadius > 0,
+                "goal/merge"
+            );
+            Require(
+                r.guardDurationMs > 0
+                    && r.slapDamage > 0
+                    && r.slapPeriodMs > 0
+                    && r.slapReach > 0
+                    && r.sweepDamage > 0
+                    && r.sweepRadius > 0
+                    && r.sweepRecoveryMs > 0,
+                "animal"
+            );
+            Require(
+                r.repairDurationMs > 0
+                    && r.repairAmount > 0
+                    && r.repairCooldownMs > 0
+                    && r.animalRepairs >= 0
+                    && r.animalBuilds >= 0
+                    && r.buildDurationMs > 0
+                    && r.buildOnAnimalTurn > 0
+                    && r.rerouteDurationMs > 0,
+                "actions"
+            );
+            Require(
+                r.threatBase > 0
+                    && r.threatNearWeight > 0
+                    && r.threatExponent > 0
+                    && r.slapPush >= 0
+                    && r.sweepPush >= 0,
+                "threat"
+            );
+            Rules = new SiegeRulesDefinition(r);
+            ValidateNumbers(data.tower);
+            Require(
+                data.tower.hp > 0 && data.tower.damage > 0 && data.tower.range > 0 && data.tower.periodMs > 0,
+                "tower"
+            );
+            Tower = new SiegeTowerDefinition(data.tower);
+            Unique(data.units?.Select(x => x?.id), "units");
+            Units = Array.AsReadOnly(data.units.Select(x => new SiegeUnitDefinition(x)).ToArray());
+            ValidateUnits(data);
+            Unique(data.animalStates?.Select(x => x?.id), "profiles");
+            Profiles = Array.AsReadOnly(data.animalStates.Select(x => new SiegeProfileDefinition(x)).ToArray());
+            Require(
+                Profiles.Select(x => x.Vigilance + ":" + x.Stamina).Distinct().Count() == Profiles.Count,
+                "duplicate conditions"
+            );
+            foreach (var p in Profiles)
+            {
+                Require(
+                    p.PeriodMs > 0
+                        && !string.IsNullOrWhiteSpace(p.NameKey)
+                        && (p.Vigilance == "watchful" || p.Vigilance == "high")
+                        && (p.Stamina == "normal" || p.Stamina == "tired")
+                        && Profiles.Any(x => x.Vigilance == "watchful" && x.Stamina == p.Stamina),
+                    "profile conditions"
+                );
+            }
+            Width = data.map.width;
+            Height = data.map.height;
+            Require(Finite(Width) && Finite(Height) && Width > 0 && Height > 0, "map bounds");
+            Unique(data.map.lanes?.Select(x => x?.id), "lanes");
+            Lanes = Array.AsReadOnly(data.map.lanes.Select(x => new SiegeLane(x, Width, Height)).ToArray());
+            Require(Lanes.Any(x => x.Open), "open lane");
+            Unique(data.map.pads?.Select(x => x?.id), "pads");
+            Pads = Array.AsReadOnly(data.map.pads.Select(x => new SiegePadDefinition(x)).ToArray());
+            foreach (var pad in Pads)
+                Require(
+                    Lane(pad.LaneId) != null && Finite(pad.At) && pad.At > 0 && pad.At < r.guardStart,
+                    "pad reference"
+                );
+        }
+
+        public SiegeUnitDefinition Unit(string id) => Units.FirstOrDefault(x => x.Id == id);
+
+        public SiegeLane Lane(string id) => Lanes.FirstOrDefault(x => x.Id == id);
+
+        public SiegeProfileDefinition Profile(string id) => Profiles.FirstOrDefault(x => x.Id == id);
+
+        public SiegeProfileDefinition Conditions(string vigilance, string stamina) =>
+            Profiles.First(x => x.Vigilance == vigilance && x.Stamina == stamina);
+
+        internal static bool Finite(double value) => !double.IsNaN(value) && !double.IsInfinity(value);
+
+        internal static void Require(bool valid, string name)
+        {
+            if (!valid)
+                throw new ArgumentException("Invalid siege configuration: " + name);
+        }
+
+        private void ValidateUnits(SiegeCatalogData data)
+        {
+            foreach (var u in data.units)
+            {
+                ValidateNumbers(u);
+                Require(
+                    u.hp > 0
+                        && u.speed > 0
+                        && u.damage > 0
+                        && u.attackMs > 0
+                        && u.reach > 0
+                        && u.gain > 0
+                        && u.cost >= 0
+                        && u.cost <= Rules.EnergyCap,
+                    "unit numbers"
+                );
+                Require(new[] { "none", "aura", "brace", "reroute" }.Contains(u.ability), "ability");
+                Require(!string.IsNullOrWhiteSpace(u.nameKey) && !string.IsNullOrWhiteSpace(u.detailKey), "unit text");
+                Require(
+                    string.IsNullOrEmpty(u.upgradeId)
+                        || (Unit(u.upgradeId) != null && !Unit(u.upgradeId).Bag && u.upgradeId != u.id),
+                    "upgrade"
+                );
+                Require(!u.bag || !string.IsNullOrEmpty(u.upgradeId), "base upgrade");
+                Require(u.ability != "aura" || (u.abilityRadius > 0 && u.abilityPeriodMs > 0), "aura");
+            }
+            Require(Units.Any(x => x.Bag && x.Cost > 0), "bag empty");
+        }
+
+        private static void Unique(IEnumerable<string> source, string name)
+        {
+            Require(source != null, name);
+            string[] ids = source.ToArray();
+            Require(
+                ids.Length > 0 && ids.All(x => !string.IsNullOrWhiteSpace(x)) && ids.Distinct().Count() == ids.Length,
+                name
+            );
+        }
+
+        private static void ValidateNumbers(object data)
+        {
+            foreach (var field in data.GetType().GetFields())
+            {
+                if (field.FieldType == typeof(double))
+                    Require(Finite((double)field.GetValue(data)), field.Name);
+            }
+        }
+    }
+}

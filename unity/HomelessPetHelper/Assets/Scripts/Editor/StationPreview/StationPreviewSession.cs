@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using HomelessPetHelper.Bootstrap;
+using HomelessPetHelper.Modules.Animals;
+using HomelessPetHelper.Modules.Rescue;
 using HomelessPetHelper.Editor.OptionPreview;
 using HomelessPetHelper.Modules.Station;
 using HomelessPetHelper.Modules.Station.Cleaning;
 using HomelessPetHelper.Modules.Station.UI;
 using HomelessPetHelper.Modules.WorldTime;
-using UnityEditor;
 using UnityEngine;
 
 namespace HomelessPetHelper.Editor.StationPreview
@@ -16,15 +18,12 @@ namespace HomelessPetHelper.Editor.StationPreview
         private readonly StationPanelView _view;
         private readonly OptionPreviewText _text;
         private readonly Font _font;
-        private readonly Sprite[] _art = new Sprite[3];
-        private readonly DirtField[] _dirt = new DirtField[3];
-        private readonly DirtField[] _fur = new DirtField[3];
-        private readonly CareWorkMeter[] _washWork = new CareWorkMeter[3];
-        private readonly CareWorkMeter[] _groomWork = new CareWorkMeter[3];
-        private readonly StationContactSample[] _contact = new StationContactSample[3];
+        private readonly Dictionary<Guid, StationResidentPresentation> _residents =
+            new Dictionary<Guid, StationResidentPresentation>();
+        private readonly GameLoopSession _loop;
+        private readonly Action _leaveStation;
         private readonly Dictionary<Guid, IReadOnlyList<string>> _sampleAssessments =
             new Dictionary<Guid, IReadOnlyList<string>>();
-        private readonly string[] _names = new string[3];
         private RescueStation _station;
         private ActionWorldClock _clock;
         private StationReturnSummary _summary;
@@ -36,9 +35,12 @@ namespace HomelessPetHelper.Editor.StationPreview
         private bool _suspended;
         private string _feedback;
 
-        public StationPreviewSession(StationPanelView view, TextAsset text)
+        public StationPreviewSession(StationPanelView view, TextAsset text,
+            GameLoopSession loop = null, Action leaveStation = null)
         {
             _view = view;
+            _loop = loop;
+            _leaveStation = leaveStation;
             _text = new OptionPreviewText(text);
             _font = Font.CreateDynamicFontFromOSFont(new[] { "Microsoft YaHei", "Arial" }, 36);
             _view.ApplyFont(_font);
@@ -46,7 +48,14 @@ namespace HomelessPetHelper.Editor.StationPreview
             _view.AnimalSelected += Select;
             _view.StrokeRequested += Stroke;
             _view.SuspensionChanged += Suspend;
-            Restart();
+            if (loop == null) Restart();
+            else
+            {
+                _station = loop.Station;
+                _clock = loop.Clock;
+                _stationSessionId = loop.StationSessionId;
+                ShowSharedStation(false);
+            }
         }
 
         private void Restart()
@@ -58,19 +67,10 @@ namespace HomelessPetHelper.Editor.StationPreview
             _station = new RescueStation(session, 4);
             _clock = new ActionWorldClock(session, 1440, 540);
             _sampleAssessments.Clear();
+            _residents.Clear();
             for (int index = 0; index < 3; index++)
             {
                 string kind = index == 0 ? "dog" : "cat";
-                string artPath = StationPreviewAssets.CareArtFolder + "/T_Station_" +
-                    (index == 0 ? "Dog" : "Cat") + "Temporary";
-                _art[index] = AssetDatabase.LoadAssetAtPath<Sprite>(artPath + ".png");
-                byte[] mask = AssetDatabase.LoadAssetAtPath<TextAsset>(artPath + "Mask.bytes").bytes;
-                _dirt[index] = CreateDirt(mask, index);
-                _fur[index] = CreateFur(mask, index);
-                _washWork[index] = new CareWorkMeter(_dirt[index], 20);
-                _groomWork[index] = new CareWorkMeter(_fur[index], 12, 100);
-                _contact[index] = new StationContactSample(index == 1, index != 1, index == 2, index == 0);
-                _names[index] = _text.Get("name" + index);
                 var arrival = new StationAnimalIntake(Guid.NewGuid(), Guid.NewGuid(), "preview." + kind,
                     new AnimalIntakeCondition(StationHealthAssessment.Unchecked, index == 1 ? 0 : 65,
                         Array.Empty<string>()));
@@ -81,6 +81,7 @@ namespace HomelessPetHelper.Editor.StationPreview
 
                 // These three fixtures explicitly have no urgent problems; missing results are never healthy.
                 _sampleAssessments.Add(arrival.AnimalId, Array.Empty<string>());
+                _residents.Add(arrival.AnimalId, StationResidentPresentation.CreateSample(index, _text));
             }
 
             _selected = -1;
@@ -90,38 +91,28 @@ namespace HomelessPetHelper.Editor.StationPreview
             Refresh();
         }
 
-        private static DirtField CreateFur(byte[] mask, int index)
+        public void ShowSharedStation(bool showReturn)
         {
-            var fur = new byte[mask.Length];
-            for (int y = 0; y < 128; y++)
+            if (_loop == null) throw new InvalidOperationException("This is a standalone fixture.");
+            foreach (StationAnimalIntake arrival in _station.Animals)
             {
-                for (int x = 0; x < 128; x++)
-                {
-                    float noise = Mathf.PerlinNoise(x * 0.07f + index * 13, y * 0.07f + 43);
-                    fur[y * 128 + x] = (x + y * 2) % 11 < 2 && y % 9 < 6 ?
-                        (byte)(Mathf.Clamp01((noise - 0.38f) * 4) * 200) : (byte)0;
-                }
+                if (_residents.ContainsKey(arrival.AnimalId)) continue;
+                _residents.Add(arrival.AnimalId, StationResidentPresentation.CreateShared(_station,
+                    _stationSessionId, arrival, _clock, _residents.Count, _text));
             }
-
-            return new DirtField(128, 128, mask, fur);
+            _summary = _loop.LastArrival;
+            _selected = -1;
+            _showSummary = showReturn && _summary != null;
+            _feedback = _text.Get(_station.Animals.Count == 0 ? "loop.empty" : "stationReady");
+            Refresh();
         }
 
-        private static DirtField CreateDirt(byte[] mask, int index)
-        {
-            var dirt = new byte[mask.Length];
-            if (index != 1)
-            {
-                for (int y = 0; y < 128; y++)
-                {
-                    for (int x = 0; x < 128; x++)
-                    {
-                        float noise = Mathf.PerlinNoise(x * 0.10f + index * 19, y * 0.10f + 7);
-                        dirt[y * 128 + x] = (byte)(Mathf.Clamp01((noise - 0.43f) * 5) * 220);
-                    }
-                }
-            }
+        private StationResidentPresentation Resident(int index) => _residents[_station.Animals[index].AnimalId];
 
-            return new DirtField(128, 128, mask, dirt);
+        public void ReportOutingFailure(OutingAssemblyFailure failure)
+        {
+            _feedback = _text.Get("loop.failure." + failure);
+            Refresh();
         }
 
         private void OnCommand(StationCommand command)
@@ -134,6 +125,12 @@ namespace HomelessPetHelper.Editor.StationPreview
             switch (command)
             {
                 case StationCommand.Restart:
+                    if (_loop != null)
+                    {
+                        if (_selected >= 0 || _showSummary || _tool != StationCareTool.None) return;
+                        _leaveStation?.Invoke();
+                        return;
+                    }
                     Restart();
                     return;
                 case StationCommand.Enter:
@@ -142,7 +139,7 @@ namespace HomelessPetHelper.Editor.StationPreview
                     _feedback = _text.Get("stationReady");
                     break;
                 case StationCommand.History:
-                    if (_selected >= 0 || _showSummary) return;
+                    if (_selected >= 0 || _showSummary || _summary == null) return;
                     _showSummary = true;
                     break;
                 case StationCommand.Back:
@@ -171,27 +168,48 @@ namespace HomelessPetHelper.Editor.StationPreview
             }
             else if (_tool == StationCareTool.None && command == StationCommand.Pet)
             {
-                _feedback = _text.Get(_contact[_selected].Pet(), _names[_selected]);
+                string response = _loop == null ? Resident(_selected).Contact.Pet() :
+                    Current(_selected).CarePermissions.AcceptsTouch && IsCalm(_selected) ? "petted" : "petQuiet";
+                _feedback = _text.Get(response, Resident(_selected).Name);
             }
             else if (_tool == StationCareTool.None && command == StationCommand.QuietSpace)
             {
-                _contact[_selected].ArrangeQuietSpace(_clock.Current.ElapsedMinutes);
-                _feedback = _text.Get("quietArranged", _names[_selected]);
+                if (_loop == null) Resident(_selected).Contact.ArrangeQuietSpace(_clock.Current.ElapsedMinutes);
+                _feedback = _text.Get("quietArranged", Resident(_selected).Name);
             }
             else if (command == StationCommand.Clean || command == StationCommand.Groom)
             {
-                if (!CanCleanSample(_selected))
+                BeginCare(command == StationCommand.Groom);
+            }
+        }
+
+        private void BeginCare(bool grooming)
+        {
+            StationCareTool next = grooming ? StationCareTool.Groom : StationCareTool.Wash;
+            if (_tool == next) return;
+            if (_loop == null && !CanCleanSample(_selected))
+            {
+                _feedback = _text.Get(Resident(_selected).Contact.CoatRestricted ? "careRestricted" : "careSpace");
+                return;
+            }
+            if (_loop != null)
+            {
+                StationCoatCareFailure failure = SharedCare().GetBeginFailure(grooming);
+                if (failure != StationCoatCareFailure.None)
                 {
-                    _feedback = _text.Get(_contact[_selected].CoatRestricted ? "careRestricted" : "careSpace");
+                    _feedback = _text.Get("care.failure." + failure);
                     return;
                 }
-
-                StationCareTool next = command == StationCommand.Clean ? StationCareTool.Wash : StationCareTool.Groom;
-                if (_tool == next || (_tool != StationCareTool.None && !EndCare())) return;
-                _tool = next;
-                _cleaningVersion = _clock.Current.Version;
-                _feedback = _text.Get(next == StationCareTool.Wash ? "cleaning" : "grooming", _names[_selected]);
             }
+            if (_tool != StationCareTool.None && !EndCare()) return;
+            if (_loop != null && !SharedCare().TryBegin(grooming, out var beginFailure))
+            {
+                _feedback = _text.Get("care.failure." + beginFailure);
+                return;
+            }
+            _tool = next;
+            _cleaningVersion = _clock.Current.Version;
+            _feedback = _text.Get(grooming ? "grooming" : "cleaning", Resident(_selected).Name);
         }
 
         private void CheckSelectedAnimal()
@@ -199,15 +217,26 @@ namespace HomelessPetHelper.Editor.StationPreview
             StationCareSnapshot care = Care(_selected);
             if (care.BasicAssessment == StationHealthAssessment.Unchecked)
             {
-                if (!_sampleAssessments.TryGetValue(care.AnimalId, out var problems) ||
-                    !_station.TryCompleteBasicAssessment(_stationSessionId, care.AnimalId, problems, out _))
+                bool success = _loop != null ?
+                    _station.TryAssessKnownHealthyAnimal(_stationSessionId, care.AnimalId, out _) :
+                    _sampleAssessments.TryGetValue(care.AnimalId, out var problems) &&
+                    _station.TryCompleteBasicAssessment(_stationSessionId, care.AnimalId, problems, out _);
+                if (!success)
                 {
                     _feedback = _text.Get("assessmentUnavailable");
                     return;
                 }
             }
 
-            _feedback = _text.Get("checked", _names[_selected], _text.Get(HealthKey(_selected)));
+            if (_loop != null && _loop.Flow.Stage == RescueStage.Care &&
+                _loop.LastArrival.Arrival.AnimalId == care.AnimalId &&
+                !_loop.Outing.TryCompleteCare(_loop.Outing.Session.SessionId, out var failure))
+            {
+                _feedback = _text.Get("loop.failure." + failure);
+                return;
+            }
+
+            _feedback = _text.Get("checked", Resident(_selected).Name, _text.Get(HealthKey(_selected)));
         }
 
         private StationCareSnapshot Care(int index)
@@ -223,10 +252,33 @@ namespace HomelessPetHelper.Editor.StationPreview
 
         private bool CanCleanSample(int index)
         {
-            // No urgent problem is not blanket permission: current willingness and coat restrictions still apply.
+            // Legacy contact fixtures are separate from the shared individual's care rule owner.
             return Care(index).BasicAssessment == StationHealthAssessment.NoUrgentCareRequired &&
-                _contact[index].CanCare;
+                Resident(index).Contact.CanCare;
         }
+
+        private StationCareAvailability CareAvailability(int index)
+        {
+            if (_loop != null)
+            {
+                StationCoatCare care = Resident(index).SharedCare;
+                return new StationCareAvailability(care.CanBegin(false), care.CanBegin(true));
+            }
+            bool available = CanCleanSample(index);
+            return new StationCareAvailability(available, available);
+        }
+
+        private AnimalSnapshot Current(int index)
+        {
+            if (!_station.TryGetCurrentAnimal(_station.Animals[index].AnimalId, out var current))
+                throw new InvalidOperationException("Resident has no current individual.");
+            return current;
+        }
+
+        private bool IsCalm(int index) => Current(index).Disposition.Stress == AnimalStress.None &&
+            Current(index).Disposition.Emotion == AnimalEmotion.Relaxed;
+
+        private StationCoatCare SharedCare() => Resident(_selected).SharedCare;
 
         private string HealthKey(int index)
         {
@@ -241,7 +293,19 @@ namespace HomelessPetHelper.Editor.StationPreview
 
         private bool EndCare()
         {
-            CareWorkMeter work = _tool == StationCareTool.Wash ? _washWork[_selected] : _groomWork[_selected];
+            if (_loop != null)
+            {
+                if (!SharedCare().TryEnd(out long settled, out var failure))
+                {
+                    _feedback = _text.Get("care.failure." + failure);
+                    return false;
+                }
+                _tool = StationCareTool.None;
+                _feedback = _text.Get("careSettled", Resident(_selected).Name, settled);
+                return true;
+            }
+            StationResidentPresentation selected = Resident(_selected);
+            CareWorkMeter work = _tool == StationCareTool.Wash ? selected.WashWork : selected.GroomWork;
             long minutes = work.PendingMinutes;
             if (minutes > 0 && !_clock.TryAdvance(_cleaningVersion, minutes, out _, out _))
             {
@@ -250,26 +314,26 @@ namespace HomelessPetHelper.Editor.StationPreview
             }
 
             work.ConfirmSettlement();
-            if (_tool == StationCareTool.Wash && _dirt[_selected].RemovedFraction >= 0.97)
+            if (_tool == StationCareTool.Wash && Resident(_selected).Dirt.RemovedFraction >= 0.97)
             {
-                _dirt[_selected].ClearResidue();
+                Resident(_selected).ClearSampleDirtResidue();
                 // Completing the last small residue is included in the same capped duration.
                 work.ConfirmSettlement();
             }
 
-            foreach (StationContactSample contact in _contact)
+            foreach (StationResidentPresentation resident in _residents.Values)
             {
-                contact.ObserveSettledTime(_clock.Current.ElapsedMinutes);
+                resident.Contact?.ObserveSettledTime(_clock.Current.ElapsedMinutes);
             }
 
-            _feedback = _text.Get("careSettled", _names[_selected], minutes);
+            _feedback = _text.Get("careSettled", Resident(_selected).Name, minutes);
             _tool = StationCareTool.None;
             return true;
         }
 
         private void Select(int index)
         {
-            if (_suspended || _showSummary || _selected >= 0 || index < 0 || index >= 3)
+            if (_suspended || _showSummary || _selected >= 0 || index < 0 || index >= _station.Animals.Count)
             {
                 return;
             }
@@ -287,12 +351,16 @@ namespace HomelessPetHelper.Editor.StationPreview
                 return;
             }
 
-            DirtField field = ActiveField();
+            IReadOnlyDirtField field = ActiveField();
             if (!field.ContainsCoat(point.x, point.y)) return;
-            DirtField blocker = _tool == StationCareTool.Groom ? _dirt[_selected] : null;
-            if (field.TryErase(point.x, point.y, 0.12f, strength, blocker))
+            IReadOnlyDirtField blocker = _tool == StationCareTool.Groom ? Resident(_selected).Dirt : null;
+            bool changed = _loop == null ?
+                Resident(_selected).TrySampleStroke(_tool == StationCareTool.Groom, point.x, point.y, strength) :
+                SharedCare().TryStroke(point.x, point.y, strength);
+            if (changed)
             {
-                _view.RefreshDirt(_art[_selected], _dirt[_selected], Progress(field), true, _fur[_selected]);
+                StationResidentPresentation selected = Resident(_selected);
+                _view.RefreshDirt(selected.Art, selected.Dirt, Progress(field), true, selected.Fur);
                 if (_tool == StationCareTool.Wash) _view.Surface.ShowCleaningContact(point);
             }
             else if (_tool == StationCareTool.Groom && blocker.HasResidueAt(point.x, point.y))
@@ -302,20 +370,25 @@ namespace HomelessPetHelper.Editor.StationPreview
             }
         }
 
-        private DirtField ActiveField() => _tool == StationCareTool.Groom ? _fur[_selected] : _dirt[_selected];
+        private IReadOnlyDirtField ActiveField() => _tool == StationCareTool.Groom ?
+            Resident(_selected).Fur : Resident(_selected).Dirt;
 
         private void Suspend(bool suspended)
         {
             _suspended = suspended;
-            _clock.SetSuspended(suspended);
-            _station.SetSuspended(suspended);
+            if (_loop != null) _loop.SetSuspended(suspended);
+            else
+            {
+                _clock.SetSuspended(suspended);
+                _station.SetSuspended(suspended);
+            }
             if (_view != null && _view.isActiveAndEnabled)
             {
                 Refresh();
             }
         }
 
-        private string Progress(DirtField dirt)
+        private string Progress(IReadOnlyDirtField dirt)
         {
             string key = _tool == StationCareTool.Groom ? "groomProgress" : "progress";
             return _text.Get(key, dirt.RemovedFraction * 100);
@@ -323,40 +396,55 @@ namespace HomelessPetHelper.Editor.StationPreview
 
         private string Condition(int index)
         {
-            string dirt = _dirt[index].RemainingAmount == 0 ? "cleaned" :
-                _dirt[index].RemovedFraction > 0 ? "partial" : "dirty";
+            string dirt = Resident(index).Dirt.RemainingAmount == 0 ? "cleaned" :
+                Resident(index).Dirt.RemovedFraction > 0 ? "partial" : "dirty";
             return _text.Get("animalStatus", _text.Get(HealthKey(index)), _text.Get(dirt),
-                _text.Get(_contact[index].SignalKey));
+                _text.Get(_loop == null ? Resident(index).Contact.SignalKey :
+                    Current(index).CarePermissions.AcceptsTouch && IsCalm(index) ? "contactWilling" : "contactQuiet"));
         }
 
         private void Refresh()
         {
             _view.ShowPage(_showSummary, _selected >= 0);
             _view.SetSuspended(_suspended);
-            long minutes = _clock.Current.ElapsedMinutes;
-            _view.SetStatus(_text.Get("clock", minutes / 1440 + 1, minutes % 1440 / 60, minutes % 60),
+            if (_loop != null)
+            {
+                bool canLeave = _tool == StationCareTool.None && !_showSummary && _selected < 0 &&
+                    _loop.Flow.Stage == RescueStage.Station;
+                _view.SetSessionCommand(_text.Get("loop.outing"), !_suspended && canLeave);
+                _view.SetHistoryAvailable(_summary != null);
+            }
+            WorldTimeSnapshot time = _clock.Current;
+            _view.SetStatus(_text.Get("clock", time.DayIndex + 1m, time.MinuteOfDay / 60, time.MinuteOfDay % 60),
                 _text.Get("capacity", _station.Animals.Count, _station.TemporaryCapacity),
                 _suspended ? _text.Get("paused") : _feedback);
             if (_showSummary)
             {
-                _view.ShowSummary(_text.Get("summaryBody", _names[2], _summary.Arrival.Condition.Dirtiness), _art[2]);
+                StationResidentPresentation resident = _residents[_summary.Arrival.AnimalId];
+                _view.ShowSummary(_text.Get("summaryBody", resident.Name, _summary.Arrival.Condition.Dirtiness),
+                    resident.Art);
             }
             else if (_selected < 0)
             {
+                _view.EnsureRosterSize(_station.Animals.Count);
                 StationAnimalView[] animals = _view.Animals;
                 for (int index = 0; index < animals.Length; index++)
                 {
-                    animals[index].Refresh(index, _names[index], Condition(index), _art[index],
-                        _dirt[index], !_suspended, _fur[index]);
+                    animals[index].gameObject.SetActive(index < _station.Animals.Count);
+                    if (index >= _station.Animals.Count) continue;
+                    animals[index].Refresh(index, Resident(index).Name, Condition(index), Resident(index).Art,
+                        Resident(index).Dirt, !_suspended, Resident(index).Fur);
                 }
             }
             else
             {
-                DirtField dirt = _dirt[_selected];
+                StationResidentPresentation selected = Resident(_selected);
+                IReadOnlyDirtField dirt = selected.Dirt;
                 string progress = _tool != StationCareTool.None ? Progress(ActiveField()) :
-                    _text.Get("bothProgress", dirt.RemovedFraction * 100, _fur[_selected].RemovedFraction * 100);
-                _view.ShowDetail(_names[_selected], Condition(_selected), progress, _art[_selected], dirt,
-                    _tool != StationCareTool.None, true, CanCleanSample(_selected), _suspended, _fur[_selected]);
+                    _text.Get("bothProgress", dirt.RemovedFraction * 100, selected.Fur.RemovedFraction * 100);
+                _view.ShowDetail(selected.Name, Condition(_selected), progress, selected.Art, dirt,
+                    _tool != StationCareTool.None, true, CareAvailability(_selected), _suspended, selected.Fur);
+                if (_loop != null) _view.SetQuietSpaceAvailable(false);
             }
         }
 
@@ -366,8 +454,11 @@ namespace HomelessPetHelper.Editor.StationPreview
             _view.AnimalSelected -= Select;
             _view.StrokeRequested -= Stroke;
             _view.SuspensionChanged -= Suspend;
-            _station.Close();
-            _clock.Close();
+            if (_loop == null)
+            {
+                _station.Close();
+                _clock.Close();
+            }
             if (_view != null)
             {
                 _view.Surface.SetCleaning(false);

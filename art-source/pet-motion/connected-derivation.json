@@ -1,0 +1,11 @@
+{
+  "source": "public/pet-mesh/cat-side.png",
+  "sourceSha256": "b1889c797e975a625a746ab530a4c7d9231a068ca387871b5306b2fedfd9b727",
+  "alpha": "original alpha * max(body-mask alpha, donor/hind-mask alpha) / 255",
+  "rgb": "original RGB, except existing front seam repair in x171..197 y372..434; no hind repair or root alpha fade",
+  "masks": [
+    "art-source/pet-motion/body-mask.png",
+    "art-source/pet-limbs/donor/hind-mask.png"
+  ],
+  "method": "One uncut body/hip/hind texture for a shared indexed skin. No generation, original or accepted animation texture mutation."
+}

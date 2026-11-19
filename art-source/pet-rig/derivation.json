@@ -1,0 +1,311 @@
+{
+  "method": "Boundary-connected near-white flood removal (min RGB 243), explicit source crops and curved masks, crop trim, max 224px part, 768px atlas, 256-colour PNG dither 0.5. Opaque reference resized to 768 JPEG88. Front limb art and front ears reused in side view and scaled for this trial; not a production anatomical kit.",
+  "definitions": {
+    "front": [
+      [
+        "head",
+        "front",
+        {
+          "left": 60,
+          "top": 65,
+          "width": 310,
+          "height": 192
+        },
+        "M38 43 Q155 -5 264 43 Q290 87 285 134 Q255 186 154 190 Q54 186 28 139 Q15 85 38 43Z"
+      ],
+      [
+        "body",
+        "front-body",
+        {
+          "left": 483,
+          "top": 344,
+          "width": 314,
+          "height": 355
+        },
+        "M70 0 L250 0 Q314 94 295 227 Q282 348 157 353 Q25 346 18 227 Q0 95 70 0Z"
+      ],
+      [
+        "tail",
+        "front",
+        {
+          "left": 879,
+          "top": 72,
+          "width": 369,
+          "height": 189
+        }
+      ],
+      [
+        "earL",
+        "front",
+        {
+          "left": 123,
+          "top": 320,
+          "width": 140,
+          "height": 167
+        }
+      ],
+      [
+        "earR",
+        "front",
+        {
+          "left": 628,
+          "top": 321,
+          "width": 122,
+          "height": 160
+        }
+      ],
+      [
+        "frontL",
+        "front",
+        {
+          "left": 505,
+          "top": 605,
+          "width": 120,
+          "height": 190
+        }
+      ],
+      [
+        "frontR",
+        "front",
+        {
+          "left": 643,
+          "top": 608,
+          "width": 120,
+          "height": 190
+        }
+      ],
+      [
+        "backL",
+        "front",
+        {
+          "left": 505,
+          "top": 605,
+          "width": 120,
+          "height": 190
+        }
+      ],
+      [
+        "backR",
+        "front",
+        {
+          "left": 643,
+          "top": 608,
+          "width": 120,
+          "height": 190
+        }
+      ]
+    ],
+    "side": [
+      [
+        "head",
+        "side",
+        {
+          "left": 150,
+          "top": 319,
+          "width": 159,
+          "height": 144
+        },
+        "M14 54 Q45 29 101 36 Q145 42 150 91 Q140 133 88 136 Q30 137 7 97Z"
+      ],
+      [
+        "body",
+        "side-body",
+        {
+          "left": 271,
+          "top": 338,
+          "width": 629,
+          "height": 288
+        },
+        "M45 5 Q125 -5 226 18 Q450 -2 554 89 Q628 157 611 272 Q560 280 510 224 Q399 226 340 236 Q192 244 88 212 Q7 174 8 91Z"
+      ],
+      [
+        "tail",
+        "front",
+        {
+          "left": 879,
+          "top": 72,
+          "width": 369,
+          "height": 189
+        }
+      ],
+      [
+        "earL",
+        "front",
+        {
+          "left": 123,
+          "top": 320,
+          "width": 140,
+          "height": 167
+        }
+      ],
+      [
+        "earR",
+        "front",
+        {
+          "left": 628,
+          "top": 321,
+          "width": 122,
+          "height": 160
+        }
+      ],
+      [
+        "frontL",
+        "front",
+        {
+          "left": 505,
+          "top": 605,
+          "width": 120,
+          "height": 190
+        }
+      ],
+      [
+        "frontR",
+        "front",
+        {
+          "left": 643,
+          "top": 608,
+          "width": 120,
+          "height": 190
+        }
+      ],
+      [
+        "backL",
+        "front",
+        {
+          "left": 505,
+          "top": 605,
+          "width": 120,
+          "height": 190
+        }
+      ],
+      [
+        "backR",
+        "front",
+        {
+          "left": 643,
+          "top": 608,
+          "width": 120,
+          "height": 190
+        }
+      ]
+    ]
+  },
+  "index": {
+    "size": 768,
+    "cell": 256,
+    "views": {
+      "front": {
+        "head": {
+          "x": 16,
+          "y": 57,
+          "width": 224,
+          "height": 142
+        },
+        "body": {
+          "x": 293,
+          "y": 16,
+          "width": 181,
+          "height": 224
+        },
+        "tail": {
+          "x": 528,
+          "y": 74,
+          "width": 224,
+          "height": 107
+        },
+        "earL": {
+          "x": 42,
+          "y": 272,
+          "width": 172,
+          "height": 224
+        },
+        "earR": {
+          "x": 292,
+          "y": 272,
+          "width": 183,
+          "height": 224
+        },
+        "frontL": {
+          "x": 572,
+          "y": 272,
+          "width": 136,
+          "height": 224
+        },
+        "frontR": {
+          "x": 54,
+          "y": 528,
+          "width": 148,
+          "height": 224
+        },
+        "backL": {
+          "x": 316,
+          "y": 528,
+          "width": 136,
+          "height": 224
+        },
+        "backR": {
+          "x": 566,
+          "y": 528,
+          "width": 148,
+          "height": 224
+        }
+      },
+      "side": {
+        "head": {
+          "x": 16,
+          "y": 45,
+          "width": 224,
+          "height": 166
+        },
+        "body": {
+          "x": 272,
+          "y": 78,
+          "width": 224,
+          "height": 100
+        },
+        "tail": {
+          "x": 528,
+          "y": 74,
+          "width": 224,
+          "height": 107
+        },
+        "earL": {
+          "x": 42,
+          "y": 272,
+          "width": 172,
+          "height": 224
+        },
+        "earR": {
+          "x": 292,
+          "y": 272,
+          "width": 183,
+          "height": 224
+        },
+        "frontL": {
+          "x": 572,
+          "y": 272,
+          "width": 136,
+          "height": 224
+        },
+        "frontR": {
+          "x": 54,
+          "y": 528,
+          "width": 148,
+          "height": 224
+        },
+        "backL": {
+          "x": 316,
+          "y": 528,
+          "width": 136,
+          "height": 224
+        },
+        "backR": {
+          "x": 566,
+          "y": 528,
+          "width": 148,
+          "height": 224
+        }
+      }
+    }
+  }
+}

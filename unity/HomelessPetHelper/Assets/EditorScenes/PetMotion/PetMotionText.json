@@ -1,0 +1,17 @@
+{
+  "entries": [
+    {"key":"title","value":"小橘"},
+    {"key":"action","value":"动作"},
+    {"key":"idle","value":"呼吸休息"},
+    {"key":"look","value":"张望摆尾"},
+    {"key":"tread","value":"原地踏步"},
+    {"key":"walk","value":"来回走动"},
+    {"key":"sit","value":"坐姿休息"},
+    {"key":"side","value":"侧卧休息"},
+    {"key":"speed","value":"速度"},
+    {"key":"progress","value":"进度"},
+    {"key":"playing","value":"播放"},
+    {"key":"source","value":"原图"},
+    {"key":"reset","value":"复位"}
+  ]
+}

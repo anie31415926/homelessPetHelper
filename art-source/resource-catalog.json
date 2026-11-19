@@ -17,17 +17,421 @@
   },
   "assets": [
     {
+      "id": "pet-motion.sit-rest",
+      "name": "完整坐姿临时试验图",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "用户要求坐姿同侧卧改用完整生图，仅HTML样本，不接Unity",
+      "use": "452×512档完整左向坐姿底图，用代码驱动微动作；不视作已完成站坐卧过渡",
+      "plannedBytes": 153600,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/PetMotion/T_Pet_sit-rest.png" },
+        { "role": "reference", "path": "public/pet-motion/sit-rest.png" },
+        { "role": "master", "path": "art-source/pet-motion/sit-rest/master.png" },
+        { "role": "workflow", "path": "art-source/pet-motion/sit-rest/workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-motion/sit-rest/derivation.json" },
+        { "role": "generation-record", "path": "art-source/pet-motion/sit-rest/submission.json" },
+        { "role": "generation-record", "path": "art-source/pet-motion/sit-rest/history.json" },
+        { "role": "reference", "path": "art-source/pet-motion/sit-rest/light.png" },
+        { "role": "reference", "path": "art-source/pet-motion/sit-rest/dark.png" }
+      ],
+      "generation": { "tool": "本地ComfyUI；tools/pet-sit-art.mjs及pet-side-process.mjs sit", "model": "qwen_image_2.1_int8_convrot.safetensors", "seed": 2026111941, "record": "art-source/pet-motion/README.md", "notes": "只参考原站立猫生成整只左向坐姿，不生成独立部件拼装，不宣称原源像素不变。24步CFG4/euler/simple/768档，一次出图；青底抠图含内部空隙、窄边去溢色，599×605整只等比430×434置(11,64)。姿态间过渡仍待验证；参考图眼形、围巾及毛纹仍有差异，审核未通过。生成前登记。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-motion.side-rest",
+      "name": "侧卧整姿态临时试验图",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "用户放弃趴卧后授权坐姿与侧卧HTML快速验证，不进Unity",
+      "use": "整只参考猫的完整侧卧姿态，512档单张连续表面；只验证轻呼吸动耳摆尾，不声称站立到翻身连续变形",
+      "plannedBytes": 153600,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/PetMotion/T_Pet_side-rest.png" },
+        { "role": "reference", "path": "public/pet-motion/side-rest.png" },
+        { "role": "master", "path": "art-source/pet-motion/side-rest/master.png" },
+        { "role": "master", "path": "art-source/pet-motion/side-rest/v2/master.png" },
+        { "role": "workflow", "path": "art-source/pet-motion/side-rest/v2/workflow.json" },
+        { "role": "generation-record", "path": "art-source/pet-motion/side-rest/v2/submission.json" },
+        { "role": "generation-record", "path": "art-source/pet-motion/side-rest/v2/history.json" },
+        { "role": "workflow", "path": "art-source/pet-motion/side-rest/workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-motion/side-rest/derivation.json" },
+        { "role": "generation-record", "path": "art-source/pet-motion/side-rest/submission.json" },
+        { "role": "generation-record", "path": "art-source/pet-motion/side-rest/history.json" },
+        { "role": "reference", "path": "art-source/pet-motion/side-rest/light.png" },
+        { "role": "reference", "path": "art-source/pet-motion/side-rest/dark.png" }
+      ],
+      "generation": { "tool": "本地ComfyUI，tools/pet-side-art.mjs与pet-side-process.mjs", "model": "qwen_image_2.1_int8_convrot.safetensors", "seed": 2026111932, "record": "art-source/pet-motion/README.md", "notes": "参考public/pet-mesh/cat-side.png身份与画风，两次完整侧卧生成，不生成独立部件拼装，也不宣称原站立源像素不变。24步CFG4/euler/simple/768档，青色背景抠图，整只等比缩放摆到452×512底边498。第一版seed2026111931头身比偏写实，只保留母图/历史；当前选v2大头短身版本seed2026111932，头眼/条纹/笔触仍非严格一致。来源/许可/目标链路待审。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-motion.lie-connected",
+      "name": "趴卧同源身体臀腿连续图",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "原趴下与网格坐下均转历史对照；当前普通坐姿改完整新图，不改已认可其他动作或Unity",
+      "use": "原头身臀部和近后腿保留在一张452×512连续表面，移除前腿/旧远爪，只修前腿内线；仅旧lie与sitMesh历史对照复用该纹理，不覆盖历史图片",
+      "plannedBytes": 153600,
+      "files": [
+        { "role": "runtime", "path": "public/pet-motion/lie-connected.png" },
+        { "role": "workflow", "path": "art-source/pet-motion/connected-derivation.json" },
+        { "role": "reference", "path": "art-source/pet-motion/connected-mask.png" },
+        { "role": "reference", "path": "art-source/pet-motion/connected-light.png" },
+        { "role": "reference", "path": "art-source/pet-motion/connected-dark.png" }
+      ],
+      "generation": { "tool": "tools/pet-motion-connected.mjs，同源合并遮罩不生图", "record": "art-source/pet-motion/README.md", "notes": "用户要求趴卧臀腿连接、尾巴不拉伸；原图RGB、身体与近后腿遮罩取并集，不用旧后腿根修补或alpha羽化，只复用前腿内线修补。仅趴卧替换身体及近后腿为连续网格；尾巴单骨骼刚性摆动，旧图及其他动作不变。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-motion.body",
+      "name": "四腿动作试验同源头身尾",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "用户认可复制腿后允许尝试其他动画，仅HTML试验",
+      "use": "分离近侧双腿后的同源头身尾，少量同源毛色修补原腿内边线，452×512",
+      "plannedBytes": 153600,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/PetMotion/T_Pet_body.png" },
+        { "role": "reference", "path": "public/pet-motion/body.png" },
+        { "role": "workflow", "path": "art-source/pet-motion/derivation.json" },
+        { "role": "reference", "path": "art-source/pet-motion/body-mask.png" },
+        { "role": "reference", "path": "art-source/pet-motion/patch-mask.png" },
+        { "role": "reference", "path": "art-source/pet-motion/body-light.png" },
+        { "role": "reference", "path": "art-source/pet-motion/body-dark.png" },
+        { "role": "reference", "path": "art-source/pet-motion/assembled-light.png" },
+        { "role": "reference", "path": "art-source/pet-motion/assembled-dark.png" }
+      ],
+      "generation": { "tool": "tools/pet-motion-process.mjs，不生图", "record": "art-source/pet-motion/README.md", "notes": "原头身尾按腹部轮廓截取，2775个腿根内线附近像素同源毛色取样修补；遮罩/修补区外RGBA不变。新动作仅HTML，原图、已认可复制腿及旧入口不变。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-motion.near-front",
+      "name": "四腿动作试验同源近前腿",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "与同源头身尾一起验证独立四肢",
+      "use": "原近前腿1:1分离，腿根羽化衔接，不重画或缩小，452×512",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/PetMotion/T_Pet_near-front.png" },
+        { "role": "reference", "path": "public/pet-motion/near-front.png" }
+      ],
+      "generation": { "tool": "tools/pet-motion-process.mjs，同源提取", "record": "art-source/pet-motion/README.md", "notes": "复用pet-limbs donor近前腿提取，scale1，根部53px alpha羽化，透明RGB扩边3px，不改不透明源RGB。7798个完全不透明像素精确保留，其他是原alpha及根部羽化。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-motion.near-hind",
+      "name": "四腿动作试验同源近后腿",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "与同源头身尾一起验证独立四肢",
+      "use": "原近后腿1:1分离，腿根羽化衔接，不重画或缩小，452×512",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/PetMotion/T_Pet_near-hind.png" },
+        { "role": "reference", "path": "public/pet-motion/near-hind.png" }
+      ],
+      "generation": { "tool": "tools/pet-motion-process.mjs，同源提取", "record": "art-source/pet-motion/README.md", "notes": "复用pet-limbs donor近后腿提取，scale1，根部53px alpha羽化，透明RGB扩边3px。10787个完全不透明像素精确保留；远侧继续共用已认可带阴影复制腿，不重复登记。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-limbs.far-front-copy",
+      "name": "同源近前腿复制的完整远前腿",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "用户指出双远腿过小，允许复制可见近腿加阴影，限HTML试验",
+      "use": "同一原图近前腿等尺寸复制、平移和轻阴影，不重画腿形，452×512",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/PetMotion/T_Pet_far-front-copy.png" },
+        { "role": "reference", "path": "public/pet-limbs/far-front-copy.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/donor/front-source.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/donor/front-mask.png" },
+        { "role": "workflow", "path": "art-source/pet-limbs/donor/derivation.json" },
+        { "role": "reference", "path": "art-source/pet-limbs/donor/whole-light.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/donor/whole-dark.png" }
+      ],
+      "generation": { "tool": "tools/pet-limbs-donor.mjs，同源近腿复制，不生图", "record": "art-source/pet-limbs/README.md", "notes": "原近前腿体量/爪形保留，等尺寸平移(-25,-7)，87×175有效范围，11724个alpha>64像素，与提取源相同。仅RGB乘0.90至0.94轻阴影，不缩小或重画；原可见远爪不再叠回，避免双爪。旧AI版保留对照。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-limbs.far-hind-copy",
+      "name": "同源近后腿复制的完整远后腿",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "与同源近前腿复制版一起检查体量和遮挡，不改Unity",
+      "use": "保留原近后腿宽大腿与完整爪形，等尺寸复制、平移和轻阴影，452×512",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/PetMotion/T_Pet_far-hind-copy.png" },
+        { "role": "reference", "path": "public/pet-limbs/far-hind-copy.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/donor/hind-source.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/donor/hind-mask.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/donor/assembled-light.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/donor/assembled-dark.png" }
+      ],
+      "generation": { "tool": "tools/pet-limbs-donor.mjs，同源近腿复制，不生图", "record": "art-source/pet-limbs/README.md", "notes": "原近后腿大腿/爪形保留，等尺寸平移(-31,-8)，112×178有效范围，15153个alpha>64像素，与提取源相同。仅RGB轻阴影，不缩小或重画；复用原前景、按复制腿重标骨骼，旧AI版保留对照。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-limbs.far-front",
+      "name": "完整远侧前腿补全试验",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "用户要求补齐整条被遮挡的前后腿，仅HTML技术试验",
+      "use": "从肩根到前爪的完整远侧前腿，同源可见部分保留，隐藏上臂/前臂/爪内侧由本地ComfyUI补全，452×512",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "public/pet-limbs/far-front.png" },
+        { "role": "master", "path": "art-source/pet-limbs/front/master.png" },
+        { "role": "workflow", "path": "art-source/pet-limbs/front/workflow.json" },
+        { "role": "generation-record", "path": "art-source/pet-limbs/front/history.json" },
+        { "role": "reference", "path": "art-source/pet-limbs/front/input-guide.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/front-guide.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/front-silhouette.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/front-cut.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/front-visible.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/front-protected.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/front-provenance.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/front-detail.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/front-source-detail.png" }
+      ],
+      "generation": { "tool": "本地ComfyUI同源遮挡补全；tools/pet-limbs-art.mjs / pet-limbs-process.mjs", "model": "qwen_image_2.1_int8_convrot.safetensors", "seed": 2026111921, "record": "art-source/pet-limbs/README.md", "notes": "完整肩根/上臂/肘/前臂/腕/前爪，4段骨骼；模型输出按完整轮廓适配，仅补缺面和修边，230个可见原图核心像素锁定。前景分离线随后细修避免切进近前爪，生成实际输入另存front/input-guide.png，与最新运行引导区分。解码后遮罩，不是扩散mask inpaint；仍有接缝、描边与人工标定限制。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-limbs.far-hind",
+      "name": "完整远侧后腿补全试验",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "与完整远前腿一起验证，不是仅接一小段隐藏区域",
+      "use": "从髋根、大腿、膝、跗关节到完整后爪；保留原爪核心像素，模型补齐其余被遮挡区域，452×512",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "public/pet-limbs/far-hind.png" },
+        { "role": "master", "path": "art-source/pet-limbs/hind/master.png" },
+        { "role": "workflow", "path": "art-source/pet-limbs/hind/workflow.json" },
+        { "role": "generation-record", "path": "art-source/pet-limbs/hind/history.json" },
+        { "role": "reference", "path": "art-source/pet-limbs/hind/input-guide.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/hind-guide.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/hind-silhouette.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/hind-cut.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/hind-visible.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/hind-protected.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/hind-provenance.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/hind-detail.png" }
+      ],
+      "generation": { "tool": "本地ComfyUI同源遮挡补全；tools/pet-limbs-art.mjs / pet-limbs-process.mjs", "model": "qwen_image_2.1_int8_convrot.safetensors", "seed": 2026111922, "record": "art-source/pet-limbs/README.md", "notes": "重新按整条髋/大腿/膝/跗/后爪补齐，不继续放大旧短腿补丁。823个原后爪核心像素锁定，其余缺面按完整轮廓取本地模型内容；模型侧接缝颜色过渡10px。母图和生成依据完整保留，未恢复真实隐藏像素，不是完整步态或Unity资源。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-limbs.foreground",
+      "name": "前后远腿分离后的同源前景",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "完整双远腿HTML试验的原头身和近侧双腿，不改Unity",
+      "use": "从原图移除远侧可见前后腿，保留头身及近侧双腿，用于检查完整腿根连接和遮挡，452×512",
+      "plannedBytes": 153600,
+      "files": [
+        { "role": "runtime", "path": "public/pet-limbs/foreground.png" },
+        { "role": "workflow", "path": "art-source/pet-limbs/spec.json" },
+        { "role": "workflow", "path": "art-source/pet-limbs/derivation.json" },
+        { "role": "reference", "path": "art-source/pet-limbs/whole-limbs-light.png" },
+        { "role": "reference", "path": "art-source/pet-limbs/whole-limbs-dark.png" }
+      ],
+      "generation": { "tool": "同源像素分离；tools/pet-limbs-process.mjs", "record": "art-source/pet-limbs/README.md", "notes": "原整猫不变，只分离远侧前后腿；切口外RGBA与原图一致。前景含原头身、尾和近侧双腿，静止于后层完整双远腿之上，验证独立关节和前后遮挡，不声称四腿全套行走/趴卧。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-layers.far-hind-ai",
+      "name": "远后腿遮挡区本地模型补图",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "用户追加允许仅生成原图被遮挡部分，仍仅HTML试验",
+      "use": "同源后爪+模型隐藏上段，452×512；最新清理修正轮廓、白边和踝部切缝，保留819个爪内核心像素，旧未清理图可对照",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "public/pet-layers/far-hind-ai-clean.png" },
+        { "role": "reference", "path": "public/pet-layers/far-hind-ai.png" },
+        { "role": "workflow", "path": "art-source/pet-layers/cleanup/derivation.json" },
+        { "role": "reference", "path": "art-source/pet-layers/cleanup/silhouette.png" },
+        { "role": "reference", "path": "art-source/pet-layers/cleanup/join-repair-mask.png" },
+        { "role": "reference", "path": "art-source/pet-layers/cleanup/protected-paw.png" },
+        { "role": "reference", "path": "art-source/pet-layers/cleanup/leg-detail.png" },
+        { "role": "reference", "path": "art-source/pet-layers/cleanup/compare-light.png" },
+        { "role": "reference", "path": "art-source/pet-layers/cleanup/compare-dark.png" },
+        { "role": "master", "path": "art-source/pet-layers/ai-completion-v2/master.png" },
+        { "role": "workflow", "path": "art-source/pet-layers/ai-completion-v2/workflow.json" },
+        { "role": "generation-record", "path": "art-source/pet-layers/ai-completion-v2/history.json" },
+        { "role": "reference", "path": "art-source/pet-layers/ai-completion-v2/edit-guide.png" },
+        { "role": "reference", "path": "art-source/pet-layers/ai-completion/master.png" },
+        { "role": "workflow", "path": "art-source/pet-layers/ai-completion/workflow.json" },
+        { "role": "generation-record", "path": "art-source/pet-layers/ai-completion/history.json" },
+        { "role": "reference", "path": "art-source/pet-layers/ai-completion/edit-guide.png" },
+        { "role": "workflow", "path": "art-source/pet-layers/ai-derivation.json" },
+        { "role": "reference", "path": "art-source/pet-layers/ai-provenance.png" },
+        { "role": "reference", "path": "art-source/pet-layers/ai-rest-reassembled.png" },
+        { "role": "reference", "path": "art-source/pet-layers/ai-review.png" },
+        { "role": "reference", "path": "art-source/pet-layers/ai-leg-detail.png" }
+      ],
+      "generation": { "tool": "本地ComfyUI补全+确定性边缘清理", "model": "qwen_image_2.1_int8_convrot.safetensors", "seed": 2026111912, "record": "art-source/pet-layers/README.md", "notes": "初版锁定1384个可见原图像素、3618个隐藏补区像素。用户随后授权修抠图，clean版用连续抗锯齿轮廓、局部去白边、227像素接缝颜色修复和透明RGB扩边；819个核心爪像素仍与原图相同，边缘/接缝不再声称全部像素锁定。复用原母图未重新生图，保留初版及失败记录；不是扩散阶段遮罩inpaint，未导入Unity。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-layers.foreground",
+      "name": "同源远后腿分离后的前景",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "仅HTML远侧后腿分离试验，不是完整移动或趴卧实现",
+      "use": "452×512同源前景；最新局部抗锯齿切口清除旧后腿根残片和脚底残线，切口外原像素不变",
+      "plannedBytes": 153600,
+      "files": [
+        { "role": "runtime", "path": "public/pet-layers/foreground-clean.png" },
+        { "role": "reference", "path": "public/pet-layers/foreground.png" },
+        { "role": "reference", "path": "art-source/pet-layers/cleanup/foreground-cut-mask.png" },
+        { "role": "reference", "path": "art-source/pet-layers/cleanup/foreground-detail-before.png" },
+        { "role": "reference", "path": "art-source/pet-layers/cleanup/foreground-detail-after.png" },
+        { "role": "reference", "path": "art-source/pet-layers/visible-only.png" },
+        { "role": "reference", "path": "art-source/pet-layers/completion-mask.png" },
+        { "role": "reference", "path": "art-source/pet-layers/paw-detail.png" }
+      ],
+      "generation": { "tool": "同源像素分离；tools/pet-layers-process.mjs / pet-layers-clean.mjs", "record": "art-source/pet-layers/README.md", "notes": "用户反馈没抠干净后，扩大局部切口并4倍采样面积平均，清除挂在前景的后腿根和脚底残片；其余原图不改。旧版保留供对照，未重新生成头身或导入Unity。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-layers.far-hind",
+      "name": "同源远侧后腿试验层",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "仅验证一条远后腿，不声称恢复被挡住的真实像素",
+      "use": "原可见远侧后爪直接分离；上段隐藏区域由同图近侧后腿像素补齐，单独标识来源与补区",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "public/pet-layers/far-hind-clean.png" },
+        { "role": "reference", "path": "public/pet-layers/far-hind.png" },
+        { "role": "workflow", "path": "art-source/pet-layers/derivation.json" },
+        { "role": "reference", "path": "art-source/pet-layers/provenance.png" },
+        { "role": "reference", "path": "art-source/pet-layers/rest-reassembled.png" },
+        { "role": "reference", "path": "art-source/pet-layers/separation-review.png" }
+      ],
+      "generation": { "tool": "原图分离与同源像素补齐；tools/pet-layers-process.mjs / pet-layers-clean.mjs", "record": "art-source/pet-layers/README.md", "notes": "与模型版共用清理后轮廓、边缘去白和接缝修复，避免用不同脏边误判两种补全的差别；原取样图保留，仍非真实隐藏像素。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-mesh.cat-side",
+      "name": "单张侧面猫网格试验",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "仅HTML单图网格快速验证、聊天内玩法示意和独立siege.html逆塔防试玩，不改Unity或正式首批",
+      "use": "从既有完整正侧母图取一整只侧面猫，保留身体所有区域相对位置，仅裁边/去底/缩小；512长边透明PNG，不生成或拼接部件；另复用于逆塔防分幕示意及siege.html战场/结算的动物位置，试玩仅整图倾斜与地面范围/命中特效，不代表完整爪尾动作或正式视角定稿",
+      "plannedBytes": 153600,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/PetMotion/T_Pet_original.png" },
+        { "role": "reference", "path": "public/pet-mesh/cat-side.png" },
+        { "role": "reference", "path": "art-source/pet-mesh/source-crop.jpg" },
+        { "role": "reference", "path": "art-source/pet-mesh/edge-light.png" },
+        { "role": "reference", "path": "art-source/pet-mesh/edge-dark.png" },
+        { "role": "workflow", "path": "art-source/pet-mesh/derivation.json" }
+      ],
+      "generation": { "tool": "既有同源整图派生；tools/pet-mesh-process.mjs", "record": "art-source/pet-mesh/README.md", "notes": "复用pet-rig.turnaround母图及原生图记录，不新增ComfyUI生成。只取原图中一整只侧面猫，边界连通去白底、等比缩小、256色PNG，无分件/拼接/补画；452×512，单张贴图供Three.js SkinnedMesh使用。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-rig.turnaround",
+      "name": "猫咪正侧面动作试验参考",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "仅独立 HTML 动作验证，不进入 Unity 或正式首批",
+      "use": "按用户最新柔和大眼橘白猫参考生成正面和侧面标准站姿，768 长边参考图",
+      "plannedBytes": 256000,
+      "files": [
+        { "role": "runtime", "path": "public/pet-rig/turnaround.jpg" },
+        { "role": "reference", "path": "art-source/pet-rig/user-reference.png" },
+        { "role": "reference", "path": "art-source/pet-rig/style-reference.png" },
+        { "role": "master", "path": "art-source/pet-rig/turnaround-master.png" },
+        { "role": "workflow", "path": "art-source/pet-rig/turnaround-workflow.json" },
+        { "role": "generation-record", "path": "art-source/pet-rig/turnaround-history.json" }
+      ],
+      "generation": { "tool": "本地 ComfyUI；tools/pet-rig-art.mjs", "model": "qwen_image_2.1_int8_convrot.safetensors", "seed": 2026111901, "record": "art-source/pet-rig/README.md", "notes": "采用用户最新大眼、柔和晕染橘白猫画风，不沿用旧点眼临时图；母图前视仍偏坐姿，不能当合格标准站姿。背景实际不透明，预览使用768长边JPEG88。只作风格和视角参考。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-rig.front-atlas",
+      "name": "正面猫咪分件试验图集",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "仅独立 HTML 动作验证，不是正式骨骼资源",
+      "use": "768 长边透明分件图集；头、躯干、尾、双耳、四肢共九件；不做逐帧整图",
+      "plannedBytes": 256000,
+      "files": [
+        { "role": "runtime", "path": "public/pet-rig/front-atlas.png" },
+        { "role": "master", "path": "art-source/pet-rig/front-master.png" },
+        { "role": "master", "path": "art-source/pet-rig/front-body-master.png" },
+        { "role": "workflow", "path": "art-source/pet-rig/front-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-rig/front-body-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-rig/derivation.json" },
+        { "role": "generation-record", "path": "art-source/pet-rig/front-history.json" },
+        { "role": "generation-record", "path": "art-source/pet-rig/front-body-history.json" },
+        { "role": "reference", "path": "art-source/pet-rig/edge-light.png" },
+        { "role": "reference", "path": "art-source/pet-rig/edge-dark.png" }
+      ],
+      "generation": { "tool": "本地 ComfyUI + tools/pet-rig-process.mjs", "model": "qwen_image_2.1_int8_convrot.safetensors", "seed": 2026111902, "record": "art-source/pet-rig/README.md", "notes": "分件生成未完全遵循九宫格，补充躯干尝试seed2026111904仍带头；显式裁切/曲线遮罩、边界泛洪去白底、人工校准挂点。四肢复用前腿；768透明256色PNG，非生产解剖资源，不自动升正式图。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-rig.side-atlas",
+      "name": "侧面猫咪分件试验图集",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "仅独立 HTML 动作验证，不是正式骨骼资源",
+      "use": "768 长边透明分件图集；同语义骨架、侧面专用图层与遮挡顺序",
+      "plannedBytes": 256000,
+      "files": [
+        { "role": "runtime", "path": "public/pet-rig/side-atlas.png" },
+        { "role": "master", "path": "art-source/pet-rig/side-master.png" },
+        { "role": "master", "path": "art-source/pet-rig/side-body-master.png" },
+        { "role": "workflow", "path": "art-source/pet-rig/side-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-rig/side-body-workflow.json" },
+        { "role": "generation-record", "path": "art-source/pet-rig/side-history.json" },
+        { "role": "generation-record", "path": "art-source/pet-rig/side-body-history.json" }
+      ],
+      "generation": { "tool": "本地 ComfyUI + tools/pet-rig-process.mjs", "model": "qwen_image_2.1_int8_convrot.safetensors", "seed": 2026111903, "record": "art-source/pet-rig/README.md", "notes": "侧面整套分件失败后，补充躯干seed2026111905，仍需裁掉头和空腿。侧面耳与腿复用正面母图，分视角位置/遮挡独立。与正面共用语义骨架，不是3D转身或最终动画素材。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
       "id": "city-map.neighborhood",
-      "name": "街区外出地图",
+      "name": "街区外出地图地面底图",
       "module": "CityMap",
       "status": "temporary",
       "loadTiming": "preview-only",
       "availability": "首版三个地点均开放；本轮有图地图验证，不新增等级解锁条件",
-      "use": "768×1344 不透明竖版地图，三处地标与道路；无动物、文字或交互烘焙，独立叠加标记",
+      "use": "768×1344 不透明地面底图；保留道路与装饰民居，移除三处可交互地点及救助站建筑，后者以独立透明图叠加",
       "plannedBytes": 204800,
       "files": [
         { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/T_CityMap_Neighborhood.jpg" },
-        { "role": "master", "path": "art-source/city-map-neighborhood/selected-master.png" },
+        { "role": "master", "path": "art-source/city-map-layered/terrain-master.png" },
+        { "role": "reference", "path": "art-source/city-map-neighborhood/selected-master.png" },
+        { "role": "reference", "path": "art-source/city-map-layered/assembled.png" },
+        { "role": "reference", "path": "art-source/city-map-layered/edge-review.png" },
+        { "role": "workflow", "path": "art-source/city-map-layered/derivation.json" },
         { "role": "reference", "path": "art-source/city-map-neighborhood/style-reference.png" },
         { "role": "reference", "path": "art-source/city-map-neighborhood/master.png" },
         { "role": "reference", "path": "art-source/city-map-neighborhood/simplified-master.png" },
@@ -47,8 +451,68 @@
         "model": "qwen_image_2.1_int8_convrot.safetensors",
         "seed": 2026111812,
         "record": "art-source/city-map-neighborhood/README.md",
-        "notes": "本机 Qwen Image 2.1，三次生成 seed 2026111811/12/13；选第二版布局，原地草坪修补移除参考猫，未挪动地标。脚本 city-map-art.mjs / city-map-derive.mjs、完整工作流及后处理记录均保留。768×1344 JPEG quality82，无放大、无动物、无烘焙文案；仍为待人工审核临时图，不代表商业授权或微信链路通过。"
+        "notes": "本机 Qwen Image 2.1，原三次生成 seed 2026111811/12/13 及全部来源保留。2026-11-19 按用户纠正拆分为地面和四处独立地标；city-map-layers.mjs 从既有母图取原像素透明轮廓，仅补地面，不新生图或放大。完整坐标见 city-map-layered/derivation.json。底图仍复用原路径/GUID，JPEG82；临时待审，不代表商业授权或微信链路通过。"
       },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "city-map.place.parking",
+      "name": "地图独立单车棚",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "原有单车棚入口，不新增玩法或解锁条件",
+      "use": "208×190 透明图，独立地点 Image/Button，可单独换图移动；名称与选择状态另叠；SC_RescueLoop 通过原 Panel_CityMap 复用，无新增图片副本",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/T_CityPlace_Parking.png" }
+      ],
+      "generation": { "tool": "既有 ComfyUI 母图分层派生；tools/city-map-layers.mjs", "record": "art-source/city-map-layered/README.md", "notes": "母图与工作流共享 city-map.neighborhood 的唯一登记；未重新生成或放大，透明轮廓与底部地面影子仅作临时初筛。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "city-map.place.yard",
+      "name": "地图独立居民小院",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "原有自主探索入口，不新增玩法或解锁条件",
+      "use": "354×211 透明小院及邻树图，独立地点 Image/Button，可单独换图移动；名称与选择状态另叠",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/T_CityPlace_Yard.png" }
+      ],
+      "generation": { "tool": "既有 ComfyUI 母图分层派生；tools/city-map-layers.mjs", "record": "art-source/city-map-layered/README.md", "notes": "共享底图的生成来源；保留小院地面而非镂空内部，树随小院图层替换，不生成状态整图。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "city-map.place.porch",
+      "name": "地图独立临街门廊",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "原有寻宠入口，不新增玩法或解锁条件",
+      "use": "250×234 透明门廊图，独立地点 Image/Button，可单独换图移动；名称与选择状态另叠",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/T_CityPlace_Porch.png" }
+      ],
+      "generation": { "tool": "既有 ComfyUI 母图分层派生；tools/city-map-layers.mjs", "record": "art-source/city-map-layered/README.md", "notes": "共享底图的生成来源；原像素建筑与花丛保留，图层与文本无绑定烘焙。" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "city-map.place.shelter",
+      "name": "地图独立救助站建筑",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "现有地图救助站展示；本次不新增返回或升级功能",
+      "use": "294×218 透明救助站及邻树图，可独立替换；本轮仅视觉，不伪造第四个外出入口",
+      "plannedBytes": 61440,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/T_CityPlace_Shelter.png" }
+      ],
+      "generation": { "tool": "既有 ComfyUI 母图分层派生；tools/city-map-layers.mjs", "record": "art-source/city-map-layered/README.md", "notes": "共享底图的生成来源；方便未来获准后替换升级外观，未实现设施升级规则。" },
       "review": { "visual": "pending", "rights": "pending", "target": "pending" }
     },
     {
@@ -79,7 +543,7 @@
       "status": "temporary",
       "loadTiming": "preview-only",
       "availability": "Editor 临时验证；不代表正式动物种类或解锁进度",
-      "use": "256×256 透明动物角标，UI 状态独立叠加",
+      "use": "256×256 透明动物角标，UI 状态独立叠加；逆塔防 Unity 独立试玩复用同一 Sprite 作为守方猫，不复制图片或接分层动画",
       "plannedBytes": 61440,
       "files": [
         { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/Animals/T_Animal_CatOrange.png" }
@@ -172,7 +636,7 @@
       "status": "temporary",
       "loadTiming": "preview-only",
       "availability": "同期护理试做临时图；不批准正式资源、动作或解锁规则",
-      "use": "512×512 透明护理主图；已接站内 Editor 试玩，深浅底边缘与六比例初筛，不作为正式资产审核",
+      "use": "512×512 透明护理主图；已接站内 Editor 试玩，深浅底边缘与六比例初筛；duel.html 脑内过招实验复用同文件为前景与回顾图，不复制、不作为正式资产审核",
       "plannedBytes": 153600,
       "files": [
         { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/StationCareArt/T_Station_DogTemporary.png" },
@@ -197,7 +661,7 @@
       "status": "temporary",
       "loadTiming": "preview-only",
       "availability": "同期护理试做临时图；不批准正式资源、动作或解锁规则",
-      "use": "512×512 透明护理主图；两个猫样本共用基础图，脏污/梳理独立叠加，已接站内 Editor 试玩；B版 Web 与 Unity 救助案例复用同一 Sprite 为独立前景，不复制动物图，不修改原站内绑定",
+      "use": "512×512 透明护理主图；两个猫样本共用基础图，脏污/梳理独立叠加，已接站内 Editor 试玩；B版 Web 与 Unity 救助案例复用同一 Sprite 为独立前景；duel.html 脑内过招实验复用为前景与回顾图，不复制动物图，不修改原站内绑定；SC_RescueLoop 现场与新 Panel_StationLoop 仍复用此 Sprite 和原遮罩，同一个体的脏污成果由数据及局部场记录，不另存每只动物图片",
       "plannedBytes": 153600,
       "files": [
         { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/StationCareArt/T_Station_CatTemporary.png" },
@@ -222,7 +686,7 @@
       "status": "temporary",
       "loadTiming": "preview-only",
       "availability": "仅供B版操作布局探索，不批准正式美术、玩法规则或首批资源",
-      "use": "768×768空停车棚背景；B版 Web 与 Unity 救助案例观察区复用，按视口等比裁切；动物、文案、控件独立叠加，放大不代表新增源细节",
+      "use": "768×768空停车棚背景；B版 Web、Unity 救助案例与 duel.html 脑内过招实验观察区复用，按视口等比裁切；动物、文案、控件独立叠加，放大不代表新增源细节；SC_RescueLoop 通过原 Panel_RescueCase 复用，无新增图片副本",
       "plannedBytes": 204800,
       "files": [
         { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/RescueCaseArt/T_Rescue_ShelterTemporary.jpg" },

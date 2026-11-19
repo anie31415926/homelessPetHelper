@@ -1,0 +1,38 @@
+{
+  "width": 768,
+  "height": 1344,
+  "layers": [
+    {
+      "name": "Parking",
+      "path": "Assets/EditorScenes/CityMapArt/T_CityPlace_Parking.png",
+      "x": 0,
+      "y": 722,
+      "width": 208,
+      "height": 190
+    },
+    {
+      "name": "Yard",
+      "path": "Assets/EditorScenes/CityMapArt/T_CityPlace_Yard.png",
+      "x": 414,
+      "y": 396,
+      "width": 354,
+      "height": 211
+    },
+    {
+      "name": "Porch",
+      "path": "Assets/EditorScenes/CityMapArt/T_CityPlace_Porch.png",
+      "x": 514,
+      "y": 874,
+      "width": 250,
+      "height": 234
+    },
+    {
+      "name": "Shelter",
+      "path": "Assets/EditorScenes/CityMapArt/T_CityPlace_Shelter.png",
+      "x": 16,
+      "y": 936,
+      "width": 294,
+      "height": 218
+    }
+  ]
+}

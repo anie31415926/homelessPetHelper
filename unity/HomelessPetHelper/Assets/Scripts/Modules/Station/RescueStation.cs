@@ -60,6 +60,8 @@ namespace HomelessPetHelper.Modules.Station
             IsClosed = true;
         }
 
+        internal bool CanModify(Guid sessionId) => ValidateSession(sessionId, out _);
+
         public bool TryGetAnimal(Guid animalId, out StationAnimalIntake animal)
         {
             return _animalsById.TryGetValue(animalId, out animal);
@@ -75,6 +77,14 @@ namespace HomelessPetHelper.Modules.Station
 
             animal = intake.Individual.Current;
             return true;
+        }
+
+        /// <summary>Applies validated care effects to the admitted individual, never to arrival history.</summary>
+        public bool TryApplyCoatCondition(Guid stationSessionId, AnimalSnapshot expected, AnimalCoatCondition coat)
+        {
+            return ValidateSession(stationSessionId, out _) && expected != null &&
+                _animalsById.TryGetValue(expected.AnimalId, out var intake) && intake.Individual != null &&
+                intake.Individual.TryApplyCoatCondition(expected, coat);
         }
 
         /// <summary>

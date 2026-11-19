@@ -26,7 +26,7 @@ namespace HomelessPetHelper.Modules.Station.UI
 
         public event Action<Vector2, int> StrokeRequested;
 
-        public void Refresh(Sprite animal, DirtField field, DirtField fur = null)
+        public void Refresh(Sprite animal, IReadOnlyDirtField field, IReadOnlyDirtField fur = null)
         {
             if (_animal == null || _dirt == null || field == null)
             {
@@ -55,7 +55,7 @@ namespace HomelessPetHelper.Modules.Station.UI
             RefreshFur(fur);
         }
 
-        private void RefreshFur(DirtField fur)
+        private void RefreshFur(IReadOnlyDirtField fur)
         {
             _fur.gameObject.SetActive(fur != null);
             if (fur == null) return;

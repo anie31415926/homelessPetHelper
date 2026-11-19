@@ -41,6 +41,7 @@ namespace HomelessPetHelper.Bootstrap
 
         public OutingSession Session => _session;
         public OutingSummary LastSummary => _lastSummary;
+        public StationReturnSummary LastStationReturn { get; private set; }
 
         public OutingCoordinator(RescueFlow flow, RescueStation station, Guid stationSessionId,
             ActionWorldClock clock, Guid worldSessionId, CityMapRules mapRules,
@@ -435,7 +436,7 @@ namespace HomelessPetHelper.Bootstrap
             if (!_session.TrySettle(sessionId, out _) ||
                 (_session.AcceptedRequestId != Guid.Empty &&
                     !_requestPool.TryTransition(_session.AcceptedRequestId, RequestSignal.Resolve, out _)) ||
-                !_station.TryReceive(_stationSessionId, arrival, out _, out _) ||
+                !_station.TryReceive(_stationSessionId, arrival, out var stationReturn, out _) ||
                 !_clock.TryAdvance(expectedVersion, durationMinutes, out _, out _) ||
                 !_flow.TryAdvance(RescueSignal.ReturnToStation, out _))
             {
@@ -445,6 +446,7 @@ namespace HomelessPetHelper.Bootstrap
             summary = new OutingSummary(sessionId, _session.SelectedPointId,
                 _session.AcceptedRequestId, "rescued", durationMinutes);
             _returnedAnimalId = arrival.AnimalId;
+            LastStationReturn = stationReturn;
             _lastSummary = summary;
             return true;
         }

@@ -1,0 +1,118 @@
+{
+  "size": 768,
+  "cell": 256,
+  "views": {
+    "front": {
+      "head": {
+        "x": 16,
+        "y": 57,
+        "width": 224,
+        "height": 142
+      },
+      "body": {
+        "x": 293,
+        "y": 16,
+        "width": 181,
+        "height": 224
+      },
+      "tail": {
+        "x": 528,
+        "y": 74,
+        "width": 224,
+        "height": 107
+      },
+      "earL": {
+        "x": 42,
+        "y": 272,
+        "width": 172,
+        "height": 224
+      },
+      "earR": {
+        "x": 292,
+        "y": 272,
+        "width": 183,
+        "height": 224
+      },
+      "frontL": {
+        "x": 572,
+        "y": 272,
+        "width": 136,
+        "height": 224
+      },
+      "frontR": {
+        "x": 54,
+        "y": 528,
+        "width": 148,
+        "height": 224
+      },
+      "backL": {
+        "x": 316,
+        "y": 528,
+        "width": 136,
+        "height": 224
+      },
+      "backR": {
+        "x": 566,
+        "y": 528,
+        "width": 148,
+        "height": 224
+      }
+    },
+    "side": {
+      "head": {
+        "x": 16,
+        "y": 45,
+        "width": 224,
+        "height": 166
+      },
+      "body": {
+        "x": 272,
+        "y": 78,
+        "width": 224,
+        "height": 100
+      },
+      "tail": {
+        "x": 528,
+        "y": 74,
+        "width": 224,
+        "height": 107
+      },
+      "earL": {
+        "x": 42,
+        "y": 272,
+        "width": 172,
+        "height": 224
+      },
+      "earR": {
+        "x": 292,
+        "y": 272,
+        "width": 183,
+        "height": 224
+      },
+      "frontL": {
+        "x": 572,
+        "y": 272,
+        "width": 136,
+        "height": 224
+      },
+      "frontR": {
+        "x": 54,
+        "y": 528,
+        "width": 148,
+        "height": 224
+      },
+      "backL": {
+        "x": 316,
+        "y": 528,
+        "width": 136,
+        "height": 224
+      },
+      "backR": {
+        "x": 566,
+        "y": 528,
+        "width": 148,
+        "height": 224
+      }
+    }
+  }
+}

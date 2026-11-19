@@ -1,0 +1,108 @@
+{
+  "reference": "art-source/pet-rig/style-reference.png",
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "pet-rig-turnaround-reference.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "Soft healing storybook illustration matching the reference kitten: pale apricot orange and ivory white coat, large glossy warm brown eyes, delicate warm peach outlines, subtle watercolor-like soft shading, tiny pink nose, small pink scarf. Not flat geometric vector, not thick black outline, not dot eyes. All parts belong to ONE identical kitten. No text, no labels, no watermark, no border, no checkerboard, no ground or shadow. Genuine transparent alpha background. Character model sheet with exactly TWO full body views side by side: LEFT strictly front view, RIGHT strictly left-facing side profile. Both views are standing naturally on all four paws, not sitting. Same head height, same body proportions, all paws and tail visible, ears upright, eyes open, relaxed neutral pose. Whole animal with generous margins. This is the same orange and white kitten seen from two different cameras, not two different breeds. Clean complete anatomy.",
+        "negative_prompt": "text, watermark, UI frames, checkerboard, background scene, extra limbs, duplicated parts, photorealism, 3d render, thick black outline, dot eyes",
+        "resolution": 1024,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026111901,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "pet-rig/turnaround"
+      }
+    }
+  }
+}

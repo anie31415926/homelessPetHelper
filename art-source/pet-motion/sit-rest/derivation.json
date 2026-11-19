@@ -1,0 +1,24 @@
+{
+  "source": "art-source/pet-motion/sit-rest/master.png",
+  "sourceSha256": "bac5216ebba65ea8ebebd5abe0e237478284f06b8a62a9ca22d9c029d62df280",
+  "crop": {
+    "left": 111,
+    "top": 115,
+    "width": 599,
+    "height": 605
+  },
+  "placement": {
+    "left": 11,
+    "top": 64
+  },
+  "scaled": {
+    "width": 430,
+    "height": 434
+  },
+  "output": "public/pet-motion/sit-rest.png",
+  "target": {
+    "width": 430,
+    "height": 450
+  },
+  "operation": "Cyan chroma matte: boundary plus strong-chroma>40 enclosed seeds, flood min(G-R,B-R)>6, smooth alpha6..40; narrow edge RGB decontamination against175/231/232. Whole animal cropped uniformly to target then placed on452x512, bottom498. No detached parts, no original standing-image overwrite."
+}

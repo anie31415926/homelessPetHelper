@@ -1,0 +1,15 @@
+{
+  "source": "public/pet-mesh/cat-side.png",
+  "sourceSha256": "b1889c797e975a625a746ab530a4c7d9231a068ca387871b5306b2fedfd9b727",
+  "modelLayerSha256": "8537e16d18e58bf6bac8ea461912942386af6773f82bc93a8ea30dfa003556e9",
+  "donorLayerSha256": "d47c8416c8216e874cfa8dfd537d5429558d4c62885cca46eb440d2d134a1c9d",
+  "visibleMaskSha256": "b40ba26680905b64d3f3cdf6742fef8149977ec39ced6cc5b9018445af229d37",
+  "silhouette": "M281 353 C299 354 312 369 312 386 C312 410 288 438 280 455 C274 464 266 469 264 481 C256 483 246 483 240 479 C234 477 235 466 242 461 C247 457 254 456 256 451 C251 446 249 440 250 434 C260 424 272 407 271 392 C269 371 272 357 281 353Z",
+  "cutPath": "M226 432 Q238 434 250 431 Q257 437 267 442 L282 453 Q287 456 278 463 Q267 470 265 479 L267 493 L226 493Z",
+  "width": 452,
+  "height": 512,
+  "repairBandPixels": 227,
+  "protectedPixels": 819,
+  "method": "Supersampled continuous leg contour, local white-fringe colour replacement from same-image peach outline, narrow harmonic colour repair at cut seam, 3px transparent RGB dilation. No new model generation; original files preserved.",
+  "restrictions": "Only far leg and local foreground cut change. Original cat file and foreground outside cut mask are unchanged. Protected core paw texture remains original; edge and seam pixels may change in this authorized cleanup."
+}

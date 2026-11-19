@@ -2,7 +2,8 @@
 param(
     [ValidateSet('Initialize', 'PreviewAssets', 'PreviewLayout', 'CaseAssets', 'CaseLayout', 'CaseCompactLayout',
         'CaseCompactPolish',
-        'StationAssets', 'StationArt', 'StationCareLayout', 'MapAssets', 'MapLayout', 'ResourceAudit',
+        'StationAssets', 'StationArt', 'StationCareLayout', 'LoopAssets', 'ResourceAudit',
+        'SiegeAssets', 'SiegeLayout', 'SiegeBuild', 'PetMotionAssets', 'PetMotionAudit', 'PetMotionBake',
         'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
     [string]$Task = 'EditMode',
     [string]$EditorPath = $env:UNITY_EDITOR_PATH,
@@ -81,6 +82,48 @@ if (-not $Graphics)
 
 switch ($Task)
 {
+    'PetMotionAssets'
+    {
+        if (-not $Isolated) { throw 'PetMotionAssets must run in an isolated saved-project snapshot.' }
+        $sourceFolder = Join-Path $projectPath 'PetMotionSource'
+        New-Item -ItemType Directory -Path $sourceFolder | Out-Null
+        Copy-Item -LiteralPath (Join-Path $repoRoot 'art-source\pet-motion\unity-export.json') -Destination $sourceFolder
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.PetMotion.PetMotionAssets.CreateAssets')
+    }
+    'PetMotionBake'
+    {
+        if (-not $Isolated) { throw 'PetMotionBake must run in an isolated saved-project snapshot.' }
+        $sourceFolder = Join-Path $projectPath 'PetMotionSource'
+        New-Item -ItemType Directory -Path $sourceFolder | Out-Null
+        Copy-Item -LiteralPath (Join-Path $repoRoot 'art-source\pet-motion\unity-export.json') -Destination $sourceFolder
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.PetMotion.PetMotionAssets.UpdateClips')
+    }
+    'PetMotionAudit'
+    {
+        if (-not $Isolated) { throw 'PetMotionAudit must run in an isolated saved-project snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.PetMotion.PetMotionAudit.WriteReport')
+    }
+    'SiegeAssets'
+    {
+        if (-not $Isolated) { throw 'SiegeAssets must run in an isolated saved-project snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Siege.SiegeTrialAssets.CreateAssets')
+    }
+    'SiegeBuild'
+    {
+        if (-not $Isolated) { throw 'SiegeBuild must run in an isolated saved-project snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Siege.SiegeTrialAssets.BuildDevelopment')
+    }
+    'SiegeLayout'
+    {
+        if (-not $Isolated) { throw 'SiegeLayout must run in an isolated saved-project snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Siege.SiegeTrialAssets.RefineLayout')
+    }
+    'LoopAssets'
+    {
+        if (-not $Isolated) { throw 'LoopAssets must run in an isolated saved-project snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod',
+            'HomelessPetHelper.Editor.StationPreview.Loop.RescueLoopAssets.CreateSavedScene')
+    }
     'CaseCompactPolish'
     {
         if (-not $Isolated) { throw 'CaseCompactPolish must run in an isolated saved-project snapshot.' }
@@ -92,18 +135,6 @@ switch ($Task)
         if (-not $Isolated) { throw 'CaseCompactLayout must run in an isolated saved-project snapshot.' }
         $unityArguments += @('-quit', '-executeMethod',
             'HomelessPetHelper.Editor.RescueCase.RescueCompactLayoutUpgrade.UpgradeSavedPrefab')
-    }
-    'MapLayout'
-    {
-        if (-not $Isolated) { throw 'MapLayout must run in an isolated saved-project snapshot.' }
-        $unityArguments += @('-quit', '-executeMethod',
-            'HomelessPetHelper.Editor.CityMap.CityMapAssets.NormalizeLayout')
-    }
-    'MapAssets'
-    {
-        if (-not $Isolated) { throw 'MapAssets must run in an isolated saved-project snapshot.' }
-        $unityArguments += @('-quit', '-executeMethod',
-            'HomelessPetHelper.Editor.CityMap.CityMapAssets.CreateAssets')
     }
     'Initialize'
     {

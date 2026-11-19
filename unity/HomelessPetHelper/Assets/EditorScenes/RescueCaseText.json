@@ -1,5 +1,6 @@
 {
   "entries": [
+    { "key": "loop.return", "value": "返回救助站" },
     { "key": "title", "value": "停车棚的小猫" },
     { "key": "section", "value": "选择行动" },
     { "key": "turn", "value": "第 {0} 回合 · 食物 {1}" },

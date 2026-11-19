@@ -1,0 +1,33 @@
+{
+  "source": "public/pet-mesh/cat-side.png",
+  "width": 452,
+  "height": 512,
+  "specs": {
+    "front": {
+      "silhouette": "M121 315 C142 312 156 327 154 348 C151 372 135 392 132 414 L130 451 C133 462 131 478 124 484 C116 490 101 488 96 482 C90 477 92 467 101 462 L107 456 C106 439 105 418 102 401 C98 382 94 361 98 343 C101 329 108 319 121 315Z",
+      "visible": "M98 391 Q106 403 108 420 L111 447 Q114 456 117 460 Q111 465 109 472 Q107 480 110 484 Q101 484 96 479 Q91 475 95 467 L103 459 L105 437Z",
+      "cut": "M96 384 Q107 398 110 419 L114 450 Q116 457 119 461 Q113 465 111 471 Q108 478 111 484 L113 488 L87 492 L87 450 L96 430Z",
+      "crop": {
+        "left": 77,
+        "top": 295,
+        "width": 100,
+        "height": 207
+      },
+      "anatomy": "One entire FAR-SIDE FRONT LEG, from the rounded shoulder cap at the top through upper arm, elbow, forearm, wrist and the complete small ivory paw at the bottom. Slender front-leg anatomy, not a hind thigh. The slight elbow bend and paw position follow image 1 exactly.",
+      "seed": 2026111921
+    },
+    "hind": {
+      "silhouette": "M302 318 C327 316 350 336 349 364 C348 390 315 421 282 440 L296 451 C300 458 289 466 281 472 L280 482 C267 488 245 487 238 481 C230 475 234 464 244 460 L257 451 C246 443 239 431 244 421 C259 399 267 383 269 359 C268 337 280 320 302 318Z",
+      "visible": "M250 434 Q259 440 268 446 L280 454 Q282 457 276 463 Q267 471 264 481 Q252 484 241 480 Q234 478 236 467 Q241 460 250 456 L256 451Z",
+      "cut": "M226 432 Q238 434 250 431 Q257 437 267 442 L282 453 Q287 456 278 463 Q267 470 265 479 L267 493 L226 493Z",
+      "crop": {
+        "left": 216,
+        "top": 295,
+        "width": 153,
+        "height": 207
+      },
+      "anatomy": "One entire FAR-SIDE HIND LEG, beginning with a broad rounded hip-root and thigh at the top, a forward-left knee, a backward-right hock bend, then the full metatarsus and ivory paw pointing left. Keep the knee-to-hock zigzag indicated in image 1. Not a front leg, not a short shin, and not a single sausage-shaped limb. The thigh is broad because it normally hides under the kitten body.",
+      "seed": 2026111922
+    }
+  }
+}

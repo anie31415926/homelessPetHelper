@@ -1,0 +1,6 @@
+{
+  "name": "HomelessPetHelper.Modules.Siege",
+  "rootNamespace": "HomelessPetHelper.Modules.Siege",
+  "noEngineReferences": true,
+  "autoReferenced": false
+}

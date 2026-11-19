@@ -1,0 +1,35 @@
+{
+  "source": "public/pet-mesh/cat-side.png",
+  "sourceSha256": "b1889c797e975a625a746ab530a4c7d9231a068ca387871b5306b2fedfd9b727",
+  "bodyPath": "M0 0 H452 V512 H359 V446 C351 430 342 421 325 418 C300 420 275 432 247 434 C214 435 191 429 173 420 C150 409 127 399 111 390 C94 382 82 370 75 355 H0Z",
+  "patches": [
+    {
+      "cx": 184,
+      "cy": 403,
+      "rx": 13,
+      "ry": 31,
+      "offset": [
+        24,
+        -12
+      ]
+    },
+    {
+      "cx": 254,
+      "cy": 410,
+      "rx": 17,
+      "ry": 35,
+      "offset": [
+        -22,
+        -26
+      ]
+    }
+  ],
+  "patchedPixels": 2775,
+  "nearLegs": {
+    "source": "art-source/pet-limbs/donor/*-source.png",
+    "scale": 1,
+    "rootAlphaFade": 53,
+    "transparentRgbBleed": 3
+  },
+  "method": "Same-source torso silhouette and local fur seam repair; native near legs with root-only alpha feather. Reuse approved far-leg copies unchanged. No generation or original-file mutation."
+}

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "rules": {
+    "stepMs": 50, "durationMs": 120000, "playerPeriodMs": 4000,
+    "handSize": 3, "bagCopies": 3, "openingEnergy": 4, "energyCap": 6,
+    "turnEnergy": 2, "turnDraw": 1, "mergeCost": 1, "mergeRadius": 26,
+    "naturalMergeMinDistance": 65, "target": 70, "maxLog": 40,
+    "guardStart": 0.84, "sweepCenterAt": 0.84, "guardDurationMs": 8000,
+    "slapDamage": 2, "slapPush": 16, "slapPeriodMs": 1100, "slapReach": 10,
+    "sweepDamage": 4, "sweepPush": 42, "sweepRadius": 82, "sweepRecoveryMs": 1800,
+    "animalRepairs": 2, "repairAmount": 8, "repairThreshold": 0.6,
+    "repairDurationMs": 1800, "repairCooldownMs": 10000,
+    "threatBase": 0.1, "threatNearWeight": 4, "threatExponent": 3,
+    "buildDurationMs": 1600, "buildOnAnimalTurn": 3, "animalBuilds": 1,
+    "relaxAtProgress": 0.5, "rerouteDurationMs": 700
+  },
+  "units": [
+    { "id": "cart", "nameKey": "unit.cart", "detailKey": "detail.cart", "icon": "truck", "cost": 2, "speed": 20, "hp": 7, "damage": 2, "attackMs": 1000, "reach": 30, "gain": 10, "ability": "none", "abilityRadius": 0, "abilityPeriodMs": 0, "upgradeId": "ram", "bag": true },
+    { "id": "ball", "nameKey": "unit.ball", "detailKey": "detail.ball", "icon": "circle-dot", "cost": 2, "speed": 32, "hp": 4, "damage": 1, "attackMs": 800, "reach": 26, "gain": 8, "ability": "none", "abilityRadius": 0, "abilityPeriodMs": 0, "upgradeId": "runner", "bag": true },
+    { "id": "cover", "nameKey": "unit.cover", "detailKey": "detail.cover", "icon": "umbrella", "cost": 2, "speed": 23, "hp": 5, "damage": 1, "attackMs": 1000, "reach": 28, "gain": 8, "ability": "aura", "abilityRadius": 34, "abilityPeriodMs": 5000, "upgradeId": "canopy", "bag": true },
+    { "id": "ram", "nameKey": "unit.ram", "detailKey": "detail.ram", "icon": "shield", "cost": 0, "speed": 22, "hp": 17, "damage": 5, "attackMs": 1000, "reach": 32, "gain": 30, "ability": "brace", "abilityRadius": 0, "abilityPeriodMs": 0, "upgradeId": null, "bag": false },
+    { "id": "runner", "nameKey": "unit.runner", "detailKey": "detail.runner", "icon": "route", "cost": 0, "speed": 39, "hp": 10, "damage": 3, "attackMs": 800, "reach": 28, "gain": 24, "ability": "reroute", "abilityRadius": 0, "abilityPeriodMs": 0, "upgradeId": null, "bag": false },
+    { "id": "canopy", "nameKey": "unit.canopy", "detailKey": "detail.canopy", "icon": "umbrella", "cost": 0, "speed": 24, "hp": 13, "damage": 3, "attackMs": 1000, "reach": 32, "gain": 24, "ability": "aura", "abilityRadius": 62, "abilityPeriodMs": 2500, "upgradeId": null, "bag": false }
+  ],
+  "tower": { "hp": 14, "damage": 1, "range": 85, "periodMs": 1400 },
+  "animalStates": [
+    { "id": "calm", "nameKey": "animal.calm", "vigilance": "watchful", "stamina": "normal", "periodMs": 6000 },
+    { "id": "alert", "nameKey": "animal.alert", "vigilance": "high", "stamina": "normal", "periodMs": 3000 },
+    { "id": "tired", "nameKey": "animal.tired", "vigilance": "watchful", "stamina": "tired", "periodMs": 8000 }
+  ],
+  "map": {
+    "width": 360, "height": 360,
+    "animalImage": "/pet-mesh/cat-side.png",
+    "lanes": [
+      { "id": "top", "nameKey": "lane.top", "open": true, "points": [[40,310],[43,220],[47,131],[83,69],[177,48],[249,51],[280,68]] },
+      { "id": "mid", "nameKey": "lane.mid", "open": true, "points": [[40,310],[113,244],[193,176],[249,121],[286,81]] },
+      { "id": "bottom", "nameKey": "lane.bottom", "open": true, "points": [[40,310],[126,312],[217,307],[294,271],[317,183],[316,128],[304,94]] }
+    ],
+    "pads": [
+      { "id": "top.outer", "laneId": "top", "at": 0.32, "initial": false },
+      { "id": "top.inner", "laneId": "top", "at": 0.73, "initial": true },
+      { "id": "mid.outer", "laneId": "mid", "at": 0.39, "initial": true },
+      { "id": "mid.inner", "laneId": "mid", "at": 0.73, "initial": false },
+      { "id": "bottom.outer", "laneId": "bottom", "at": 0.32, "initial": false },
+      { "id": "bottom.inner", "laneId": "bottom", "at": 0.73, "initial": false }
+    ]
+  }
+}
