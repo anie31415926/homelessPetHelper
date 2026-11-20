@@ -31,6 +31,80 @@ namespace HomelessPetHelper.Tests.EditMode
         private MainProgressSession Open(ISaveStorage storage) => new MainProgressSession(_config,
             _content.Artwork, storage);
 
+        private CityMapPreviewConfig WithInitialCapacity(int capacity)
+        {
+            var data = JObject.Parse(AssetDatabase.LoadAssetAtPath<TextAsset>(
+                "Assets/Settings/Game/CityMapConfig.json").text);
+            data["initialCapacity"] = capacity;
+            var source = new TextAsset(data.ToString());
+            try { return new CityMapPreviewConfig(source); }
+            finally { UnityEngine.Object.DestroyImmediate(source); }
+        }
+
+        [TestCase(0, 0, 5)]
+        [TestCase(1, 4, 0)]
+        [TestCase(1, 4, 20)]
+        [TestCase(2, 2, 20)]
+        [TestCase(2, int.MaxValue, 2)]
+        public void SavedCapacityIsIndependentOfNewGameDefaults(int initial, int capacity, int nextInitial)
+        {
+            var storage = new MemorySaveStorage();
+            _config = WithInitialCapacity(initial);
+            using (var first = Open(storage))
+            {
+                if (capacity > initial)
+                    Assert.That(first.Session.Station.TryExpandTemporaryCapacity(
+                        first.Session.StationSessionId, capacity, out _), Is.True);
+                Assert.That(first.TryCheckpoint(), Is.True, first.PersistenceError?.ToString());
+            }
+            int writes = storage.Writes;
+            _config = WithInitialCapacity(nextInitial);
+            using var restored = Open(storage);
+            Assert.That(restored.CanContinue, Is.True, restored.PersistenceError?.ToString());
+            Assert.That(restored.Session.Station.TemporaryCapacity, Is.EqualTo(capacity));
+            Assert.That(restored.Session.Station.AvailableTemporaryPlaces, Is.EqualTo(capacity));
+            Assert.That(storage.Writes, Is.EqualTo(writes), "Loading must not rewrite the saved capacity.");
+            Assert.That(restored.TryCheckpoint(), Is.True);
+            using var again = Open(storage);
+            Assert.That(again.Session.Station.TemporaryCapacity, Is.EqualTo(capacity));
+            using var fresh = Open(new MemorySaveStorage());
+            Assert.That(fresh.Session.Station.TemporaryCapacity, Is.EqualTo(nextInitial));
+        }
+
+        [Test]
+        public void FullStationCanExpandSaveReloadAndRescueIntoTheNewPlace()
+        {
+            var storage = new MemorySaveStorage();
+            _config = WithInitialCapacity(1);
+            Guid cat;
+            using (var first = Open(storage))
+            {
+                cat = Rescue(first, "ordinary");
+                Check(first, cat);
+                var station = first.Session.Station;
+                Assert.That(station.IsFull, Is.True);
+                Assert.That(first.Session.Map.TryPlanDeparture("yard", station.AvailableTemporaryPlaces,
+                    out _, out var failure), Is.False);
+                Assert.That(failure, Is.EqualTo(OutingFailure.CapacityNotAvailable));
+                Assert.That(station.TryExpandTemporaryCapacity(first.Session.StationSessionId, 2, out _), Is.True);
+                Assert.That(first.TryCheckpoint(), Is.True, first.PersistenceError?.ToString());
+            }
+            using (var restored = Open(storage))
+            {
+                Assert.That(restored.CanContinue, Is.True, restored.PersistenceError?.ToString());
+                Assert.That(restored.Session.Station.AvailableTemporaryPlaces, Is.EqualTo(1));
+                Assert.That(restored.Session.Station.Animals.Single().AnimalId, Is.EqualTo(cat));
+                var dog = Rescue(restored, "ordinary-dog");
+                Check(restored, dog);
+                Assert.That(restored.Session.Station.IsFull, Is.True);
+                Assert.That(restored.TryCheckpoint(), Is.True);
+            }
+            using var again = Open(storage);
+            Assert.That(again.Session.Station.TemporaryCapacity, Is.EqualTo(2));
+            Assert.That(again.Session.Station.Animals.Count, Is.EqualTo(2));
+            Assert.That(again.Session.Station.IsFull, Is.True);
+        }
+
         [Test]
         public void ContentMapsTwoOrdinaryAnimalsAndKeepsOwnerReunionSeparate()
         {
@@ -237,6 +311,8 @@ namespace HomelessPetHelper.Tests.EditMode
         [TestCase("animal")]
         [TestCase("time")]
         [TestCase("work")]
+        [TestCase("negativeCapacity")]
+        [TestCase("overcrowded")]
         public void ChecksummedButSemanticallyInvalidSnapshotsAreBlockedWithoutOverwriting(string corruption)
         {
             var storage = new MemorySaveStorage();
@@ -261,6 +337,8 @@ namespace HomelessPetHelper.Tests.EditMode
                 case "animal": resident["Current"]["Id"] = Guid.NewGuid().ToString("N"); break;
                 case "time": data["ElapsedMinutes"] = 0; break;
                 case "work": resident["Coat"]["WashSettled"] = 1000; break;
+                case "negativeCapacity": data["Capacity"] = -1; break;
+                case "overcrowded": data["Capacity"] = 0; break;
             }
             Assert.That(raw.TryCommit(writer => writer.Set(section, data), out _), Is.True);
             var originals = storage.Slots.ToArray();

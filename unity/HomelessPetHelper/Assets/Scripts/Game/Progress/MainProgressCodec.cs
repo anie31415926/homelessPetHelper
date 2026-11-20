@@ -46,7 +46,7 @@ namespace HomelessPetHelper.Game.Progress
             StationArtwork artwork, out StationCareRoster care, out Dictionary<Guid, Guid> links)
         {
             if (data == null || data.Requests == null || data.Residents == null || data.ElapsedMinutes < 0 ||
-                data.Capacity != config.InitialCapacity || data.Residents.Length > data.Capacity)
+                data.Capacity < 0 || data.Residents.Length > data.Capacity)
                 throw new ArgumentException("Invalid station checkpoint header.");
             var pool = RestoreRequests(data.Requests, config);
             var session = new GameLoopSession(data.Capacity, config.MinutesPerDay,

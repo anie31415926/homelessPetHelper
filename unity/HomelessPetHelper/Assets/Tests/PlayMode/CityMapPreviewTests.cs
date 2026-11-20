@@ -35,6 +35,45 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator MainMapAndStationUseExpandedCapacityAcrossRefreshAndReload()
+        {
+            _storageScope.Dispose();
+            var storage = new MemorySaveStorage();
+            _storageScope = new MainSceneStorageScope(() => storage);
+            _copy = JsonUtility.FromJson<TextTable>(AssetDatabase.LoadAssetAtPath<TextAsset>(
+                "Assets/Settings/Game/CityMapText.json").text);
+            yield return SceneManager.LoadSceneAsync("Assets/Scenes/Main.unity");
+            yield return null;
+            var root = UnityEngine.Object.FindObjectOfType<HomelessPetHelper.Game.MainGameRoot>();
+            var session = root.Presenter.Session;
+            Assert.That(session.Station.TryExpandTemporaryCapacity(session.StationSessionId, 7, out _), Is.True);
+            var station = UnityEngine.Object.FindObjectOfType<HomelessPetHelper.Modules.Station.UI.StationPanelView>();
+            station.GetComponentsInChildren<Button>().Single(button => button.name == "Restart").onClick.Invoke();
+            _view = UnityEngine.Object.FindObjectOfType<CityMapView>();
+            Assert.That(Label("Status").text, Is.EqualTo(Copy("status", 7, 0)));
+            Assert.That(Button("Primary").IsInteractable(), Is.True);
+            Assert.That(session.Station.TryExpandTemporaryCapacity(session.StationSessionId, 9, out _), Is.True);
+            Click("Yard");
+            Assert.That(Label("Status").text, Is.EqualTo(Copy("status", 9, 0)));
+            Click("Cancel");
+            var content = AssetDatabase.LoadAssetAtPath<HomelessPetHelper.Game.GameContent>(
+                "Assets/Settings/Game/GameContent.asset");
+            var copy = new HomelessPetHelper.Game.Text.OptionPreviewText(content.StationText);
+            Assert.That(station.GetComponentsInChildren<Text>().Any(label =>
+                label.text == copy.Get("capacity", 0, 9)), Is.True);
+            Assert.That(storage.Writes, Is.EqualTo(2), "Opening and returning each save one stable checkpoint.");
+            var stationId = session.StationSessionId;
+            yield return SceneManager.LoadSceneAsync("Assets/Scenes/Main.unity");
+            yield return null;
+            root = UnityEngine.Object.FindObjectOfType<HomelessPetHelper.Game.MainGameRoot>();
+            Assert.That(root.Presenter.Session.StationSessionId, Is.Not.EqualTo(stationId));
+            Assert.That(root.Presenter.Session.Station.TemporaryCapacity, Is.EqualTo(9));
+            Assert.That(root.Presenter.Session.Station.AvailableTemporaryPlaces, Is.EqualTo(9));
+            Assert.That(storage.Writes, Is.EqualTo(2), "Reload must read the same save without rewriting it.");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator SavedMapSelectsFreelyPausesAndCommitsEachReturnOnce()
         {
             yield return Load();
