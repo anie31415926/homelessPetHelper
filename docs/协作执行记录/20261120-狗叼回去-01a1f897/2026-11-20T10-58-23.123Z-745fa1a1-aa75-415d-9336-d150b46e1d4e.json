@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261120-狗叼回去-01a1f897.md",
+  "sessionId": "01a1f897-81cd-74e2-94ec-687a2431ee42",
+  "phase": "start",
+  "readAt": "2026-11-20T10:58:23.123Z",
+  "writePaths": [
+    "docs/协作任务/20261120-狗叼回去-01a1f897.md",
+    "docs/协作执行记录/20261120-狗叼回去-01a1f897/",
+    "docs/逆塔防狗叼回去实现记录.md",
+    "docs/逆塔防猫狗攻防内容方案.md",
+    "src/siege/content-text.zh-CN.json",
+    "src/siege/content.json",
+    "tests/siege-content.test.mjs",
+    "tools/siege-content.mjs",
+    "tools/siege-unity-data.mjs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/",
+    "unity/HomelessPetHelper/Assets/Settings/Siege/SiegeTrialData.json",
+    "unity/HomelessPetHelper/Assets/Settings/Siege/SiegeTrialText.json",
+    "unity/HomelessPetHelper/Assets/Tests/Siege/"
+  ],
+  "contextDigest": "27e48f125575e252c5b86ede074e9bbf385868eb77c83c1e23d39988bd90f1a4",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "7885eae668288128a423d5d16434fabc0d169a9434ee34ee3f82d9fade177476"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261120-狗叼回去-01a1f897.md",
+      "sha256": "622fe10a7328d7deef5e4f562e43beb53fd8900f7dbcfb4f242e6a5e23f10eee"
+    },
+    {
+      "path": "docs/协作任务/20261120-站内自主行动-01a1d310.md",
+      "sha256": "d4dddefadc1568d06a99539556b22bf4cf7469b4474e80830337a32f86b5a907"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "97b67c4e0e1c0963b73175b37b3c61244e2b52653f73ed28a8884611824ae8b6"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "258e1c22e3a77a262cce0e6ca5fcf9ac940bafc8f5c1e2c8598ece1f41d2798b"
+    }
+  ]
+}

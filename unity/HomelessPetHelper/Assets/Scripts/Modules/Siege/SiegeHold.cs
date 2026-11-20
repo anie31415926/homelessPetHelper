@@ -83,6 +83,7 @@ namespace HomelessPetHelper.Modules.Siege
 
         private static bool Eligible(SiegeState s, SiegeCatalog c, SiegeEncounterDefinition d, Unit unit) =>
             d != null && d.HoldDurationMs > 0 && unit != null && unit.Hp > 0
+            && !unit.IsCarried
             && unit.TransitRemainingMs == 0 && unit.HeldUntilMs <= s.ElapsedMs
             && unit.HoldProtectedUntilMs <= s.ElapsedMs
             && SiegeEntities.Position(c, unit).Distance(new SiegePoint(d.HoldOriginX, d.HoldOriginY)) <= d.HoldRange;

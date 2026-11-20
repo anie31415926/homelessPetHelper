@@ -151,6 +151,17 @@ namespace HomelessPetHelper.Modules.Siege
             public double holdOriginX;
             public double holdOriginY;
             public double holdRange;
+            public string carryNameKey;
+            public int carryDelayMs;
+            public int carryDurationMs;
+            public int carryRecoveryMs;
+            public int carryCooldownMs;
+            public int carryProtectionMs;
+            public double carryOriginX;
+            public double carryOriginY;
+            public double carryRange;
+            public double carryDistance;
+            public double carryMinDistance;
         }
 
         [Serializable]
@@ -406,6 +417,17 @@ namespace HomelessPetHelper.Modules.Siege
         public double HoldOriginX { get; }
         public double HoldOriginY { get; }
         public double HoldRange { get; }
+        public string CarryNameKey { get; }
+        public int CarryDelayMs { get; }
+        public int CarryDurationMs { get; }
+        public int CarryRecoveryMs { get; }
+        public int CarryCooldownMs { get; }
+        public int CarryProtectionMs { get; }
+        public double CarryOriginX { get; }
+        public double CarryOriginY { get; }
+        public double CarryRange { get; }
+        public double CarryDistance { get; }
+        public double CarryMinDistance { get; }
 
         internal SiegeEncounterDefinition(SiegeCatalogData.EncounterDto data)
         {
@@ -426,6 +448,17 @@ namespace HomelessPetHelper.Modules.Siege
             HoldOriginX = data.holdOriginX;
             HoldOriginY = data.holdOriginY;
             HoldRange = data.holdRange;
+            CarryNameKey = data.carryNameKey;
+            CarryDelayMs = data.carryDelayMs;
+            CarryDurationMs = data.carryDurationMs;
+            CarryRecoveryMs = data.carryRecoveryMs;
+            CarryCooldownMs = data.carryCooldownMs;
+            CarryProtectionMs = data.carryProtectionMs;
+            CarryOriginX = data.carryOriginX;
+            CarryOriginY = data.carryOriginY;
+            CarryRange = data.carryRange;
+            CarryDistance = data.carryDistance;
+            CarryMinDistance = data.carryMinDistance;
         }
     }
 }

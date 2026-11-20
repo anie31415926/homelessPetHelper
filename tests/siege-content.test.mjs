@@ -25,6 +25,13 @@ for (const [name, mutate] of [
     ['hold without immunity', c => { c.encounters[0].holdProtectionMs = 0; }],
     ['non-finite hold reach', c => { c.encounters[0].holdRange = Infinity; }],
     ['hold without cooldown', c => { c.encounters[0].holdCooldownMs = 0; }],
+    ['carry without recovery', c => { c.encounters[1].carryRecoveryMs = 0; }],
+    ['carry without protection', c => { c.encounters[1].carryProtectionMs = 0; }],
+    ['non-finite carry range', c => { c.encounters[1].carryRange = NaN; }],
+    ['negative carry distance', c => { c.encounters[1].carryDistance = -1; }],
+    ['carry into spawn', c => { c.encounters[1].carryMinDistance = 0; }],
+    ['fractional carry duration', c => { c.encounters[1].carryDurationMs = 1.5; }],
+    ['carry cooldown before landing', c => { c.encounters[1].carryCooldownMs = 2000; }],
 ]) test(`rejects ${name}`, () => {
     const source = structuredClone(CONTENT);
     mutate(source);

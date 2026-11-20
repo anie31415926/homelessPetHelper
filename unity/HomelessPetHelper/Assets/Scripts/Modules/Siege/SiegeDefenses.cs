@@ -23,7 +23,7 @@ namespace HomelessPetHelper.Modules.Siege
                 if (s.ElapsedMs < tower.NextShotMs)
                     continue;
                 var point = c.Lane(tower.LaneId).PointAt(tower.Distance);
-                var target = s.Troops.Where(x => x.Hp > 0
+                var target = s.Troops.Where(x => x.Hp > 0 && !x.IsCarried
                     && point.Distance(SiegeEntities.Position(c, x)) <= d.Range)
                     .OrderByDescending(x => x.Distance / c.Lane(x.LaneId).Length)
                     .ThenBy(x => x.Id).FirstOrDefault();
@@ -64,7 +64,8 @@ namespace HomelessPetHelper.Modules.Siege
             tower.WindingUp = false;
             tower.NextShotMs = s.ElapsedMs + d.PeriodMs;
             foreach (var unit in s.Troops)
-                if (unit.Hp > 0 && SiegeEntities.Position(c, unit).Distance(tower.LockedPoint) <= d.Radius)
+                if (unit.Hp > 0 && !unit.IsCarried
+                    && SiegeEntities.Position(c, unit).Distance(tower.LockedPoint) <= d.Radius)
                     SiegeEntities.Hit(unit, d.Damage, d.Push, s.ElapsedMs);
             s.VisualEffects.Add(new Effect { Kind = "push", From = tower.LockedPoint,
                 Radius = d.Radius, StartMs = s.ElapsedMs, UntilMs = s.ElapsedMs + 400, Visual = d.Visual });

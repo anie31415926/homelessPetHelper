@@ -705,7 +705,18 @@
       "holdProtectionMs": 10000,
       "holdOriginX": 301,
       "holdOriginY": 38,
-      "holdRange": 110
+      "holdRange": 110,
+      "carryNameKey": "unity.carry",
+      "carryDelayMs": 0,
+      "carryDurationMs": 0,
+      "carryRecoveryMs": 0,
+      "carryCooldownMs": 0,
+      "carryProtectionMs": 0,
+      "carryOriginX": 301,
+      "carryOriginY": 38,
+      "carryRange": 0,
+      "carryDistance": 0,
+      "carryMinDistance": 20
     },
     {
       "id": "dog",
@@ -733,7 +744,18 @@
       "holdProtectionMs": 0,
       "holdOriginX": 301,
       "holdOriginY": 38,
-      "holdRange": 0
+      "holdRange": 0,
+      "carryNameKey": "unity.carry",
+      "carryDelayMs": 200,
+      "carryDurationMs": 1600,
+      "carryRecoveryMs": 800,
+      "carryCooldownMs": 16000,
+      "carryProtectionMs": 10000,
+      "carryOriginX": 301,
+      "carryOriginY": 38,
+      "carryRange": 130,
+      "carryDistance": 65,
+      "carryMinDistance": 20
     }
   ]
 }

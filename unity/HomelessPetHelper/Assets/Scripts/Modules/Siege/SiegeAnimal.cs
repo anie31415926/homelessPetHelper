@@ -15,7 +15,13 @@ namespace HomelessPetHelper.Modules.Siege
                 SiegeAnimalCasting.Plan(s, c, IntentKind.Hold, new SkillTarget(hold.LaneId, unitId: hold.Id));
                 return;
             }
-            if (previous == IntentKind.Guard || previous == IntentKind.Hold)
+            var carry = previous == IntentKind.Guard ? SiegeCarry.FindTarget(s, c) : null;
+            if (carry != null)
+            {
+                SiegeAnimalCasting.Plan(s, c, IntentKind.Carry, new SkillTarget(carry.LaneId, unitId: carry.Id));
+                return;
+            }
+            if (previous == IntentKind.Guard || previous == IntentKind.Hold || previous == IntentKind.Carry)
             {
                 SiegeAnimalCasting.Plan(s, c, IntentKind.Sweep, new SkillTarget(lane));
                 return;

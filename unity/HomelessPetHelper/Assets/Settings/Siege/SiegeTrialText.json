@@ -847,6 +847,38 @@
     {
       "key": "event.holdEnd",
       "value": "爪子松开，这个道具暂时不会再被抓。"
+    },
+    {
+      "key": "unity.carry",
+      "value": "叼回去"
+    },
+    {
+      "key": "unity.carrying",
+      "value": "叼回 #{0} · {1:0.0}秒"
+    },
+    {
+      "key": "unity.carried",
+      "value": " · 搬运中 {0:0.0}秒"
+    },
+    {
+      "key": "reason.carried",
+      "value": "搬运中无法合体或改道。"
+    },
+    {
+      "key": "event.carryPlan",
+      "value": "狗盯住了一个道具，准备叼回去。"
+    },
+    {
+      "key": "event.carried",
+      "value": "狗轻叼道具，沿原路向后搬运。"
+    },
+    {
+      "key": "event.carryMiss",
+      "value": "没有叼中，也没有换抓其他单位。"
+    },
+    {
+      "key": "event.carryEnd",
+      "value": "道具落地，恢复行动，暂时不会再被抓。"
     }
   ]
 }

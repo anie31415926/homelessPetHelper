@@ -8,7 +8,7 @@ namespace HomelessPetHelper.Modules.Siege
     {
         private static readonly SiegeAnimalSkill[] Skills =
         {
-            new SiegeGuard(), new SiegeSweep(), new SiegeBuild(), new SiegeRepair(), new SiegeHold(),
+            new SiegeGuard(), new SiegeSweep(), new SiegeBuild(), new SiegeRepair(), new SiegeHold(), new SiegeCarry(),
         };
 
         private static SiegeAnimalSkill Skill(IntentKind kind)
@@ -66,6 +66,8 @@ namespace HomelessPetHelper.Modules.Siege
             var skill = Skill(cast.Kind);
             if (cast.Phase == CastPhase.Windup && s.ElapsedMs >= cast.ResolveAtMs)
                 Resolve(s, c, skill);
+            if (cast.Phase == CastPhase.Active)
+                skill.AdvanceActive(s, c);
             if (cast.Phase == CastPhase.Active
                 && (s.ElapsedMs >= cast.UntilMs || skill.HasEnded(s, c)))
             {

@@ -46,6 +46,7 @@ namespace HomelessPetHelper.Modules.Siege
                     && e.initialTowerIds.Concat(e.buildTowerIds).All(id => Tower(id) != null), "encounter towers");
                 SiegeCatalog.Require(e.sweepDelayMs >= 0 && e.sweepDelayMs <= 2000, "sweep delay");
                 ValidateHold(e);
+                ValidateCarry(e);
             }
             Encounters = Array.AsReadOnly(encounters.Select(x => new SiegeEncounterDefinition(x)).ToArray());
         }
@@ -64,6 +65,22 @@ namespace HomelessPetHelper.Modules.Siege
         }
 
         public SiegeTowerTypeDefinition Tower(string id) => Towers.FirstOrDefault(x => x.Id == id);
+
+        private static void ValidateCarry(SiegeCatalogData.EncounterDto e)
+        {
+            SiegeCatalog.Require(e.carryDelayMs >= 0 && e.carryDelayMs <= 60000
+                && e.carryDurationMs >= 0 && e.carryDurationMs <= 60000
+                && e.carryRecoveryMs >= 0 && e.carryRecoveryMs <= 60000
+                && e.carryCooldownMs >= 0 && e.carryCooldownMs <= 60000
+                && e.carryProtectionMs >= 0 && e.carryProtectionMs <= 60000
+                && NonNegative(e.carryRange) && NonNegative(e.carryDistance)
+                && NonNegative(e.carryMinDistance) && SiegeCatalog.Finite(e.carryOriginX)
+                && SiegeCatalog.Finite(e.carryOriginY), "carry numbers");
+            SiegeCatalog.Require(e.carryDurationMs == 0 || (!string.IsNullOrWhiteSpace(e.carryNameKey)
+                && e.carryRecoveryMs > 0 && e.carryProtectionMs > 0 && e.carryRange > 0
+                && e.carryDistance > 0 && e.carryMinDistance > 0
+                && e.carryCooldownMs >= e.carryDelayMs + e.carryDurationMs + e.carryRecoveryMs), "carry enabled");
+        }
 
         public SiegeEncounterDefinition Encounter(string id) => Encounters.FirstOrDefault(x => x.Id == id);
 

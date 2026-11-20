@@ -34,5 +34,13 @@
   "event.holdPlan": "猫盯住了一个道具，准备伸爪按住。",
   "event.held": "猫伸爪按住道具，其他单位仍可推进。",
   "event.holdMiss": "爪子落空，没有换抓其他单位。",
-  "event.holdEnd": "爪子松开，这个道具暂时不会再被抓。"
+  "event.holdEnd": "爪子松开，这个道具暂时不会再被抓。",
+  "unity.carry": "叼回去",
+  "unity.carrying": "叼回 #{0} · {1:0.0}秒",
+  "unity.carried": " · 搬运中 {0:0.0}秒",
+  "reason.carried": "搬运中无法合体或改道。",
+  "event.carryPlan": "狗盯住了一个道具，准备叼回去。",
+  "event.carried": "狗轻叼道具，沿原路向后搬运。",
+  "event.carryMiss": "没有叼中，也没有换抓其他单位。",
+  "event.carryEnd": "道具落地，恢复行动，暂时不会再被抓。"
 }

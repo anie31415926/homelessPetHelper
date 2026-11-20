@@ -67,6 +67,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 Get(encounter.GuardNameKey);
                 Get(encounter.SweepNameKey);
                 if (encounter.HoldDurationMs > 0) Get(encounter.HoldNameKey);
+                if (encounter.CarryDurationMs > 0) Get(encounter.CarryNameKey);
             }
             foreach (var tower in c.Content.Towers)
                 Get(tower.NameKey);

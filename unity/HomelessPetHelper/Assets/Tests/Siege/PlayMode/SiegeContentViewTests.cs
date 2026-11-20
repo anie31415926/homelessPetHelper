@@ -105,7 +105,7 @@ namespace HomelessPetHelper.Tests.Siege.PlayMode
                             string lane = s.Turn % 3 == 0 ? "Top" : s.Turn % 3 == 1 ? "Mid" : "Bottom";
                             Click(lane);
                             var materials = s.Units.Where(x => x.DefinitionId == card.DefinitionId
-                                && x.TransitRemainingMs == 0).Take(2).ToArray();
+                                && x.TransitRemainingMs == 0 && !x.IsCarried).Take(2).ToArray();
                             if (materials.Length == 2 && s.Energy >= 3)
                             {
                                 if (!Button("NewMaterial").gameObject.activeInHierarchy) Click("Materials");
@@ -330,6 +330,124 @@ namespace HomelessPetHelper.Tests.Siege.PlayMode
             Assert.That(session.Snapshot.AnimalState.HeldUnitId, Is.Zero);
             Assert.That(session.Snapshot.Units.Single().HoldProtectedUntilMs, Is.GreaterThan(session.ElapsedMs));
             Capture(camera, target, Path.Combine(folder, "hold-released.png"));
+            camera.targetTexture = null; target.Release(); UnityEngine.Object.Destroy(target);
+            yield return SceneManager.LoadSceneAsync("Assets/Scenes/Main.unity");
+        }
+
+        [UnityTest, Timeout(180000)]
+        public IEnumerator CarryShowsPickupRouteLandingAndFreezesWithRealControls()
+        {
+            yield return EditorSceneManager.LoadSceneAsyncInPlayMode(ScenePath, new LoadSceneParameters());
+            yield return null;
+            _view = UnityEngine.Object.FindObjectOfType<SiegeTrialView>();
+            var data = JsonUtility.FromJson<SiegeCatalogData>(
+                AssetDatabase.LoadAssetAtPath<TextAsset>(DataPath).text);
+            foreach (var pad in data.map.pads) pad.initial = false;
+            foreach (var profile in data.animalStates) profile.periodMs = 1000;
+            foreach (var unit in data.contentUnits) { unit.speed = 24; unit.hp = 100; }
+            data.rules.playerPeriodMs = 400; data.rules.turnEnergy = 6;
+            data.rules.animalBuilds = 0; data.rules.animalRepairs = 0;
+            data.rules.slapPush = 0; data.rules.sweepPush = 0;
+            // Keep a real strategy window inside the test carry; production remains 1600ms.
+            data.encounters[1].carryDurationMs = 2400;
+            var session = new SiegeSession(new SiegeCatalog(data), 132, "calm", "carry-controls", "dog");
+            _view.gameObject.SetActive(false);
+            _view.BindEncounter(session, AssetDatabase.LoadAssetAtPath<TextAsset>(TextPath),
+                () => { }, () => { }, session.SetPaused);
+            _view.gameObject.SetActive(true);
+            var canvas = _view.GetComponent<Canvas>();
+            var camera = UnityEngine.Object.FindObjectOfType<Camera>();
+            canvas.renderMode = RenderMode.ScreenSpaceCamera; canvas.worldCamera = camera; canvas.planeDistance = 1;
+            var target = new RenderTexture(540, 1170, 24); camera.targetTexture = target;
+            string folder = Path.GetFullPath(Path.Combine(Application.dataPath, "../SiegeCarryEvidence"));
+            Directory.CreateDirectory(folder);
+            bool warned = false;
+            int attempts = 0;
+            while (!(session.Snapshot.AnimalState.CarriedUnitId != 0 && session.Phase == BattlePhase.Decision)
+                && attempts++ < 1400)
+            {
+                if (session.Phase == BattlePhase.Decision)
+                {
+                    if (session.Snapshot.AnimalState.Intent == IntentKind.Carry)
+                    {
+                        yield return null;
+                        AssertBounds(canvas);
+                        Capture(camera, target, Path.Combine(folder, "carry-warning.png")); warned = true;
+                    }
+                    int deployed = session.Snapshot.Stats.Deployed;
+                    if (deployed < 3)
+                    {
+                        Cell("_handRoot", 0);
+                        Click(deployed == 0 ? "Mid" : deployed == 1 ? "Top" : "Bottom");
+                    }
+                    Click("Submit");
+                }
+                else session.Advance(50);
+                yield return null;
+            }
+            Assert.That(attempts, Is.LessThan(1400));
+            Assert.That(warned, Is.True);
+            // Pose is applied in LateUpdate; inspect it after the frozen window has rendered.
+            yield return null; yield return null;
+            var before = session.Snapshot;
+            int id = before.AnimalState.CarriedUnitId;
+            var field = _view.GetComponentInChildren<SiegeBattlefield>();
+            var overlay = _view.GetComponentInChildren<SiegeCarryOverlay>();
+            Canvas.ForceUpdateCanvases();
+            Assert.That(overlay.canvasRenderer.GetMesh().vertexCount, Is.GreaterThan(50));
+            var positionOnLane = session.Position(before.Units.Single(x => x.Id == id));
+            float scale = Mathf.Min(field.rectTransform.rect.width / (float)session.Catalog.Width,
+                field.rectTransform.rect.height / (float)session.Catalog.Height);
+            var expected = field.rectTransform.rect.center + new Vector2(
+                (float)(positionOnLane.X - session.Catalog.Width / 2),
+                (float)(session.Catalog.Height / 2 - positionOnLane.Y)) * scale;
+            var mouth = (Vector2)field.transform.InverseTransformPoint(
+                overlay.transform.TransformPoint(overlay.MouthPoint));
+            Assert.That(Vector2.Distance(mouth, expected), Is.LessThan(.01f),
+                "mouth=" + mouth + " expected=" + expected + " overlayHeight=" + overlay.rectTransform.rect.height);
+            Click("Materials");
+            var roster = (RectTransform)new SerializedObject(_view).FindProperty("_rosterRoot").objectReferenceValue;
+            int index = before.Units.ToList().FindIndex(x => x.Id == id);
+            Assert.That(roster.GetChild(index).GetComponentInChildren<Button>().interactable, Is.False);
+            foreach (var size in new[] { new Vector2Int(375, 667), new Vector2Int(540, 1170),
+                new Vector2Int(768, 1024) })
+            {
+                camera.targetTexture = null; target.Release(); UnityEngine.Object.Destroy(target);
+                target = new RenderTexture(size.x, size.y, 24); camera.targetTexture = target;
+                yield return null; yield return null;
+                AssertBounds(canvas);
+                Capture(camera, target, Path.Combine(folder, "carry-active-" + size.x + ".png"));
+            }
+            Click("Pause");
+            var animal = _view.GetComponentsInChildren<Image>().Single(x => x.name == "Cat").rectTransform;
+            Canvas.ForceUpdateCanvases();
+            var vertices = field.canvasRenderer.GetMesh().vertices;
+            var position = animal.anchoredPosition;
+            session.Advance(1000); yield return null; yield return null;
+            Assert.That(session.ElapsedMs, Is.EqualTo(before.ElapsedMs));
+            Assert.That(field.canvasRenderer.GetMesh().vertices, Is.EqualTo(vertices));
+            Assert.That(animal.anchoredPosition, Is.EqualTo(position));
+            Click("Pause");
+            int end = before.Units.Single(x => x.Id == id).CarriedUntilMs;
+            for (int i = 0; session.Snapshot.AnimalState.CarriedUnitId != 0 && i < 100; i++)
+            {
+                if (session.Phase == BattlePhase.Decision) Click("Submit");
+                else session.Advance(50);
+                yield return null;
+            }
+            var landed = session.Snapshot.Units.Single(x => x.Id == id);
+            Assert.That(landed.IsCarried, Is.False);
+            // The real view also advances the clock between rendered frames after landing.
+            double resumedDistance = session.Catalog.Unit(landed.DefinitionId).Speed
+                * (session.ElapsedMs - end) / 1000.0;
+            Assert.That(landed.Distance, Is.EqualTo(landed.CarryToDistance + resumedDistance).Within(.000001));
+            Assert.That(landed.HoldProtectedUntilMs, Is.EqualTo(end + data.encounters[1].carryProtectionMs));
+            Assert.That(session.Snapshot.Stats.Carries, Is.EqualTo(1));
+            yield return null; yield return null;
+            Canvas.ForceUpdateCanvases();
+            Assert.That(overlay.canvasRenderer.GetMesh().vertexCount, Is.Zero);
+            AssertBounds(canvas);
+            Capture(camera, target, Path.Combine(folder, "carry-landed.png"));
             camera.targetTexture = null; target.Release(); UnityEngine.Object.Destroy(target);
             yield return SceneManager.LoadSceneAsync("Assets/Scenes/Main.unity");
         }

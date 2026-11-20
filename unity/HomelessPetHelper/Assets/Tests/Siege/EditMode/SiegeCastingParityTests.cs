@@ -24,6 +24,8 @@ namespace HomelessPetHelper.Tests.Siege.EditMode
         {
             var data = JsonUtility.FromJson<SiegeCatalogData>(
                 AssetDatabase.LoadAssetAtPath<TextAsset>(SiegeTrialAssets.DataPath).text);
+            // Preserve the pre-extension five-skill baseline, not the newly enabled carry encounter.
+            foreach (var definition in data.encounters) definition.carryDurationMs = 0;
             var session = new SiegeSession(new SiegeCatalog(data), 132, profile, "cast-parity", encounter);
             var trace = new StringBuilder();
             for (int tick = 0; tick < 3000; tick++)

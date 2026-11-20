@@ -58,6 +58,15 @@ export function validateContent(source, text) {
         if (e.holdDurationMs > 0) require(text[e.holdNameKey] && e.holdRecoveryMs > 0
             && e.holdCooldownMs >= e.holdDurationMs + e.holdRecoveryMs
             && e.holdProtectionMs > 0 && e.holdRange > 0, `hold enabled ${e.id}`);
+        for (const key of ['carryDelayMs', 'carryDurationMs', 'carryRecoveryMs', 'carryCooldownMs', 'carryProtectionMs'])
+            require(Number.isInteger(e[key]) && e[key] >= 0 && e[key] <= 60000, `carry ${e.id}.${key}`);
+        require(Number.isFinite(e.carryOriginX) && Number.isFinite(e.carryOriginY), `carry origin ${e.id}`);
+        for (const key of ['carryRange', 'carryDistance', 'carryMinDistance'])
+            require(Number.isFinite(e[key]) && e[key] >= 0, `carry geometry ${e.id}.${key}`);
+        if (e.carryDurationMs > 0) require(text[e.carryNameKey] && e.carryRecoveryMs > 0
+            && e.carryCooldownMs >= e.carryDelayMs + e.carryDurationMs + e.carryRecoveryMs
+            && e.carryProtectionMs > 0 && e.carryRange > 0 && e.carryDistance > 0
+            && e.carryMinDistance > 0, `carry enabled ${e.id}`);
     }
     return source;
 }

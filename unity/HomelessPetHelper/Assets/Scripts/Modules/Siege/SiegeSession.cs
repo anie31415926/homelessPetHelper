@@ -205,6 +205,8 @@ namespace HomelessPetHelper.Modules.Siege
                 var units = ids.Select(x => s.Troops.FirstOrDefault(u => u.Id == x)).ToArray();
                 if (units.Any(x => x == null || x.Hp <= 0 || x.TransitRemainingMs > 0))
                     return "reason.merge";
+                if (units.Any(x => x.IsCarried))
+                    return "reason.carried";
                 if (
                     units.Any(x => x.DefinitionId != units[0].DefinitionId)
                     || string.IsNullOrEmpty(Catalog.Unit(units[0].DefinitionId).UpgradeId)
@@ -220,6 +222,8 @@ namespace HomelessPetHelper.Modules.Siege
                     return "reason.reroute";
                 if (unit.HeldUntilMs > s.ElapsedMs)
                     return "reason.held";
+                if (unit.IsCarried)
+                    return "reason.carried";
                 if (Catalog.Lane(o.RerouteLaneId)?.Open != true)
                     return "reason.lane";
                 SiegeEntities.Reroute(unit, Catalog, o.RerouteLaneId);

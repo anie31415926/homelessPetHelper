@@ -39,10 +39,10 @@ namespace HomelessPetHelper.Modules.Siege
             foreach (var unit in s.Troops)
             {
                 var d = c.Unit(unit.DefinitionId);
-                if (unit.Hp <= 0 || d.Ability != "braceAura" || unit.AbilityCharges <= 0
+                if (unit.Hp <= 0 || unit.IsCarried || d.Ability != "braceAura" || unit.AbilityCharges <= 0
                     || unit.TransitRemainingMs > 0)
                     continue;
-                var targets = s.Troops.Where(x => x.Id != unit.Id && x.Hp > 0 && x.Brace == 0
+                var targets = s.Troops.Where(x => x.Id != unit.Id && x.Hp > 0 && !x.IsCarried && x.Brace == 0
                     && s.ElapsedMs >= x.BraceReadyMs && x.TransitRemainingMs == 0
                     && SiegeEntities.Position(c, unit).Distance(SiegeEntities.Position(c, x)) <= d.AbilityRadius)
                     .OrderBy(x => SiegeEntities.Position(c, unit).Distance(SiegeEntities.Position(c, x)))
@@ -66,11 +66,13 @@ namespace HomelessPetHelper.Modules.Siege
             foreach (var unit in s.Troops)
             {
                 var d = c.Unit(unit.DefinitionId);
-                if (d.Ability != "aura" || unit.TransitRemainingMs > 0 || s.ElapsedMs < unit.NextAuraMs)
+                if (d.Ability != "aura" || unit.IsCarried || unit.TransitRemainingMs > 0
+                    || s.ElapsedMs < unit.NextAuraMs)
                     continue;
                 foreach (var ally in s.Troops)
                     if (
                         ally.Id != unit.Id
+                        && !ally.IsCarried
                         && SiegeEntities.Position(c, unit).Distance(SiegeEntities.Position(c, ally)) <= d.AbilityRadius
                     )
                         ally.Shield = 1;
@@ -82,7 +84,8 @@ namespace HomelessPetHelper.Modules.Siege
         {
             foreach (var unit in s.Troops)
             {
-                if (unit.Hp <= 0 || unit.HeldUntilMs > s.ElapsedMs)
+                if (unit.Hp <= 0 || unit.IsCarried || unit.CarriedUntilMs == s.ElapsedMs
+                    || unit.HeldUntilMs > s.ElapsedMs)
                     continue;
                 if (unit.TransitRemainingMs > 0)
                 {

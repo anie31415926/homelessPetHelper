@@ -61,6 +61,7 @@ namespace HomelessPetHelper.Modules.Siege
                 if (
                     string.IsNullOrEmpty(c.Unit(anchor.DefinitionId).UpgradeId)
                     || anchor.TransitRemainingMs > 0
+                    || anchor.IsCarried
                     || anchor.Distance < c.Rules.NaturalMergeMinDistance
                 )
                     continue;
@@ -70,6 +71,7 @@ namespace HomelessPetHelper.Modules.Siege
                         && x.DefinitionId == anchor.DefinitionId
                         && x.LaneId == anchor.LaneId
                         && x.TransitRemainingMs == 0
+                        && !x.IsCarried
                         && x.Distance >= c.Rules.NaturalMergeMinDistance
                         && Position(c, x).Distance(Position(c, anchor)) <= c.Rules.MergeRadius
                     )
@@ -90,6 +92,7 @@ namespace HomelessPetHelper.Modules.Siege
 
         internal static void Hit(SiegeState.Unit unit, double damage, double push = 0, int elapsedMs = 0)
         {
+            if (unit.IsCarried) return;
             if (unit.Shield > 0)
                 unit.Shield--;
             else

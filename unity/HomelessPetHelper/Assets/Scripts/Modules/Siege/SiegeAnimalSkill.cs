@@ -18,6 +18,7 @@ namespace HomelessPetHelper.Modules.Siege
         // Return actor occupation, not the lifetime of an independent effect such as a tower.
         internal abstract int Resolve(SiegeState s, SiegeCatalog c);
         internal virtual void Miss(SiegeState s, SiegeCatalog c) { }
+        internal virtual void AdvanceActive(SiegeState s, SiegeCatalog c) { }
         internal virtual bool HasEnded(SiegeState s, SiegeCatalog c) => false;
         internal virtual void End(SiegeState s, SiegeCatalog c) { }
     }

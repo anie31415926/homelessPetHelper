@@ -474,7 +474,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             string intentKey = encounter == null ? "unity." + kind
                 : a.Intent == IntentKind.Guard ? encounter.GuardNameKey
                 : a.Intent == IntentKind.Sweep ? encounter.SweepNameKey
-                : a.Intent == IntentKind.Hold ? encounter.HoldNameKey : "unity." + kind;
+                : a.Intent == IntentKind.Hold ? encounter.HoldNameKey
+                : a.Intent == IntentKind.Carry ? encounter.CarryNameKey : "unity." + kind;
             _intent.text = _text.Format(
                 "unity.intent",
                 _text.Get(_catalog.Conditions(a.Vigilance, a.Stamina).NameKey),
@@ -483,7 +484,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 a.BuildsLeft,
                 a.RepairsLeft
             );
-            if (a.Intent == IntentKind.Hold)
+            if (a.Intent == IntentKind.Hold || a.Intent == IntentKind.Carry)
                 _intent.text += _text.Format("unity.holdTarget", a.IntentUnitId);
             _playerBar.SetValueWithoutNotify((float)s.PlayerChargeMs / _catalog.Rules.PlayerPeriodMs);
             _animalBar.SetValueWithoutNotify((float)a.Charge);
@@ -502,7 +503,10 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 if (_externalFeedback == null && s.Phase == BattlePhase.Timeout)
                     _feedback.text = _text.Get("game.timeout");
             }
-            if (a.HeldUnitId != 0)
+            if (a.CarriedUnitId != 0)
+                _feedback.text += " · " + _text.Format("unity.carrying", a.CarriedUnitId,
+                    (a.Cast.UntilMs - s.ElapsedMs) / 1000.0);
+            else if (a.HeldUnitId != 0)
                 _feedback.text += " · " + _text.Format("unity.holding", a.HeldUnitId,
                     (a.HoldUntilMs - s.ElapsedMs) / 1000.0);
             else if (a.RecoveryUntilMs > s.ElapsedMs)
@@ -532,7 +536,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                     || (
                         _materialIds.Count == 1
                         && s.Units.Any(x => x.Id == _materialIds[0] && x.Reroutes > 0
-                            && x.TransitRemainingMs == 0 && x.HeldUntilMs <= s.ElapsedMs)
+                            && x.TransitRemainingMs == 0 && !x.IsCarried && x.HeldUntilMs <= s.ElapsedMs)
                     )
                 );
             _destination.interactable = decision && _rerouteId.HasValue;
@@ -614,14 +618,16 @@ namespace HomelessPetHelper.Modules.Siege.UI
                             d.Hp
                         ) + HoldLabel(s, unit),
                         _materialIds.Contains(unit.Id),
-                        decision && unit.TransitRemainingMs == 0,
+                        decision && unit.TransitRemainingMs == 0 && !unit.IsCarried,
                         SelectUnit
                     );
             }
             _rosterPool.Trim(s.Units.Count);
         }
 
-        private string HoldLabel(SiegeState s, Unit unit) => unit.HeldUntilMs > s.ElapsedMs
+        private string HoldLabel(SiegeState s, Unit unit) => unit.IsCarried
+            ? _text.Format("unity.carried", (unit.CarriedUntilMs - s.ElapsedMs) / 1000.0)
+            : unit.HeldUntilMs > s.ElapsedMs
             ? _text.Format("unity.held", (unit.HeldUntilMs - s.ElapsedMs) / 1000.0)
             : unit.HoldProtectedUntilMs > s.ElapsedMs ? _text.Get("unity.holdProtected") : string.Empty;
 

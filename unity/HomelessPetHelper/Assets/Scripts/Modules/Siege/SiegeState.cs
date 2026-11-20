@@ -21,6 +21,7 @@ namespace HomelessPetHelper.Modules.Siege
             Build = 2,
             Repair = 3,
             Hold = 4,
+            Carry = 5,
         }
 
         public enum TowerStatus
@@ -136,7 +137,13 @@ namespace HomelessPetHelper.Modules.Siege
             public int BraceReadyMs { get; internal set; }
             public int AbilityCharges { get; internal set; }
             public int HeldUntilMs { get; internal set; }
+            // Shared re-grab protection; retain the original snapshot name for existing consumers.
             public int HoldProtectedUntilMs { get; internal set; }
+            public bool IsCarried { get; internal set; }
+            public int CarryStartedMs { get; internal set; }
+            public int CarriedUntilMs { get; internal set; }
+            public double CarryFromDistance { get; internal set; }
+            public double CarryToDistance { get; internal set; }
             internal int BraceRearmMs;
             internal bool BurstUsed;
             internal string BurstTowerId;
@@ -195,6 +202,8 @@ namespace HomelessPetHelper.Modules.Siege
             public int HoldStartedMs { get; internal set; }
             public int HoldUntilMs { get; internal set; }
             public int NextHoldMs => SkillReadyAtMs(IntentKind.Hold);
+            public int CarriedUnitId => Cast != null && Cast.Kind == IntentKind.Carry
+                && Cast.Phase == CastPhase.Active ? Cast.Target.UnitId : 0;
             public SkillCast Cast { get; internal set; }
             internal Dictionary<IntentKind, int> SkillCooldowns = new Dictionary<IntentKind, int>();
             internal int NextSlapMs;
@@ -244,6 +253,8 @@ namespace HomelessPetHelper.Modules.Siege
             public int Repairs { get; internal set; }
             public int Holds { get; internal set; }
             public int HoldMisses { get; internal set; }
+            public int Carries { get; internal set; }
+            public int CarryMisses { get; internal set; }
 
             internal Statistics Clone() => (Statistics)MemberwiseClone();
         }

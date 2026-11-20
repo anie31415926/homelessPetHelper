@@ -13,6 +13,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
     {
         [SerializeField]
         private Image _cat;
+        [SerializeField] private SiegeCarryOverlay _carryOverlay;
         [Serializable]
         private sealed class AnimalVisual
         {
@@ -58,6 +59,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             if (_validatedCatalog != catalog)
             {
+                if (_carryOverlay == null)
+                    throw new InvalidOperationException("Missing siege carry overlay binding.");
                 foreach (var encounter in catalog.Content.Encounters)
                     foreach (string id in encounter.UnitIds)
                         if (!SiegeTokenArt.Supports(catalog.Unit(id).Icon)
@@ -93,7 +96,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             Vector2 home = Local(new SiegePoint(301, 38));
             Vector2 position = home;
             float jump = 0;
-            if (jumping && _state != null)
+            if (jumping && _state != null && _state.AnimalState.Cast?.Kind == IntentKind.Sweep)
             {
                 var a = _state.AnimalState;
                 if (a.ImpactAtMs > _state.ElapsedMs)
@@ -108,13 +111,17 @@ namespace HomelessPetHelper.Modules.Siege.UI
                     position = Vector2.Lerp(home, Local(a.SweepCenter), back);
                 }
             }
+            if (_state != null && _state.AnimalState.Cast?.Kind == IntentKind.Carry)
+                position = CarryAnimalPosition(home);
             _cat.rectTransform.anchoredPosition = position + Vector2.up * jump;
             _cat.rectTransform.sizeDelta = Vector2.one * (78 * Scale);
-            bool acting = _state != null && _state.Effects.Any(x => x.Kind == "slap" || x.Kind == "sweep");
+            bool acting = _state != null && _state.AnimalState.Cast?.Kind != IntentKind.Carry
+                && _state.Effects.Any(x => x.Kind == "slap" || x.Kind == "sweep");
             _cat.rectTransform.localRotation = Quaternion.Euler(0, 0, acting ? -9 : 0);
             bool winding = jumping && _state != null && _state.AnimalState.Intent == IntentKind.Sweep
-                && _state.AnimalState.Charge > .5;
+                && _state.AnimalState.Cast == null && _state.AnimalState.Charge > .5;
             _cat.rectTransform.localScale = winding ? new Vector3(1.05f, .9f, 1) : Vector3.one;
+            _carryOverlay.Show(_catalog, _state?.Units.FirstOrDefault(x => x.IsCarried), PropScale);
         }
 
         protected override void OnPopulateMesh(VertexHelper vh)
@@ -143,15 +150,17 @@ namespace HomelessPetHelper.Modules.Siege.UI
             DrawZones(vh);
             DrawTowers(vh);
             foreach (var unit in _state.Units)
-                DrawUnit(vh, unit);
+                if (!unit.IsCarried) DrawUnit(vh, unit);
             DrawHold(vh);
+            DrawCarry(vh);
             DrawEffects(vh);
         }
 
         private void DrawIntent(VertexHelper vh)
         {
             var a = _state.AnimalState;
-            if ((a.Intent == IntentKind.Sweep && a.HeldUnitId == 0) || a.ImpactAtMs > _state.ElapsedMs)
+            if ((a.Intent == IntentKind.Sweep && a.HeldUnitId == 0 && a.Cast?.Kind != IntentKind.Carry)
+                || a.ImpactAtMs > _state.ElapsedMs)
             {
                 Circle(vh, Local(a.SweepCenter), (float)a.SweepRadius * Scale, new Color32(233, 122, 108, 35));
                 Ring(vh, Local(a.SweepCenter), (float)a.SweepRadius * Scale, 1.5f * Scale, Coral);
@@ -187,7 +196,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             var target = _state.Units.FirstOrDefault(x => x.Id == (active ? a.HeldUnitId : a.IntentUnitId));
             if (!active)
             {
-                DrawHoldRange(vh, d);
+                DrawGrabRange(vh, new SiegePoint(d.HoldOriginX, d.HoldOriginY), d.HoldRange);
                 if (target == null) return;
                 Vector2 point = Local(SiegeEntitiesPosition(target));
                 Line(vh, origin, point, Scale, new Color32(224, 176, 64, 150));
@@ -205,21 +214,63 @@ namespace HomelessPetHelper.Modules.Siege.UI
             Ring(vh, held, 17 * PropScale, 2 * PropScale, Coral);
         }
 
-        private void DrawHoldRange(VertexHelper vh, SiegeEncounterDefinition definition)
+        private void DrawGrabRange(VertexHelper vh, SiegePoint point, double range)
         {
             // Only the reachable arc belongs on the map, not over the surrounding HUD.
             var bounds = new Rect(0, 0, (float)_catalog.Width, (float)_catalog.Height);
-            var origin = new Vector2((float)definition.HoldOriginX, (float)definition.HoldOriginY);
+            var origin = new Vector2((float)point.X, (float)point.Y);
             for (int i = 0; i < 120; i++)
             {
                 float angle = i * Mathf.PI / 60;
                 float next = (i + 1) * Mathf.PI / 60;
-                var from = origin + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * (float)definition.HoldRange;
-                var to = origin + new Vector2(Mathf.Cos(next), Mathf.Sin(next)) * (float)definition.HoldRange;
+                var from = origin + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * (float)range;
+                var to = origin + new Vector2(Mathf.Cos(next), Mathf.Sin(next)) * (float)range;
                 if (bounds.Contains(from) && bounds.Contains(to))
                     Line(vh, Local(new SiegePoint(from.x, from.y)), Local(new SiegePoint(to.x, to.y)),
                         Scale, new Color32(224, 176, 64, 180));
             }
+        }
+
+        private Vector2 CarryAnimalPosition(Vector2 home)
+        {
+            var cast = _state.AnimalState.Cast;
+            var d = _catalog.Content.Encounter(_state.EncounterId);
+            Vector2 offset = Vector2.down * 6 * Scale;
+            var unit = _state.Units.FirstOrDefault(x => x.Id == cast.Target.UnitId);
+            if (cast.Phase == CastPhase.Active && unit != null)
+                return Local(SiegeEntitiesPosition(unit)) + offset;
+            if (cast.Phase == CastPhase.Windup)
+            {
+                float t = Mathf.Clamp01((_state.ElapsedMs - cast.StartedMs)
+                    / (float)Math.Max(1, cast.ResolveAtMs - cast.StartedMs));
+                return Vector2.Lerp(home, Local(cast.Point) + offset, t);
+            }
+            float back = Mathf.Clamp01((_state.AnimalState.RecoveryUntilMs - _state.ElapsedMs)
+                / (float)Math.Max(1, d.CarryRecoveryMs));
+            return Vector2.Lerp(home, Local(cast.Point) + offset, back);
+        }
+
+        private void DrawCarry(VertexHelper vh)
+        {
+            var a = _state.AnimalState;
+            bool casting = a.Cast != null && a.Cast.Kind == IntentKind.Carry;
+            if (casting && a.Cast.Phase == CastPhase.Recovery) return;
+            if (!casting && a.Intent != IntentKind.Carry) return;
+            var d = _catalog.Content.Encounter(_state.EncounterId);
+            var unit = _state.Units.FirstOrDefault(x => x.Id == (casting ? a.Cast.Target.UnitId : a.IntentUnitId));
+            if (!casting)
+                DrawGrabRange(vh, new SiegePoint(d.CarryOriginX, d.CarryOriginY), d.CarryRange);
+            if (unit == null) return;
+            var lane = _catalog.Lane(unit.LaneId);
+            double from = unit.IsCarried ? unit.CarryFromDistance : unit.Distance;
+            double to = unit.IsCarried ? unit.CarryToDistance : Math.Max(d.CarryMinDistance, from - d.CarryDistance);
+            for (int i = 0; i < 16; i++)
+                Line(vh, Local(lane.PointAt(from + (to - from) * i / 16)),
+                    Local(lane.PointAt(from + (to - from) * (i + 1) / 16)),
+                    Scale, new Color32(224, 176, 64, 190));
+            Ring(vh, Local(lane.PointAt(to)), 13 * PropScale, 2 * PropScale, Mint);
+            Ring(vh, Local(SiegeEntitiesPosition(unit)), 15 * PropScale, 2 * PropScale,
+                unit.IsCarried ? Coral : new Color32(224, 176, 64, 255));
         }
 
         private void DrawZones(VertexHelper vh)
@@ -290,7 +341,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (_state.EncounterId != null)
             {
                 float phase = (float)(unit.Distance / 8 + unit.Id * .7);
-                Vector2 bob = Vector2.up * Mathf.Abs(Mathf.Sin(phase)) * 1.5f * Scale;
+                Vector2 bob = unit.IsCarried ? Vector2.zero
+                    : Vector2.up * Mathf.Abs(Mathf.Sin(phase)) * 1.5f * Scale;
                 SiegeTokenArt.Draw(vh, d.Icon, point + bob, radius, phase, unit.Brace > 0);
                 if (unit.Brace > 0)
                     Line(vh, point + new Vector2(-radius, -radius), point + new Vector2(radius, -radius),
@@ -377,7 +429,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             )
                 return;
             var units = _state
-                .Units.Where(x => Vector2.Distance(Local(SiegeEntitiesPosition(x)), local) <= 15 * PropScale)
+                .Units.Where(x => !x.IsCarried
+                    && Vector2.Distance(Local(SiegeEntitiesPosition(x)), local) <= 15 * PropScale)
                 .OrderBy(x => x.Id)
                 .ToArray();
             if (units.Length > 0 && _interactive)
