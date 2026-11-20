@@ -10,6 +10,7 @@ param(
     [string]$TestFilter,
     [ValidatePattern('^[A-Za-z0-9-]+$')]
     [string]$ReportSuffix,
+    [string]$RunRecordPath,
     [switch]$Isolated,
     [switch]$Graphics
 )
@@ -20,6 +21,15 @@ $projectPath = Join-Path $repoRoot 'unity\HomelessPetHelper'
 $reportPath = Join-Path $repoRoot 'test-results\unity'
 $versionFile = Join-Path $projectPath 'ProjectSettings\ProjectVersion.txt'
 $version = (Select-String -LiteralPath $versionFile -Pattern '^m_EditorVersion: (.+)$').Matches[0].Groups[1].Value
+
+if (-not [string]::IsNullOrWhiteSpace($RunRecordPath))
+{
+    if (-not $Isolated -or $Task -notin @('EditMode', 'PlayMode'))
+    {
+        throw 'Structured run records require an isolated test run.'
+    }
+    if (Test-Path -LiteralPath $RunRecordPath) { throw 'Run record already exists; use a unique path.' }
+}
 
 if ([string]::IsNullOrWhiteSpace($EditorPath))
 {
@@ -243,42 +253,95 @@ if ($isTestRun)
     Copy-Item -LiteralPath $playerSettingsPath -Destination $settingsBackup -Force
 }
 
+$record = $null
+if (-not [string]::IsNullOrWhiteSpace($RunRecordPath))
+{
+    $inputFiles = @(
+        foreach ($folder in @('Assets', 'Packages', 'ProjectSettings'))
+        {
+            foreach ($inputFile in Get-ChildItem -LiteralPath (Join-Path $projectPath $folder) -Recurse -File -Force)
+            {
+                [ordered]@{
+                    path = $inputFile.FullName.Substring($projectPath.Length + 1).Replace('\', '/')
+                    bytes = $inputFile.Length
+                    sha256 = (Get-FileHash -LiteralPath $inputFile.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+                }
+            }
+        }
+    )
+    $record = [ordered]@{
+        schemaVersion = 1; task = $Task; status = 'running'
+        startedAt = [DateTime]::UtcNow.ToString('o'); finishedAt = $null
+        projectPath = $projectPath; isolated = [bool]$Isolated; graphics = [bool]$Graphics
+        testFilter = $TestFilter; editorPath = $EditorPath; editorVersion = $version
+        editorFileVersion = (Get-Item -LiteralPath $EditorPath).VersionInfo.FileVersion
+        editorProductVersion = (Get-Item -LiteralPath $EditorPath).VersionInfo.ProductVersion
+        powershellVersion = $PSVersionTable.PSVersion.ToString()
+        reportPath = $resultPath; logPath = $logPath; exitCode = $null
+        inputFiles = $inputFiles; tests = $null; reportSha256 = $null; logSha256 = $null
+    }
+    $record | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $RunRecordPath -Encoding UTF8
+}
+
 try
 {
-    $process = Start-Process -FilePath $EditorPath -ArgumentList $unityArguments -WindowStyle Hidden -PassThru
-    $process.WaitForExit()
+    try
+    {
+        $process = Start-Process -FilePath $EditorPath -ArgumentList $unityArguments -WindowStyle Hidden -PassThru
+        $process.WaitForExit()
+    }
+    finally
+    {
+        # Unity Test Framework enables runInBackground; keep tests from changing player configuration.
+        if ($isTestRun)
+        {
+            Copy-Item -LiteralPath $settingsBackup -Destination $playerSettingsPath -Force
+        }
+        if ($null -ne $record -and $null -ne $process) { $record.exitCode = $process.ExitCode }
+    }
+
+    Write-Output "Unity $version / $Task exit code: $($process.ExitCode)"
+    Write-Output "Log: $logPath"
+    if ($isTestRun -and (Test-Path -LiteralPath $resultPath))
+    {
+        [xml]$report = Get-Content -LiteralPath $resultPath -Raw
+        $run = $report.'test-run'
+        if ($null -ne $record)
+        {
+            $record.tests = [ordered]@{
+                result = [string]$run.result; total = [int]$run.total; passed = [int]$run.passed
+                failed = [int]$run.failed; skipped = [int]$run.skipped; inconclusive = [int]$run.inconclusive
+            }
+        }
+    }
+    if ($process.ExitCode -ne 0)
+    {
+        throw 'Unity command failed. Inspect the log before retrying.'
+    }
+
+    if ($isTestRun)
+    {
+        if (-not (Test-Path -LiteralPath $resultPath)) { throw 'Unity exited without a test report.' }
+        if ($run.result -ne 'Passed' -or [int]$run.total -eq 0 -or [int]$run.failed -gt 0)
+        {
+            throw "Tests did not pass: $($run.result), total=$($run.total), failed=$($run.failed)"
+        }
+        Write-Output "Tests: $($run.passed)/$($run.total) passed. Report: $resultPath"
+    }
+    if ($null -ne $record) { $record.status = 'passed' }
 }
 finally
 {
-    # Unity Test Framework enables runInBackground; keep tests from changing player configuration.
-    if ($isTestRun)
+    if ($null -ne $record)
     {
-        Copy-Item -LiteralPath $settingsBackup -Destination $playerSettingsPath -Force
+        if ($record.status -ne 'passed') { $record.status = 'failed' }
+        $record.finishedAt = [DateTime]::UtcNow.ToString('o')
+        if (Test-Path -LiteralPath $resultPath)
+        { $record.reportSha256 = (Get-FileHash -LiteralPath $resultPath -Algorithm SHA256).Hash.ToLowerInvariant() }
+        if (Test-Path -LiteralPath $logPath)
+        { $record.logSha256 = (Get-FileHash -LiteralPath $logPath -Algorithm SHA256).Hash.ToLowerInvariant() }
+        $record | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $RunRecordPath -Encoding UTF8
     }
-}
-
-Write-Output "Unity $version / $Task exit code: $($process.ExitCode)"
-Write-Output "Log: $logPath"
-if ($process.ExitCode -ne 0)
-{
-    throw 'Unity command failed. Inspect the log before retrying.'
-}
-
-if ($isTestRun)
-{
-    if (-not (Test-Path -LiteralPath $resultPath))
-    {
-        throw 'Unity exited without a test report.'
-    }
-
-    [xml]$report = Get-Content -LiteralPath $resultPath -Raw
-    $run = $report.'test-run'
-    if ($run.result -ne 'Passed' -or [int]$run.total -eq 0 -or [int]$run.failed -gt 0)
-    {
-        throw "Tests did not pass: $($run.result), total=$($run.total), failed=$($run.failed)"
-    }
-
-    Write-Output "Tests: $($run.passed)/$($run.total) passed. Report: $resultPath"
 }
 
 if ($Task -eq 'ResourceAudit')
