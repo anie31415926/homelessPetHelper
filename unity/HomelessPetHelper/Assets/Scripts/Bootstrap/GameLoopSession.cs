@@ -21,6 +21,7 @@ namespace HomelessPetHelper.Bootstrap
         public RequestPoolState Requests { get; }
         public OutingCoordinator Outing { get; }
         public IRescueActivity Activity { get; private set; }
+        public IRouteOpeningActivity OpeningRoute { get; private set; }
         public StationReturnSummary LastArrival { get; private set; }
         public bool IsClosed { get; private set; }
 
@@ -62,6 +63,68 @@ namespace HomelessPetHelper.Bootstrap
             if (!Outing.TryBeginOuting(outingId, seed, out failure)) return false;
             Activity?.Dispose();
             Activity = null;
+            OpeningRoute?.Dispose();
+            OpeningRoute = null;
+            return true;
+        }
+
+        /// <summary>Transfers ownership only after this outing accepts an uncompleted route objective.</summary>
+        public bool TryStartOpeningRoute(IRouteOpeningActivity opening, out OutingAssemblyFailure failure)
+        {
+            if (!RequireOpen(out failure)) return false;
+            var outing = Outing.Session;
+            if (outing == null || OpeningRoute != null || Activity != null ||
+                outing.DeparturePlan?.EntryKind != MapEntryKind.HelpRequest)
+            {
+                failure = OutingAssemblyFailure.WrongStage;
+                return false;
+            }
+            if (opening == null || opening.SessionId != outing.SessionId || opening.IsClosed ||
+                opening.IsSuspended || opening.IsComplete)
+            {
+                failure = OutingAssemblyFailure.IdentityMismatch;
+                return false;
+            }
+            if (!Outing.TryStartOpeningRoute(outing.SessionId, out failure)) return false;
+            OpeningRoute = opening;
+            return true;
+        }
+
+        /// <summary>Only the currently owned, live route can certify entry; rejection changes no flow state.</summary>
+        public bool TryEnterRescueAfterOpening(IRescueActivity activity, out OutingAssemblyFailure failure)
+        {
+            if (!RequireOpen(out failure)) return false;
+            var outing = Outing.Session;
+            if (outing == null || Flow.Stage != RescueStage.Approach || outing.IsSettled || Activity != null ||
+                OpeningRoute == null || !outing.HasOpenedRoute)
+            {
+                failure = OutingAssemblyFailure.WrongStage;
+                return false;
+            }
+            if (Flow.IsSuspended || outing.IsSuspended || OpeningRoute.IsSuspended)
+            {
+                failure = OutingAssemblyFailure.Suspended;
+                return false;
+            }
+            if (OpeningRoute.IsClosed || OpeningRoute.SessionId != outing.SessionId ||
+                activity == null || activity.SessionId != outing.SessionId || activity.Individual == null ||
+                activity.IsRescueComplete || activity.IsAssistanceRequested || activity.IsClosed ||
+                    activity.IsSuspended)
+            {
+                failure = OutingAssemblyFailure.IdentityMismatch;
+                return false;
+            }
+            if (!OpeningRoute.IsComplete)
+            {
+                failure = OutingAssemblyFailure.RouteNotComplete;
+                return false;
+            }
+            if (!Outing.TryAdvanceField(outing.SessionId, RescueSignal.ApproachCompleted, out failure)) return false;
+            if (!Outing.TryBindRescueAnimal(outing.SessionId, activity, out _))
+                throw new InvalidOperationException("Validated rescue binding failed.");
+            Activity = activity;
+            OpeningRoute.Dispose();
+            OpeningRoute = null;
             return true;
         }
 
@@ -90,7 +153,8 @@ namespace HomelessPetHelper.Bootstrap
                 failure = OutingAssemblyFailure.IdentityMismatch;
                 return false;
             }
-            if (outing.DeparturePlan.EntryKind != MapEntryKind.HelpRequest || outing.HasOpenedRoute)
+            if (outing.DeparturePlan.EntryKind != MapEntryKind.HelpRequest || outing.HasOpenedRoute ||
+                OpeningRoute != null)
             {
                 failure = OutingAssemblyFailure.WrongStage;
                 return false;
@@ -146,6 +210,8 @@ namespace HomelessPetHelper.Bootstrap
             if (!Outing.TryEndUnresolved(Outing.Session.SessionId, out _, out failure)) return false;
             Activity?.Dispose();
             Activity = null;
+            OpeningRoute?.Dispose();
+            OpeningRoute = null;
             return true;
         }
 
@@ -165,6 +231,7 @@ namespace HomelessPetHelper.Bootstrap
             Station.SetSuspended(suspended);
             Clock.SetSuspended(suspended);
             Activity?.SetSuspended(suspended);
+            OpeningRoute?.SetSuspended(suspended);
         }
 
         public void Dispose()
@@ -173,6 +240,8 @@ namespace HomelessPetHelper.Bootstrap
             IsClosed = true;
             Activity?.Dispose();
             Activity = null;
+            OpeningRoute?.Dispose();
+            OpeningRoute = null;
             Station.Close();
             Clock.Close();
             Flow.SetSuspended(true);

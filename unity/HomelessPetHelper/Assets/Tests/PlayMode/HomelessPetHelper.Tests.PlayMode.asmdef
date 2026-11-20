@@ -16,7 +16,8 @@
     "HomelessPetHelper.Modules.WorldTime",
     "HomelessPetHelper.Tests.Support",
     "HomelessPetHelper.Framework.Persistence",
-    "HomelessPetHelper.Modules.Outing"
+    "HomelessPetHelper.Modules.Outing",
+    "HomelessPetHelper.Modules.Approach"
   ],
   "optionalUnityReferences": [
     "TestAssemblies"

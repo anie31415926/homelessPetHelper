@@ -1,14 +1,44 @@
 using System;
 using System.Linq;
 using HomelessPetHelper.Game;
+using HomelessPetHelper.Game.Approach;
 using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Modules.Approach;
+using HomelessPetHelper.Modules.Rescue.UI;
 using NUnit.Framework;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace HomelessPetHelper.Tests.EditMode
 {
     public sealed class MainAssetTests
     {
+        [Test]
+        public void ApproachPrefabHasCompleteStaticBindingsAndSharedScreenAdaptation()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Panels/Panel_Approach.prefab");
+            Assert.That(prefab, Is.Not.Null);
+            Assert.That(prefab.GetComponentsInChildren<MonoBehaviour>(true), Has.None.Null);
+            Assert.That(prefab.GetComponent<ApproachPanelView>(), Is.Not.Null);
+            var board = prefab.GetComponentInChildren<ApproachBoardView>(true);
+            Assert.That(board.CellCount, Is.EqualTo(ApproachCatalog.BoardColumns * ApproachCatalog.BoardRows));
+            Assert.That(prefab.GetComponentsInChildren<ApproachCellView>(true).Length, Is.EqualTo(board.CellCount));
+            Assert.That(prefab.GetComponentInChildren<SafeAreaView>(true), Is.Not.Null);
+            var scaler = prefab.GetComponent<CanvasScaler>();
+            Assert.That(scaler.uiScaleMode, Is.EqualTo(CanvasScaler.ScaleMode.ScaleWithScreenSize));
+            Assert.That(scaler.referenceResolution, Is.EqualTo(new Vector2(1080, 1920)));
+            foreach (var component in prefab.GetComponentsInChildren<MonoBehaviour>(true)
+                .Where(value => value.GetType().Namespace == typeof(ApproachPanelView).Namespace))
+            {
+                var property = new SerializedObject(component).GetIterator();
+                while (property.NextVisible(true))
+                    if (property.propertyType == SerializedPropertyType.ObjectReference)
+                        Assert.That(property.objectReferenceValue, Is.Not.Null,
+                            component.name + ": " + property.propertyPath);
+            }
+        }
+
         [Test]
         public void MainUsesRuntimeContentAndNoPreviewAssetsOrEditorTypes()
         {
@@ -25,6 +55,12 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.DoesNotThrow(content.Validate);
             Assert.That(content.Font.HasCharacter('救'), Is.True);
             Assert.That(content.Font.HasCharacter('助'), Is.True);
+            Assert.That(dependencies, Does.Contain("Assets/Settings/Game/ApproachConfig.json"));
+            var approachSource = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.TextAsset>(
+                "Assets/Settings/Game/ApproachText.json");
+            foreach (char character in approachSource.text)
+                if (character > 127 && !char.IsWhiteSpace(character))
+                    Assert.That(content.Font.HasCharacter(character), Is.True, "approach glyph: " + character);
             var stationText = new OptionPreviewText(content.StationText);
             foreach (var key in new[] { "save.loadFailed", "save.writeFailed", "save.recovered", "loop.dog",
                 "save.outingBoundary", "save.careBoundary" })

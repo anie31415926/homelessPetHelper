@@ -34,6 +34,7 @@ namespace HomelessPetHelper.Bootstrap
         NecessaryCarePending = 24,
         RescueNotComplete = 25,
         DirectHandoffRequired = 26,
-        DurationPolicyRequired = 27
+        DurationPolicyRequired = 27,
+        RouteNotComplete = 28
     }
 }

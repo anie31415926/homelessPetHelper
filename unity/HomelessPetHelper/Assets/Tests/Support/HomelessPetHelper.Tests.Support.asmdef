@@ -1,6 +1,13 @@
 {
   "name": "HomelessPetHelper.Tests.Support",
-  "references": ["HomelessPetHelper.Framework.Persistence", "HomelessPetHelper.Game"],
-  "optionalUnityReferences": ["TestAssemblies"],
+  "references": [
+    "HomelessPetHelper.Framework.Persistence",
+    "HomelessPetHelper.Game",
+    "HomelessPetHelper.Modules.Approach",
+    "UnityEngine.UI"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
   "autoReferenced": false
 }

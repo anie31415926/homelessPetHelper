@@ -3,6 +3,7 @@ using HomelessPetHelper.Framework.Audio;
 using HomelessPetHelper.Game.CityMap;
 using HomelessPetHelper.Game.Station;
 using HomelessPetHelper.Modules.Siege;
+using HomelessPetHelper.Modules.Approach;
 using UnityEngine;
 
 namespace HomelessPetHelper.Game
@@ -15,6 +16,11 @@ namespace HomelessPetHelper.Game
         [SerializeField] private TextAsset _catMask, _dogMask;
         [SerializeField] private Font _font;
         [SerializeField] private AudioCatalog _audioCatalog;
+        [SerializeField] private TextAsset _approachConfig, _approachText;
+        public TextAsset ApproachText => _approachText;
+        public ApproachCatalog CreateApproachCatalog() => _approachConfig != null ?
+            new ApproachCatalog(JsonUtility.FromJson<ApproachCatalogData>(_approachConfig.text)) :
+            throw new InvalidOperationException("Missing approach content.");
         public AudioCatalog AudioCatalog => _audioCatalog;
         public TextAsset MapText => _mapText;
         public TextAsset StationText => _stationText;
@@ -34,6 +40,8 @@ namespace HomelessPetHelper.Game
             Artwork.Get(true, out _);
             CreateMapConfig().ValidateRescues(CreateSiegeCatalog());
             new Modules.Siege.UI.SiegeText(_siegeText).Validate(CreateSiegeCatalog());
+            CreateApproachCatalog();
+            Approach.ApproachPanelView.ValidateText(new Text.OptionPreviewText(_approachText));
         }
     }
 }

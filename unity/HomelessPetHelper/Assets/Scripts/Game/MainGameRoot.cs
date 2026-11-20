@@ -19,11 +19,13 @@ namespace HomelessPetHelper.Game
         [SerializeField] private StationPanelView _station;
         [SerializeField] private CityMapView _map;
         [SerializeField] private SiegeTrialView _siege;
+        [SerializeField] private Approach.ApproachPanelView _approach;
         [SerializeField] private AudioScope[] _audioScopes = Array.Empty<AudioScope>();
         public MainLoopPresenter Presenter { get; private set; }
         public MainAudioSession Audio { get; private set; }
 
         private ISaveStorage _progressStorage;
+        private Func<int> _outingSeedSource;
         private bool _started;
 
         /// <summary>
@@ -35,10 +37,18 @@ namespace HomelessPetHelper.Game
             _progressStorage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
+        /// <summary>Explicit randomness dependency for deterministic composition; configure before Start.</summary>
+        public void ConfigureOutingSeedSource(Func<int> source)
+        {
+            if (_started) throw new InvalidOperationException("Configure outing seeds before Start.");
+            _outingSeedSource = source ?? throw new ArgumentNullException(nameof(source));
+        }
+
         private void Start()
         {
             _started = true;
-            if (_bootstrap == null || _content == null || _station == null || _map == null || _siege == null)
+            if (_bootstrap == null || _content == null || _station == null || _map == null ||
+                _siege == null || _approach == null)
                 throw new InvalidOperationException("Incomplete Main scene bindings.");
             Audio = new MainAudioSession(transform, _content.AudioCatalog, CreateAudioStorage());
             foreach (AudioScope scope in _audioScopes)
@@ -46,8 +56,8 @@ namespace HomelessPetHelper.Game
                 if (scope == null) throw new InvalidOperationException("Missing Main audio scope.");
                 scope.Bind(Audio.Playback);
             }
-            Presenter = new MainLoopPresenter(_station, _map, _siege, _content, Audio.Playback,
-                _progressStorage ?? CreateProgressStorage());
+            Presenter = new MainLoopPresenter(_station, _map, _siege, _approach, _content, Audio.Playback,
+                _progressStorage ?? CreateProgressStorage(), _outingSeedSource);
             _bootstrap.BindSession(Presenter.Session);
             if (Audio.PersistenceError != null)
                 Debug.LogWarning("Audio preferences are session-only; original save is preserved. " +

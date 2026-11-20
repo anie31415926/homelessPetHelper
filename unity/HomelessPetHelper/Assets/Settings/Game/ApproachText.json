@@ -1,0 +1,192 @@
+{
+  "entries": [
+    {
+      "key": "title.Puzzle",
+      "value": "挪箱搭桥 · 开路"
+    },
+    {
+      "key": "title.Cleanup",
+      "value": "清理杂物 · 开路"
+    },
+    {
+      "key": "instruction.Puzzle",
+      "value": "选中箱子，再点同一行或列的落点，也可以拖动。搭桥接通水沟，走近小家伙。"
+    },
+    {
+      "key": "instruction.Cleanup",
+      "value": "选对工具，按住并拖动清理，从入口逐步向里开路。泥斑不挡路，清出安全通道就好。"
+    },
+    {
+      "key": "tool.Move",
+      "value": "挪箱"
+    },
+    {
+      "key": "tool.Bridge",
+      "value": "搭桥"
+    },
+    {
+      "key": "tool.Litter",
+      "value": "拾杂物"
+    },
+    {
+      "key": "tool.Weeds",
+      "value": "除杂草"
+    },
+    {
+      "key": "tool.Mud",
+      "value": "洗泥斑"
+    },
+    {
+      "key": "undo",
+      "value": "撤回一步"
+    },
+    {
+      "key": "continue",
+      "value": "走近它 · 开始救助"
+    },
+    {
+      "key": "return",
+      "value": "暂时回站"
+    },
+    {
+      "key": "pause",
+      "value": "暂停"
+    },
+    {
+      "key": "resume",
+      "value": "继续开路"
+    },
+    {
+      "key": "summary",
+      "value": "{0} · 入口到动物处{1}"
+    },
+    {
+      "key": "route.blocked",
+      "value": "尚未连通"
+    },
+    {
+      "key": "route.ready",
+      "value": "已经连通"
+    },
+    {
+      "key": "ready",
+      "value": "先为它留出一条安全的路。"
+    },
+    {
+      "key": "paused",
+      "value": "开路已暂停，当前进度保留。"
+    },
+    {
+      "key": "selected",
+      "value": "箱子已选中，请选择同一直线的落点。"
+    },
+    {
+      "key": "changed",
+      "value": "又靠近一点，留意通路是否连通。"
+    },
+    {
+      "key": "cleaning",
+      "value": "正在清理，这一小块很快就好。"
+    },
+    {
+      "key": "opened",
+      "value": "通道已连通！可以走近它，开始救助。"
+    },
+    {
+      "key": "undone",
+      "value": "已回到上一步。"
+    },
+    {
+      "key": "cell.wall",
+      "value": "墙"
+    },
+    {
+      "key": "cell.water",
+      "value": "水沟"
+    },
+    {
+      "key": "cell.bridge",
+      "value": "木桥"
+    },
+    {
+      "key": "cell.box",
+      "value": "箱子"
+    },
+    {
+      "key": "cell.Litter",
+      "value": "杂物"
+    },
+    {
+      "key": "cell.Weeds",
+      "value": "杂草"
+    },
+    {
+      "key": "cell.Mud",
+      "value": "泥斑"
+    },
+    {
+      "key": "cell.entrance",
+      "value": "入口"
+    },
+    {
+      "key": "animal.cat",
+      "value": "小猫"
+    },
+    {
+      "key": "animal.dog",
+      "value": "小狗"
+    },
+    {
+      "key": "cell.covered",
+      "value": "{0}\n{1}"
+    },
+    {
+      "key": "cell.work",
+      "value": "{0}\n{1}%"
+    },
+    {
+      "key": "failure.Closed",
+      "value": "这次开路已经结束。"
+    },
+    {
+      "key": "failure.Suspended",
+      "value": "先恢复开路，再继续操作。"
+    },
+    {
+      "key": "failure.WrongMode",
+      "value": "当前开路方式不支持这个操作。"
+    },
+    {
+      "key": "failure.InvalidCell",
+      "value": "请在场地内操作。"
+    },
+    {
+      "key": "failure.Blocked",
+      "value": "这里被挡住了，请换一个合法位置。"
+    },
+    {
+      "key": "failure.WrongTool",
+      "value": "换个对应的工具再试试。"
+    },
+    {
+      "key": "failure.OutOfReach",
+      "value": "先从靠近入口的地方开路。"
+    },
+    {
+      "key": "failure.NoWork",
+      "value": "这里已经没有需要清理的东西。"
+    },
+    {
+      "key": "failure.NoHistory",
+      "value": "还没有可以撤回的操作。"
+    },
+    {
+      "key": "failure.InvalidDuration",
+      "value": "本次清理输入无效，请重新按住操作。"
+    },
+    {
+      "key": "phase",
+      "value": "开路寻踪 → 救助 → 安全回站"
+    }
+  ]
+}

@@ -35,6 +35,7 @@
     { "key": "loop.failure.NecessaryCarePending", "value": "请先为新入站动物安排必要照护。" },
     { "key": "loop.failure.RescueNotComplete", "value": "救助尚未完成，不能按成功入站结算。" },
     { "key": "loop.failure.DirectHandoffRequired", "value": "这次救助需要直接交接，不能按收容入站处理。" },
+    { "key": "loop.failure.RouteNotComplete", "value": "先打通道路，再走近它。" },
     { "key": "loop.failure.DurationPolicyRequired", "value": "缺少外出计时规则，尚未结算。" },
     { "key": "care.failure.Suspended", "value": "护理已暂停，恢复后可继续。" },
     { "key": "care.failure.SessionUnavailable", "value": "本次护理会话不可用，操作未提交。" },

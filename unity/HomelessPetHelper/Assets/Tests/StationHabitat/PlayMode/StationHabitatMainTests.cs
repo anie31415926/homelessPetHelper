@@ -31,7 +31,7 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
             var siege = UnityEngine.Object.FindObjectOfType<SiegeTrialView>(true);
             Assert.That(station.Scene.Count, Is.Zero);
             Click(station, "Restart");
-            Click(map, "Primary");
+            Click(map, "Primary"); MainApproachDriver.Complete();
             var activity = (SiegeRescueActivity)root.Presenter.Session.Activity;
             for (int i = 0; i < 700 && activity.Battle.Phase != SiegeState.BattlePhase.Won; i++)
             {

@@ -4,7 +4,7 @@ param(
         'CaseCompactPolish',
         'StationAssets', 'StationArt', 'StationCareLayout', 'LoopAssets', 'ResourceAudit',
         'SiegeAssets', 'SiegeLayout', 'SiegeBuild', 'PetMotionAssets', 'PetMotionAudit', 'PetMotionBake',
-        'RuntimeMove', 'MainAssets', 'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
+        'RuntimeMove', 'MainAssets', 'ApproachAssets', 'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
     [string]$Task = 'EditMode',
     [string]$EditorPath = $env:UNITY_EDITOR_PATH,
     [string]$TestFilter,
@@ -92,6 +92,11 @@ if (-not $Graphics)
 
 switch ($Task)
 {
+    'ApproachAssets'
+    {
+        if (-not $Isolated) { throw 'ApproachAssets requires an isolated snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Approach.ApproachPanelAuthor.Apply')
+    }
     'RuntimeMove'
     {
         if (-not $Isolated) { throw 'RuntimeMove requires an isolated snapshot.' }

@@ -44,7 +44,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         private SiegeRescueActivity Depart()
         {
             Click(_station, "Restart");
-            Click(_map, "Primary");
+            Click(_map, "Primary"); MainApproachDriver.Complete();
             Assert.That(_siege.gameObject.activeInHierarchy, Is.True);
             Assert.That(_root.Presenter.Session.Activity, Is.TypeOf<SiegeRescueActivity>());
             return (SiegeRescueActivity)_root.Presenter.Session.Activity;
@@ -56,7 +56,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return Capture(_station, "empty");
             Click(_station, "Restart");
             yield return Capture(_map, "map");
-            Click(_map, "Primary");
+            Click(_map, "Primary"); MainApproachDriver.Complete();
             var activity = (SiegeRescueActivity)_root.Presenter.Session.Activity;
             yield return null;
             yield return null;
@@ -72,10 +72,10 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(session.Station.Animals.Count, Is.EqualTo(1));
             var arrival = session.Station.Animals[0];
             Assert.That(arrival.MatchesCurrentIndividual(activity.Individual), Is.True);
-            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(25));
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(35));
             staleReturn.onClick.Invoke();
             Assert.That(session.Station.Animals.Count, Is.EqualTo(1));
-            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(25));
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(35));
             yield return Capture(_station, "summary");
             Click(_station, "Enter");
             Click(_station, "Animal0");

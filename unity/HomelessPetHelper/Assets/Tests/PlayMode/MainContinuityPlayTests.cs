@@ -50,7 +50,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return Load();
             Assert.That(_storage.Writes, Is.Zero);
             Click(_station, "Restart");
-            Click(_map, "Primary");
+            Click(_map, "Primary"); MainApproachDriver.Complete();
             var catActivity = (SiegeRescueActivity)_root.Presenter.Session.Activity;
             Assert.That(catActivity.Battle.Snapshot.EncounterId, Is.EqualTo("cat"));
             yield return Win();
@@ -68,7 +68,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(catCoat.CopyDirt().RemovedFraction, Is.GreaterThan(0));
             Click(_station, "Restart");
             Click(_map, "Yard");
-            Click(_map, "Primary");
+            Click(_map, "Primary"); MainApproachDriver.Complete();
             var dogActivity = (SiegeRescueActivity)_root.Presenter.Session.Activity;
             Assert.That(dogActivity.Battle.Snapshot.EncounterId, Is.EqualTo("dog"));
             Assert.That(dogActivity.Individual.Current.DefinitionId, Is.EqualTo("dog"));
@@ -108,7 +108,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         public IEnumerator BackgroundAndSceneReloadDoNotSettleUnendedCare()
         {
             yield return Load();
-            Click(_station, "Restart"); Click(_map, "Primary");
+            Click(_station, "Restart"); Click(_map, "Primary"); MainApproachDriver.Complete();
             yield return Win();
             Click(_siege, "Retry"); Click(_station, "Enter"); Click(_station, "Animal0"); Click(_station, "Check");
             var arrival = _root.Presenter.Session.Station.Animals.Single();

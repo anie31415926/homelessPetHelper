@@ -17,7 +17,8 @@
     "HomelessPetHelper.Game",
     "HomelessPetHelper.Tests.Support",
     "HomelessPetHelper.Framework.Persistence",
-    "HomelessPetHelper.Modules.Siege"
+    "HomelessPetHelper.Modules.Siege",
+    "HomelessPetHelper.Modules.Approach"
   ],
   "includePlatforms": [
     "Editor"

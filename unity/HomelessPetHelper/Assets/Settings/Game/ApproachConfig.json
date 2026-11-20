@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "undoLimit": 40,
+  "maxStepSeconds": 0.05,
+  "templates": [
+    {
+      "id": "puzzle.warehouse",
+      "mode": 0,
+      "rows": [
+        "#######",
+        "#.....#",
+        "###.###",
+        "#.....#",
+        "~~~~~~~",
+        "#..#..#",
+        "#.....#",
+        "###.###"
+      ],
+      "entrance": 52,
+      "animal": 8,
+      "bridgeCells": [
+        29,
+        33
+      ],
+      "boxes": [
+        17,
+        36
+      ],
+      "debris": []
+    },
+    {
+      "id": "cleanup.yard",
+      "mode": 1,
+      "rows": [
+        "#.....#",
+        "#.....#",
+        "#.....#",
+        "#.....#",
+        "#.....#",
+        "#.....#",
+        "#.....#",
+        "#.....#"
+      ],
+      "entrance": 52,
+      "animal": 9,
+      "bridgeCells": [],
+      "boxes": [],
+      "debris": [
+        {
+          "cell": 22,
+          "tool": 3,
+          "workSeconds": 0.55
+        },
+        {
+          "cell": 23,
+          "tool": 4,
+          "workSeconds": 0.4
+        },
+        {
+          "cell": 24,
+          "tool": 2,
+          "workSeconds": 0.24
+        },
+        {
+          "cell": 25,
+          "tool": 3,
+          "workSeconds": 0.55
+        },
+        {
+          "cell": 26,
+          "tool": 4,
+          "workSeconds": 0.4
+        },
+        {
+          "cell": 29,
+          "tool": 2,
+          "workSeconds": 0.24
+        },
+        {
+          "cell": 30,
+          "tool": 3,
+          "workSeconds": 0.55
+        },
+        {
+          "cell": 31,
+          "tool": 4,
+          "workSeconds": 0.4
+        },
+        {
+          "cell": 32,
+          "tool": 2,
+          "workSeconds": 0.24
+        },
+        {
+          "cell": 33,
+          "tool": 3,
+          "workSeconds": 0.55
+        },
+        {
+          "cell": 36,
+          "tool": 4,
+          "workSeconds": 0.4
+        },
+        {
+          "cell": 37,
+          "tool": 2,
+          "workSeconds": 0.24
+        },
+        {
+          "cell": 38,
+          "tool": 3,
+          "workSeconds": 0.55
+        },
+        {
+          "cell": 39,
+          "tool": 4,
+          "workSeconds": 0.4
+        },
+        {
+          "cell": 40,
+          "tool": 2,
+          "workSeconds": 0.24
+        },
+        {
+          "cell": 43,
+          "tool": 3,
+          "workSeconds": 0.55
+        },
+        {
+          "cell": 44,
+          "tool": 4,
+          "workSeconds": 0.4
+        },
+        {
+          "cell": 45,
+          "tool": 2,
+          "workSeconds": 0.24
+        },
+        {
+          "cell": 46,
+          "tool": 3,
+          "workSeconds": 0.55
+        },
+        {
+          "cell": 47,
+          "tool": 4,
+          "workSeconds": 0.4
+        },
+        {
+          "cell": 9,
+          "tool": 3,
+          "workSeconds": 0.8
+        }
+      ]
+    }
+  ]
+}

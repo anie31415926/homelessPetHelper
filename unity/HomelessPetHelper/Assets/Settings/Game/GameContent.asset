@@ -23,3 +23,5 @@ MonoBehaviour:
   _dogMask: {fileID: 4900000, guid: 2ebdc47a57e7c764b90e585596ec285b, type: 3}
   _font: {fileID: 12800000, guid: 5d52f7131b6f9b641934fdec9b6107c1, type: 3}
   _audioCatalog: {fileID: 11400000, guid: 5fd1ad538b69f1a43bd873dc1869aefc, type: 2}
+  _approachConfig: {fileID: 4900000, guid: c8cef9e46b1c410ba43e6bdf20753876, type: 3}
+  _approachText: {fileID: 4900000, guid: 82bec45c2b854f4da3bc5f55845b47ef, type: 3}

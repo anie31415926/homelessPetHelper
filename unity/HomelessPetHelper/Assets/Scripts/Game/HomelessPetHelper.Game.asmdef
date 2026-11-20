@@ -17,7 +17,8 @@
     "HomelessPetHelper.Framework.Audio",
     "HomelessPetHelper.Framework.Audio.Persistence",
     "HomelessPetHelper.Framework.Persistence",
-    "HomelessPetHelper.Framework.Audio.UI"
+    "HomelessPetHelper.Framework.Audio.UI",
+    "HomelessPetHelper.Modules.Approach"
   ],
   "autoReferenced": false,
   "overrideReferences": true,

@@ -1,0 +1,9 @@
+{
+  "name": "HomelessPetHelper.Modules.Approach",
+  "rootNamespace": "HomelessPetHelper.Modules.Approach",
+  "references": [
+    "HomelessPetHelper.Modules.Rescue"
+  ],
+  "autoReferenced": false,
+  "noEngineReferences": true
+}
