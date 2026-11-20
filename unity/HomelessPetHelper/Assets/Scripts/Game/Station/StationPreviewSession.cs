@@ -7,6 +7,8 @@ using HomelessPetHelper.Game.Text;
 using HomelessPetHelper.Modules.Station;
 using HomelessPetHelper.Modules.Station.Cleaning;
 using HomelessPetHelper.Modules.Station.UI;
+using HomelessPetHelper.Modules.Station.UI.Habitat;
+using HomelessPetHelper.Modules.Station.Habitat;
 using HomelessPetHelper.Modules.WorldTime;
 using UnityEngine;
 
@@ -22,6 +24,7 @@ namespace HomelessPetHelper.Game.Station
         private readonly Dictionary<Guid, StationResidentPresentation> _residents =
             new Dictionary<Guid, StationResidentPresentation>();
         private readonly GameLoopSession _loop;
+        private readonly List<StationSceneResident> _sceneResidents = new List<StationSceneResident>();
         private readonly Action _leaveStation;
         private readonly Dictionary<Guid, IReadOnlyList<string>> _sampleAssessments =
             new Dictionary<Guid, IReadOnlyList<string>>();
@@ -70,6 +73,8 @@ namespace HomelessPetHelper.Game.Station
             _clock = new ActionWorldClock(session, 1440, 540);
             _sampleAssessments.Clear();
             _residents.Clear();
+            if (_view.Habitat != null) _view.Habitat.ClearResidents();
+            if (_view.Scene != null) _view.Scene.ClearResidents();
             for (int index = 0; index < 3; index++)
             {
                 string kind = index == 0 ? "dog" : "cat";
@@ -407,14 +412,15 @@ namespace HomelessPetHelper.Game.Station
 
         private void Refresh()
         {
-            _view.ShowPage(_showSummary, _selected >= 0);
+            _view.ShowPage(_showSummary, _selected >= 0, _tool != StationCareTool.None);
             _view.SetSuspended(_suspended);
+            RefreshScene();
             if (_loop != null)
             {
                 bool canLeave = _tool == StationCareTool.None && !_showSummary && _selected < 0 &&
-                    _loop.Flow.Stage == RescueStage.Station;
+                    _loop.Flow.Stage == RescueStage.Station && _leaveStation != null;
                 _view.SetSessionCommand(_text.Get("loop.outing"), !_suspended && canLeave);
-                _view.SetHistoryAvailable(_summary != null);
+                _view.SetHistoryAvailable(_summary != null && !_suspended && _selected < 0 && !_showSummary);
             }
             WorldTimeSnapshot time = _clock.Current;
             _view.SetStatus(_text.Get("clock", time.DayIndex + 1m, time.MinuteOfDay / 60, time.MinuteOfDay % 60),
@@ -428,6 +434,8 @@ namespace HomelessPetHelper.Game.Station
             }
             else if (_selected < 0)
             {
+                if (_view.Scene != null) return;
+                RefreshHabitat();
                 _view.EnsureRosterSize(_station.Animals.Count);
                 StationAnimalView[] animals = _view.Animals;
                 for (int index = 0; index < animals.Length; index++)
@@ -450,6 +458,38 @@ namespace HomelessPetHelper.Game.Station
             }
         }
 
+        private void RefreshHabitat()
+        {
+            if (_view.Habitat == null) return;
+            for (int index = 0; index < _station.Animals.Count; index++)
+            {
+                var arrival = _station.Animals[index];
+                bool cat = arrival.AnimalDefinitionId == "cat.shy";
+                if (!cat || Care(index).BasicAssessment != StationHealthAssessment.NoUrgentCareRequired) continue;
+                // Permission is read from the real individual, never granted by presentation time.
+                _view.Habitat.ShowResident(arrival.AnimalId, Resident(index).Name,
+                    Current(index).CarePermissions.AcceptsTouch && IsCalm(index));
+                return;
+            }
+            _view.Habitat.ShowResident(Guid.Empty, string.Empty, false);
+        }
+
+        private void RefreshScene()
+        {
+            if (_view.Scene == null) return;
+            _sceneResidents.Clear();
+            for (int index = 0; index < _station.Animals.Count; index++)
+            {
+                var arrival = _station.Animals[index];
+                _station.TryGetCurrentAnimal(arrival.AnimalId, out var current);
+                bool observing = StationHabitatPlacement.NeedsObservation(Care(index).BasicAssessment, current);
+                bool cat = arrival.AnimalDefinitionId == "cat.shy" || arrival.AnimalDefinitionId == "preview.cat";
+                _sceneResidents.Add(new StationSceneResident(arrival.AnimalId, index, Resident(index).Name,
+                    Resident(index).Art, cat, observing));
+            }
+            _view.Scene.Show(_sceneResidents, _selected);
+        }
+
         public void Dispose()
         {
             _view.CommandRequested -= OnCommand;
@@ -463,6 +503,8 @@ namespace HomelessPetHelper.Game.Station
             }
             if (_view != null)
             {
+                if (_view.Habitat != null) _view.Habitat.ClearResidents();
+                if (_view.Scene != null) _view.Scene.ClearResidents();
                 _view.Surface.SetCleaning(false);
                 _view.ApplyFont(UnityEngine.Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"));
             }

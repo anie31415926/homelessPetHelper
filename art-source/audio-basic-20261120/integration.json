@@ -1,0 +1,66 @@
+{
+    "schemaVersion":  1,
+    "sourceManifest":  "v2/manifest.json",
+    "assets":  [
+                   {
+                       "id":  "ui-tap",
+                       "sourceSha256":  "e27b661bb89db48271e3bd84cbad0992a1b6f1e91b2b68fcaaf3bf19b5dc1809",
+                       "runtimeFile":  "unity/HomelessPetHelper/Assets/Art/Audio/SFX_UI_Tap.wav",
+                       "status":  "temporary",
+                       "listening":  "accepted-by-user",
+                       "rights":  "pending",
+                       "targetDevice":  "pending",
+                       "loadTiming":  "first-play-static-dependency"
+                   },
+                   {
+                       "id":  "ui-open",
+                       "sourceSha256":  "9166ec6d7826c98c197baf7c945b8f1290cb755f16aec82c9a7d714b87b43eea",
+                       "runtimeFile":  "unity/HomelessPetHelper/Assets/Art/Audio/SFX_UI_Open.wav",
+                       "status":  "temporary",
+                       "listening":  "accepted-by-user",
+                       "rights":  "pending",
+                       "targetDevice":  "pending",
+                       "loadTiming":  "first-play-static-dependency"
+                   },
+                   {
+                       "id":  "merge",
+                       "sourceSha256":  "9b46a788bbfb208bcc3f24cec1d8443b0060edecc90a5707e66119c51425527f",
+                       "runtimeFile":  "unity/HomelessPetHelper/Assets/Art/Audio/SFX_Merge.wav",
+                       "status":  "temporary",
+                       "listening":  "accepted-by-user",
+                       "rights":  "pending",
+                       "targetDevice":  "pending",
+                       "loadTiming":  "first-play-static-dependency"
+                   },
+                   {
+                       "id":  "rescue-success",
+                       "sourceSha256":  "09fd2ddcd920d37574eea327c129ebd156f58c4ac1cf5f3a78e4937e82957269",
+                       "runtimeFile":  "unity/HomelessPetHelper/Assets/Art/Audio/SFX_RescueSuccess.wav",
+                       "status":  "temporary",
+                       "listening":  "accepted-by-user",
+                       "rights":  "pending",
+                       "targetDevice":  "pending",
+                       "loadTiming":  "first-play-static-dependency"
+                   },
+                   {
+                       "id":  "reward",
+                       "sourceSha256":  "279e7d1240bae04857b2c8d6f0141acc05233955ba934ef5328ebfb65ff1f640",
+                       "runtimeFile":  "unity/HomelessPetHelper/Assets/Art/Audio/SFX_Reward.wav",
+                       "status":  "temporary",
+                       "listening":  "accepted-by-user",
+                       "rights":  "pending",
+                       "targetDevice":  "pending",
+                       "loadTiming":  "first-play-static-dependency"
+                   },
+                   {
+                       "id":  "gentle-notice",
+                       "sourceSha256":  "df6357852bc5a6cf2cfed1b90d0572094e5e5646d1117f00b099a75f755b7031",
+                       "runtimeFile":  "unity/HomelessPetHelper/Assets/Art/Audio/SFX_Notice.wav",
+                       "status":  "temporary",
+                       "listening":  "accepted-by-user",
+                       "rights":  "pending",
+                       "targetDevice":  "pending",
+                       "loadTiming":  "first-play-static-dependency"
+                   }
+               ]
+}

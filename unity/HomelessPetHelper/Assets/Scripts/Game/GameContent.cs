@@ -1,4 +1,5 @@
 using System;
+using HomelessPetHelper.Framework.Audio;
 using HomelessPetHelper.Game.CityMap;
 using HomelessPetHelper.Game.Station;
 using HomelessPetHelper.Modules.Siege;
@@ -13,6 +14,8 @@ namespace HomelessPetHelper.Game
         [SerializeField] private Sprite _cat, _dog;
         [SerializeField] private TextAsset _catMask, _dogMask;
         [SerializeField] private Font _font;
+        [SerializeField] private AudioCatalog _audioCatalog;
+        public AudioCatalog AudioCatalog => _audioCatalog;
         public TextAsset MapText => _mapText;
         public TextAsset StationText => _stationText;
         public TextAsset SiegeText => _siegeText;

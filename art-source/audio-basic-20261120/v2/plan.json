@@ -1,0 +1,20 @@
+{
+  "status": "candidate",
+  "style": "Warm, gentle, tactile and playful casual pet rescue feedback. Avoid piercing highs and epic combat sounds.",
+  "generationSeconds": 3,
+  "latentSeconds": 47.6,
+  "exportGainDb": -18,
+  "steps": 60,
+  "cfg": 5,
+  "sampler": "dpmpp_3m_sde_gpu",
+  "scheduler": "exponential",
+  "negative": "Speech, voices, singing, background music, drums, distortion, static noise, ambience, loud harsh sounds, long reverb, sirens, explosions.",
+  "cues": [
+    { "id": "ui-tap", "seed": 2026112021, "prompt": "A single soft bubble pop sound effect. One small round plop, a warm tactile button click. Close-up, dry, isolated sound on a silent background. Cute gentle casual game interface sound, very brief clean decay.", "maxSeconds": 0.3, "peakDbfs": -9 },
+    { "id": "ui-open", "seed": 2026112022, "prompt": "A single small rounded rising bloop with a gentle airy swish. A cute playful popup opening sound effect, soft warm tone, short clean decay. Isolated studio recording on silence, no other sounds.", "maxSeconds": 0.55, "peakDbfs": -10 },
+    { "id": "merge", "seed": 2026112023, "prompt": "Two soft wooden marimba plinks rising in pitch, followed by one cute bubble pop. A brief friendly magical combination sound effect. Warm, playful and rounded, isolated dry close-up sound on silence, no musical accompaniment.", "maxSeconds": 1.05, "peakDbfs": -7 },
+    { "id": "rescue-success", "seed": 2026112024, "prompt": "A short cheerful three note major key xylophone notification chime. Three warm wooden plinks rising in pitch, gentle and reassuring, a small happy success sound effect. Soft rounded notes with short decay, isolated sound on silence, no backing track.", "maxSeconds": 1.7, "peakDbfs": -6 },
+    { "id": "reward", "seed": 2026112025, "prompt": "A short two note bell chime sound effect, a delicate rounded ding ding rising in pitch with a brief sparkling tail. A gentle collectible reward notification for a cute casual game. Not piercing, clean isolated sound on silence.", "maxSeconds": 1.0, "peakDbfs": -8 },
+    { "id": "gentle-notice", "seed": 2026112026, "prompt": "Two soft muted kalimba notes, doop doop, a short friendly wooden notification sound effect. Low rounded mellow tone, gentle reminder, calm rather than alarming. Clean dry isolated close-up sound on silence.", "maxSeconds": 1.0, "peakDbfs": -10 }
+  ]
+}

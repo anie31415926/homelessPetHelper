@@ -1,0 +1,36 @@
+{
+  "_id": "6873cfa703ab62ee6fd48440",
+  "id": "ComfyUI-Wiki/t5-base",
+  "private": false,
+  "tags": [
+    "license:apache-2.0",
+    "region:us"
+  ],
+  "downloads": 0,
+  "likes": 2,
+  "modelId": "ComfyUI-Wiki/t5-base",
+  "author": "ComfyUI-Wiki",
+  "sha": "6cd5e6887a033dee7a1bad4e5ea9ed43d83681f4",
+  "lastModified": "2025-07-13T15:27:52.000Z",
+  "gated": false,
+  "disabled": false,
+  "model-index": null,
+  "config": {},
+  "cardData": {
+    "license": "apache-2.0"
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes"
+    },
+    {
+      "rfilename": "README.md"
+    },
+    {
+      "rfilename": "t5-base.safetensors"
+    }
+  ],
+  "spaces": [],
+  "createdAt": "2025-07-13T15:24:23.000Z",
+  "usedStorage": 891646390
+}

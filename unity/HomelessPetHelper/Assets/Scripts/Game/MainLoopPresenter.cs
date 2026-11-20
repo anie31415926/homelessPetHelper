@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using HomelessPetHelper.Bootstrap;
+using HomelessPetHelper.Framework.Audio;
 using HomelessPetHelper.Game.CityMap;
 using HomelessPetHelper.Game.Station;
 using HomelessPetHelper.Game.Text;
@@ -21,17 +22,20 @@ namespace HomelessPetHelper.Game
         private readonly CityMapPreviewConfig _config;
         private readonly StationPreviewSession _stationPresenter;
         private readonly OptionPreviewText _text;
+        private readonly AudioService _audio;
         private CityMapPresenter _mapPresenter;
         private SiegeRescueActivity _activity;
         private bool _disposed;
         public GameLoopSession Session { get; }
 
-        public MainLoopPresenter(StationPanelView station, CityMapView map, SiegeTrialView siege, GameContent content)
+        public MainLoopPresenter(StationPanelView station, CityMapView map, SiegeTrialView siege, GameContent content,
+            AudioService audio = null)
         {
             _station = station;
             _map = map;
             _siege = siege;
             _content = content;
+            _audio = audio;
             content.Validate();
             _config = content.CreateMapConfig();
             _text = new OptionPreviewText(content.StationText);
@@ -90,6 +94,7 @@ namespace HomelessPetHelper.Game
             _activity.SynchronizeOutcome();
             if (!Session.TryConfirmRescue(out var failure))
                 throw new InvalidOperationException("Siege completion could not be confirmed: " + failure);
+            _audio?.PlayEffect(GameAudioCues.RescueSuccess);
         }
 
         private void ReturnFromSiege()

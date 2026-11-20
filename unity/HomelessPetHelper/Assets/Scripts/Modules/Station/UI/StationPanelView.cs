@@ -35,6 +35,9 @@ namespace HomelessPetHelper.Modules.Station.UI
         [SerializeField] private Button _restart;
         [SerializeField] private Toggle _pause;
         [SerializeField] private CanvasGroup _actions;
+        [SerializeField] private Habitat.StationHabitatView _habitat;
+        [SerializeField] private Habitat.StationSceneView _scene;
+        [SerializeField] private Habitat.StationSceneChrome _chrome;
         private bool _focused = true;
         private bool _applicationPaused;
         private readonly List<StationAnimalView> _extraAnimals = new List<StationAnimalView>();
@@ -45,6 +48,9 @@ namespace HomelessPetHelper.Modules.Station.UI
         public event Action<bool> SuspensionChanged;
 
         public DirtSurfaceView Surface => _surface;
+        public Habitat.StationHabitatView Habitat => _habitat;
+        public Habitat.StationSceneView Scene => _scene;
+        public bool IsSceneLayout => _chrome != null;
         public StationAnimalView[] Animals => _animals.Concat(_extraAnimals).ToArray();
 
         public void EnsureRosterSize(int count)
@@ -77,12 +83,13 @@ namespace HomelessPetHelper.Modules.Station.UI
             }
         }
 
-        public void ShowPage(bool summary, bool detail)
+        public void ShowPage(bool summary, bool detail, bool caring = false)
         {
             _surface.SetCleaning(false);
             _summary.SetActive(summary);
-            _overview.SetActive(!summary && !detail);
+            _overview.SetActive(!summary && (_chrome != null ? !caring : !detail));
             _detail.SetActive(!summary && detail);
+            if (_chrome != null) _chrome.SetPage(summary, detail, caring);
         }
 
         public void ShowSummary(string body, Sprite art)
@@ -96,9 +103,16 @@ namespace HomelessPetHelper.Modules.Station.UI
             _clock.text = clock;
             _capacity.text = capacity;
             _feedback.text = feedback;
+            if (_chrome != null) _chrome.Feedback(feedback);
         }
 
-        public void SetFeedback(string feedback) => _feedback.text = feedback;
+        public void SetFeedback(string feedback)
+        {
+            _feedback.text = feedback;
+            if (_chrome != null) _chrome.Feedback(feedback);
+        }
+
+        public void DismissDetail() => Back();
 
         public void ShowDetail(string name, string condition, string progress, Sprite art, IReadOnlyDirtField dirt,
             bool cleaning, bool canFinish, StationCareAvailability care, bool suspended, IReadOnlyDirtField fur = null)
@@ -108,17 +122,17 @@ namespace HomelessPetHelper.Modules.Station.UI
             _progress.text = progress;
             _surface.Refresh(art, dirt, fur);
             _surface.SetCleaning(cleaning && !suspended);
-            _check.gameObject.SetActive(true);
-            _pet.gameObject.SetActive(true);
+            _check.gameObject.SetActive(_chrome == null || !cleaning);
+            _pet.gameObject.SetActive(_chrome == null || !cleaning);
             _check.interactable = !cleaning;
             _pet.interactable = !cleaning;
-            _clean.gameObject.SetActive(true);
-            _groom.gameObject.SetActive(true);
-            _quietSpace.gameObject.SetActive(true);
+            _clean.gameObject.SetActive(_chrome == null || !cleaning);
+            _groom.gameObject.SetActive(_chrome == null || !cleaning);
+            _quietSpace.gameObject.SetActive(_chrome == null);
             _quietSpace.interactable = !cleaning;
             _clean.interactable = care.CanWash && !suspended;
             _groom.interactable = care.CanGroom && !suspended;
-            _finish.gameObject.SetActive(true);
+            _finish.gameObject.SetActive(_chrome == null || cleaning);
             _finish.interactable = cleaning && canFinish && !suspended;
         }
 
@@ -132,6 +146,9 @@ namespace HomelessPetHelper.Modules.Station.UI
 
         public void SetSuspended(bool suspended)
         {
+            if (_habitat != null) _habitat.SetSuspended(suspended);
+            if (_scene != null) _scene.SetSuspended(suspended);
+            if (_chrome != null) _chrome.SetSuspended(suspended);
             _actions.interactable = !suspended;
             _actions.alpha = suspended ? 0.45f : 1;
             _restart.interactable = !suspended;
@@ -151,6 +168,7 @@ namespace HomelessPetHelper.Modules.Station.UI
             _restart.onClick.AddListener(Restart);
             _pause.onValueChanged.AddListener(Pause);
             _surface.StrokeRequested += Stroke;
+            if (_scene != null) _scene.Selected += Select;
             foreach (StationAnimalView animal in Animals)
             {
                 animal.Selected += Select;
@@ -172,6 +190,7 @@ namespace HomelessPetHelper.Modules.Station.UI
             _restart.onClick.RemoveListener(Restart);
             _pause.onValueChanged.RemoveListener(Pause);
             _surface.StrokeRequested -= Stroke;
+            if (_scene != null) _scene.Selected -= Select;
             foreach (StationAnimalView animal in Animals)
             {
                 animal.Selected -= Select;

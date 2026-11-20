@@ -1,0 +1,12 @@
+{
+  "name": "HomelessPetHelper.Tests.Audio",
+  "rootNamespace": "HomelessPetHelper.Tests.Audio.EditMode",
+  "references": ["HomelessPetHelper.Framework.Audio", "HomelessPetHelper.Framework.Audio.Persistence",
+    "HomelessPetHelper.Framework.Persistence", "HomelessPetHelper.Game",
+    "HomelessPetHelper.Framework.Audio.UI", "UnityEngine.UI"],
+  "overrideReferences": true,
+  "precompiledReferences": ["Newtonsoft.Json.dll", "nunit.framework.dll"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}

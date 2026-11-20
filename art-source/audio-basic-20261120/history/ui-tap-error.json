@@ -1,0 +1,195 @@
+{
+  "prompt": [
+    0,
+    "35ad3fa8-2894-49ff-b7bb-b9a324b54106",
+    {
+      "1": {
+        "class_type": "CheckpointLoaderSimple",
+        "inputs": {
+          "ckpt_name": "stable-audio-open-1.0.safetensors"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "t5-base.safetensors",
+          "type": "stable_audio",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "text": "One single soft rounded bubble pop, a small gentle plop with a tiny woody click. Cute tactile button press sound for a cozy casual mobile game. Very short dry close-up sound, clear onset, warm and muted, isolated on silence, no other sounds."
+        }
+      },
+      "4": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "text": "Speech, human voices, singing, background music, drums, loud harsh metallic sounds, distortion, hiss, noisy ambience, long reverberation, sirens, explosions."
+        }
+      },
+      "5": {
+        "class_type": "ConditioningStableAudio",
+        "inputs": {
+          "positive": [
+            "3",
+            0
+          ],
+          "negative": [
+            "4",
+            0
+          ],
+          "seconds_start": 0,
+          "seconds_total": 3
+        }
+      },
+      "6": {
+        "class_type": "EmptyLatentAudio",
+        "inputs": {
+          "seconds": 3,
+          "batch_size": 1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "6",
+            0
+          ],
+          "seed": 2026112001,
+          "steps": 60,
+          "cfg": 5,
+          "sampler_name": "dpmpp_3m_sde_gpu",
+          "scheduler": "exponential",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecodeAudio",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "1",
+            2
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveAudioAdvanced",
+        "inputs": {
+          "audio": [
+            "8",
+            0
+          ],
+          "filename_prefix": "audio-basic-20261120/ui-tap",
+          "format": {
+            "format": "flac"
+          }
+        }
+      }
+    },
+    {
+      "client_id": "audio-basic-20261120",
+      "create_time": 1795172686456
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {},
+  "status": {
+    "status_str": "error",
+    "completed": false,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "35ad3fa8-2894-49ff-b7bb-b9a324b54106",
+          "timestamp": 1795172686458
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "35ad3fa8-2894-49ff-b7bb-b9a324b54106",
+          "timestamp": 1795172686460
+        }
+      ],
+      [
+        "execution_error",
+        {
+          "prompt_id": "35ad3fa8-2894-49ff-b7bb-b9a324b54106",
+          "node_id": "9",
+          "node_type": "SaveAudioAdvanced",
+          "executed": [
+            "4",
+            "8",
+            "3",
+            "5",
+            "1",
+            "7",
+            "2",
+            "6"
+          ],
+          "exception_message": "SaveAudioAdvanced.execute() missing 1 required positional argument: 'format'\n",
+          "exception_type": "TypeError",
+          "traceback": [
+            "  File \"C:\\Users\\Admin\\ComfyUI-Installs\\ComfyUI\\ComfyUI\\execution.py\", line 547, in execute\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+            "  File \"C:\\Users\\Admin\\ComfyUI-Installs\\ComfyUI\\ComfyUI\\execution.py\", line 352, in get_output_data\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+            "  File \"C:\\Users\\Admin\\ComfyUI-Installs\\ComfyUI\\ComfyUI\\execution.py\", line 326, in _async_map_node_over_list\n    await process_inputs(input_dict, i)\n",
+            "  File \"C:\\Users\\Admin\\ComfyUI-Installs\\ComfyUI\\ComfyUI\\execution.py\", line 314, in process_inputs\n    result = f(**inputs)\n",
+            "  File \"C:\\Users\\Admin\\ComfyUI-Installs\\ComfyUI\\ComfyUI\\comfy_api\\internal\\__init__.py\", line 149, in wrapped_func\n    return method(locked_class, **inputs)\n",
+            "  File \"C:\\Users\\Admin\\ComfyUI-Installs\\ComfyUI\\ComfyUI\\comfy_api\\latest\\_io.py\", line 2053, in EXECUTE_NORMALIZED\n    to_return = cls.execute(*args, **kwargs)\n"
+          ],
+          "current_inputs": {
+            "audio": [
+              "{'waveform': tensor([[[-5.2094e-02,  2.1576e-02, -2.8183e-02,  ...,  3.3319e-05,\n          -7.3910e-06,  1.8239e-05],\n         [-5.2124e-02,  2.1576e-02, -2.8198e-02,  ...,  4.7326e-05,\n           2.3842e-07,  2.1875e-05]]]), 'sample_rate': 44100}"
+            ],
+            "filename_prefix": [
+              "audio-basic-20261120/ui-tap"
+            ]
+          },
+          "current_outputs": [
+            "4",
+            "2",
+            "8",
+            "9",
+            "3",
+            "1",
+            "7",
+            "5",
+            "6"
+          ],
+          "timestamp": 1795172694403
+        }
+      ]
+    ]
+  },
+  "meta": {}
+}

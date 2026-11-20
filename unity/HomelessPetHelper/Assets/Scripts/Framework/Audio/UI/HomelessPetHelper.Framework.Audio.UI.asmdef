@@ -1,0 +1,6 @@
+{
+  "name": "HomelessPetHelper.Framework.Audio.UI",
+  "rootNamespace": "HomelessPetHelper.Framework.Audio.UI",
+  "references": ["HomelessPetHelper.Framework.Audio", "UnityEngine.UI"],
+  "autoReferenced": false
+}

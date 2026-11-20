@@ -1,0 +1,8 @@
+{
+  "name": "HomelessPetHelper.Tests.Audio.PlayMode",
+  "rootNamespace": "HomelessPetHelper.Tests.Audio.PlayMode",
+  "references": ["HomelessPetHelper.Framework.Audio", "HomelessPetHelper.Framework.Persistence",
+    "HomelessPetHelper.Game", "HomelessPetHelper.Framework.Audio.UI", "UnityEngine.UI"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}

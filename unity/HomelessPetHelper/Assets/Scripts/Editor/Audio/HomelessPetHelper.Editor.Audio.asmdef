@@ -1,0 +1,8 @@
+{
+  "name": "HomelessPetHelper.Editor.Audio",
+  "rootNamespace": "HomelessPetHelper.Editor.Audio",
+  "references": ["HomelessPetHelper.Game", "HomelessPetHelper.Framework.Audio",
+    "HomelessPetHelper.Framework.Audio.UI", "UnityEngine.UI"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": false
+}

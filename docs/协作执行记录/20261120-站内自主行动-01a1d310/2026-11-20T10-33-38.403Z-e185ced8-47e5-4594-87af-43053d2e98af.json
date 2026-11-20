@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261120-站内自主行动-01a1d310.md",
+  "sessionId": "01a1d310-49aa-7061-97e4-183bf146eb20",
+  "phase": "start",
+  "readAt": "2026-11-20T10:33:38.403Z",
+  "writePaths": [
+    "docs/协作任务/20261120-站内自主行动-01a1d310.md",
+    "docs/协作执行记录/20261120-站内自主行动-01a1d310/",
+    "docs/救助站场景与动物自主行为.md",
+    "tools/station-habitat.ps1",
+    "unity/HomelessPetHelper/Assets/Art/Fonts/NotoSansSC-Game.ttf",
+    "unity/HomelessPetHelper/Assets/Art/Fonts/README.md",
+    "unity/HomelessPetHelper/Assets/EditorScenes/StationHabitat.meta",
+    "unity/HomelessPetHelper/Assets/EditorScenes/StationHabitat/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_StationLoop.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_StationHabitatActor.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_StationHabitatActor.prefab.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/StationHabitat.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/StationHabitat/",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Station/StationPreviewSession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/Habitat.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/Habitat/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/HomelessPetHelper.Modules.Station.UI.asmdef",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/StationPanelView.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/StationHabitat.json",
+    "unity/HomelessPetHelper/Assets/Settings/Game/StationHabitat.json.meta",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat.meta",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/"
+  ],
+  "contextDigest": "4fbb22398eaefe1671caf851470704a12e6636c1df1fef39a3f3ee0ee50bd4c4",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "7885eae668288128a423d5d16434fabc0d169a9434ee34ee3f82d9fade177476"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261120-基础音频-01a1d420.md",
+      "sha256": "211143f81868567dd5598f4f342721363753969233300c187f56e34091c51c09"
+    },
+    {
+      "path": "docs/协作任务/20261120-站内自主行动-01a1d310.md",
+      "sha256": "729d7ed80de8b136a613f6a684df4afa3f0393a946338a6b5aad0316e82717ac"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "97b67c4e0e1c0963b73175b37b3c61244e2b52653f73ed28a8884611824ae8b6"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "258e1c22e3a77a262cce0e6ca5fcf9ac940bafc8f5c1e2c8598ece1f41d2798b"
+    }
+  ]
+}

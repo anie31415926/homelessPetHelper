@@ -114,6 +114,7 @@ GameObject:
   - component: {fileID: 3673944124781905642}
   - component: {fileID: 1636963411400075179}
   - component: {fileID: 7437914713352939293}
+  - component: {fileID: 3679263170568864231}
   m_Layer: 0
   m_Name: Widget_SiegeChoice
   m_TagString: Untagged
@@ -257,3 +258,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _button: {fileID: 3673944124781905642}
   _label: {fileID: 4456006966387143184}
+--- !u!114 &3679263170568864231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1081340503456206295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 362f849ca8641e84c87c8cd31a1b1747, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scope: {fileID: 0}
+  _cueId: ui.tap
+  _silent: 0

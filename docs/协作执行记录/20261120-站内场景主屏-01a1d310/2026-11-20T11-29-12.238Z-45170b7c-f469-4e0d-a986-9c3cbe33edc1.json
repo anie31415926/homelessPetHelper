@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261120-站内场景主屏-01a1d310.md",
+  "sessionId": "01a1d310-49aa-7061-97e4-183bf146eb20",
+  "phase": "start",
+  "readAt": "2026-11-20T11:29:12.238Z",
+  "writePaths": [
+    ".ui-craft/brief.md",
+    "docs/协作任务/20261120-站内场景主屏-01a1d310.md",
+    "docs/协作执行记录/20261120-站内场景主屏-01a1d310/",
+    "docs/救助站场景与动物自主行为.md",
+    "docs/站内照护措施与交互.md",
+    "tools/station-habitat.ps1",
+    "unity/HomelessPetHelper/Assets/EditorScenes/StationHabitat/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_StationHabitatResident.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_StationHabitatResident.prefab.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/StationHabitat/",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Station/StationPreviewSession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/Habitat/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/StationPanelView.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/StationHabitat.json",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/RescueLoopPreviewTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/StationAssetTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/MainGameTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/"
+  ],
+  "contextDigest": "33cca9c1a21bb610e3ae7047739f75a85ff634dcc779855de2d77848fcd9f7e1",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "7885eae668288128a423d5d16434fabc0d169a9434ee34ee3f82d9fade177476"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261120-狗叼回去-01a1f897.md",
+      "sha256": "45b426390491120432a726f6d9bc1ac0553fed77eeaba8735ee5e06296185f14"
+    },
+    {
+      "path": "docs/协作任务/20261120-站内场景主屏-01a1d310.md",
+      "sha256": "6eff5f3d47d41121689f53249f829c0938d73a4ef612908d912d9db80f93f6b0"
+    },
+    {
+      "path": "docs/协作任务/20261120-音效快速接入-01a1d420.md",
+      "sha256": "69de2591f0714fde71ba156e3143f730f13b74f8e4a5cc871a60d0c44f9d4ed7"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "97b67c4e0e1c0963b73175b37b3c61244e2b52653f73ed28a8884611824ae8b6"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "258e1c22e3a77a262cce0e6ca5fcf9ac940bafc8f5c1e2c8598ece1f41d2798b"
+    }
+  ]
+}

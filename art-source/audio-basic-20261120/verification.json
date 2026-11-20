@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-11-20T11:12:14.262Z",
+  "result": "pass",
+  "currentManifest": "v2/manifest.json",
+  "checks": [
+    "6 unique cues",
+    "source/candidate/preview SHA-256",
+    "completed ComfyUI job receipts",
+    "prompt and seed correspondence",
+    "no source or candidate clipping",
+    "duration/peak/non-silence"
+  ],
+  "notChecked": [
+    "manual listening",
+    "speech/music detection",
+    "commercial clearance",
+    "Unity import",
+    "WeChat device"
+  ],
+  "hashes": {
+    "v2/raw/ui-tap.flac": "f528e472897556fcc4160ac5b7d408ff93b958d3ab36b5070893849f951e9cab",
+    "v2/candidates/ui-tap.wav": "e27b661bb89db48271e3bd84cbad0992a1b6f1e91b2b68fcaaf3bf19b5dc1809",
+    "v2/raw/ui-open.flac": "60c5a84254c5aefc187f865b29bbbe38ca469a61245b24ab7a3e62cff30d9eb9",
+    "v2/candidates/ui-open.wav": "9166ec6d7826c98c197baf7c945b8f1290cb755f16aec82c9a7d714b87b43eea",
+    "v2/raw/merge.flac": "3c12b15a2e556e5b1ddd2eaea30091917e8944c7fb27fb954c681ee6fd597047",
+    "v2/candidates/merge.wav": "9b46a788bbfb208bcc3f24cec1d8443b0060edecc90a5707e66119c51425527f",
+    "v2/raw/rescue-success.flac": "2ca67cc89c5d89da570be2a8b90620324eb0b6ab39f901e0a94f132a5188efd6",
+    "v2/candidates/rescue-success.wav": "09fd2ddcd920d37574eea327c129ebd156f58c4ac1cf5f3a78e4937e82957269",
+    "v2/raw/reward.flac": "8ab1ed91bbcba1a6bd7ddc82986e2a97ca4e890755520e6d2b11131e259dcc54",
+    "v2/candidates/reward.wav": "279e7d1240bae04857b2c8d6f0141acc05233955ba934ef5328ebfb65ff1f640",
+    "v2/raw/gentle-notice.flac": "aad5d13b7634b25f96bdc3fce03cfcaac031e2594a5e84a1831627ea8ff6041b",
+    "v2/candidates/gentle-notice.wav": "df6357852bc5a6cf2cfed1b90d0572094e5e5646d1117f00b099a75f755b7031",
+    "prepare.mjs": "a03409e2a93e07b60135d5d69a3cf1db156fc8f34efdb2f7cf19103e81fe1695",
+    "generate.mjs": "b2f988ad79795d6f44c36eed3a9a1c682fe9fe670b317e758dceeeee739f91d9",
+    "process.py": "e51c95ac84608dc0190445d9f6bdbd4ad26d4540046674d95da4ae87d9b8c7d6",
+    "v2/plan.json": "5a4bf737602ebe8d433f4dfd7bf51d331761d23fdf31e9ba4d0729559a9c8c5a",
+    "v2/manifest.json": "09dc772c20868fd2c4b82574908d138ed18bcc36631192e30452f04e5a2f2fbe",
+    "provenance/models.json": "c28b98c834beaf6fb3387ef0c5c867a255c8c3f135796a05b6d593f1fffd7403"
+  }
+}

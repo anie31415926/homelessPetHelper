@@ -569,6 +569,7 @@ GameObject:
   - component: {fileID: 3215215463467590398}
   - component: {fileID: 5225898555833038072}
   - component: {fileID: 3822177110503562841}
+  - component: {fileID: 6415777848133235969}
   m_Layer: 0
   m_Name: Panel_CityMap
   m_TagString: Untagged
@@ -733,6 +734,18 @@ MonoBehaviour:
   _primaryLabel: {fileID: 3906928229787584883}
   _cancel: {fileID: 5032134100036172038}
   _pause: {fileID: 5594408149075004273}
+--- !u!114 &6415777848133235969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2705477717129237350}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db29750697448e74bb008c473142aa7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3187202057260305220
 GameObject:
   m_ObjectHideFlags: 0
@@ -745,6 +758,7 @@ GameObject:
   - component: {fileID: 7923637447416666056}
   - component: {fileID: 3854438038887068015}
   - component: {fileID: 6550239232834239971}
+  - component: {fileID: 107897408261200908}
   m_Layer: 0
   m_Name: Yard
   m_TagString: Untagged
@@ -854,6 +868,21 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &107897408261200908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3187202057260305220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 362f849ca8641e84c87c8cd31a1b1747, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scope: {fileID: 0}
+  _cueId: ui.tap
+  _silent: 0
 --- !u!1 &3564793592190681143
 GameObject:
   m_ObjectHideFlags: 0
@@ -992,6 +1021,7 @@ GameObject:
   - component: {fileID: 4599235454150444372}
   - component: {fileID: 86802471846263414}
   - component: {fileID: 5032134100036172038}
+  - component: {fileID: 7151119910583069116}
   m_Layer: 0
   m_Name: Cancel
   m_TagString: Untagged
@@ -1121,6 +1151,21 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7151119910583069116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3756592215229481292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 362f849ca8641e84c87c8cd31a1b1747, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scope: {fileID: 0}
+  _cueId: ui.tap
+  _silent: 0
 --- !u!1 &3762624090832561318
 GameObject:
   m_ObjectHideFlags: 0
@@ -1932,6 +1977,7 @@ GameObject:
   - component: {fileID: 2586106710504313467}
   - component: {fileID: 1935626590359979115}
   - component: {fileID: 6231313163995483184}
+  - component: {fileID: 939974730733835086}
   m_Layer: 0
   m_Name: Parking
   m_TagString: Untagged
@@ -2041,6 +2087,21 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &939974730733835086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6353566314938567751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 362f849ca8641e84c87c8cd31a1b1747, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scope: {fileID: 0}
+  _cueId: ui.tap
+  _silent: 0
 --- !u!1 &6884351372906596747
 GameObject:
   m_ObjectHideFlags: 0
@@ -2766,6 +2827,7 @@ GameObject:
   - component: {fileID: 5075920358169827245}
   - component: {fileID: 299536756525190854}
   - component: {fileID: 2140153735141829087}
+  - component: {fileID: 6467339753565276359}
   m_Layer: 0
   m_Name: Primary
   m_TagString: Untagged
@@ -2895,6 +2957,21 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6467339753565276359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8604469097584002465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 362f849ca8641e84c87c8cd31a1b1747, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scope: {fileID: 0}
+  _cueId: ui.tap
+  _silent: 0
 --- !u!1 &8789224215216865188
 GameObject:
   m_ObjectHideFlags: 0
@@ -3101,6 +3178,7 @@ GameObject:
   - component: {fileID: 3259538095093934462}
   - component: {fileID: 5953153441255147506}
   - component: {fileID: 3692359656442809355}
+  - component: {fileID: 6157996600428433675}
   m_Layer: 0
   m_Name: Porch
   m_TagString: Untagged
@@ -3210,3 +3288,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6157996600428433675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9074260161402445281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 362f849ca8641e84c87c8cd31a1b1747, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scope: {fileID: 0}
+  _cueId: ui.tap
+  _silent: 0

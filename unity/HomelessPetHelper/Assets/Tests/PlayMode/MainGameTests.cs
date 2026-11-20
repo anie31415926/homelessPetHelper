@@ -195,8 +195,12 @@ namespace HomelessPetHelper.Tests.PlayMode
             UnityEngine.Object.Destroy(pixels);
         }
 
-        private static Button FindButton(Component view, string name) => view.GetComponentsInChildren<Button>(true)
-            .Single(button => button.name == name);
+        private static Button FindButton(Component view, string name)
+        {
+            if (view is StationPanelView station && station.Scene != null && name.StartsWith("Animal",
+                StringComparison.Ordinal)) return station.Scene.Cells[int.Parse(name.Substring(6))].SelectButton;
+            return view.GetComponentsInChildren<Button>(true).Single(button => button.name == name);
+        }
 
         private static void Click(Component view, string name)
         {

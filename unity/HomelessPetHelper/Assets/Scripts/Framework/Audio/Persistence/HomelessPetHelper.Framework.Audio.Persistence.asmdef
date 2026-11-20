@@ -1,0 +1,8 @@
+{
+  "name": "HomelessPetHelper.Framework.Audio.Persistence",
+  "rootNamespace": "HomelessPetHelper.Framework.Audio.Persistence",
+  "references": ["HomelessPetHelper.Framework.Audio", "HomelessPetHelper.Framework.Persistence"],
+  "overrideReferences": true,
+  "precompiledReferences": ["Newtonsoft.Json.dll"],
+  "autoReferenced": false
+}

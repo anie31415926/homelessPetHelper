@@ -241,7 +241,7 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(partial.Coat.Dirtiness, Is.LessThan(arrival.Coat.Dirtiness));
             Assert.That(partial.Coat.LooseFur, Is.EqualTo(arrival.Coat.LooseFur));
             long before = _loop.Session.Clock.Current.ElapsedMinutes;
-            Toggle pause = _station.GetComponentInChildren<Toggle>();
+            Toggle pause = _station.GetComponentInChildren<Toggle>(true);
             pause.isOn = true;
             Stroke(new Vector2(0.5f, 0.5f));
             Assert.That(_loop.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(before));
@@ -307,7 +307,7 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [UnityTest]
-        public IEnumerator MultipleResidentsScrollAndCapacityNeverForcesEviction()
+        public IEnumerator MultipleResidentsShareSceneAndCapacityNeverForcesEviction()
         {
             yield return new EnterPlayMode();
             yield return Load();
@@ -338,9 +338,15 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(_loop.Session.Station.Animals.Count, Is.EqualTo(2));
             Assert.That(_loop.Session.Station.Animals[0].AnimalId, Is.EqualTo(first));
             Click(_map, "Cancel");
+            Assert.That(_station.Scene.Count, Is.EqualTo(2));
+            Assert.That(_station.Scene.Cells.Take(2).Select(cell => cell.AnimalId),
+                Is.EqualTo(_loop.Session.Station.Animals.Select(animal => animal.AnimalId)));
+            // The inactive legacy roster remains compatible, but no longer takes room on the home screen.
             _station.EnsureRosterSize(7);
             Assert.That(_station.Animals.Length, Is.EqualTo(7));
-            Assert.That(_station.GetComponentInChildren<ScrollRect>().content.childCount, Is.EqualTo(7));
+            var roster = _station.GetComponentInChildren<ScrollRect>(true);
+            Assert.That(roster.content.childCount, Is.EqualTo(7));
+            Assert.That(roster.gameObject.activeInHierarchy, Is.False);
         }
 
         private IEnumerator Load()
@@ -393,10 +399,16 @@ namespace HomelessPetHelper.Tests.EditMode
             _station.Surface.OnPointerUp(pointer);
         }
 
-        private static Button Button(Component view, string name) => view.GetComponentsInChildren<Button>(true)
-            .Single(button => button.name == name);
+        private static Button Button(Component view, string name)
+        {
+            if (view is StationPanelView station && station.Scene != null && name.StartsWith("Animal",
+                StringComparison.Ordinal)) return station.Scene.Cells[int.Parse(name.Substring(6))].SelectButton;
+            return view.GetComponentsInChildren<Button>(true).Single(button => button.name == name);
+        }
         private static void Click(Component view, string name)
         {
+            if (view is StationPanelView station && station.IsSceneLayout && name == "History" &&
+                !Button(view, name).isActiveAndEnabled) Button(view, "StationMenu").onClick.Invoke();
             Button button = Button(view, name);
             Assert.That(button.isActiveAndEnabled && button.IsInteractable(), Is.True, name);
             button.onClick.Invoke();

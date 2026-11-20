@@ -1,0 +1,327 @@
+{
+  "schemaVersion": 1,
+  "status": "candidate",
+  "tool": "Local ComfyUI 0.37.1",
+  "models": "../provenance/models.json",
+  "plan": "plan.json",
+  "processing": {
+    "tool": "process.py",
+    "avVersion": "17.0.1",
+    "numpyVersion": "2.4.4"
+  },
+  "audition": {
+    "file": "audition.wav",
+    "sha256": "e6b9ff56df16bd7572dc6915825253a421926b361a58e0f012009a57b2a43f57",
+    "timeline": [
+      {
+        "id": "ui-tap",
+        "startSeconds": 0.3,
+        "endSeconds": 0.359
+      },
+      {
+        "id": "ui-open",
+        "startSeconds": 1.059,
+        "endSeconds": 1.18
+      },
+      {
+        "id": "merge",
+        "startSeconds": 1.88,
+        "endSeconds": 2.261
+      },
+      {
+        "id": "rescue-success",
+        "startSeconds": 2.961,
+        "endSeconds": 4.661
+      },
+      {
+        "id": "reward",
+        "startSeconds": 5.361,
+        "endSeconds": 5.947
+      },
+      {
+        "id": "gentle-notice",
+        "startSeconds": 6.647,
+        "endSeconds": 7.642
+      }
+    ]
+  },
+  "assets": [
+    {
+      "id": "ui-tap",
+      "status": "candidate",
+      "loadTiming": "unassigned",
+      "source": {
+        "file": "raw/ui-tap.flac",
+        "sha256": "f528e472897556fcc4160ac5b7d408ff93b958d3ab36b5070893849f951e9cab",
+        "sampleRate": 44100,
+        "channels": 2,
+        "seconds": 47.554467,
+        "peakDbfs": -29.125,
+        "rmsDbfs": -79.295,
+        "clippedSamples": 0,
+        "dcOffset": -0.0
+      },
+      "candidate": {
+        "file": "candidates/ui-tap.wav",
+        "sha256": "e27b661bb89db48271e3bd84cbad0992a1b6f1e91b2b68fcaaf3bf19b5dc1809",
+        "bytes": 5278,
+        "sampleRate": 44100,
+        "channels": 1,
+        "encoding": "PCM16 WAV",
+        "seconds": 0.059342,
+        "peakDbfs": -9.0,
+        "rmsDbfs": -30.132,
+        "clippedSamples": 0,
+        "dcOffset": -2.9e-06
+      },
+      "processing": {
+        "cropStartSample": 0,
+        "cropEndSample": 2617,
+        "dcRemoved": -3.731610622850592e-07,
+        "fadeInSamples": 132,
+        "fadeOutSamples": 794,
+        "gainDb": 20.1252,
+        "monoStereoRmsRatio": 1.0,
+        "selection": "Highest energy window, then low-level edge trim; requires listening review."
+      },
+      "workflow": "workflows/ui-tap-api.json",
+      "history": "history/ui-tap-history.json",
+      "review": {
+        "listening": "pending",
+        "rights": "pending",
+        "targetDevice": "pending"
+      }
+    },
+    {
+      "id": "ui-open",
+      "status": "candidate",
+      "loadTiming": "unassigned",
+      "source": {
+        "file": "raw/ui-open.flac",
+        "sha256": "60c5a84254c5aefc187f865b29bbbe38ca469a61245b24ab7a3e62cff30d9eb9",
+        "sampleRate": 44100,
+        "channels": 2,
+        "seconds": 47.554467,
+        "peakDbfs": -14.883,
+        "rmsDbfs": -56.105,
+        "clippedSamples": 0,
+        "dcOffset": 5e-08
+      },
+      "candidate": {
+        "file": "candidates/ui-open.wav",
+        "sha256": "9166ec6d7826c98c197baf7c945b8f1290cb755f16aec82c9a7d714b87b43eea",
+        "bytes": 10664,
+        "sampleRate": 44100,
+        "channels": 1,
+        "encoding": "PCM16 WAV",
+        "seconds": 0.120408,
+        "peakDbfs": -10.0,
+        "rmsDbfs": -25.252,
+        "clippedSamples": 0,
+        "dcOffset": 3.28e-06
+      },
+      "processing": {
+        "cropStartSample": 11123,
+        "cropEndSample": 16433,
+        "dcRemoved": 2.067551549994115e-05,
+        "fadeInSamples": 132,
+        "fadeOutSamples": 794,
+        "gainDb": 4.888,
+        "monoStereoRmsRatio": 0.999997,
+        "selection": "Highest energy window, then low-level edge trim; requires listening review."
+      },
+      "workflow": "workflows/ui-open-api.json",
+      "history": "history/ui-open-history.json",
+      "review": {
+        "listening": "pending",
+        "rights": "pending",
+        "targetDevice": "pending"
+      }
+    },
+    {
+      "id": "merge",
+      "status": "candidate",
+      "loadTiming": "unassigned",
+      "source": {
+        "file": "raw/merge.flac",
+        "sha256": "3c12b15a2e556e5b1ddd2eaea30091917e8944c7fb27fb954c681ee6fd597047",
+        "sampleRate": 44100,
+        "channels": 2,
+        "seconds": 47.554467,
+        "peakDbfs": -28.945,
+        "rmsDbfs": -69.816,
+        "clippedSamples": 0,
+        "dcOffset": 2e-08
+      },
+      "candidate": {
+        "file": "candidates/merge.wav",
+        "sha256": "9b46a788bbfb208bcc3f24cec1d8443b0060edecc90a5707e66119c51425527f",
+        "bytes": 33650,
+        "sampleRate": 44100,
+        "channels": 1,
+        "encoding": "PCM16 WAV",
+        "seconds": 0.38102,
+        "peakDbfs": -7.001,
+        "rmsDbfs": -27.012,
+        "clippedSamples": 0,
+        "dcOffset": 5.56e-06
+      },
+      "processing": {
+        "cropStartSample": 0,
+        "cropEndSample": 16803,
+        "dcRemoved": -1.1887017129567637e-06,
+        "fadeInSamples": 132,
+        "fadeOutSamples": 794,
+        "gainDb": 21.945,
+        "monoStereoRmsRatio": 0.999981,
+        "selection": "Highest energy window, then low-level edge trim; requires listening review."
+      },
+      "workflow": "workflows/merge-api.json",
+      "history": "history/merge-history.json",
+      "review": {
+        "listening": "pending",
+        "rights": "pending",
+        "targetDevice": "pending"
+      }
+    },
+    {
+      "id": "rescue-success",
+      "status": "candidate",
+      "loadTiming": "unassigned",
+      "source": {
+        "file": "raw/rescue-success.flac",
+        "sha256": "2ca67cc89c5d89da570be2a8b90620324eb0b6ab39f901e0a94f132a5188efd6",
+        "sampleRate": 44100,
+        "channels": 2,
+        "seconds": 47.554467,
+        "peakDbfs": -28.827,
+        "rmsDbfs": -56.639,
+        "clippedSamples": 0,
+        "dcOffset": 1.6e-07
+      },
+      "candidate": {
+        "file": "candidates/rescue-success.wav",
+        "sha256": "09fd2ddcd920d37574eea327c129ebd156f58c4ac1cf5f3a78e4937e82957269",
+        "bytes": 149984,
+        "sampleRate": 44100,
+        "channels": 1,
+        "encoding": "PCM16 WAV",
+        "seconds": 1.7,
+        "peakDbfs": -6.0,
+        "rmsDbfs": -19.353,
+        "clippedSamples": 0,
+        "dcOffset": -2.43e-06
+      },
+      "processing": {
+        "cropStartSample": 0,
+        "cropEndSample": 74970,
+        "dcRemoved": 3.464113509987328e-06,
+        "fadeInSamples": 132,
+        "fadeOutSamples": 794,
+        "gainDb": 22.8301,
+        "monoStereoRmsRatio": 1.0,
+        "selection": "Highest energy window, then low-level edge trim; requires listening review."
+      },
+      "workflow": "workflows/rescue-success-api.json",
+      "history": "history/rescue-success-history.json",
+      "review": {
+        "listening": "pending",
+        "rights": "pending",
+        "targetDevice": "pending"
+      }
+    },
+    {
+      "id": "reward",
+      "status": "candidate",
+      "loadTiming": "unassigned",
+      "source": {
+        "file": "raw/reward.flac",
+        "sha256": "8ab1ed91bbcba1a6bd7ddc82986e2a97ca4e890755520e6d2b11131e259dcc54",
+        "sampleRate": 44100,
+        "channels": 2,
+        "seconds": 47.554467,
+        "peakDbfs": -32.28,
+        "rmsDbfs": -68.383,
+        "clippedSamples": 0,
+        "dcOffset": 4e-08
+      },
+      "candidate": {
+        "file": "candidates/reward.wav",
+        "sha256": "279e7d1240bae04857b2c8d6f0141acc05233955ba934ef5328ebfb65ff1f640",
+        "bytes": 51712,
+        "sampleRate": 44100,
+        "channels": 1,
+        "encoding": "PCM16 WAV",
+        "seconds": 0.585805,
+        "peakDbfs": -8.0,
+        "rmsDbfs": -25.032,
+        "clippedSamples": 0,
+        "dcOffset": -8.62e-06
+      },
+      "processing": {
+        "cropStartSample": 2044,
+        "cropEndSample": 27878,
+        "dcRemoved": 1.9018851428834095e-06,
+        "fadeInSamples": 132,
+        "fadeOutSamples": 794,
+        "gainDb": 24.8375,
+        "monoStereoRmsRatio": 0.962817,
+        "selection": "Highest energy window, then low-level edge trim; requires listening review."
+      },
+      "workflow": "workflows/reward-api.json",
+      "history": "history/reward-history.json",
+      "review": {
+        "listening": "pending",
+        "rights": "pending",
+        "targetDevice": "pending"
+      }
+    },
+    {
+      "id": "gentle-notice",
+      "status": "candidate",
+      "loadTiming": "unassigned",
+      "source": {
+        "file": "raw/gentle-notice.flac",
+        "sha256": "aad5d13b7634b25f96bdc3fce03cfcaac031e2594a5e84a1831627ea8ff6041b",
+        "sampleRate": 44100,
+        "channels": 2,
+        "seconds": 47.554467,
+        "peakDbfs": -30.163,
+        "rmsDbfs": -65.213,
+        "clippedSamples": 0,
+        "dcOffset": 7e-08
+      },
+      "candidate": {
+        "file": "candidates/gentle-notice.wav",
+        "sha256": "df6357852bc5a6cf2cfed1b90d0572094e5e5646d1117f00b099a75f755b7031",
+        "bytes": 87874,
+        "sampleRate": 44100,
+        "channels": 1,
+        "encoding": "PCM16 WAV",
+        "seconds": 0.995805,
+        "peakDbfs": -10.0,
+        "rmsDbfs": -28.135,
+        "clippedSamples": 0,
+        "dcOffset": -9.89e-06
+      },
+      "processing": {
+        "cropStartSample": 756,
+        "cropEndSample": 44671,
+        "dcRemoved": 2.573302784854264e-06,
+        "fadeInSamples": 132,
+        "fadeOutSamples": 794,
+        "gainDb": 20.3868,
+        "monoStereoRmsRatio": 0.997884,
+        "selection": "Highest energy window, then low-level edge trim; requires listening review."
+      },
+      "workflow": "workflows/gentle-notice-api.json",
+      "history": "history/gentle-notice-history.json",
+      "review": {
+        "listening": "pending",
+        "rights": "pending",
+        "targetDevice": "pending"
+      }
+    }
+  ],
+  "verification": "Decoded raw FLAC and exported/reopened WAV; finite, non-silent, mono fold-down and peak checks passed. No manual listening or target-device validation claimed."
+}

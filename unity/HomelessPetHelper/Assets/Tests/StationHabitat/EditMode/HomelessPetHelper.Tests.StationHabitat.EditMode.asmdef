@@ -1,0 +1,8 @@
+{
+  "name": "HomelessPetHelper.Tests.StationHabitat.EditMode",
+  "references": ["HomelessPetHelper.Modules.Station", "HomelessPetHelper.Modules.Station.UI",
+    "HomelessPetHelper.Modules.Animals"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}

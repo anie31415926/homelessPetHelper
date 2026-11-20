@@ -1,0 +1,53 @@
+{
+  "_id": "6873c9b0a6a72b11068a46a6",
+  "id": "Comfy-Org/stable-audio-open-1.0",
+  "private": false,
+  "library_name": "diffusion-single-file",
+  "tags": [
+    "diffusion-single-file",
+    "comfyui",
+    "base_model:stabilityai/stable-audio-open-1.0",
+    "base_model:finetune:stabilityai/stable-audio-open-1.0",
+    "license:other",
+    "region:us"
+  ],
+  "downloads": 45846,
+  "likes": 15,
+  "modelId": "Comfy-Org/stable-audio-open-1.0",
+  "author": "Comfy-Org",
+  "sha": "3eb100708b423cf59fc5bf2a152f5cc1e7718062",
+  "lastModified": "2026-09-23T07:17:42.000Z",
+  "gated": false,
+  "disabled": false,
+  "model-index": null,
+  "config": {},
+  "cardData": {
+    "license": "other",
+    "license_name": "stable-audio-community",
+    "license_link": "https://huggingface.co/Comfy-Org/stable-audio-open-1.0_repackaged/blob/main/LICENSE.md",
+    "tags": [
+      "comfyui",
+      "diffusion-single-file"
+    ],
+    "base_model": [
+      "stabilityai/stable-audio-open-1.0"
+    ]
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes"
+    },
+    {
+      "rfilename": "LICENSE.md"
+    },
+    {
+      "rfilename": "README.md"
+    },
+    {
+      "rfilename": "stable-audio-open-1.0.safetensors"
+    }
+  ],
+  "spaces": [],
+  "createdAt": "2025-07-13T14:58:56.000Z",
+  "usedStorage": 4853889016
+}

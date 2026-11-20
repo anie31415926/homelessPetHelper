@@ -22,3 +22,4 @@ MonoBehaviour:
   _catMask: {fileID: 4900000, guid: e7f3e9d489d6cda449fa658e2060ece1, type: 3}
   _dogMask: {fileID: 4900000, guid: 2ebdc47a57e7c764b90e585596ec285b, type: 3}
   _font: {fileID: 12800000, guid: 5d52f7131b6f9b641934fdec9b6107c1, type: 3}
+  _audioCatalog: {fileID: 11400000, guid: 5fd1ad538b69f1a43bd873dc1869aefc, type: 2}

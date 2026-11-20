@@ -1,0 +1,109 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "stable-audio-open-1.0.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "t5-base.safetensors",
+      "type": "stable_audio",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "A very short happy three-note ascending major-key wooden xylophone chime, soft plink plonk ding, warm gentle ending. A small reassuring success notification for a cozy animal rescue game, modest and heartwarming, clean isolated sound, no accompaniment, no rhythmic loop."
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "Speech, human voices, singing, background music, drums, loud harsh metallic sounds, distortion, hiss, noisy ambience, long reverberation, sirens, explosions."
+    }
+  },
+  "5": {
+    "class_type": "ConditioningStableAudio",
+    "inputs": {
+      "positive": [
+        "3",
+        0
+      ],
+      "negative": [
+        "4",
+        0
+      ],
+      "seconds_start": 0,
+      "seconds_total": 3
+    }
+  },
+  "6": {
+    "class_type": "EmptyLatentAudio",
+    "inputs": {
+      "seconds": 3,
+      "batch_size": 1
+    }
+  },
+  "7": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "5",
+        0
+      ],
+      "negative": [
+        "5",
+        1
+      ],
+      "latent_image": [
+        "6",
+        0
+      ],
+      "seed": 2026112004,
+      "steps": 60,
+      "cfg": 5,
+      "sampler_name": "dpmpp_3m_sde_gpu",
+      "scheduler": "exponential",
+      "denoise": 1
+    }
+  },
+  "8": {
+    "class_type": "VAEDecodeAudio",
+    "inputs": {
+      "samples": [
+        "7",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveAudioAdvanced",
+    "inputs": {
+      "audio": [
+        "8",
+        0
+      ],
+      "filename_prefix": "audio-basic-20261120/rescue-success",
+      "format": "flac"
+    }
+  }
+}

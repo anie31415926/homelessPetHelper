@@ -1,5 +1,6 @@
 using System.Linq;
 using HomelessPetHelper.Modules.Station.UI;
+using HomelessPetHelper.Modules.Station.UI.Habitat;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -46,7 +47,8 @@ namespace HomelessPetHelper.Tests.EditMode
 
             foreach (MonoBehaviour view in root.GetComponentsInChildren<MonoBehaviour>(true))
             {
-                if (!(view is StationPanelView) && !(view is StationAnimalView) && !(view is DirtSurfaceView))
+                if (!(view is StationPanelView) && !(view is StationAnimalView) && !(view is DirtSurfaceView) &&
+                    !(view is StationSceneView) && !(view is StationSceneChrome) && !(view is StationResidentView))
                 {
                     continue;
                 }
@@ -54,10 +56,12 @@ namespace HomelessPetHelper.Tests.EditMode
                 SerializedProperty field = new SerializedObject(view).GetIterator();
                 while (field.NextVisible(true))
                 {
-                    if (view is StationPanelView && field.propertyPath == "_rosterContent")
+                    if (view is StationPanelView &&
+                        (field.propertyPath == "_rosterContent" || field.propertyPath == "_habitat" ||
+                            field.propertyPath == "_scene" || field.propertyPath == "_chrome"))
                     {
                         Assert.That(field.objectReferenceValue != null, Is.EqualTo(expandable),
-                            "Only the expandable loop panel owns saved scroll content.");
+                            "Only the expandable loop panel owns saved scroll content and the habitat.");
                         continue;
                     }
                     if (field.propertyType == SerializedPropertyType.ObjectReference)

@@ -1,0 +1,54 @@
+{
+  "status": "candidate",
+  "style": "Warm, gentle, tactile and playful feedback for a casual cat and dog rescue game. Small-scale, not epic or combative.",
+  "generationSeconds": 3,
+  "steps": 60,
+  "cfg": 5,
+  "sampler": "dpmpp_3m_sde_gpu",
+  "scheduler": "exponential",
+  "negative": "Speech, human voices, singing, background music, drums, loud harsh metallic sounds, distortion, hiss, noisy ambience, long reverberation, sirens, explosions.",
+  "cues": [
+    {
+      "id": "ui-tap",
+      "seed": 2026112001,
+      "prompt": "One single soft rounded bubble pop, a small gentle plop with a tiny woody click. Cute tactile button press sound for a cozy casual mobile game. Very short dry close-up sound, clear onset, warm and muted, isolated on silence, no other sounds.",
+      "maxSeconds": 0.28,
+      "peakDbfs": -9
+    },
+    {
+      "id": "ui-open",
+      "seed": 2026112002,
+      "prompt": "One small gentle soft whoop and pop, a light rounded rising wooden bloop. Cute playful popup opening sound in a cozy casual mobile game, short airy soft motion and delicate ending, dry close-up isolated sound, quiet background.",
+      "maxSeconds": 0.5,
+      "peakDbfs": -10
+    },
+    {
+      "id": "merge",
+      "seed": 2026112003,
+      "prompt": "A single cute squishy pop followed immediately by two warm ascending wooden marimba notes, plop plink. A tiny friendly magical merge sound for a playful casual mobile game. Soft attack, rounded tone, brief clean decay, dry isolated sound in silence, no musical backing.",
+      "maxSeconds": 0.85,
+      "peakDbfs": -7
+    },
+    {
+      "id": "rescue-success",
+      "seed": 2026112004,
+      "prompt": "A very short happy three-note ascending major-key wooden xylophone chime, soft plink plonk ding, warm gentle ending. A small reassuring success notification for a cozy animal rescue game, modest and heartwarming, clean isolated sound, no accompaniment, no rhythmic loop.",
+      "maxSeconds": 1.45,
+      "peakDbfs": -6
+    },
+    {
+      "id": "reward",
+      "seed": 2026112005,
+      "prompt": "A single delicate bright reward pickup chime, two small rounded bell notes rising quickly with a soft sparkling tail. Cute and friendly, not sharp or piercing. Tiny collectible notification for a cozy casual mobile game, isolated dry close-up sound with short decay, no other sounds.",
+      "maxSeconds": 0.9,
+      "peakDbfs": -8
+    },
+    {
+      "id": "gentle-notice",
+      "seed": 2026112006,
+      "prompt": "Two soft low wooden pluck notes, doop doop, a gentle friendly reminder notification. Rounded muted kalimba timbre, calm and reassuring rather than alarming, very short clean decay. A cozy casual mobile game sound effect, dry isolated close-up, silence behind it.",
+      "maxSeconds": 0.65,
+      "peakDbfs": -10
+    }
+  ]
+}
