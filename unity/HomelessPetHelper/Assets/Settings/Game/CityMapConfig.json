@@ -22,10 +22,20 @@
   ],
   "requestTemplates": [
     { "id": "ordinary", "textKey": "parking.detail", "animalDefinitionId": "cat.shy", "allowedPointIds": ["parking"] },
+    { "id": "ordinary-dog", "textKey": "yard.rescue", "animalDefinitionId": "dog", "allowedPointIds": ["yard"] },
     { "id": "reunion", "textKey": "porch.detail", "animalDefinitionId": "dog", "allowedPointIds": ["porch"] }
+  ],
+  "rescueEncounters": [
+    { "templateId": "ordinary", "animalDefinitionId": "cat.shy", "encounterId": "cat", "dogArtwork": false,
+      "knownHealthy": true, "dirtiness": 65, "looseFur": 50, "rescueProfile": "calm", "isHungry": true,
+      "acceptsTouch": true, "acceptsWash": true, "acceptsGroom": true, "washMinutes": 20, "groomMinutes": 12 },
+    { "templateId": "ordinary-dog", "animalDefinitionId": "dog", "encounterId": "dog", "dogArtwork": true,
+      "knownHealthy": true, "dirtiness": 65, "looseFur": 50, "rescueProfile": "calm", "isHungry": true,
+      "acceptsTouch": true, "acceptsWash": true, "acceptsGroom": true, "washMinutes": 20, "groomMinutes": 12 }
   ],
   "initialRequests": [
     { "templateId": "ordinary", "pointId": "parking", "templateVersion": 1 },
+    { "templateId": "ordinary-dog", "pointId": "yard", "templateVersion": 1 },
     { "templateId": "reunion", "pointId": "porch", "templateVersion": 1, "hasDirectReception": true,
       "reunion": { "ownerId": "owner", "receivingArrangementId": "safe-receiving" } }
   ]

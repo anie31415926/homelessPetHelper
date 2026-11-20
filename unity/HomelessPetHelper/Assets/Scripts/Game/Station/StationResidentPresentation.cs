@@ -29,8 +29,8 @@ namespace HomelessPetHelper.Game.Station
             var resident = new StationResidentPresentation
             {
                 Art = art,
-                _sampleDirt = CreateField(mask, index, false, index == 1),
-                _sampleFur = CreateField(mask, index, true, false)
+                _sampleDirt = StationCoatFields.Create(mask, index, false, index == 1),
+                _sampleFur = StationCoatFields.Create(mask, index, true, false)
             };
             resident.WashWork = new CareWorkMeter(resident.Dirt, 20);
             resident.GroomWork = new CareWorkMeter(resident.Fur, 12, 100);
@@ -41,20 +41,18 @@ namespace HomelessPetHelper.Game.Station
 
         internal static StationResidentPresentation CreateShared(RescueStation station, Guid stationId,
             StationAnimalIntake arrival, ActionWorldClock clock, int index, OptionPreviewText text,
-            StationArtwork artwork)
+            StationArtwork artwork, StationCoatCare sharedCare = null, bool dogArtwork = false)
         {
             if (!station.TryGetCurrentAnimal(arrival.AnimalId, out var animal) || animal.Coat == null)
                 throw new InvalidOperationException("A shared resident needs explicit animal and coat data.");
-            if (animal.DefinitionId != "cat.shy")
-                throw new InvalidOperationException("No station presentation for: " + animal.DefinitionId);
-            Sprite art = artwork.Get(false, out var mask);
+            Sprite art = artwork.Get(dogArtwork, out var mask);
             return new StationResidentPresentation
             {
                 Art = art,
-                Name = text.Get("loop.animal", index + 1),
-                SharedCare = new StationCoatCare(station, stationId, arrival.AnimalId, clock,
-                    CreateField(mask, index * 2, false, animal.Coat.Dirtiness == 0),
-                    CreateField(mask, index * 2, true, animal.Coat.LooseFur == 0), 20, 12)
+                Name = text.Get(dogArtwork ? "loop.dog" : "loop.animal", index + 1),
+                SharedCare = sharedCare ?? new StationCoatCare(station, stationId, arrival.AnimalId, clock,
+                    StationCoatFields.Create(mask, index * 2, false, animal.Coat.Dirtiness == 0),
+                    StationCoatFields.Create(mask, index * 2, true, animal.Coat.LooseFur == 0), 20, 12)
             };
         }
 
@@ -71,30 +69,5 @@ namespace HomelessPetHelper.Game.Station
             _sampleDirt.ClearResidue();
         }
 
-        private static DirtField CreateField(byte[] mask, int seed, bool fur, bool cleared)
-        {
-            var samples = new byte[mask.Length];
-            if (!cleared)
-            {
-                for (int y = 0; y < 128; y++)
-                {
-                    for (int x = 0; x < 128; x++)
-                    {
-                        if (fur)
-                        {
-                            float noise = Mathf.PerlinNoise(x * 0.07f + seed * 13, y * 0.07f + 43);
-                            samples[y * 128 + x] = (x + y * 2) % 11 < 2 && y % 9 < 6 ?
-                                (byte)(Mathf.Clamp01((noise - 0.38f) * 4) * 200) : (byte)0;
-                        }
-                        else
-                        {
-                            float noise = Mathf.PerlinNoise(x * 0.10f + seed * 19, y * 0.10f + 7);
-                            samples[y * 128 + x] = (byte)(Mathf.Clamp01((noise - 0.43f) * 5) * 220);
-                        }
-                    }
-                }
-            }
-            return new DirtField(128, 128, mask, samples);
-        }
     }
 }

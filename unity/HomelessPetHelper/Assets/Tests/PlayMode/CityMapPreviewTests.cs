@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using HomelessPetHelper.Tests.Support;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +20,9 @@ namespace HomelessPetHelper.Tests.PlayMode
 {
     public sealed class CityMapPreviewTests
     {
+        private MainSceneStorageScope _storageScope;
+        [SetUp] public void IsolateMainStorage() => _storageScope = new MainSceneStorageScope();
+        [TearDown] public void ReleaseMainStorage() => _storageScope.Dispose();
         private const string ScenePath = "Assets/EditorScenes/SC_CityMap.unity";
         private CityMapView _view;
         private TextTable _copy;
@@ -76,7 +80,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Click("Yard");
             Click("Primary");
             Click("Primary");
-            Assert.That(Label("Details").text, Is.EqualTo(Copy("returned.exploring", 5)));
+            Assert.That(Label("Details").text, Is.EqualTo(Copy("returned", 5)));
             yield return SceneManager.LoadSceneAsync("Assets/Scenes/Main.unity");
             yield return Load();
             Assert.That(Label("Status").text, Is.EqualTo(initialStatus));

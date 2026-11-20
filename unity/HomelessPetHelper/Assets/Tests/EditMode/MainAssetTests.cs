@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using HomelessPetHelper.Game;
+using HomelessPetHelper.Game.Text;
 using NUnit.Framework;
 using UnityEditor;
 
@@ -24,6 +25,12 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.DoesNotThrow(content.Validate);
             Assert.That(content.Font.HasCharacter('救'), Is.True);
             Assert.That(content.Font.HasCharacter('助'), Is.True);
+            var stationText = new OptionPreviewText(content.StationText);
+            foreach (var key in new[] { "save.loadFailed", "save.writeFailed", "save.recovered", "loop.dog",
+                "save.outingBoundary", "save.careBoundary" })
+                foreach (char character in stationText.Get(key, 1))
+                    if (!char.IsWhiteSpace(character))
+                        Assert.That(content.Font.HasCharacter(character), Is.True, key + ": " + character);
             Assert.That(EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(scene => scene.path),
                 Is.EqualTo(new[] { "Assets/Scenes/Main.unity" }));
         }

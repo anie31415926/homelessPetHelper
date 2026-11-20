@@ -14,7 +14,10 @@
     "HomelessPetHelper.Modules.Outing.UI",
     "HomelessPetHelper.Editor",
     "HomelessPetHelper.Bootstrap",
-    "HomelessPetHelper.Game"
+    "HomelessPetHelper.Game",
+    "HomelessPetHelper.Tests.Support",
+    "HomelessPetHelper.Framework.Persistence",
+    "HomelessPetHelper.Modules.Siege"
   ],
   "includePlatforms": [
     "Editor"
@@ -22,5 +25,9 @@
   "optionalUnityReferences": [
     "TestAssemblies"
   ],
-  "autoReferenced": false
+  "autoReferenced": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "Newtonsoft.Json.dll"
+  ]
 }

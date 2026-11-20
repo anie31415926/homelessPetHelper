@@ -5,7 +5,7 @@ using HomelessPetHelper.Modules.Siege;
 
 namespace HomelessPetHelper.Game
 {
-    /// <summary>Bridge for the explicitly healthy parking-cat encounter, not a universal medical clearance.</summary>
+    /// <summary>Bridge for explicitly authored healthy encounters, not a universal medical clearance.</summary>
     public sealed class SiegeRescueActivity : IRescueActivity
     {
         public Guid SessionId { get; }
@@ -18,14 +18,24 @@ namespace HomelessPetHelper.Game
         public bool IsRescueComplete => !IsClosed && !IsSuspended && Battle.Phase == SiegeState.BattlePhase.Won;
 
         public SiegeRescueActivity(Guid sessionId, int seed, SiegeCatalog catalog)
+            : this(sessionId, seed, catalog, null) { }
+
+        public SiegeRescueActivity(Guid sessionId, int seed, SiegeCatalog catalog,
+            CityMap.RescueEncounterDefinition encounter)
         {
+            if (encounter != null && !encounter.KnownHealthy)
+                throw new ArgumentException("An explicit health source is required.");
             if (sessionId == Guid.Empty) throw new ArgumentException("Missing outing identity.", nameof(sessionId));
             SessionId = sessionId;
-            Individual = new AnimalIndividual(Guid.NewGuid(), "cat.shy",
-                new AnimalDisposition(true, AnimalEmotion.Nervous, AnimalStress.None, AnimalBehavior.Watching),
+            Individual = new AnimalIndividual(Guid.NewGuid(), encounter?.AnimalDefinitionId ?? "cat.shy",
+                new AnimalDisposition(encounter?.IsHungry ?? true, AnimalEmotion.Nervous, AnimalStress.None,
+                    AnimalBehavior.Watching),
                 new AnimalHealthSnapshot(Array.Empty<AnimalHealthProblem>()),
-                new AnimalCarePermissions(true, true, true), new AnimalCoatCondition(65, 50));
-            Battle = new SiegeSession(catalog, unchecked((uint)seed), "calm", sessionId.ToString("N"));
+                new AnimalCarePermissions(encounter?.AcceptsTouch ?? true, encounter?.AcceptsWash ?? true,
+                    encounter?.AcceptsGroom ?? true), new AnimalCoatCondition(encounter?.Dirtiness ?? 65,
+                        encounter?.LooseFur ?? 50));
+            Battle = new SiegeSession(catalog, unchecked((uint)seed), encounter?.RescueProfile ?? "calm",
+                sessionId.ToString("N"), encounter?.EncounterId);
         }
 
         public void SynchronizeOutcome()

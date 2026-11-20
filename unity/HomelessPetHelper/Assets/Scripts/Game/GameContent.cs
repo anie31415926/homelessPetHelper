@@ -31,7 +31,8 @@ namespace HomelessPetHelper.Game
             if (_font == null || _mapText == null || _stationText == null || _siegeText == null)
                 throw new InvalidOperationException("Missing game content bindings.");
             Artwork.Get(false, out _);
-            CreateMapConfig();
+            Artwork.Get(true, out _);
+            CreateMapConfig().ValidateRescues(CreateSiegeCatalog());
             new Modules.Siege.UI.SiegeText(_siegeText).Validate(CreateSiegeCatalog());
         }
     }

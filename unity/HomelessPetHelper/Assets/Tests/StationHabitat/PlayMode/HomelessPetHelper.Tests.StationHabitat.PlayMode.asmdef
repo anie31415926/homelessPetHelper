@@ -1,11 +1,24 @@
 {
   "name": "HomelessPetHelper.Tests.StationHabitat.PlayMode",
-  "references": ["HomelessPetHelper.Modules.Station", "HomelessPetHelper.Modules.Station.UI",
-    "HomelessPetHelper.Modules.PetMotion", "HomelessPetHelper.Modules.Rescue.UI", "UnityEngine.UI",
-    "HomelessPetHelper.Game", "HomelessPetHelper.Bootstrap",
-    "HomelessPetHelper.Modules.Outing.UI", "HomelessPetHelper.Modules.Siege",
-    "HomelessPetHelper.Modules.Siege.UI", "HomelessPetHelper.Modules.Rescue", "HomelessPetHelper.Modules.Animals",
-    "HomelessPetHelper.Modules.WorldTime"],
-  "optionalUnityReferences": ["TestAssemblies"],
+  "references": [
+    "HomelessPetHelper.Modules.Station",
+    "HomelessPetHelper.Modules.Station.UI",
+    "HomelessPetHelper.Modules.PetMotion",
+    "HomelessPetHelper.Modules.Rescue.UI",
+    "UnityEngine.UI",
+    "HomelessPetHelper.Game",
+    "HomelessPetHelper.Bootstrap",
+    "HomelessPetHelper.Modules.Outing.UI",
+    "HomelessPetHelper.Modules.Siege",
+    "HomelessPetHelper.Modules.Siege.UI",
+    "HomelessPetHelper.Modules.Rescue",
+    "HomelessPetHelper.Modules.Animals",
+    "HomelessPetHelper.Modules.WorldTime",
+    "HomelessPetHelper.Tests.Support",
+    "HomelessPetHelper.Framework.Persistence"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
   "autoReferenced": false
 }

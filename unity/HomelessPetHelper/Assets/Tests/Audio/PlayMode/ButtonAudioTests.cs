@@ -1,3 +1,4 @@
+using HomelessPetHelper.Tests.Support;
 using System.Collections;
 using System.Linq;
 using HomelessPetHelper.Framework.Audio;
@@ -20,9 +21,13 @@ namespace HomelessPetHelper.Tests.Audio.PlayMode
         private AudioService _audio;
         private ProbeOutput _output;
 
+        private MainSceneStorageScope _storageScope;
+        [TearDown] public void ReleaseStorageScope() => _storageScope?.Dispose();
+
         [UnitySetUp]
         public IEnumerator SetUp()
         {
+            _storageScope = new MainSceneStorageScope();
             yield return SceneManager.LoadSceneAsync("Main");
             _root = new GameObject("ButtonAudioTests", typeof(AudioScope));
             _scope = _root.GetComponent<AudioScope>();

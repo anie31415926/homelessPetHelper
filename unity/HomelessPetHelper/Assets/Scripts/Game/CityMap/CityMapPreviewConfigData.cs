@@ -16,7 +16,17 @@ namespace HomelessPetHelper.Game.CityMap
         public TimePolicy timePolicy = null;
         public Point[] points = Array.Empty<Point>();
         public Template[] requestTemplates = Array.Empty<Template>();
+        public RescueEncounter[] rescueEncounters = Array.Empty<RescueEncounter>();
         public Request[] initialRequests = Array.Empty<Request>();
+
+        [Serializable]
+        internal sealed class RescueEncounter
+        {
+            public string templateId = string.Empty, animalDefinitionId = string.Empty, encounterId = string.Empty;
+            public string rescueProfile = string.Empty;
+            public bool dogArtwork, knownHealthy, isHungry, acceptsTouch, acceptsWash, acceptsGroom;
+            public int dirtiness, looseFur, washMinutes, groomMinutes;
+        }
 
         [Serializable]
         internal sealed class TimePolicy

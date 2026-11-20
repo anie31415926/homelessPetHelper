@@ -26,29 +26,59 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
 
         public StationCoatCare(RescueStation station, Guid stationSessionId, Guid animalId, ActionWorldClock clock,
             DirtField dirt, DirtField fur, int washMinutes, int groomMinutes)
+            : this(station, stationSessionId, animalId, clock,
+                new StationCoatCareState(dirt, fur, CurrentCoat(station, animalId), washMinutes,
+                    groomMinutes, 0, 0), false) { }
+
+        public StationCoatCare(RescueStation station, Guid stationSessionId, Guid animalId, ActionWorldClock clock,
+            StationCoatCareState state) : this(station, stationSessionId, animalId, clock, state, true) { }
+
+        private StationCoatCare(RescueStation station, Guid stationSessionId, Guid animalId, ActionWorldClock clock,
+            StationCoatCareState state, bool restoring)
         {
+            if (state == null) throw new ArgumentNullException(nameof(state));
+            var dirt = state.CopyDirt();
+            var fur = state.CopyFur();
             _station = station ?? throw new ArgumentNullException(nameof(station));
             _clock = clock ?? throw new ArgumentNullException(nameof(clock));
             _stationSessionId = stationSessionId;
             _animalId = animalId;
             if (!station.TryGetCurrentAnimal(animalId, out var animal) || animal.Coat == null)
                 throw new ArgumentException("Coat care needs an admitted individual with explicit coat data.");
-            _initial = animal.Coat;
+            _initial = state.InitialCoat;
             _expectedCoat = animal.Coat;
             if (dirt == null) throw new ArgumentNullException(nameof(dirt));
             if (fur == null) throw new ArgumentNullException(nameof(fur));
             if (dirt.Width != fur.Width || dirt.Height != fur.Height)
                 throw new ArgumentException("Coat fields must share dimensions.");
-            if ((_initial.Dirtiness == 0) != (dirt.RemainingAmount == 0) ||
-                (_initial.LooseFur == 0) != (fur.RemainingAmount == 0))
+            if ((_initial.Dirtiness == 0) != ((restoring ? dirt.InitialAmount : dirt.RemainingAmount) == 0) ||
+                (_initial.LooseFur == 0) != ((restoring ? fur.InitialAmount : fur.RemainingAmount) == 0) ||
+                restoring && (animal.Coat.Dirtiness != RemainingCondition(_initial.Dirtiness, dirt) ||
+                animal.Coat.LooseFur != RemainingCondition(_initial.LooseFur, fur)))
                 throw new ArgumentException("Coat fields must represent the actual individual.");
             // Neither retained constructor inputs nor downcasts may bypass the care session gates.
             _dirt = dirt.Copy();
             _fur = fur.Copy();
             Dirt = _dirt.AsReadOnly();
             Fur = _fur.AsReadOnly();
-            _wash = new CareWorkMeter(_dirt, washMinutes);
-            _groom = new CareWorkMeter(_fur, groomMinutes, 100);
+            _wash = new CareWorkMeter(_dirt, state.WashMinutes, 97, state.WashSettledMinutes);
+            _groom = new CareWorkMeter(_fur, state.GroomMinutes, 100, state.GroomSettledMinutes);
+            if (restoring && (_wash.PendingMinutes != 0 || _groom.PendingMinutes != 0))
+                throw new ArgumentException("Stable care must have settled all whole minutes.");
+        }
+
+        private static AnimalCoatCondition CurrentCoat(RescueStation station, Guid animalId)
+        {
+            if (station == null || !station.TryGetCurrentAnimal(animalId, out var animal) || animal.Coat == null)
+                throw new ArgumentException("Missing admitted coat.");
+            return animal.Coat;
+        }
+
+        public StationCoatCareState Capture()
+        {
+            if (IsActive) throw new InvalidOperationException("End care deliberately before capturing a checkpoint.");
+            return new StationCoatCareState(_dirt, _fur, _initial, _wash.FullDurationMinutes,
+                _groom.FullDurationMinutes, _wash.SettledMinutes, _groom.SettledMinutes);
         }
 
         /// <summary>Action eligibility also applies to switching tools after explicitly ending active care.</summary>
@@ -134,12 +164,15 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
                 StationCoatCareFailure.None : StationCoatCareFailure.CoatChanged;
         }
 
+        private static int RemainingCondition(int initial, IReadOnlyDirtField field) =>
+            (int)Math.Ceiling(initial * (1 - field.RemovedFraction));
+
         private void UpdateIndividual()
         {
             _station.TryGetCurrentAnimal(_animalId, out var current);
             var coat = new AnimalCoatCondition(
-                (int)Math.Ceiling(_initial.Dirtiness * (1 - Dirt.RemovedFraction)),
-                (int)Math.Ceiling(_initial.LooseFur * (1 - Fur.RemovedFraction)));
+                RemainingCondition(_initial.Dirtiness, Dirt),
+                RemainingCondition(_initial.LooseFur, Fur));
             if (coat.Dirtiness == current.Coat.Dirtiness && coat.LooseFur == current.Coat.LooseFur) return;
             if (!_station.TryApplyCoatCondition(_stationSessionId, current, coat))
                 throw new InvalidOperationException("Validated coat effect could not be committed.");

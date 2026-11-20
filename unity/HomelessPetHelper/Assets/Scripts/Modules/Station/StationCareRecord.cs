@@ -14,6 +14,8 @@ namespace HomelessPetHelper.Modules.Station
                 StationHealthAssessment.Unchecked, Array.Empty<StationCareProblem>());
         }
 
+        internal StationCareRecord(StationCareSnapshot snapshot) => Current = snapshot;
+
         internal bool TryCompleteBasicAssessment(IReadOnlyList<string> necessaryProblemIds,
             AnimalHealthSnapshot healthAtAssessment, out StationFailure failure)
         {

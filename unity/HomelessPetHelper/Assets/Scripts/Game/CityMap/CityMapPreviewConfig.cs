@@ -13,6 +13,7 @@ namespace HomelessPetHelper.Game.CityMap
         private readonly CityMapPreviewConfigData _data;
         private readonly Dictionary<string, string> _detailKeys = new Dictionary<string, string>();
         private readonly HelpRequestTemplate[] _templates;
+        private readonly RescueEncounterDefinition[] _rescueEncounters;
 
         public CityMapDefinition Definition { get; }
         public string InitialPointId => _data.initialPointId;
@@ -40,6 +41,34 @@ namespace HomelessPetHelper.Game.CityMap
                 throw new ArgumentException("initialPointId must reference an initially open point.");
             _templates = BuildTemplates();
             ValidateRequests();
+            _rescueEncounters = (_data.rescueEncounters ?? Array.Empty<CityMapPreviewConfigData.RescueEncounter>())
+                .Select(entry => new RescueEncounterDefinition(entry ??
+                    throw new ArgumentException("Missing rescue encounter."))).ToArray();
+        }
+
+        public RescueEncounterDefinition GetRescue(string templateId) =>
+            _rescueEncounters.SingleOrDefault(item => item.TemplateId == templateId);
+
+        public RescueEncounterDefinition GetAnimalPresentation(string definitionId) =>
+            _rescueEncounters.FirstOrDefault(item => item.AnimalDefinitionId == definitionId);
+
+        public void ValidateRescues(Modules.Siege.SiegeCatalog catalog)
+        {
+            var ids = new HashSet<string>();
+            foreach (var entry in _rescueEncounters)
+            {
+                if (entry == null || !ids.Add(entry.TemplateId) ||
+                    GetRequestTemplate(entry.TemplateId)?.AnimalDefinitionId != entry.AnimalDefinitionId ||
+                    catalog.Content.Encounter(entry.EncounterId) == null
+                        || catalog.Profile(entry.RescueProfile) == null ||
+                    !entry.KnownHealthy || entry.WashMinutes < 1 || entry.WashMinutes > 1440 ||
+                    entry.GroomMinutes < 1 || entry.GroomMinutes > 1440 ||
+                    entry.Dirtiness < 0 || entry.Dirtiness > 100 || entry.LooseFur < 0 || entry.LooseFur > 100)
+                    throw new ArgumentException("Invalid Main rescue encounter mapping.");
+            }
+            foreach (var request in _data.initialRequests)
+                if (!request.hasDirectReception && GetRescue(request.templateId) == null)
+                    throw new ArgumentException("Main ordinary request has no authored encounter.");
         }
 
         public string GetDetailKey(string pointId) => _detailKeys[pointId];

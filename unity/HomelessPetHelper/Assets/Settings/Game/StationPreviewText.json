@@ -1,5 +1,11 @@
 {
   "entries": [
+    { "key": "save.outingBoundary", "value": "外出中退出，会回到出发前的站内记录。" },
+    { "key": "save.careBoundary", "value": "{0}结束本次后保存，中途退出恢复上次成果。" },
+    { "key": "save.loadFailed", "value": "进度读取失败，原记录已保留。请退出后重试。" },
+    { "key": "save.writeFailed", "value": "进度保存失败，已停止操作。请退出后重新读取记录。" },
+    { "key": "save.recovered", "value": "已从上一次有效记录恢复进度。" },
+    { "key": "loop.dog", "value": "救助狗狗 {0}" },
     { "key": "loop.outing", "value": "外出救助" },
     { "key": "loop.empty", "value": "暂时没有动物入住。" },
     { "key": "loop.animal", "value": "救助猫咪 {0}" },

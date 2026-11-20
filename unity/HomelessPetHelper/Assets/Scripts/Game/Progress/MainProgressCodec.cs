@@ -1,0 +1,127 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using HomelessPetHelper.Bootstrap;
+using HomelessPetHelper.Game.CityMap;
+using HomelessPetHelper.Game.Station;
+using HomelessPetHelper.Modules.Outing;
+using HomelessPetHelper.Modules.Rescue;
+using HomelessPetHelper.Modules.Station;
+
+namespace HomelessPetHelper.Game.Progress
+{
+    internal static class MainProgressCodec
+    {
+        internal static MainProgressData NewGame(CityMapPreviewConfig config) => new MainProgressData
+        {
+            Capacity = config.InitialCapacity, ElapsedMinutes = 0,
+            Requests = config.CreateRequestPool().Requests.Select(CaptureRequest).ToArray(),
+            Residents = Array.Empty<ResidentData>()
+        };
+
+        internal static MainProgressData Capture(GameLoopSession session, StationCareRoster care,
+            IReadOnlyDictionary<Guid, Guid> requestsByOuting)
+        {
+            if (session.IsClosed || session.Activity != null ||
+                (session.Outing.Session != null && !session.Outing.Session.IsSettled) ||
+                (session.Flow.Stage != RescueStage.Station && session.Flow.Stage != RescueStage.Care))
+                throw new InvalidOperationException("Only stable station checkpoints may be saved.");
+            return new MainProgressData
+            {
+                Capacity = session.Station.TemporaryCapacity, ElapsedMinutes = session.Clock.Current.ElapsedMinutes,
+                Requests = session.Requests.Requests.Select(CaptureRequest).ToArray(),
+                Residents = session.Station.Animals.Select(arrival =>
+                {
+                    if (!requestsByOuting.TryGetValue(arrival.OutingId, out var requestId))
+                        throw new InvalidOperationException("Missing rescue request identity.");
+                    session.Station.TryGetCurrentAnimal(arrival.AnimalId, out var current);
+                    session.Station.TryGetCareSnapshot(arrival.AnimalId, out var assessment);
+                    return MainResidentCodec.Capture(arrival, current, assessment,
+                        care.Get(arrival.AnimalId), requestId);
+                }).ToArray()
+            };
+        }
+
+        internal static GameLoopSession Restore(MainProgressData data, CityMapPreviewConfig config,
+            StationArtwork artwork, out StationCareRoster care, out Dictionary<Guid, Guid> links)
+        {
+            if (data == null || data.Requests == null || data.Residents == null || data.ElapsedMinutes < 0 ||
+                data.Capacity != config.InitialCapacity || data.Residents.Length > data.Capacity)
+                throw new ArgumentException("Invalid station checkpoint header.");
+            var pool = RestoreRequests(data.Requests, config);
+            var session = new GameLoopSession(data.Capacity, config.MinutesPerDay,
+                config.CreateRules(new PointUnlockState(), pool), pool, config.TimePolicy, data.ElapsedMinutes);
+            care = new StationCareRoster(session, artwork, config);
+            links = new Dictionary<Guid, Guid>();
+            try
+            {
+                var residents = new List<StationResidentState>();
+                var usedRequests = new HashSet<Guid>();
+                foreach (var resident in data.Residents)
+                {
+                    if (resident == null || !Guid.TryParseExact(resident.RequestId, "N", out var requestId) ||
+                        !pool.TryGet(requestId, out var request) || request.State != RequestState.Resolved ||
+                        request.ReunionPlan != null || !usedRequests.Add(requestId))
+                        throw new ArgumentException("Resident must belong to one resolved ordinary request.");
+                    var encounter = config.GetRescue(request.TemplateId);
+                    if (encounter == null || resident.Current?.DefinitionId != encounter.AnimalDefinitionId)
+                        throw new ArgumentException("Request and animal content differ.");
+                    var restored = MainResidentCodec.Restore(resident);
+                    residents.Add(restored);
+                    if (!links.TryAdd(restored.Arrival.OutingId, requestId))
+                        throw new ArgumentException("Duplicate outing identity.");
+                }
+                if (pool.Requests.Count(request => request.State == RequestState.Resolved) != residents.Count)
+                    throw new ArgumentException("Resolved requests and arrivals differ.");
+                session.Station.RestoreResidents(residents);
+                long minimumMinutes = 0;
+                config.TimePolicy.TryGetDuration(OutingReturnProgress.HandingOver, false, out var rescueMinutes, out _);
+                for (int i = 0; i < residents.Count; i++)
+                {
+                    var state = MainResidentCodec.RestoreCoat(data.Residents[i].Coat);
+                    MainResidentCodec.ValidateMask(state, residents[i].Arrival.AnimalDefinitionId, artwork, config);
+                    care.Restore(residents[i].Arrival.AnimalId, state);
+                    minimumMinutes = checked(minimumMinutes + rescueMinutes + state.WashSettledMinutes +
+                        state.GroomSettledMinutes);
+                }
+                if (data.ElapsedMinutes < minimumMinutes)
+                    throw new ArgumentException("Checkpoint time is earlier than its settled work.");
+                session.RestoreLastArrival();
+                return session;
+            }
+            catch { session.Dispose(); throw; }
+        }
+
+        private static RequestPoolState RestoreRequests(RequestData[] data, CityMapPreviewConfig config)
+        {
+            var expected = config.CreateRequestPool().Requests;
+            if (data.Length != expected.Count) throw new ArgumentException("Checkpoint request set differs.");
+            var requests = new List<HelpRequest>();
+            var states = new List<RequestState>();
+            var keys = new HashSet<string>();
+            foreach (var item in data)
+            {
+                if (item == null || !Guid.TryParseExact(item.Id, "N", out var id))
+                    throw new ArgumentException("Invalid request identity.");
+                var match = expected.SingleOrDefault(request => request.TemplateId == item.TemplateId &&
+                    request.PointId == item.PointId);
+                if (match == null || item.Version != match.TemplateVersion ||
+                    item.OwnerId != match.ReunionPlan?.OwnerId
+                        || item.ReceivingId != match.ReunionPlan?.ReceivingArrangementId ||
+                    !keys.Add(item.TemplateId + ":" + item.PointId))
+                    throw new ArgumentException("Incompatible request definition.");
+                var reunion = item.OwnerId == null ? null : new OwnerReunionPlan(id, item.OwnerId, item.ReceivingId);
+                requests.Add(new HelpRequest(id, item.TemplateId, item.PointId, item.Version, reunion));
+                states.Add((RequestState)item.State);
+            }
+            return RequestPoolState.Restore(requests, states);
+        }
+
+        private static RequestData CaptureRequest(HelpRequest request) => new RequestData
+        {
+            Id = request.RequestId.ToString("N"), TemplateId = request.TemplateId, PointId = request.PointId,
+            Version = request.TemplateVersion, State = (int)request.State,
+            OwnerId = request.ReunionPlan?.OwnerId, ReceivingId = request.ReunionPlan?.ReceivingArrangementId
+        };
+    }
+}

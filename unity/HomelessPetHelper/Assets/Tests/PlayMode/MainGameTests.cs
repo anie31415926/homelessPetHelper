@@ -1,3 +1,4 @@
+using HomelessPetHelper.Tests.Support;
 using System;
 using System.Collections;
 using System.IO;
@@ -24,9 +25,13 @@ namespace HomelessPetHelper.Tests.PlayMode
         private CityMapView _map;
         private SiegeTrialView _siege;
 
+        private MainSceneStorageScope _storageScope;
+        [TearDown] public void ReleaseStorageScope() => _storageScope?.Dispose();
+
         [UnitySetUp]
         public IEnumerator Load()
         {
+            _storageScope = new MainSceneStorageScope();
             yield return SceneManager.LoadSceneAsync("Main", LoadSceneMode.Single);
             yield return null;
             _root = UnityEngine.Object.FindObjectOfType<MainGameRoot>();

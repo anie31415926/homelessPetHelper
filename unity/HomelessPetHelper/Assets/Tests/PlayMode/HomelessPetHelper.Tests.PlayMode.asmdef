@@ -13,7 +13,10 @@
     "HomelessPetHelper.Modules.Siege.UI",
     "HomelessPetHelper.Modules.Animals",
     "HomelessPetHelper.Modules.Station",
-    "HomelessPetHelper.Modules.WorldTime"
+    "HomelessPetHelper.Modules.WorldTime",
+    "HomelessPetHelper.Tests.Support",
+    "HomelessPetHelper.Framework.Persistence",
+    "HomelessPetHelper.Modules.Outing"
   ],
   "optionalUnityReferences": [
     "TestAssemblies"

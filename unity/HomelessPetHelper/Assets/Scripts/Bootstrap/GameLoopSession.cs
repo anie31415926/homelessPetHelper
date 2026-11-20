@@ -25,7 +25,7 @@ namespace HomelessPetHelper.Bootstrap
         public bool IsClosed { get; private set; }
 
         public GameLoopSession(int capacity, int minutesPerDay, CityMapRules map,
-            RequestPoolState requests, OutingTimePolicy timePolicy)
+            RequestPoolState requests, OutingTimePolicy timePolicy, long initialElapsedMinutes = 0)
         {
             Map = map ?? throw new ArgumentNullException(nameof(map));
             _timePolicy = timePolicy ?? throw new ArgumentNullException(nameof(timePolicy));
@@ -33,13 +33,32 @@ namespace HomelessPetHelper.Bootstrap
             Requests = requests;
             Station = new RescueStation(StationSessionId, capacity);
             Guid worldId = Guid.NewGuid();
-            Clock = new ActionWorldClock(worldId, minutesPerDay);
+            Clock = new ActionWorldClock(worldId, minutesPerDay, initialElapsedMinutes);
             Outing = new OutingCoordinator(Flow, Station, StationSessionId, Clock, worldId, Map, requests, timePolicy);
         }
 
         public bool TryOpenMap(Guid outingId, int seed, out OutingAssemblyFailure failure)
         {
             if (!RequireOpen(out failure)) return false;
+            if (Station.HasAcceptedOuting(outingId))
+            {
+                failure = OutingAssemblyFailure.SessionIdReused;
+                return false;
+            }
+            // Restored stations start without a live outing. Keep the necessary-care gate without
+            // replacing the coordinator's existing stage, pause or infrastructure refusal precedence.
+            if (Flow.Stage == RescueStage.Station && !Flow.IsSuspended && !Station.IsSuspended &&
+                !Station.IsClosed && !Clock.IsSuspended && !Clock.IsClosed)
+            {
+                foreach (var animal in Station.Animals)
+                {
+                    if (Station.CanCompleteNecessaryCare(StationSessionId, animal.AnimalId, out var careFailure))
+                        continue;
+                    failure = careFailure == StationFailure.BasicAssessmentRequired ?
+                        OutingAssemblyFailure.BasicAssessmentRequired : OutingAssemblyFailure.NecessaryCarePending;
+                    return false;
+                }
+            }
             if (!Outing.TryBeginOuting(outingId, seed, out failure)) return false;
             Activity?.Dispose();
             Activity = null;
@@ -128,6 +147,14 @@ namespace HomelessPetHelper.Bootstrap
             Activity?.Dispose();
             Activity = null;
             return true;
+        }
+
+        /// <summary>Restores the last frozen arrival only on a fresh, staged station session.</summary>
+        public void RestoreLastArrival()
+        {
+            if (Outing.Session != null || LastArrival != null) throw new InvalidOperationException("Session is live.");
+            if (Station.Animals.Count > 0)
+                LastArrival = Station.GetHistoricalReturn(Station.Animals[Station.Animals.Count - 1].AnimalId);
         }
 
         public void SetSuspended(bool suspended)

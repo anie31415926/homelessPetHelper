@@ -7,6 +7,7 @@
     { "key": "yard", "value": "居民小院" },
     { "key": "porch", "value": "临街门廊" },
     { "key": "parking.detail", "value": "居民提供了流浪猫线索。\n需要预留一个安置位。" },
+    { "key": "yard.rescue", "value": "居民提供了流浪狗线索。\n需要预留一个安置位。" },
     { "key": "yard.detail", "value": "暂无线索，可以去周边看看。\n需要预留一个安置位。" },
     { "key": "porch.detail", "value": "收到寻宠线索，已确认原主人可安全接回。\n不占用救助站安置位。" },
     { "key": "depart", "value": "前往这里" },

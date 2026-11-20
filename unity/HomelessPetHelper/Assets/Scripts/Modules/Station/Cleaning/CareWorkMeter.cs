@@ -10,6 +10,9 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
         private readonly int _completionPercent;
         private long _settledMinutes;
 
+        public long SettledMinutes => _settledMinutes;
+        public int FullDurationMinutes => _fullDurationMinutes;
+
         public long PendingMinutes => TotalMinutes - _settledMinutes;
 
         private long TotalMinutes
@@ -23,7 +26,8 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
             }
         }
 
-        public CareWorkMeter(IReadOnlyDirtField field, int fullDurationMinutes, int completionPercent = 97)
+        public CareWorkMeter(IReadOnlyDirtField field, int fullDurationMinutes, int completionPercent = 97,
+            long settledMinutes = 0)
         {
             _field = field ?? throw new ArgumentNullException(nameof(field));
             if (fullDurationMinutes < 1 || fullDurationMinutes > 1440)
@@ -38,6 +42,9 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
 
             _fullDurationMinutes = fullDurationMinutes;
             _completionPercent = completionPercent;
+            if (settledMinutes < 0 || settledMinutes > TotalMinutes)
+                throw new ArgumentOutOfRangeException(nameof(settledMinutes));
+            _settledMinutes = settledMinutes;
         }
 
         /// <summary>Call only after the corresponding game-time delta was successfully committed.</summary>

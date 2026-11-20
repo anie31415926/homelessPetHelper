@@ -26,6 +26,9 @@ namespace HomelessPetHelper.Game.Station
         private readonly GameLoopSession _loop;
         private readonly List<StationSceneResident> _sceneResidents = new List<StationSceneResident>();
         private readonly Action _leaveStation;
+        private readonly StationCareRoster _careRoster;
+        private readonly Func<bool> _checkpoint;
+        private bool _persistenceBlocked;
         private readonly Dictionary<Guid, IReadOnlyList<string>> _sampleAssessments =
             new Dictionary<Guid, IReadOnlyList<string>>();
         private RescueStation _station;
@@ -40,11 +43,14 @@ namespace HomelessPetHelper.Game.Station
         private string _feedback;
 
         public StationPreviewSession(StationPanelView view, TextAsset text, StationArtwork artwork, Font font,
-            GameLoopSession loop = null, Action leaveStation = null)
+            GameLoopSession loop = null, Action leaveStation = null, StationCareRoster careRoster = null,
+            Func<bool> checkpoint = null)
         {
             _view = view;
             _loop = loop;
             _leaveStation = leaveStation;
+            _careRoster = careRoster;
+            _checkpoint = checkpoint;
             _text = new OptionPreviewText(text);
             _artwork = artwork ?? throw new ArgumentNullException(nameof(artwork));
             _font = font != null ? font : throw new ArgumentNullException(nameof(font));
@@ -105,7 +111,9 @@ namespace HomelessPetHelper.Game.Station
             {
                 if (_residents.ContainsKey(arrival.AnimalId)) continue;
                 _residents.Add(arrival.AnimalId, StationResidentPresentation.CreateShared(_station,
-                    _stationSessionId, arrival, _clock, _residents.Count, _text, _artwork));
+                    _stationSessionId, arrival, _clock, _residents.Count, _text, _artwork,
+                        _careRoster?.Get(arrival.AnimalId),
+                    _careRoster?.UsesDogArtwork(arrival.AnimalDefinitionId) ?? arrival.AnimalDefinitionId == "dog"));
             }
             _summary = _loop.LastArrival;
             _selected = -1;
@@ -116,6 +124,19 @@ namespace HomelessPetHelper.Game.Station
 
         private StationResidentPresentation Resident(int index) => _residents[_station.Animals[index].AnimalId];
 
+        public void ReportPersistenceFailure()
+        {
+            _persistenceBlocked = true;
+            _feedback = _text.Get("save.writeFailed");
+            Refresh();
+        }
+
+        public void ReportPersistenceRecovery()
+        {
+            _feedback = _text.Get("save.recovered");
+            Refresh();
+        }
+
         public void ReportOutingFailure(OutingAssemblyFailure failure)
         {
             _feedback = _text.Get("loop.failure." + failure);
@@ -124,7 +145,7 @@ namespace HomelessPetHelper.Game.Station
 
         private void OnCommand(StationCommand command)
         {
-            if (_suspended)
+            if (_suspended || _persistenceBlocked)
             {
                 return;
             }
@@ -209,6 +230,7 @@ namespace HomelessPetHelper.Game.Station
                 }
             }
             if (_tool != StationCareTool.None && !EndCare()) return;
+            if (_persistenceBlocked) return;
             if (_loop != null && !SharedCare().TryBegin(grooming, out var beginFailure))
             {
                 _feedback = _text.Get("care.failure." + beginFailure);
@@ -217,6 +239,7 @@ namespace HomelessPetHelper.Game.Station
             _tool = next;
             _cleaningVersion = _clock.Current.Version;
             _feedback = _text.Get(grooming ? "grooming" : "cleaning", Resident(_selected).Name);
+            if (_checkpoint != null) _feedback = _text.Get("save.careBoundary", _feedback);
         }
 
         private void CheckSelectedAnimal()
@@ -244,6 +267,7 @@ namespace HomelessPetHelper.Game.Station
             }
 
             _feedback = _text.Get("checked", Resident(_selected).Name, _text.Get(HealthKey(_selected)));
+            _checkpoint?.Invoke();
         }
 
         private StationCareSnapshot Care(int index)
@@ -309,7 +333,7 @@ namespace HomelessPetHelper.Game.Station
                 }
                 _tool = StationCareTool.None;
                 _feedback = _text.Get("careSettled", Resident(_selected).Name, settled);
-                return true;
+                return _checkpoint?.Invoke() ?? true;
             }
             StationResidentPresentation selected = Resident(_selected);
             CareWorkMeter work = _tool == StationCareTool.Wash ? selected.WashWork : selected.GroomWork;
@@ -340,7 +364,8 @@ namespace HomelessPetHelper.Game.Station
 
         private void Select(int index)
         {
-            if (_suspended || _showSummary || _selected >= 0 || index < 0 || index >= _station.Animals.Count)
+            if (_suspended || _persistenceBlocked || _showSummary || _selected >= 0 || index < 0
+                || index >= _station.Animals.Count)
             {
                 return;
             }
@@ -353,7 +378,7 @@ namespace HomelessPetHelper.Game.Station
 
         private void Stroke(Vector2 point, int strength)
         {
-            if (_suspended || _tool == StationCareTool.None || _selected < 0 || _showSummary)
+            if (_suspended || _persistenceBlocked || _tool == StationCareTool.None || _selected < 0 || _showSummary)
             {
                 return;
             }
@@ -413,19 +438,20 @@ namespace HomelessPetHelper.Game.Station
         private void Refresh()
         {
             _view.ShowPage(_showSummary, _selected >= 0, _tool != StationCareTool.None);
-            _view.SetSuspended(_suspended);
+            _view.SetSuspended(_suspended || _persistenceBlocked);
             RefreshScene();
             if (_loop != null)
             {
                 bool canLeave = _tool == StationCareTool.None && !_showSummary && _selected < 0 &&
                     _loop.Flow.Stage == RescueStage.Station && _leaveStation != null;
-                _view.SetSessionCommand(_text.Get("loop.outing"), !_suspended && canLeave);
-                _view.SetHistoryAvailable(_summary != null && !_suspended && _selected < 0 && !_showSummary);
+                _view.SetSessionCommand(_text.Get("loop.outing"), !_suspended && !_persistenceBlocked && canLeave);
+                _view.SetHistoryAvailable(_summary != null && !_suspended && !_persistenceBlocked
+                    && _selected < 0 && !_showSummary);
             }
             WorldTimeSnapshot time = _clock.Current;
             _view.SetStatus(_text.Get("clock", time.DayIndex + 1m, time.MinuteOfDay / 60, time.MinuteOfDay % 60),
                 _text.Get("capacity", _station.Animals.Count, _station.TemporaryCapacity),
-                _suspended ? _text.Get("paused") : _feedback);
+                _suspended && !_persistenceBlocked ? _text.Get("paused") : _feedback);
             if (_showSummary)
             {
                 StationResidentPresentation resident = _residents[_summary.Arrival.AnimalId];
@@ -443,7 +469,7 @@ namespace HomelessPetHelper.Game.Station
                     animals[index].gameObject.SetActive(index < _station.Animals.Count);
                     if (index >= _station.Animals.Count) continue;
                     animals[index].Refresh(index, Resident(index).Name, Condition(index), Resident(index).Art,
-                        Resident(index).Dirt, !_suspended, Resident(index).Fur);
+                        Resident(index).Dirt, !_suspended && !_persistenceBlocked, Resident(index).Fur);
                 }
             }
             else
@@ -453,7 +479,8 @@ namespace HomelessPetHelper.Game.Station
                 string progress = _tool != StationCareTool.None ? Progress(ActiveField()) :
                     _text.Get("bothProgress", dirt.RemovedFraction * 100, selected.Fur.RemovedFraction * 100);
                 _view.ShowDetail(selected.Name, Condition(_selected), progress, selected.Art, dirt,
-                    _tool != StationCareTool.None, true, CareAvailability(_selected), _suspended, selected.Fur);
+                    _tool != StationCareTool.None, true, CareAvailability(_selected), _suspended
+                        || _persistenceBlocked, selected.Fur);
                 if (_loop != null) _view.SetQuietSpaceAvailable(false);
             }
         }

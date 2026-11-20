@@ -23,6 +23,23 @@ namespace HomelessPetHelper.Modules.Station
             AnimalAtArrival = individual.Current;
         }
 
+        /// <summary>Reconstructs history separately from the current individual; never replays admission.</summary>
+        public static StationAnimalIntake Restore(Guid outingId, AnimalSnapshot arrival,
+            AnimalIndividual current, AnimalIntakeCondition condition)
+        {
+            if (arrival == null || current == null || arrival.AnimalId != current.Current.AnimalId ||
+                arrival.DefinitionId != current.Current.DefinitionId)
+                throw new ArgumentException("Arrival and current individual identities differ.");
+            return new StationAnimalIntake(outingId, current, condition, arrival);
+        }
+
+        private StationAnimalIntake(Guid outingId, AnimalIndividual current, AnimalIntakeCondition condition,
+            AnimalSnapshot arrival) : this(outingId, current.Current.AnimalId, current.Current.DefinitionId, condition)
+        {
+            Individual = current;
+            AnimalAtArrival = arrival;
+        }
+
         /// <summary>
         /// Checks owner identity and frozen arrival against the latest state without exposing mutation.
         /// </summary>

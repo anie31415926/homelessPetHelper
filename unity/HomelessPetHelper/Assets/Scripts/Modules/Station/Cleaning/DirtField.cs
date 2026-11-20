@@ -40,11 +40,29 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
             InitialAmount = RemainingAmount;
         }
 
-        private DirtField(DirtField source)
+        /// <summary>Restore raw samples without resetting the original amount used for work accounting.</summary>
+        public static DirtField Restore(int width, int height, byte[] mask, byte[] samples, long initialAmount)
+        {
+            var field = new DirtField(width, height, mask, samples);
+            long maximum = 0;
+            for (int i = 0; i < mask.Length; i++)
+            {
+                if (mask[i] == 0 && samples[i] != 0) throw new ArgumentException("Samples outside coat.");
+                if (mask[i] != 0) maximum += 255;
+            }
+            if (initialAmount < field.RemainingAmount || initialAmount > maximum)
+                throw new ArgumentException("Invalid original field amount.");
+            return new DirtField(field, initialAmount);
+        }
+
+        public byte[] CopyMask() => (byte[])_allowedMask.Clone();
+        public byte[] CopySamples() => (byte[])_samples.Clone();
+
+        private DirtField(DirtField source, long? initialAmount = null)
         {
             Width = source.Width;
             Height = source.Height;
-            InitialAmount = source.InitialAmount;
+            InitialAmount = initialAmount ?? source.InitialAmount;
             RemainingAmount = source.RemainingAmount;
             _samples = (byte[])source._samples.Clone();
             _allowedMask = (byte[])source._allowedMask.Clone();

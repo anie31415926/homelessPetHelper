@@ -41,7 +41,11 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             foreach (var cell in _cells)
                 if (cell != null)
+                {
+                    // Destroy is deferred. A panel may reopen in the same frame, so revoke input now.
+                    cell.gameObject.SetActive(false);
                     UnityEngine.Object.Destroy(cell.gameObject);
+                }
             _cells.Clear();
         }
     }

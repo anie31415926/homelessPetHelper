@@ -1,3 +1,4 @@
+using HomelessPetHelper.Tests.Support;
 using System.Collections;
 using HomelessPetHelper.Bootstrap;
 using HomelessPetHelper.Modules.Rescue;
@@ -12,9 +13,13 @@ namespace HomelessPetHelper.Tests.PlayMode
     {
         private GameBootstrap _bootstrap;
 
+        private MainSceneStorageScope _storageScope;
+        [TearDown] public void ReleaseStorageScope() => _storageScope?.Dispose();
+
         [UnitySetUp]
         public IEnumerator LoadMainScene()
         {
+            _storageScope = new MainSceneStorageScope();
             yield return SceneManager.LoadSceneAsync("Main", LoadSceneMode.Single);
             GameBootstrap[] bootstraps = Object.FindObjectsOfType<GameBootstrap>();
             Assert.That(bootstraps.Length, Is.EqualTo(1));

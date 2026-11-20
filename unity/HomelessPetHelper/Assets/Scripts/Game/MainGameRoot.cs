@@ -23,8 +23,21 @@ namespace HomelessPetHelper.Game
         public MainLoopPresenter Presenter { get; private set; }
         public MainAudioSession Audio { get; private set; }
 
+        private ISaveStorage _progressStorage;
+        private bool _started;
+
+        /// <summary>
+        /// Explicit composition hook, called before Start. Tests use isolated durable or memory storage.
+        /// </summary>
+        public void ConfigureProgressStorage(ISaveStorage storage)
+        {
+            if (_started) throw new InvalidOperationException("Configure progress storage before Start.");
+            _progressStorage = storage ?? throw new ArgumentNullException(nameof(storage));
+        }
+
         private void Start()
         {
+            _started = true;
             if (_bootstrap == null || _content == null || _station == null || _map == null || _siege == null)
                 throw new InvalidOperationException("Incomplete Main scene bindings.");
             Audio = new MainAudioSession(transform, _content.AudioCatalog, CreateAudioStorage());
@@ -33,7 +46,8 @@ namespace HomelessPetHelper.Game
                 if (scope == null) throw new InvalidOperationException("Missing Main audio scope.");
                 scope.Bind(Audio.Playback);
             }
-            Presenter = new MainLoopPresenter(_station, _map, _siege, _content, Audio.Playback);
+            Presenter = new MainLoopPresenter(_station, _map, _siege, _content, Audio.Playback,
+                _progressStorage ?? CreateProgressStorage());
             _bootstrap.BindSession(Presenter.Session);
             if (Audio.PersistenceError != null)
                 Debug.LogWarning("Audio preferences are session-only; original save is preserved. " +
@@ -49,6 +63,15 @@ namespace HomelessPetHelper.Game
                 if (scope != null) scope.Unbind();
             Audio?.Dispose();
             Audio = null;
+        }
+
+        private static ISaveStorage CreateProgressStorage()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return new WeChatSaveStorage("homeless-pet.main.v1");
+#else
+            return new FileSaveStorage(Path.Combine(Application.persistentDataPath, "main-progress"));
+#endif
         }
 
         private static ISaveStorage CreateAudioStorage()

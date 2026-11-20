@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using HomelessPetHelper.Tests.Support;
 using System;
 using System.Collections;
 using System.IO;
@@ -21,6 +22,7 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
         [UnityTest]
         public IEnumerator CheckedCatUsesTheRealIdentityAndPresentationCannotAdvanceBusinessState()
         {
+            using var storageScope = new MainSceneStorageScope();
             yield return SceneManager.LoadSceneAsync("Main");
             yield return null;
             var root = UnityEngine.Object.FindObjectOfType<MainGameRoot>();

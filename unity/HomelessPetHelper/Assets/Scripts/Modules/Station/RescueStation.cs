@@ -50,6 +50,39 @@ namespace HomelessPetHelper.Modules.Station
             TemporaryCapacity = temporaryCapacity;
         }
 
+        /// <summary>
+        /// Only a fresh station may restore. Validate the entire input before publishing any resident.
+        /// </summary>
+        public void RestoreResidents(IReadOnlyList<StationResidentState> residents)
+        {
+            if (IsClosed || IsSuspended || _animals.Count != 0 || residents == null ||
+                residents.Count > TemporaryCapacity)
+                throw new ArgumentException("Station cannot accept this restoration.");
+            var animalIds = new HashSet<Guid>();
+            var outingIds = new HashSet<Guid>();
+            foreach (var resident in residents)
+                if (resident == null || !animalIds.Add(resident.Arrival.AnimalId) ||
+                    !outingIds.Add(resident.Arrival.OutingId))
+                    throw new ArgumentException("Duplicate or missing station resident.");
+            var animals = new List<StationAnimalIntake>();
+            foreach (var resident in residents)
+            {
+                var arrival = resident.Arrival;
+                animals.Add(arrival);
+                _animalsById.Add(arrival.AnimalId, arrival);
+                _acceptedOutingIds.Add(arrival.OutingId);
+                _careByAnimalId.Add(arrival.AnimalId, new StationCareRecord(resident.Care));
+            }
+            _animals = animals.AsReadOnly();
+        }
+
+        public StationReturnSummary GetHistoricalReturn(Guid animalId)
+        {
+            if (!_animalsById.TryGetValue(animalId, out var arrival))
+                throw new ArgumentException("Unknown animal.");
+            return new StationReturnSummary(arrival, _animals.IndexOf(arrival) + 1, TemporaryCapacity);
+        }
+
         public void SetSuspended(bool isSuspended)
         {
             IsSuspended = isSuspended;
@@ -61,6 +94,8 @@ namespace HomelessPetHelper.Modules.Station
         }
 
         internal bool CanModify(Guid sessionId) => ValidateSession(sessionId, out _);
+
+        public bool HasAcceptedOuting(Guid outingId) => _acceptedOutingIds.Contains(outingId);
 
         public bool TryGetAnimal(Guid animalId, out StationAnimalIntake animal)
         {

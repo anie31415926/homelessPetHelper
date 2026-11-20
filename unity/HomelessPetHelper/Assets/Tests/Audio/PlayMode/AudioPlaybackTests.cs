@@ -1,3 +1,4 @@
+using HomelessPetHelper.Tests.Support;
 using System.Collections;
 using System.Linq;
 using HomelessPetHelper.Framework.Audio;
@@ -14,9 +15,13 @@ namespace HomelessPetHelper.Tests.Audio.PlayMode
         private GameObject _root;
         private AudioClip _clip;
 
+        private MainSceneStorageScope _storageScope;
+        [TearDown] public void ReleaseStorageScope() => _storageScope?.Dispose();
+
         [UnitySetUp]
         public IEnumerator SetUp()
         {
+            _storageScope = new MainSceneStorageScope();
             yield return SceneManager.LoadSceneAsync("Main", LoadSceneMode.Single);
             _root = new GameObject("AudioPlaybackTest");
             _clip = AudioClip.Create("GeneratedTestClipOnly", 441000, 1, 44100, false);

@@ -1,0 +1,6 @@
+{
+  "name": "HomelessPetHelper.Tests.Support",
+  "references": ["HomelessPetHelper.Framework.Persistence", "HomelessPetHelper.Game"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}

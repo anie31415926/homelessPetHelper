@@ -42,6 +42,27 @@ namespace HomelessPetHelper.Modules.Outing
             return true;
         }
 
+        /// <summary>
+        /// Reconstructs detached stable requests; active Accepted requests need an outing checkpoint.
+        /// </summary>
+        public static RequestPoolState Restore(IReadOnlyList<HelpRequest> requests, IReadOnlyList<RequestState> states)
+        {
+            if (requests == null || states == null || requests.Count != states.Count)
+                throw new ArgumentException("Request state sizes differ.");
+            var pool = new RequestPoolState();
+            for (int i = 0; i < requests.Count; i++)
+            {
+                if (states[i] != RequestState.Available && states[i] != RequestState.Resolved &&
+                    states[i] != RequestState.HelpedElsewhere)
+                    throw new ArgumentException("Not a stable request state.");
+                var source = requests[i] ?? throw new ArgumentException("Missing request.");
+                var request = new HelpRequest(source.RequestId, source.TemplateId, source.PointId,
+                    source.TemplateVersion, source.ReunionPlan) { State = states[i] };
+                if (!pool.TryAdd(request, out _)) throw new ArgumentException("Duplicate request identity.");
+            }
+            return pool;
+        }
+
         public bool TryGet(Guid requestId, out HelpRequest request)
         {
             return _requestsById.TryGetValue(requestId, out request);

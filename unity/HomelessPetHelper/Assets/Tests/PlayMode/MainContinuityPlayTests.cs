@@ -1,0 +1,230 @@
+using System;
+using System.Collections;
+using System.IO;
+using System.Linq;
+using HomelessPetHelper.Game;
+using HomelessPetHelper.Modules.Outing;
+using HomelessPetHelper.Modules.Outing.UI;
+using HomelessPetHelper.Modules.Siege;
+using HomelessPetHelper.Modules.Siege.UI;
+using HomelessPetHelper.Modules.Station.UI;
+using HomelessPetHelper.Tests.Support;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
+using UnityEngine.UI;
+
+namespace HomelessPetHelper.Tests.PlayMode
+{
+    public sealed class MainContinuityPlayTests
+    {
+        private MemorySaveStorage _storage;
+        private MainSceneStorageScope _scope;
+        private MainGameRoot _root;
+        private StationPanelView _station;
+        private CityMapView _map;
+        private SiegeTrialView _siege;
+
+        [SetUp] public void SetUp()
+        {
+            _storage = new MemorySaveStorage();
+            _scope = new MainSceneStorageScope(() => _storage);
+        }
+        [TearDown] public void TearDown() => _scope.Dispose();
+
+        private IEnumerator Load()
+        {
+            yield return SceneManager.LoadSceneAsync("Main", LoadSceneMode.Single);
+            yield return null;
+            _root = UnityEngine.Object.FindObjectOfType<MainGameRoot>();
+            _station = UnityEngine.Object.FindObjectOfType<StationPanelView>(true);
+            _map = UnityEngine.Object.FindObjectOfType<CityMapView>(true);
+            _siege = UnityEngine.Object.FindObjectOfType<SiegeTrialView>(true);
+        }
+
+        [UnityTest]
+        public IEnumerator RealControlsRescueCatThenDogAndReloadTheirIndividualCareAndTime()
+        {
+            yield return Load();
+            Assert.That(_storage.Writes, Is.Zero);
+            Click(_station, "Restart");
+            Click(_map, "Primary");
+            var catActivity = (SiegeRescueActivity)_root.Presenter.Session.Activity;
+            Assert.That(catActivity.Battle.Snapshot.EncounterId, Is.EqualTo("cat"));
+            yield return Win();
+            Click(_siege, "Retry");
+            var cat = _root.Presenter.Session.Station.Animals.Single().AnimalId;
+            Click(_station, "Enter");
+            Click(_station, "Animal0");
+            Click(_station, "Check");
+            Click(_station, "Clean");
+            Canvas.ForceUpdateCanvases();
+            Stroke();
+            Click(_station, "Finish");
+            Click(_station, "Back");
+            var catCoat = _root.Presenter.Progress.Care.Get(cat).Capture();
+            Assert.That(catCoat.CopyDirt().RemovedFraction, Is.GreaterThan(0));
+            Click(_station, "Restart");
+            Click(_map, "Yard");
+            Click(_map, "Primary");
+            var dogActivity = (SiegeRescueActivity)_root.Presenter.Session.Activity;
+            Assert.That(dogActivity.Battle.Snapshot.EncounterId, Is.EqualTo("dog"));
+            Assert.That(dogActivity.Individual.Current.DefinitionId, Is.EqualTo("dog"));
+            yield return Win();
+            Click(_siege, "Retry");
+            var dog = _root.Presenter.Session.Station.Animals[1].AnimalId;
+            Click(_station, "Enter");
+            Click(_station, "Animal1");
+            Click(_station, "Check");
+            Click(_station, "Back");
+            Assert.That(cat, Is.Not.EqualTo(dog));
+            Assert.That(_station.Scene.Count, Is.EqualTo(2));
+            long minutes = _root.Presenter.Session.Clock.Current.ElapsedMinutes;
+            Guid oldStation = _root.Presenter.Session.StationSessionId;
+            yield return Load();
+            var session = _root.Presenter.Session;
+            Assert.That(_root.Presenter.Progress.CanContinue, Is.True);
+            Assert.That(session.StationSessionId, Is.Not.EqualTo(oldStation));
+            Assert.That(session.Station.Animals.Select(item => item.AnimalId), Is.EqualTo(new[] { cat, dog }));
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(minutes));
+            Assert.That(_root.Presenter.Progress.Care.Get(cat).Capture().CopyDirt().CopySamples(),
+                Is.EqualTo(catCoat.CopyDirt().CopySamples()));
+            Assert.That(session.Station.Animals[0].AnimalAtArrival.Coat.Dirtiness, Is.EqualTo(65));
+            Assert.That(session.Requests.Requests.Count(item => item.State == RequestState.Resolved), Is.EqualTo(2));
+            Click(_station, "Animal0");
+            Click(_station, "Clean");
+            Click(_station, "Finish");
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(minutes));
+            Click(_station, "Back");
+            yield return CaptureStation();
+            Click(_station, "Animal1");
+            Assert.That(_station.GetComponentsInChildren<Text>(true).Any(text => text.text.Contains("救助狗狗")), Is.True);
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator BackgroundAndSceneReloadDoNotSettleUnendedCare()
+        {
+            yield return Load();
+            Click(_station, "Restart"); Click(_map, "Primary");
+            yield return Win();
+            Click(_siege, "Retry"); Click(_station, "Enter"); Click(_station, "Animal0"); Click(_station, "Check");
+            var arrival = _root.Presenter.Session.Station.Animals.Single();
+            var original = _root.Presenter.Progress.Care.Get(arrival.AnimalId).Capture();
+            long minutes = _root.Presenter.Session.Clock.Current.ElapsedMinutes;
+            int writes = _storage.Writes;
+            Click(_station, "Clean"); Canvas.ForceUpdateCanvases(); Stroke();
+            _station.SendMessage("OnApplicationPause", true);
+            Assert.That(_storage.Writes, Is.EqualTo(writes));
+            Assert.That(_root.Presenter.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(minutes));
+            yield return Load();
+            Assert.That(_root.Presenter.Progress.Care.Get(arrival.AnimalId).Capture().CopyDirt().CopySamples(),
+                Is.EqualTo(original.CopyDirt().CopySamples()));
+            Assert.That(_root.Presenter.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(minutes));
+        }
+
+        [UnityTest]
+        public IEnumerator ReadAndWriteFailuresShowFeedbackAndPreventProgressMutations()
+        {
+            _storage.Slots[0] = "preserved broken progress";
+            yield return Load();
+            Assert.That(_root.Presenter.Session, Is.Null);
+            Assert.That(Button(_station, "Restart").IsInteractable(), Is.False);
+            Assert.That(FeedbackContains("读取失败"), Is.True);
+            Button(_station, "Restart").onClick.Invoke();
+            Assert.That(_map.gameObject.activeInHierarchy, Is.False);
+            Assert.That(_storage.Writes, Is.Zero);
+            Assert.That(_storage.Slots[0], Is.EqualTo("preserved broken progress"));
+            _storage.Slots[0] = null;
+            yield return Load();
+            _storage.FailWrites = true;
+            Click(_station, "Restart");
+            Assert.That(_root.Presenter.Progress.CanContinue, Is.False);
+            Assert.That(_map.gameObject.activeInHierarchy, Is.False);
+            Assert.That(FeedbackContains("保存失败"), Is.True);
+            _storage.FailWrites = false;
+            Button(_station, "Restart").onClick.Invoke();
+            Assert.That(_root.Presenter.Session.Outing.Session, Is.Null);
+            Assert.That(_storage.Writes, Is.Zero);
+        }
+
+        private bool FeedbackContains(string text) => _station.GetComponentsInChildren<Text>(true)
+            .Any(label => label.isActiveAndEnabled && label.text.Contains(text));
+
+        private IEnumerator Win()
+        {
+            var activity = (SiegeRescueActivity)_root.Presenter.Session.Activity;
+            for (int i = 0; i < 700 && activity.Battle.Phase != SiegeState.BattlePhase.Won &&
+                activity.Battle.Phase != SiegeState.BattlePhase.Timeout; i++)
+            {
+                if (activity.Battle.Phase == SiegeState.BattlePhase.Decision)
+                {
+                    var cell = _siege.GetComponentsInChildren<SiegeChoiceCell>().FirstOrDefault();
+                    if (cell != null) cell.GetComponent<Button>().onClick.Invoke();
+                    Click(_siege, "Top"); Click(_siege, "Submit");
+                }
+                activity.Battle.Advance(1000);
+                yield return null;
+            }
+            yield return null;
+            Assert.That(activity.IsRescueComplete, Is.True, activity.Battle.Snapshot.EncounterId + ": " +
+                activity.Battle.Phase + ", progress=" + activity.Battle.Snapshot.Progress);
+        }
+
+        private void Stroke()
+        {
+            var rect = (RectTransform)_station.Surface.transform;
+            for (int y = 2; y < 8; y++)
+            for (int x = 2; x < 7; x++)
+            {
+                var local = new Vector3(Mathf.Lerp(rect.rect.xMin, rect.rect.xMax, x / 10f),
+                    Mathf.Lerp(rect.rect.yMin, rect.rect.yMax, y / 10f));
+                var pointer = new PointerEventData(EventSystem.current) { pointerId = 1,
+                    position = RectTransformUtility.WorldToScreenPoint(null, rect.TransformPoint(local)) };
+                _station.Surface.OnPointerDown(pointer); _station.Surface.OnPointerUp(pointer);
+            }
+        }
+
+        private static Button Button(Component view, string name)
+        {
+            if (view is StationPanelView station && name.StartsWith("Animal", StringComparison.Ordinal))
+                return station.Scene.Cells[int.Parse(name.Substring(6))].SelectButton;
+            return view.GetComponentsInChildren<Button>(true).Single(button => button.name == name);
+        }
+        private static void Click(Component view, string name)
+        {
+            var button = Button(view, name);
+            Assert.That(button.isActiveAndEnabled && button.IsInteractable(), Is.True, name);
+            button.onClick.Invoke();
+        }
+
+        private IEnumerator CaptureStation()
+        {
+            var canvas = _station.GetComponent<Canvas>();
+            var camera = new GameObject("ContinuityCapture", typeof(Camera)).GetComponent<Camera>();
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = Color.white;
+            camera.cullingMask = 1 << canvas.gameObject.layer;
+            canvas.renderMode = RenderMode.ScreenSpaceCamera; canvas.worldCamera = camera; canvas.planeDistance = 10;
+            string folder = Path.GetFullPath("MainContinuityEvidence"); Directory.CreateDirectory(folder);
+            foreach (var size in new[] { new Vector2Int(390, 844), new Vector2Int(540, 960),
+                new Vector2Int(768, 1024) })
+            {
+                var target = new RenderTexture(size.x, size.y, 24); camera.targetTexture = target;
+                yield return null; yield return null; Canvas.ForceUpdateCanvases(); camera.Render();
+                var previous = RenderTexture.active; RenderTexture.active = target;
+                var pixels = new Texture2D(size.x, size.y, TextureFormat.RGB24, false);
+                pixels.ReadPixels(new Rect(0, 0, size.x, size.y), 0, 0); pixels.Apply();
+                    RenderTexture.active = previous;
+                File.WriteAllBytes(Path.Combine(folder,
+                    "two-residents-restored-" + size.x + "x" + size.y + ".png"), pixels.EncodeToPNG());
+                UnityEngine.Object.Destroy(pixels); camera.targetTexture = null; target.Release();
+                    UnityEngine.Object.Destroy(target);
+            }
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.worldCamera = null;
+            UnityEngine.Object.Destroy(camera.gameObject);
+        }
+    }
+}
