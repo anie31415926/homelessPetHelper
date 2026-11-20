@@ -1,0 +1,10 @@
+{
+  "name": "HomelessPetHelper.Tests.Persistence",
+  "rootNamespace": "HomelessPetHelper.Tests.Persistence",
+  "references": ["HomelessPetHelper.Framework.Persistence"],
+  "overrideReferences": true,
+  "precompiledReferences": ["Newtonsoft.Json.dll", "nunit.framework.dll"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}

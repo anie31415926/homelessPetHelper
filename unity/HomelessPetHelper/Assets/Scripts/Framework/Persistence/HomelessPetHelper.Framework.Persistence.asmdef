@@ -1,0 +1,9 @@
+{
+  "name": "HomelessPetHelper.Framework.Persistence",
+  "rootNamespace": "HomelessPetHelper.Framework.Persistence",
+  "references": [],
+  "overrideReferences": true,
+  "precompiledReferences": ["Newtonsoft.Json.dll"],
+  "autoReferenced": false,
+  "noEngineReferences": true
+}
