@@ -2,6 +2,76 @@
 
 2026-11-19。用户授权“先把这些已有的加进 Unity 工程，然后分析资源大小”。本页为该批次接续入口，替代此前 HTML 记录中的“未接 Unity”；不是正式美术或跨姿态过渡验收。
 
+## 2026-11-20 运行时迁移
+
+优化后的图集/材质/mesh/clip/Shader/Widget已保留GUID迁到`Assets/Art/PetMotion/`；场景、文本和测试夹具仍留EditorScenes。Main的逆塔防动物位引用该rig，经透明RenderTexture显示；rig位于场景根节点，只在该面板启用且战斗运行时播放。护理仍用原Sprite/Mask配对，不假装已解决动画表面清洁。
+
+六动作、裁边/共享/曲线结果保持；旧独立动作预览保留。MainFinal全量图形EditMode522/522、PlayMode40/40（含真实动物RT像素与旧A/B），详见[Main记录](Main正式流程与资源迁移.md)。下方“优化不接Main”仅表示优化当轮范围；不是当前运行入口状态。图集补边/指纹后续任务已获协调移交，其改动须另验，不能沿用此快照通过数。临时美术、无跨姿态过渡和微信未验边界不变。
+
+## 2026-11-20 优化检查点（当前）
+
+用户确认优先实施保留坐标裁边/UV、共享素材和曲线精简，并要求合图逻辑公共化。三项已完成，**入口及六动作不变**，不接 Main、护理遮罩、正式状态/存档或跨姿态过渡，不生成新图/安装框架/提交推送。下方 2026-11-19 的八整图/原曲线数据是优化前基线，不再代表当前依赖。
+
+### 当前实现
+
+- `tools/pet-motion-atlas.mjs` 从八张原图的非零 alpha 包围盒保留 2px 透明边，不缩放/旋转/重画；`atlas.json` 保存原 452×512 尺寸、裁边 offset、图集区域及原 SHA256。保留区 RGBA 逐字节复制，包括透明 RGB；合成不能直接做多层 alpha-over，否则半透明 RGB 可能被舍入。
+- 七个蒙皮保留每个剩余顶点的原坐标、原四权重、骨点和 bind pose；只移除完全在裁区外的三角形和不再被引用的顶点，重映射 UV，不切割并重新插值权重。边界三角形仍使用原顶点，第二套局部 UV 让 Shader 丢弃区域外采样，避免碰到邻图；不在每帧重新算 UV。
+- 共享一张 **876×924** NPOT RGBA32 图集、一个材质；关闭 Read/Write/Mipmap，Max Size1024、Clamp/Bilinear，不更改色空间或新增平台压缩覆盖。带 padding 包围矩形占页 98.1%，不是非透明像素占比。七蒙皮及三原图对照共用材质，坐/卧对照也复用相应静态 mesh；站立对照另有裁边 mesh，不能再套 body 的 UV。
+- 原八张 public PNG 与 Unity 原始拷贝均未改。原拷贝/旧材质保留作引用，但不在当前 rig 递归依赖中。远近腿存在阴影和腿根 alpha 差异，因此共图集而不强行共用同一像素区域。同种实例共享 mesh/material/texture/clip 引用，骨骼与播放状态独立，不按动物复制资产；**五层蒙皮仍不是一次 draw**。
+- 仍为原生 `.anim`，保留时长、60Hz源采样、阶跃镜像、向量恒定兄弟轴及末尾0.15秒同骨架闭合。移除没有蒙皮权重/受影响后代的离线 CCD target 曲线；线性简化容差改为位移0.05源坐标单位、旋转0.08度、缩放0.0002。先做保守有界压缩，没有重写 IK/短周期/程序微动，运行时模块无改动。
+- `PetMotionBake` 更新六曲线、保持 GUID 的 mesh，并通过 Prefab Mode 修改已有 Widget 的绑定，不重建面板或场景；骨点/静态姿态不同会拒绝 UV-only 升级，必须另做骨架迁移。最终重烘焙同时验证已有优化资产的可重复升级。
+
+### 公共图集工具
+
+复核已有实现：旧 `tools/pet-rig-process.mjs` 是固定 768px/3×3 分件合图，不是通用紧凑打包；`ImageAtlasAudit.cs` 只检查 Unity SpriteAtlas。现将排布/合图集中在 **`tools/lib/image-atlas.mjs`**，两套离线处理都调用，旧原型保持固定布局/调色板规格且本轮不重生原图。
+
+公共 API 为 `packAtlasRegions(regions, options)` 和 `composeAtlas(sharp, layout, images, pngOptions)`，支持自动紧凑或显式固定布局，检查尺寸/ID/边界/重叠/缺图；不写文件、不承担动物裁边/UV或台账、不做运行时加载。契约和复用方式见 `tools/lib/README.md`，无需再为别的主题复制合图算法。
+
+### 同口径实测
+
+Unity2022.3.62f3 / StandaloneWindows64，包含原图对照。只计算当前 rig 的递归依赖：
+
+| 项目 | 优化前 | 当前 | 减少 |
+| --- | ---: | ---: | ---: |
+| PNG 依赖 | 8 / 556476 bytes | 1 / 518906 bytes | 源字节6.8% |
+| RGBA32 基础像素量 | 7405568 bytes / 7.06 MiB | 3237696 bytes / 3.09 MiB | 56.3% |
+| 七个蒙皮总顶点 / 三角形 | 14063 / 26880 | 5525 / 10350 | 60.7% / 61.5% |
+| 骨骼动画关键点 | 32424 | 17679 | 45.5% |
+| mesh 源文件（当前含额外原图对照mesh） | 1820787 bytes | 1107426 bytes | 39.2% |
+| 六 `.anim` 源文件 | 17352669 bytes / 16.55 MiB | 9908280 bytes / 9.45 MiB | 42.9% |
+| Editor 纹理对象 | 14816576 bytes | 6476072 bytes | 56.3% |
+| Editor mesh / clip对象 | 1799524 / 3205026 bytes | 1084436 / 1860106 bytes | 39.7% / 42.0% |
+| rig-only Windows64 LZ4 Bundle | 1517647 bytes / 1.45 MiB | 1148042 bytes / 1.09 MiB | 24.4% |
+| rig-only Windows64 LZMA Bundle | 655833 bytes | 526546 bytes | 19.7% |
+
+**不是微信下载/目标GPU内存/整包结论。** 保留原图并新增派生图会增加仓库图片存储；台账现在33张temporary/preview-only、2381.0KiB，包含HTML原图与独立派生图，不能拿这份全库源文件统计冒充 Unity 当前依赖。原坐姿158.6KiB超150KiB计划及首批未确认提醒均保留，新图集按本批八图共同使用规划512KiB，不静默放宽原单图计划。
+
+### 验证与接续
+
+- 图形 PlayMode `PetOptimize3` **10/10，无跳过**：原8项、两实例静态资产共享/骨骼独立、与旧提交rig的A/B；保留6比例36截图和安全区下拉截图，已查看站/走/坐/卧画面。
+- A/B 使用优化前提交 `a19ca31` 对应的旧 Windows64 rig-only Bundle，不从优化后重新录基线。六动作各16归一时点全部保留顶点最大差 **0.3396553** 源坐标单位；六动作×原图/动画×深浅底×4时点共96组像素对照，RGB平均绝对差最大0.07025909（0–255），RGB总差>48的像素占比最大0.04082%。镜像姿态按实际蒙皮矩阵核对，避免默认BakeMesh去除镜像scale造成假错。
+- Three独立顶点基准扩为六动作×8时点×有效层×5点，误差<0.65；不将恰好落在浮点取模换向边界的离散原采样异常当新回归。旧运动采样/60Hz换向误差未在本优化中修改，A/B仍覆盖两版在边界的等价性，非承诺任意时点逐帧等于Three。
+- 预热200次walk CPU采样 **0托管bytes / 2.5007ms**，仅Editor CPU总循环，不是微信全帧Profiler。`npm run test:atlas`7/7（含像素/坐标/权重/骨点/公共工具错误分支）、HTML动作/姿态/旧rig/台账44/44、Vite构建、生成一致性、源码213脚本/22程序集检查通过；保留原Three大chunk提示。未跑本轮全工程玩法回归。
+- 证据：`test-results/pet-motion/source-size.json`、`unity-size-optimized.json`、`optimized-contact.png`；`PlayMode-isolated-PetOptimize3.xml/log`，`isolated-PlayMode-0580ee01766846d9b3a8d7fbf107d1fd/PetMotionEvidence/`；`PetMotionAudit-isolated-PetOptimize2.log` 及对应隔离Library。图片检查无缺失/漏登记。大测试方法保留线性笛卡尔积编排，按复杂度触发线复核，不为行数拆无意义转发。
+
+复现顺序（Sharp沿用本机依赖，设置`CODEX_NODE_MODULES`）：
+
+```powershell
+node tools/pet-motion-atlas.mjs --check
+node tools/pet-motion-unity.mjs --check
+npm run test:atlas
+powershell.exe -NoProfile -File tools/unity.ps1 -Task PetMotionBake -Isolated -ReportSuffix PetOptimize
+powershell.exe -NoProfile -File tools/unity.ps1 -Task PlayMode -Isolated -Graphics -TestFilter HomelessPetHelper.Tests.PetMotion -ReportSuffix PetOptimize
+powershell.exe -NoProfile -File tools/unity.ps1 -Task PetMotionAudit -Isolated -Graphics -ReportSuffix PetOptimize
+npm run assets:check
+```
+
+需重生时去掉两个`--check`，先图集再导出；隔离Bake不会自动覆盖工作区，只能核对后复制本批mesh/clip/Widget/新材质和`.meta`，禁止整份Assets覆盖。A/B命令会将本机`test-results/pet-motion/baseline-rig.bundle`复制到隔离Assets外；它须来自**旧提交的**PetMotionAudit/LZ4输出，缺失会明确跳过A/B而非假报通过。本轮确有旧Bundle，10项全部实际执行。
+
+下一步先收优化版Unity观感反馈；三项不再是待做。短周期/程序微动、移除生产对照依赖、按需姿态和微信纹理压缩仍需独立评估，不自动扩展到生产加载框架/所有品种。微信真机、完整Player/微信包、正式美术许可及跨姿态过渡仍未验证。
+
+## 2026-11-19 导入基线（历史）
+
 ## 入口与范围
 
 - Unity 工程 `unity/HomelessPetHelper`，菜单 `Homeless Pet Helper > Preview > Open Animal Motion`，打开后 Play。

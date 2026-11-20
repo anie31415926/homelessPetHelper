@@ -20,7 +20,7 @@ namespace HomelessPetHelper.Editor.PetMotion
         internal static void CreatePanel()
         {
             _text = new Dictionary<string, string>();
-            var copy = AssetDatabase.LoadAssetAtPath<TextAsset>(PetMotionAssets.Folder + "/PetMotionText.json");
+            var copy = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/EditorScenes/PetMotion/PetMotionText.json");
             foreach (var entry in JsonUtility.FromJson<Copy>(copy.text).entries)
                 _text.Add(entry.key, entry.value);
             var root = new GameObject("Panel_PetMotion");

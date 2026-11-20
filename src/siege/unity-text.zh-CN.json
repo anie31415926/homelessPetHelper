@@ -1,4 +1,8 @@
 {
+  "game.transport": "安全转运回站",
+  "game.return": "结束救助回站",
+  "game.won": "它愿意让你靠近了，可以安全转运回站。",
+  "game.timeout": "这次还没能靠近它，先回站休整。",
   "unity.title": "街角救助",
   "unity.status": "第 {0} 回合 · {1} / {2} · 剩余 {3}秒 · 资源 {4}",
   "unity.decision": "你的回合",

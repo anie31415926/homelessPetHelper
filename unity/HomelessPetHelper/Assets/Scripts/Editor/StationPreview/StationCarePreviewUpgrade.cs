@@ -1,3 +1,6 @@
+using HomelessPetHelper.Game.CityMap;
+using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Game.Station;
 using System;
 using HomelessPetHelper.Editor.OptionPreview;
 using HomelessPetHelper.Modules.Station.UI;

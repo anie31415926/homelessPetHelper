@@ -8,7 +8,7 @@ const sharp = require(require.resolve('sharp', process.env.CODEX_NODE_MODULES ?
   { paths: [process.env.CODEX_NODE_MODULES] } : undefined));
 const server = process.env.COMFY_URL || 'http://127.0.0.1:8188';
 const sourceFolder = 'art-source/station-care-temporary';
-const outputFolder = 'unity/HomelessPetHelper/Assets/EditorScenes/StationCareArt';
+const outputFolder = 'unity/HomelessPetHelper/Assets/Art/Station';
 if (!['127.0.0.1', 'localhost', '[::1]'].includes(new URL(server).hostname)) {
   throw new Error('This preview generator only accepts a local ComfyUI endpoint.');
 }
@@ -23,7 +23,7 @@ await mkdir(outputFolder, { recursive: true });
 for (const [kind, reference, seed] of [
   ['Dog', 'DogWhite', 2026111801], ['Cat', 'CatOrange', 2026111802],
 ]) {
-  const input = `unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/Animals/T_Animal_${reference}.png`;
+  const input = `unity/HomelessPetHelper/Assets/Art/CityMap/Animals/T_Animal_${reference}.png`;
   const form = new FormData();
   form.append('image', new Blob([await readFile(input)]), `station-reference-${kind}.png`);
   form.append('overwrite', 'false');

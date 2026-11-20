@@ -1,10 +1,23 @@
 {
   "name": "HomelessPetHelper.Editor",
   "rootNamespace": "HomelessPetHelper.Editor",
-  "references": ["HomelessPetHelper.Bootstrap", "HomelessPetHelper.Modules.Rescue",
-    "HomelessPetHelper.Modules.Rescue.UI", "HomelessPetHelper.Modules.Animals",
-    "HomelessPetHelper.Modules.Station", "HomelessPetHelper.Modules.Outing",
-    "HomelessPetHelper.Modules.Outing.UI", "HomelessPetHelper.Modules.WorldTime", "UnityEngine.UI"],
-  "includePlatforms": ["Editor"],
+  "references": [
+    "HomelessPetHelper.Bootstrap",
+    "HomelessPetHelper.Modules.Rescue",
+    "HomelessPetHelper.Modules.Rescue.UI",
+    "HomelessPetHelper.Modules.Animals",
+    "HomelessPetHelper.Modules.Station",
+    "HomelessPetHelper.Modules.Outing",
+    "HomelessPetHelper.Modules.Outing.UI",
+    "HomelessPetHelper.Modules.WorldTime",
+    "UnityEngine.UI",
+    "HomelessPetHelper.Game",
+    "HomelessPetHelper.Modules.Station.UI",
+    "HomelessPetHelper.Modules.Siege.UI",
+    "HomelessPetHelper.Modules.PetMotion"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
   "autoReferenced": false
 }

@@ -23,7 +23,7 @@ namespace HomelessPetHelper.Tests.EditMode
         [Test]
         public void AuditWithTextureInspectorOpenKeepsInstalledPlatformPropertiesAvailable()
         {
-            const string path = "Assets/EditorScenes/CityMapArt/Animals/T_Animal_DogWhite.png";
+            const string path = "Assets/Art/CityMap/Animals/T_Animal_DogWhite.png";
             var importer = (TextureImporter)AssetImporter.GetAtPath(path);
             UnityEditor.Editor inspector = UnityEditor.Editor.CreateEditor(importer);
             try
@@ -38,15 +38,15 @@ namespace HomelessPetHelper.Tests.EditMode
             }
         }
 
-        [TestCase("Assets/EditorScenes/CityMapArt/Animals/T_Animal_Rabbit.png")]
-        [TestCase("Assets/EditorScenes/CityMapArt/Animals/T_Animal_CatCalico.png")]
-        [TestCase("Assets/EditorScenes/CityMapArt/Animals/T_Animal_CatOrange.png")]
-        [TestCase("Assets/EditorScenes/CityMapArt/Animals/T_Animal_DogWhite.png")]
-        [TestCase("Assets/EditorScenes/CityMapArt/T_CityMap_Neighborhood.jpg")]
+        [TestCase("Assets/Art/CityMap/Animals/T_Animal_Rabbit.png")]
+        [TestCase("Assets/Art/CityMap/Animals/T_Animal_CatCalico.png")]
+        [TestCase("Assets/Art/CityMap/Animals/T_Animal_CatOrange.png")]
+        [TestCase("Assets/Art/CityMap/Animals/T_Animal_DogWhite.png")]
+        [TestCase("Assets/Art/CityMap/T_CityMap_Neighborhood.jpg")]
         [TestCase("Assets/EditorScenes/StationArt/T_Station_cat.png")]
         [TestCase("Assets/EditorScenes/StationArt/T_Station_dog.png")]
-        [TestCase("Assets/EditorScenes/StationCareArt/T_Station_CatTemporary.png")]
-        [TestCase("Assets/EditorScenes/StationCareArt/T_Station_DogTemporary.png")]
+        [TestCase("Assets/Art/Station/T_Station_CatTemporary.png")]
+        [TestCase("Assets/Art/Station/T_Station_DogTemporary.png")]
         public void InstalledPlatformPropertiesCanBeCachedByBuiltInInspector(string path)
         {
             var importer = AssetImporter.GetAtPath(path) as TextureImporter;

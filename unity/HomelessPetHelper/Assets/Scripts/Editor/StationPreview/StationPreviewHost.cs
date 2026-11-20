@@ -1,3 +1,6 @@
+using HomelessPetHelper.Game.CityMap;
+using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Game.Station;
 using HomelessPetHelper.Modules.Station.UI;
 using UnityEditor;
 using UnityEngine;
@@ -59,7 +62,8 @@ namespace HomelessPetHelper.Editor.StationPreview
                 if (root.TryGetComponent(out StationPanelView view))
                 {
                     _session = new StationPreviewSession(view,
-                        AssetDatabase.LoadAssetAtPath<TextAsset>(StationPreviewAssets.TextPath));
+                        AssetDatabase.LoadAssetAtPath<TextAsset>(StationPreviewAssets.TextPath),
+                        RuntimePreviewContent.Load().Artwork, RuntimePreviewContent.Load().Font);
                     return;
                 }
             }

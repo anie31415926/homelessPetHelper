@@ -183,7 +183,7 @@ export function toMarkdown(report) {
         `源文件规划线 ${kib(report.budgets.firstPlaySourcePlanningBytes)} KiB；` +
             `转换后首次图片下载目标 ${kib(report.budgets.firstPlayDownloadTargetBytes)} KiB。`,
         '**实际首次下载：未测量，不能判达标；首批为 0 或范围未确认也不代表通过。**', '',
-        `Editor 临时/计划登记 ${report.preview.entries} 项，其中已有运行/候选图 ${report.preview.imageFiles} 张，` +
+        `仅试做/历史计划登记 ${report.preview.entries} 项，其中已有运行/候选图 ${report.preview.imageFiles} 张，` +
             `源文件 ${kib(report.preview.sourceBytes)} KiB；不算正式首批。`, '',
         '## 模块参考量', '', '| 模块 | 交付计划项 | 源文件/计划 KiB | 源文件复核线 KiB |',
         '| --- | --- | --- | --- |'];

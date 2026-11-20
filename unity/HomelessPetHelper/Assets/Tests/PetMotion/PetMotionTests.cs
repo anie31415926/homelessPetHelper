@@ -17,7 +17,7 @@ namespace HomelessPetHelper.Tests.PetMotion
 {
     public sealed class PetMotionTests
     {
-        private const string Folder = "Assets/EditorScenes/PetMotion";
+        private const string Folder = "Assets/Art/PetMotion";
         private PetMotionPlayer _player;
         private GameObject _panel;
 
@@ -32,7 +32,7 @@ namespace HomelessPetHelper.Tests.PetMotion
 
         private IEnumerator Load()
         {
-            yield return EditorSceneManager.LoadSceneAsyncInPlayMode(Folder + "/SC_PetMotion.unity",
+            yield return EditorSceneManager.LoadSceneAsyncInPlayMode("Assets/EditorScenes/PetMotion/SC_PetMotion.unity",
                 new LoadSceneParameters());
             yield return null;
             yield return null;
@@ -43,22 +43,24 @@ namespace HomelessPetHelper.Tests.PetMotion
         }
 
         [UnityTest]
-        public IEnumerator ImportedTexturesAreBoundAndExcludedFromMain()
+        public IEnumerator RuntimeTexturesAreBoundWithoutPreviewSceneDependencies()
         {
             yield return Load();
             var dependencies = AssetDatabase.GetDependencies("Assets/Scenes/Main.unity", true);
-            Assert.That(dependencies.Any(x => x.StartsWith(Folder, StringComparison.Ordinal)), Is.False);
+            Assert.That(dependencies.Any(x => x.StartsWith(Folder, StringComparison.Ordinal)), Is.True);
+            Assert.That(dependencies.Any(x => x.StartsWith("Assets/EditorScenes/", StringComparison.Ordinal)),
+                Is.False);
             Assert.That(EditorBuildSettings.scenes.Any(x => x.path.StartsWith(Folder,
                 StringComparison.Ordinal)), Is.False);
             var textures = AssetDatabase.GetDependencies(Folder + "/Widget_PetMotion.prefab", true)
                 .Where(x => x.EndsWith(".png", StringComparison.Ordinal)).ToArray();
-            Assert.That(textures.Length, Is.EqualTo(8));
+            Assert.That(textures.Length, Is.EqualTo(1));
             foreach (string path in textures)
             {
                 var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
                 var importer = (TextureImporter)AssetImporter.GetAtPath(path);
-                Assert.That(texture.width, Is.EqualTo(452));
-                Assert.That(texture.height, Is.EqualTo(512));
+                Assert.That(texture.width, Is.EqualTo(876));
+                Assert.That(texture.height, Is.EqualTo(924));
                 Assert.That(importer.isReadable || importer.mipmapEnabled, Is.False);
                 Assert.That(importer.npotScale, Is.EqualTo(TextureImporterNPOTScale.None));
             }
@@ -70,33 +72,27 @@ namespace HomelessPetHelper.Tests.PetMotion
         {
             yield return Load();
             var fixtures = JsonUtility.FromJson<Fixtures>(
-                AssetDatabase.LoadAssetAtPath<TextAsset>(Folder + "/PetMotionFixtures.json").text);
+                AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/EditorScenes/PetMotion/PetMotionFixtures.json").text);
             var names = new[] { "idle", "look", "tread", "walk", "sit", "side" };
-            var baked = new Mesh();
-            try
+            foreach (var fixture in fixtures.fixtures)
             {
-                foreach (var fixture in fixtures.fixtures)
+                _player.Select(Array.IndexOf(names, fixture.action));
+                _player.Seek(fixture.time / _player.Duration);
+                yield return null;
+                var renderer = _player.GetComponentsInChildren<SkinnedMeshRenderer>()
+                    .Single(x => x.name == fixture.id);
+                var vertices = PetMotionOptimizationTests.WorldVertices(renderer);
+                for (int i = 0; i < fixture.indices.Length; i++)
                 {
-                    _player.Select(Array.IndexOf(names, fixture.action));
-                    _player.Seek(fixture.time / _player.Duration);
-                    yield return null;
-                    var renderer = _player.GetComponentsInChildren<SkinnedMeshRenderer>()
-                        .Single(x => x.name == fixture.id);
-                    renderer.BakeMesh(baked);
-                    var vertices = baked.vertices;
-                    for (int i = 0; i < fixture.indices.Length; i++)
-                    {
-                        var actual = renderer.transform.TransformPoint(vertices[fixture.indices[i]]);
-                        int v = i * 3;
-                        var expected = new Vector3(fixture.vertices[v], fixture.vertices[v + 1],
-                            fixture.vertices[v + 2]);
-                        Assert.That(Vector3.Distance(actual, expected), Is.LessThan(.65f),
-                            fixture.action + "/" + fixture.id + "/" + fixture.time + "/" + fixture.indices[i] +
-                            ": actual=" + actual + ", expected=" + expected);
-                    }
+                    var actual = vertices[fixture.indices[i]];
+                    int v = i * 3;
+                    var expected = new Vector3(fixture.vertices[v], fixture.vertices[v + 1],
+                        fixture.vertices[v + 2]);
+                    Assert.That(Vector3.Distance(actual, expected), Is.LessThan(.65f),
+                        fixture.action + "/" + fixture.id + "/" + fixture.time + "/" + fixture.indices[i] +
+                        ": actual=" + actual + ", expected=" + expected);
                 }
             }
-            finally { UnityEngine.Object.Destroy(baked); }
             yield return Unload();
         }
 

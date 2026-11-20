@@ -1,8 +1,18 @@
 {
   "name": "HomelessPetHelper.Tests.Siege",
   "rootNamespace": "HomelessPetHelper.Tests.Siege",
-  "references": ["HomelessPetHelper.Modules.Siege", "HomelessPetHelper.Modules.Siege.UI", "HomelessPetHelper.Editor.Siege", "UnityEngine.UI"],
-  "includePlatforms": ["Editor"],
-  "optionalUnityReferences": ["TestAssemblies"],
+  "references": [
+    "HomelessPetHelper.Modules.Siege",
+    "HomelessPetHelper.Modules.Siege.UI",
+    "HomelessPetHelper.Editor.Siege",
+    "UnityEngine.UI",
+    "HomelessPetHelper.Game"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
   "autoReferenced": false
 }

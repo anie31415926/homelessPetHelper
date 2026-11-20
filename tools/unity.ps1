@@ -4,7 +4,7 @@ param(
         'CaseCompactPolish',
         'StationAssets', 'StationArt', 'StationCareLayout', 'LoopAssets', 'ResourceAudit',
         'SiegeAssets', 'SiegeLayout', 'SiegeBuild', 'PetMotionAssets', 'PetMotionAudit', 'PetMotionBake',
-        'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
+        'RuntimeMove', 'MainAssets', 'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
     [string]$Task = 'EditMode',
     [string]$EditorPath = $env:UNITY_EDITOR_PATH,
     [string]$TestFilter,
@@ -73,6 +73,16 @@ if (-not [string]::IsNullOrWhiteSpace($ReportSuffix))
 }
 
 $logPath = Join-Path $reportPath "$reportName.log"
+if ($Isolated -and $Task -eq 'PlayMode')
+{
+    $baseline = Join-Path $repoRoot 'test-results\pet-motion\baseline-rig.bundle'
+    if (Test-Path -LiteralPath $baseline -PathType Leaf)
+    {
+        $baselineFolder = Join-Path $projectPath 'PetMotionBaseline'
+        New-Item -ItemType Directory -Path $baselineFolder | Out-Null
+        Copy-Item -LiteralPath $baseline -Destination (Join-Path $baselineFolder 'pet-motion')
+    }
+}
 $resultPath = Join-Path $reportPath "$reportName.xml"
 $unityArguments = @('-batchmode', '-projectPath', "`"$projectPath`"", '-logFile', "`"$logPath`"")
 if (-not $Graphics)
@@ -82,6 +92,16 @@ if (-not $Graphics)
 
 switch ($Task)
 {
+    'RuntimeMove'
+    {
+        if (-not $Isolated) { throw 'RuntimeMove requires an isolated snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.RuntimeMigration.MoveAssets')
+    }
+    'MainAssets'
+    {
+        if (-not $Isolated) { throw 'MainAssets requires an isolated snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.MainSceneAuthor.Apply')
+    }
     'PetMotionAssets'
     {
         if (-not $Isolated) { throw 'PetMotionAssets must run in an isolated saved-project snapshot.' }

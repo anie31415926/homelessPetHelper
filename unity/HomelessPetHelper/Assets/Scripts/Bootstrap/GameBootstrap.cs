@@ -8,6 +8,7 @@ namespace HomelessPetHelper.Bootstrap
     {
         private bool _isBackgrounded;
         private bool _hasFocus = true;
+        private GameLoopSession _session;
 
         public RescueFlow Flow { get; private set; }
 
@@ -15,6 +16,13 @@ namespace HomelessPetHelper.Bootstrap
         {
             Flow = new RescueFlow();
             Application.targetFrameRate = 60;
+        }
+
+        public void BindSession(GameLoopSession session)
+        {
+            _session = session;
+            Flow = session?.Flow ?? new RescueFlow();
+            RefreshSuspension();
         }
 
         private void OnApplicationPause(bool isPaused)
@@ -31,6 +39,12 @@ namespace HomelessPetHelper.Bootstrap
 
         private void RefreshSuspension()
         {
+            // Shared panels preserve their explicit pause until the player resumes them.
+            if (_session != null)
+            {
+                if (_isBackgrounded || !_hasFocus) _session.SetSuspended(true);
+                return;
+            }
             Flow.SetSuspended(_isBackgrounded || !_hasFocus);
         }
     }

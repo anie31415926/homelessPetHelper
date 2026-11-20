@@ -8,13 +8,14 @@ namespace HomelessPetHelper.Editor.PetMotion
         public int schema;
         public int sampleRate;
         public Rig[] rigs;
+        public Rig[] sources;
         public Take[] takes;
 
         [Serializable]
         public sealed class Rig
         {
             public string id, texture;
-            public float[] positions, uv, weights;
+            public float[] positions, uv, cropUV, weights;
             public int[] triangles, indices;
             public Bone[] bones;
         }

@@ -79,7 +79,44 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private int _renderedTime = -1;
         private float _handWidth = -1;
         private HorizontalLayoutGroup _handLayout;
+        private bool _external, _reportedOutcome, _externalPaused;
+        private bool _hasFocus = true, _applicationPaused;
+        private Action _completed, _returnRequested;
+        private Action<bool> _suspensionChanged;
+        private string _externalFeedback;
         public SiegeState Snapshot => _session?.Snapshot;
+        public bool IsBattleRunning => _session != null && _session.Phase == BattlePhase.Running && !_session.Paused;
+
+        public void BindEncounter(SiegeSession session, TextAsset text, Action completed,
+            Action returnRequested, Action<bool> suspensionChanged)
+        {
+            if (gameObject.activeInHierarchy) throw new InvalidOperationException("Bind a closed siege panel.");
+            _external = true;
+            _reportedOutcome = false;
+            _externalPaused = false;
+            _session = session ?? throw new ArgumentNullException(nameof(session));
+            _catalog = session.Catalog;
+            _text = new SiegeText(text);
+            _text.Validate(_catalog);
+            _completed = completed;
+            _returnRequested = returnRequested;
+            _suspensionChanged = suspensionChanged;
+            _seedValue = session.Snapshot.Seed;
+            _externalFeedback = null;
+        }
+
+        public void UnbindEncounter()
+        {
+            _completed = _returnRequested = null;
+            _suspensionChanged = null;
+            _session = null;
+        }
+
+        public void ShowExternalFeedback(string feedback)
+        {
+            _externalFeedback = feedback;
+            Render();
+        }
 
         private void OnEnable()
         {
@@ -129,11 +166,13 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _rosterPool?.Dispose();
             _handPool = null;
             _rosterPool = null;
-            _session = null;
+            if (_external && _session != null) SetEncounterPaused(true);
+            else _session = null;
         }
 
         private void Start()
         {
+            if (_external) return;
             try
             {
                 if (_data == null || _copy == null || _cellPrefab == null || _field == null)
@@ -164,11 +203,25 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 _catalog.Rules.DurationMs / _catalog.Rules.PlayerPeriodMs + 2
             );
             _materialsPanel.SetActive(false);
-            Restart();
+            _newSeed.gameObject.SetActive(!_external);
+            _profile.gameObject.SetActive(!_external);
+            if (_external)
+            {
+                _tower = null;
+                _laneIndex = 1;
+                Clear();
+                _renderedTime = -1;
+            }
+            else Restart();
         }
 
         private void Restart()
         {
+            if (_external)
+            {
+                _returnRequested?.Invoke();
+                return;
+            }
             _session = new SiegeSession(
                 _catalog,
                 _seedValue,
@@ -202,6 +255,11 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 return;
             var phase = _session.Phase;
             _session.Advance(Math.Min(100, Time.unscaledDeltaTime * 1000));
+            if (_external && !_externalPaused && !_reportedOutcome && _session.Phase == BattlePhase.Won)
+            {
+                _reportedOutcome = true;
+                _completed?.Invoke();
+            }
             if (
                 _renderedTime != _session.ElapsedMs
                 || phase != _session.Phase
@@ -212,12 +270,14 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         private void OnApplicationFocus(bool focused)
         {
+            _hasFocus = focused;
             if (!focused)
                 Interrupt();
         }
 
         private void OnApplicationPause(bool paused)
         {
+            _applicationPaused = paused;
             if (paused)
                 Interrupt();
         }
@@ -226,14 +286,22 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             if (_session == null)
                 return;
-            _session.SetPaused(true);
+            if (_external) SetEncounterPaused(true);
+            else _session.SetPaused(true);
             Render();
         }
 
         private void Pause()
         {
-            _session.SetPaused(!_session.Paused);
+            if (_external) SetEncounterPaused(!_externalPaused);
+            else _session.SetPaused(!_session.Paused);
             Render();
+        }
+
+        private void SetEncounterPaused(bool paused)
+        {
+            _externalPaused = paused || !_hasFocus || _applicationPaused;
+            _suspensionChanged?.Invoke(_externalPaused);
         }
 
         private void Top() => Route(0);
@@ -405,6 +473,16 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 _error != null ? _text.Get(_error)
                 : decision && !valid ? _text.Get(reason)
                 : _text.Get("unity." + (s.Paused ? "paused" : s.Phase.ToString().ToLowerInvariant()));
+            if (_external && _externalFeedback != null) _feedback.text = _externalFeedback;
+            if (_external)
+            {
+                SetLabel(_retry, _text.Get(s.Phase == BattlePhase.Won ? "game.transport" : "game.return"));
+                _retry.interactable = !_externalPaused;
+                if (_externalFeedback == null && s.Phase == BattlePhase.Won)
+                    _feedback.text = _text.Get("game.won");
+                if (_externalFeedback == null && s.Phase == BattlePhase.Timeout)
+                    _feedback.text = _text.Get("game.timeout");
+            }
             if (a.RecoveryUntilMs > s.ElapsedMs)
                 _feedback.text += " · " + _text.Get("unity.recovering");
             if (a.RepairTowerId != null)
@@ -430,7 +508,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                     )
                 );
             _destination.interactable = decision && _rerouteId.HasValue;
-            _pause.interactable = s.Phase == BattlePhase.Decision || s.Phase == BattlePhase.Running;
+            _pause.interactable = _external || s.Phase == BattlePhase.Decision || s.Phase == BattlePhase.Running;
             SetLabel(
                 _anchor,
                 _anchorId == SiegeOrder.NewUnit ? _text.Get("unity.newUnit") : _text.Format("unity.anchor", _anchorId)

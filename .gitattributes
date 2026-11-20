@@ -5,3 +5,9 @@ unity/**/*.unity text eol=lf
 unity/**/*.asset text eol=lf
 unity/**/Packages/*.json text eol=lf
 tools/*.ps1 text eol=lf
+
+# Generators and the atlas manifest compare exact source bytes across checkouts.
+*.js text eol=lf
+*.mjs text eol=lf
+*.json text eol=lf
+unity/**/*.shader text eol=lf

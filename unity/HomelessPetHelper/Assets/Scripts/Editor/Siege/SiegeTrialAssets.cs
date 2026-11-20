@@ -17,9 +17,9 @@ namespace HomelessPetHelper.Editor.Siege
         public const string ScenePath = "Assets/EditorScenes/Siege/SC_SiegeTrial.unity";
         public const string PanelPath = "Assets/Prefabs/Panels/Panel_SiegeTrial.prefab";
         public const string CellPath = "Assets/Prefabs/Widgets/Widget_SiegeChoice.prefab";
-        public const string DataPath = "Assets/EditorScenes/Siege/SiegeTrialData.json";
-        public const string TextPath = "Assets/EditorScenes/Siege/SiegeTrialText.json";
-        private const string CatPath = "Assets/EditorScenes/CityMapArt/Animals/T_Animal_CatOrange.png";
+        public const string DataPath = "Assets/Settings/Siege/SiegeTrialData.json";
+        public const string TextPath = "Assets/Settings/Siege/SiegeTrialText.json";
+        private const string CatPath = "Assets/Art/CityMap/Animals/T_Animal_CatOrange.png";
         private static readonly Color Ink = new Color32(32, 36, 40, 255);
         private static readonly Color Surface = new Color32(242, 243, 244, 255);
 

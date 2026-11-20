@@ -1,3 +1,6 @@
+using HomelessPetHelper.Game.CityMap;
+using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Game.Station;
 using HomelessPetHelper.Modules.Outing.UI;
 using UnityEditor;
 using UnityEngine;

@@ -33,7 +33,10 @@
     "test:pet-postures": "node --test tests/pet-postures.test.js",
     "test:pet-postures:browser": "node tests/pet-postures-browser.mjs",
     "assets:check": "node tools/resource-catalog.mjs",
-    "test:assets": "node --test tests/resource-catalog.test.mjs"
+    "test:assets": "node --test tests/resource-catalog.test.mjs",
+    "test:atlas": "node --test tests/image-atlas.test.mjs tests/atlas-padding.test.mjs tests/atlas-manifest.test.mjs tests/pet-motion-assets.test.mjs",
+    "atlas:generate": "node tools/pet-motion-atlas.mjs && node tools/pet-motion-unity.mjs && node tools/check-atlases.mjs --write",
+    "atlas:check": "node tools/check-atlases.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
@@ -46,6 +49,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.56.0",
+    "sharp": "0.35.5",
     "vite": "^6.1.0"
   }
 }

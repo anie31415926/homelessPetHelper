@@ -1,3 +1,6 @@
+using HomelessPetHelper.Game.CityMap;
+using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Game.Station;
 using System;
 using System.Linq;
 using HomelessPetHelper.Bootstrap;
@@ -50,7 +53,7 @@ namespace HomelessPetHelper.Editor.StationPreview.Loop
             _rescueView.gameObject.SetActive(false);
             _stationView.gameObject.SetActive(true);
             _stationPresenter = new StationPreviewSession(station, Load(StationPreviewAssets.TextPath),
-                Session, OpenMap);
+                RuntimePreviewContent.Load().Artwork, RuntimePreviewContent.Load().Font, Session, OpenMap);
             Session.SetSuspended(false);
         }
 

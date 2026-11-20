@@ -57,8 +57,8 @@ data.map.lanes.forEach(lane => { lane.points = lane.points.map(([x,y]) => ({x,y}
 const extra = JSON.parse(fs.readFileSync(path.join(root, 'src/siege/unity-text.zh-CN.json'), 'utf8'));
 const outputs = {
     [`${base}/Scripts/Modules/Siege/SiegeCatalogData.cs`]: source,
-    [`${base}/EditorScenes/Siege/SiegeTrialData.json`]: JSON.stringify(data, null, 2) + '\n',
-    [`${base}/EditorScenes/Siege/SiegeTrialText.json`]: JSON.stringify({entries: Object.entries({...TEXT,...extra}).map(([key,value]) => ({key,value}))}, null, 2) + '\n'
+    [`${base}/Settings/Siege/SiegeTrialData.json`]: JSON.stringify(data, null, 2) + '\n',
+    [`${base}/Settings/Siege/SiegeTrialText.json`]: JSON.stringify({entries: Object.entries({...TEXT,...extra}).map(([key,value]) => ({key,value}))}, null, 2) + '\n'
 };
 for (const [relative, content] of Object.entries(outputs)) {
     const file = path.join(root, relative);

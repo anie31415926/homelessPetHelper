@@ -8,8 +8,8 @@ namespace HomelessPetHelper.Editor.CityMap
     {
         public const string ScenePath = "Assets/EditorScenes/SC_CityMap.unity";
         public const string PanelPath = "Assets/Prefabs/Panels/Panel_CityMap.prefab";
-        public const string TextPath = "Assets/EditorScenes/CityMapText.json";
-        public const string ConfigPath = "Assets/EditorScenes/CityMapConfig.json";
+        public const string TextPath = "Assets/Settings/Game/CityMapText.json";
+        public const string ConfigPath = "Assets/Settings/Game/CityMapConfig.json";
 
         [MenuItem("Homeless Pet Helper/Preview/Open City Map")]
         public static void OpenScene()

@@ -1,0 +1,182 @@
+using System;
+using System.Linq;
+using HomelessPetHelper.Bootstrap;
+using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Modules.Outing;
+using HomelessPetHelper.Modules.Outing.UI;
+using HomelessPetHelper.Modules.Rescue;
+using HomelessPetHelper.Modules.Station;
+using HomelessPetHelper.Modules.WorldTime;
+using UnityEngine;
+
+namespace HomelessPetHelper.Game.CityMap
+{
+    /// <summary>Map navigation with real departure and unresolved return, never a fake field success.</summary>
+    public sealed class CityMapPresenter : IDisposable
+    {
+        private readonly CityMapView _view;
+        private readonly OptionPreviewText _text;
+        private readonly CityMapPreviewConfig _config;
+        private readonly CityMapRules _rules;
+        private readonly RescueFlow _flow = new RescueFlow();
+        private readonly RescueStation _station;
+        private readonly ActionWorldClock _clock;
+        private readonly OutingCoordinator _outing;
+        private readonly GameLoopSession _loop;
+        private readonly Action _departed;
+        private readonly Action _returned;
+        private string _selection;
+        private bool _paused;
+        private string _feedbackKey = "ready";
+        private string _externalFeedback;
+
+        public CityMapPresenter(CityMapView view, TextAsset text, CityMapPreviewConfig config,
+            GameLoopSession loop = null, Action departed = null, Action returned = null)
+        {
+            if (view == null) throw new ArgumentNullException(nameof(view));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _view = view;
+            _loop = loop;
+            _departed = departed;
+            _returned = returned;
+            _text = new OptionPreviewText(text);
+            _config.ValidateText(_text);
+            _view.ValidateDefinition(config.Definition.BackgroundId,
+                config.Definition.Points.Select(point => point.PointId));
+            if (loop != null)
+            {
+                _station = loop.Station;
+                _clock = loop.Clock;
+                _rules = loop.Map;
+                _flow = loop.Flow;
+                _outing = loop.Outing;
+                _selection = config.InitialPointId;
+                Refresh();
+            }
+            else
+            {
+                Guid stationId = Guid.NewGuid();
+                Guid worldId = Guid.NewGuid();
+                _station = new RescueStation(stationId, config.InitialCapacity);
+                _clock = new ActionWorldClock(worldId, config.MinutesPerDay);
+                RequestPoolState pool = config.CreateRequestPool();
+                _rules = config.CreateRules(new PointUnlockState(), pool);
+                _outing = new OutingCoordinator(_flow, _station, stationId, _clock, worldId,
+                    _rules, pool, config.TimePolicy);
+                Begin();
+            }
+            _view.PlaceSelected += Select;
+            _view.PrimaryClicked += Act;
+            _view.CancelClicked += Cancel;
+            _view.PauseChanged += Pause;
+            Pause(_view.IsSuspended);
+        }
+
+        public void Dispose()
+        {
+            _view.PlaceSelected -= Select;
+            _view.PrimaryClicked -= Act;
+            _view.CancelClicked -= Cancel;
+            _view.PauseChanged -= Pause;
+        }
+
+        public void ShowFeedback(string feedback)
+        {
+            _externalFeedback = feedback ?? throw new ArgumentNullException(nameof(feedback));
+            Refresh();
+        }
+
+        private void Begin()
+        {
+            if (!_outing.TryBeginOuting(Guid.NewGuid(), _config.Seed, out var failure))
+                throw new InvalidOperationException("Cannot open map trial: " + failure);
+            _selection = _config.InitialPointId;
+            _feedbackKey = "ready";
+            _externalFeedback = null;
+            Refresh();
+        }
+
+        private void Select(string pointId)
+        {
+            if (_paused || _outing.Session.Stage != OutingStage.MapSelecting) return;
+            MapPointView point = _rules.BuildSnapshot().Points.SingleOrDefault(item => item.PointId == pointId);
+            if (point == null || point.DisplayState == PointDisplayState.Locked) return;
+            _selection = pointId;
+            _feedbackKey = "ready";
+            _externalFeedback = null;
+            Refresh();
+        }
+
+        private void Act()
+        {
+            if (_paused) return;
+            _externalFeedback = null;
+            var session = _outing.Session;
+            if (session.IsSettled)
+            {
+                Begin();
+                return;
+            }
+
+            bool success = session.Stage == OutingStage.MapSelecting ?
+                _outing.TrySelectAndDepart(session.SessionId, _selection, out var failure) :
+                _outing.TryEndUnresolved(session.SessionId, out _, out failure);
+            _feedbackKey = success ? "ready" :
+                failure == OutingAssemblyFailure.StationFull ? "full" : "failure";
+            Refresh();
+            if (success && _loop != null)
+            {
+                if (session.IsSettled) _returned?.Invoke();
+                else _departed?.Invoke();
+            }
+        }
+
+        private void Pause(bool paused)
+        {
+            _paused = paused;
+            if (_loop != null) _loop.SetSuspended(paused);
+            else
+            {
+                _outing.Session.SetSuspended(paused);
+                _flow.SetSuspended(paused);
+            }
+            Refresh();
+        }
+
+        private void Cancel()
+        {
+            if (_paused || _outing.Session.Stage != OutingStage.MapSelecting) return;
+            _externalFeedback = null;
+            if (!_outing.TryEndUnresolved(_outing.Session.SessionId, out _, out _))
+                _feedbackKey = "failure";
+            Refresh();
+            if (_loop != null && _outing.Session.IsSettled) _returned?.Invoke();
+        }
+
+        private void Refresh()
+        {
+            var session = _outing.Session;
+            MapViewSnapshot snapshot = _rules.BuildSnapshot();
+            bool selecting = session.Stage == OutingStage.MapSelecting;
+            string currentPointId = selecting ? _selection : session.SelectedPointId;
+            MapPointView currentPoint = snapshot.Points.SingleOrDefault(point => point.PointId == currentPointId);
+            string pointName = currentPoint == null ? string.Empty : _text.Get(currentPoint.DisplayNameKey);
+            string heading = selecting ? pointName : session.IsSettled ?
+                _text.Get("station") : _text.Get("arrived", pointName);
+            string details = selecting ? _text.Get(currentPoint.RequestTextKey ?? _config.GetDetailKey(_selection)) :
+                session.IsSettled ?
+                _text.Get(!session.HasDeparted ? "cancelled" : session.AcceptedRequestId == Guid.Empty ?
+                    "returned.exploring" : "returned", _outing.LastSummary.ElapsedMinutes) :
+                _text.Get(session.AcceptedRequestId == Guid.Empty ? "arrived.exploring" : "arrived.detail");
+            string command = selecting ? "depart" : session.IsSettled ? "reopen" : "return";
+            string feedback = _externalFeedback ?? (!selecting && _feedbackKey == "ready" ?
+                string.Empty : _text.Get(_feedbackKey));
+            _view.Render(_text.Get("status", _station.AvailableTemporaryPlaces, _clock.Current.ElapsedMinutes),
+                heading, details, _paused ? _text.Get("paused") : feedback, _text.Get(command),
+                selecting, _paused);
+            foreach (MapPointView point in snapshot.Points)
+                _view.RenderPoint(point.PointId, _text.Get(point.DisplayNameKey), point.PointId == _selection,
+                    selecting && !_paused && point.DisplayState != PointDisplayState.Locked);
+        }
+    }
+}

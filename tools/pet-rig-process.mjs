@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
+import { composeAtlas } from './lib/image-atlas.mjs';
 const require = createRequire(import.meta.url);
 const sharp = require(require.resolve('sharp', process.env.CODEX_NODE_MODULES ? { paths: [process.env.CODEX_NODE_MODULES] } : undefined));
 const root = 'art-source/pet-rig';
@@ -56,17 +57,20 @@ const definitions = {
 };
 const index = { size: 768, cell: 256, views: {} };
 for (const [view, parts] of Object.entries(definitions)) {
-  const layers = [];
+  const regions = [], images = new Map();
   index.views[view] = {};
   for (let i = 0; i < parts.length; i++) {
     const [name, source, rect, shape] = parts[i];
     const buffer = await sharp(await cut(source, rect, shape)).trim({ threshold: 5 }).resize(224, 224, { fit: 'inside' }).png().toBuffer();
     const { width, height } = await sharp(buffer).metadata();
     const x = (i % 3) * 256 + Math.floor((256 - width) / 2), y = Math.floor(i / 3) * 256 + Math.floor((256 - height) / 2);
-    layers.push({ input: buffer, left: x, top: y });
+    regions.push({ id:name, x, y, width, height });
+    images.set(name, buffer);
     index.views[view][name] = { x, y, width, height };
   }
-  await sharp({ create: { width: 768, height: 768, channels: 4, background: '#00000000' } }).composite(layers).png({ compressionLevel: 9, palette: true, colours: 256, dither: .5, effort: 10 }).toFile(`public/pet-rig/${view}-atlas.png`);
+  await writeFile(`public/pet-rig/${view}-atlas.png`, await composeAtlas(sharp,
+    { width:768, height:768, regions }, images,
+    { compressionLevel:9, palette:true, colours:256, dither:.5, effort:10 }));
 }
 await sharp(`${root}/turnaround-master.png`).resize(768).jpeg({ quality: 88 }).toFile('public/pet-rig/turnaround.jpg');
 await writeFile('public/pet-rig/atlas.json', JSON.stringify(index, null, 2));

@@ -252,7 +252,7 @@ namespace HomelessPetHelper.Tests.Siege.PlayMode
                 )
                 .cases.Single(x => x.seed == 20261119 && x.profile == "calm" && x.policy == "read");
             var text = new SiegeText(
-                AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/EditorScenes/Siege/SiegeTrialText.json")
+                AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Settings/Siege/SiegeTrialText.json")
             );
             var canvas = _view.GetComponent<Canvas>();
             var camera = UnityEngine.Object.FindObjectOfType<Camera>();
@@ -367,7 +367,7 @@ namespace HomelessPetHelper.Tests.Siege.PlayMode
         private bool InspectTower(Camera camera)
         {
             var data = JsonUtility.FromJson<SiegeCatalogData>(
-                AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/EditorScenes/Siege/SiegeTrialData.json").text
+                AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Settings/Siege/SiegeTrialData.json").text
             );
             var catalog = new SiegeCatalog(data);
             var tower = _view.Snapshot.Towers[0];

@@ -39,7 +39,7 @@ const masked = await sharp(patch).removeAlpha().joinChannel(await sharp(alpha).r
 const result = await sharp(source).composite([{ input: masked, left: 294, top: 580 }]).png().toBuffer();
 await writeFile(`${folder}/selected-master.png`, result);
 await sharp(result).flatten({ background: '#ffffff' }).jpeg({ quality: 82, mozjpeg: true })
-  .toFile('unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/T_CityMap_Neighborhood.jpg');
+  .toFile('unity/HomelessPetHelper/Assets/Art/CityMap/T_CityMap_Neighborhood.jpg');
 await writeFile(`${folder}/postprocess.json`, JSON.stringify({ source,
   reason: 'Remove leaked reference cat, retain all generated landmarks and paths.',
   grassSource: { left: 300, top: 0, width: 194, height: 255 },

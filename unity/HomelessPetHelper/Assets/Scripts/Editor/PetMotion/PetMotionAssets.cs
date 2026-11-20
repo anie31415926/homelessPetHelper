@@ -10,8 +10,8 @@ namespace HomelessPetHelper.Editor.PetMotion
 {
     public static class PetMotionAssets
     {
-        public const string Folder = "Assets/EditorScenes/PetMotion";
-        public const string ScenePath = Folder + "/SC_PetMotion.unity";
+        public const string Folder = "Assets/Art/PetMotion";
+        public const string ScenePath = "Assets/EditorScenes/PetMotion/SC_PetMotion.unity";
         public const string PanelPath = "Assets/Prefabs/Panels/Panel_PetMotion.prefab";
         public const string RigPath = Folder + "/Widget_PetMotion.prefab";
         private static readonly List<Transform> Bones = new List<Transform>();
@@ -33,7 +33,7 @@ namespace HomelessPetHelper.Editor.PetMotion
                         "Creation refuses overwrites; edit saved Prefabs in Prefab Mode.");
             string source = Path.Combine(Application.dataPath, "../PetMotionSource/unity-export.json");
             var data = JsonUtility.FromJson<PetMotionBakeData>(File.ReadAllText(source));
-            if (data.schema != 1 || data.rigs.Length != 7 || data.takes.Length != 6)
+            if (data.schema != 2 || data.rigs.Length != 7 || data.takes.Length != 6)
                 throw new InvalidDataException("Invalid pet motion export.");
             ImportTextures();
             CreateRig(data);
@@ -60,11 +60,11 @@ namespace HomelessPetHelper.Editor.PetMotion
                 Path.Combine(Application.dataPath, "../PetMotionSource/unity-export.json")));
             foreach (var take in data.takes)
                 CreateClip(take);
-            PetMotionPanelAuthor.RefineSavedPanel();
+            PetMotionOptimization.Apply(data);
             AssetDatabase.SaveAssets();
         }
 
-        private static void ImportTextures()
+        internal static void ImportTextures()
         {
             foreach (string file in Directory.GetFiles(Folder, "T_*.png"))
             {
@@ -75,7 +75,7 @@ namespace HomelessPetHelper.Editor.PetMotion
                 importer.alphaSource = TextureImporterAlphaSource.FromInput;
                 importer.alphaIsTransparency = true;
                 importer.npotScale = TextureImporterNPOTScale.None;
-                importer.maxTextureSize = 512;
+                importer.maxTextureSize = path.EndsWith("T_Pet_Atlas.png", StringComparison.Ordinal) ? 1024 : 512;
                 importer.mipmapEnabled = false;
                 importer.isReadable = false;
                 importer.wrapMode = TextureWrapMode.Clamp;
@@ -106,14 +106,15 @@ namespace HomelessPetHelper.Editor.PetMotion
             for (int i = 0; i < clips.Length; i++)
                 clips[i] = CreateClip(data.takes[i]);
             var sources = new GameObject[3];
-            string[] textureNames = { "original", "sit-rest", "side-rest" };
             for (int i = 0; i < sources.Length; i++)
             {
                 var node = Child("Source" + i, root.transform);
                 var filter = node.AddComponent<MeshFilter>();
-                filter.sharedMesh = AssetDatabase.LoadAssetAtPath<Mesh>(Folder + "/Mesh_body.asset");
+                string pose = i == 1 ? "sit" : "side";
+                filter.sharedMesh = i == 0 ? WriteMesh(data.sources[0], Array.Empty<Matrix4x4>())
+                    : AssetDatabase.LoadAssetAtPath<Mesh>(Folder + "/Mesh_" + pose + ".asset");
                 var renderer = node.AddComponent<MeshRenderer>();
-                renderer.sharedMaterial = Material(textureNames[i]);
+                renderer.sharedMaterial = Material("Atlas");
                 node.SetActive(false);
                 sources[i] = node;
             }
@@ -154,34 +155,10 @@ namespace HomelessPetHelper.Editor.PetMotion
                 bones[i].localPosition = new Vector3(b.position[0], b.position[1], b.position[2]);
                 Bones.Add(bones[i]);
             }
-            int count = data.positions.Length / 3;
-            var vertices = new Vector3[count];
-            var uv = new Vector2[count];
-            var weights = new BoneWeight[count];
-            for (int i = 0; i < count; i++)
-            {
-                vertices[i] = new Vector3(data.positions[i * 3], data.positions[i * 3 + 1], 0);
-                uv[i] = new Vector2(data.uv[i * 2], data.uv[i * 2 + 1]);
-                int w = i * 4;
-                weights[i] = new BoneWeight
-                {
-                    boneIndex0 = data.indices[w], boneIndex1 = data.indices[w + 1],
-                    boneIndex2 = data.indices[w + 2], boneIndex3 = data.indices[w + 3],
-                    weight0 = data.weights[w], weight1 = data.weights[w + 1],
-                    weight2 = data.weights[w + 2], weight3 = data.weights[w + 3],
-                };
-            }
             var bind = new Matrix4x4[bones.Length];
             for (int i = 0; i < bind.Length; i++)
                 bind[i] = bones[i].worldToLocalMatrix * node.transform.localToWorldMatrix;
-            var mesh = new Mesh
-            {
-                name = "Mesh_" + data.id,
-                vertices = vertices, uv = uv, triangles = data.triangles,
-                boneWeights = weights, bindposes = bind,
-            };
-            mesh.RecalculateBounds();
-            AssetDatabase.CreateAsset(mesh, Folder + "/Mesh_" + data.id + ".asset");
+            var mesh = WriteMesh(data, bind);
             var renderer = node.AddComponent<SkinnedMeshRenderer>();
             renderer.sharedMesh = mesh;
             renderer.sharedMaterial = Material(data.texture);
@@ -193,6 +170,47 @@ namespace HomelessPetHelper.Editor.PetMotion
             renderer.localBounds = new Bounds(Vector3.zero, new Vector3(650, 650, 10));
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             renderer.receiveShadows = false;
+        }
+
+        internal static Mesh WriteMesh(PetMotionBakeData.Rig data, Matrix4x4[] bind)
+        {
+            int count = data.positions.Length / 3;
+            var vertices = new Vector3[count];
+            var uv = new Vector2[count];
+            var cropUV = new Vector2[count];
+            var weights = new BoneWeight[count];
+            for (int i = 0; i < count; i++)
+            {
+                vertices[i] = new Vector3(data.positions[i * 3], data.positions[i * 3 + 1], 0);
+                uv[i] = new Vector2(data.uv[i * 2], data.uv[i * 2 + 1]);
+                cropUV[i] = new Vector2(data.cropUV[i * 2], data.cropUV[i * 2 + 1]);
+                int w = i * 4;
+                weights[i] = new BoneWeight
+                {
+                    boneIndex0 = data.indices[w], boneIndex1 = data.indices[w + 1],
+                    boneIndex2 = data.indices[w + 2], boneIndex3 = data.indices[w + 3],
+                    weight0 = data.weights[w], weight1 = data.weights[w + 1],
+                    weight2 = data.weights[w + 2], weight3 = data.weights[w + 3],
+                };
+            }
+            var mesh = new Mesh
+            {
+                name = "Mesh_" + data.id,
+                vertices = vertices, uv = uv, uv2 = cropUV, triangles = data.triangles,
+                boneWeights = weights, bindposes = bind,
+            };
+            mesh.RecalculateBounds();
+            string path = Folder + "/Mesh_" + data.id + ".asset";
+            var existing = AssetDatabase.LoadAssetAtPath<Mesh>(path);
+            if (existing != null)
+            {
+                EditorUtility.CopySerialized(mesh, existing);
+                UnityEngine.Object.DestroyImmediate(mesh);
+                EditorUtility.SetDirty(existing);
+                return existing;
+            }
+            AssetDatabase.CreateAsset(mesh, path);
+            return mesh;
         }
 
         private static AnimationClip CreateClip(PetMotionBakeData.Take take)
@@ -227,7 +245,7 @@ namespace HomelessPetHelper.Editor.PetMotion
             return clip;
         }
 
-        private static Material Material(string texture)
+        internal static Material Material(string texture)
         {
             string path = Folder + "/M_Pet_" + texture + ".mat";
             var existing = AssetDatabase.LoadAssetAtPath<Material>(path);

@@ -2,7 +2,7 @@
   "source": "art-source/city-map-neighborhood/selected-master.png",
   "width": 768,
   "height": 1344,
-  "background": "unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/T_CityMap_Neighborhood.jpg",
+  "background": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityMap_Neighborhood.jpg",
   "layers": [
     {
       "name": "Parking",

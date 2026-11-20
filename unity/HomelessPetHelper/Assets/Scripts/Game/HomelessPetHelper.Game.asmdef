@@ -1,0 +1,6 @@
+{
+  "name": "HomelessPetHelper.Game",
+  "rootNamespace": "HomelessPetHelper.Game",
+  "references": ["HomelessPetHelper.Bootstrap", "HomelessPetHelper.Modules.Animals", "HomelessPetHelper.Modules.Outing", "HomelessPetHelper.Modules.Outing.UI", "HomelessPetHelper.Modules.Rescue", "HomelessPetHelper.Modules.Station", "HomelessPetHelper.Modules.Station.UI", "HomelessPetHelper.Modules.WorldTime", "HomelessPetHelper.Modules.Siege", "HomelessPetHelper.Modules.Siege.UI", "HomelessPetHelper.Modules.PetMotion", "UnityEngine.UI"],
+  "autoReferenced": false
+}

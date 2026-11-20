@@ -144,7 +144,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         private IEnumerator Load()
         {
             _copy = JsonUtility.FromJson<TextTable>(AssetDatabase.LoadAssetAtPath<TextAsset>(
-                "Assets/EditorScenes/CityMapText.json").text);
+                "Assets/Settings/Game/CityMapText.json").text);
             yield return EditorSceneManager.LoadSceneAsyncInPlayMode(ScenePath, new LoadSceneParameters());
             yield return null;
             _view = UnityEngine.Object.FindObjectOfType<CityMapView>();

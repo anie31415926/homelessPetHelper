@@ -1,0 +1,187 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "art-source/pet-motion/atlas.json",
+      "sha256": "1399f8b4b16402e0d879b661e9863fb08191f98fa15214fa6df5a6860d36a8fa"
+    },
+    {
+      "path": "art-source/pet-motion/unity-export.json",
+      "sha256": "0957f8a43955847fce63df2db1d8754a4202a693ae47428eac349064e77dd275"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "ff3fb2b41dcc56d4c14f337622b08227310ae17eca75da3f7cdfdbabf20d79b8"
+    },
+    {
+      "path": "package.json",
+      "sha256": "ad577644fbcd162a4c866528d1a14a2b795c5fd5dc7068fc79a7d45df733225b"
+    },
+    {
+      "path": "public/pet-limbs/far-front-copy.png",
+      "sha256": "48a8b0f7c51d9cb9128c0f4cfe6d261561c147404e5cb417f7379614d0fcec6b"
+    },
+    {
+      "path": "public/pet-limbs/far-hind-copy.png",
+      "sha256": "10d71bac1ed843b89419cb67d9f39bbd7bd065fc1fedb174b581a93306cdf15e"
+    },
+    {
+      "path": "public/pet-mesh/cat-side.png",
+      "sha256": "b1889c797e975a625a746ab530a4c7d9231a068ca387871b5306b2fedfd9b727"
+    },
+    {
+      "path": "public/pet-motion/body.png",
+      "sha256": "71dd8b5c58765cbe60ead2343b61e0972d09c2eaf5ecefb7494275052855d898"
+    },
+    {
+      "path": "public/pet-motion/near-front.png",
+      "sha256": "db56e591dfce43c8fb2fcdcf7be4453b740c40a05ea9eb74165a3b5663516902"
+    },
+    {
+      "path": "public/pet-motion/near-hind.png",
+      "sha256": "c0f45afbff80abb7183965581e2e36ec767f6eb26bbe54e2cfc89d8ae8ae2b49"
+    },
+    {
+      "path": "public/pet-motion/side-rest.png",
+      "sha256": "2b10c5765fb20c1bd83377b7008455b3efb793cd9931c2103c4e2cf7ab1ad341"
+    },
+    {
+      "path": "public/pet-motion/sit-rest.png",
+      "sha256": "edaa5d690554b4d4634c8240d267600766095d1a46031bf2866c10422638d06f"
+    },
+    {
+      "path": "src/pet-layers/limbs.js",
+      "sha256": "3e6660d3354f1828317835fb780e6aaceead757dccd462ba94708d5354ae6098"
+    },
+    {
+      "path": "src/pet-layers/motion.js",
+      "sha256": "a6bf9282764ce9d5f75e5149a7ac1931cb627b586d52193626c50cfa4012a4d1"
+    },
+    {
+      "path": "src/pet-layers/rest-skin.js",
+      "sha256": "b1d28aa0eb696a6b657d47d29e920d0633cff3a540e4dc5b7421b3be8224afb5"
+    },
+    {
+      "path": "src/pet-layers/side-rest.js",
+      "sha256": "7ca1747ae43a901f8719f14848e0b435ea4830d60c70631da2947e1c333f9477"
+    },
+    {
+      "path": "src/pet-layers/sit-rest.js",
+      "sha256": "5963309abb0a4c38aababc9ec1532ce7fe5b4d3a6cad60b62eedcb0270480a57"
+    },
+    {
+      "path": "src/pet-mesh/skin.js",
+      "sha256": "23dd0b94effb1e43f8c18effc0ad613868fa97960a5540b13a7d1a2027a0cd1c"
+    },
+    {
+      "path": "tools/check-atlases.mjs",
+      "sha256": "4ed0a372188e502f6e635ba129ce25b20599fdbfdf0ee6710b9f1b13071a10b7"
+    },
+    {
+      "path": "tools/lib/atlas-manifest.mjs",
+      "sha256": "28102e0d6bc73c0dc4e1c38a4250b291e79ce5ab7c1ffdaa70c8651e9555e69a"
+    },
+    {
+      "path": "tools/lib/atlas-padding.mjs",
+      "sha256": "beec978cbba9834a00e69098a6b8e3865e16ab4b32cb5b53b59fd117a288631e"
+    },
+    {
+      "path": "tools/lib/image-atlas.mjs",
+      "sha256": "41b6e47531c5c94e65b2e7209bd007f81d74a84d725f25b5eec6e919ddc5bd3f"
+    },
+    {
+      "path": "tools/pet-motion-atlas.mjs",
+      "sha256": "6ddc939595bb8afbf55c657e1d7a7bfe44a4707bb3a763f0feefda0cca9a5c3d"
+    },
+    {
+      "path": "tools/pet-motion-unity.mjs",
+      "sha256": "c1f6ca6e42a28115c9384346014c99584fd6b4413fc8477a59dc901218fa7172"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/PetMotion/Sh_PetMotion.shader",
+      "sha256": "766bf1e7557d177fe908a49edb9ce904815784391b0d96c5c1fce7e3f8cce96b"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/PetMotion/T_Pet_Atlas.png",
+      "sha256": "590e75aa06d75224e964245b7a15e10f7612ec0f2e082f4d8b4f1a484e32b074"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/PetMotion/T_Pet_body.png",
+      "sha256": "71dd8b5c58765cbe60ead2343b61e0972d09c2eaf5ecefb7494275052855d898"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/PetMotion/T_Pet_far-front-copy.png",
+      "sha256": "48a8b0f7c51d9cb9128c0f4cfe6d261561c147404e5cb417f7379614d0fcec6b"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/PetMotion/T_Pet_far-hind-copy.png",
+      "sha256": "10d71bac1ed843b89419cb67d9f39bbd7bd065fc1fedb174b581a93306cdf15e"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/PetMotion/T_Pet_near-front.png",
+      "sha256": "db56e591dfce43c8fb2fcdcf7be4453b740c40a05ea9eb74165a3b5663516902"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/PetMotion/T_Pet_near-hind.png",
+      "sha256": "c0f45afbff80abb7183965581e2e36ec767f6eb26bbe54e2cfc89d8ae8ae2b49"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/PetMotion/T_Pet_original.png",
+      "sha256": "b1889c797e975a625a746ab530a4c7d9231a068ca387871b5306b2fedfd9b727"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/PetMotion/T_Pet_side-rest.png",
+      "sha256": "2b10c5765fb20c1bd83377b7008455b3efb793cd9931c2103c4e2cf7ab1ad341"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/PetMotion/T_Pet_sit-rest.png",
+      "sha256": "edaa5d690554b4d4634c8240d267600766095d1a46031bf2866c10422638d06f"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/EditorScenes/PetMotion/PetMotionFixtures.json",
+      "sha256": "b6f6001cebfea35b7342105e620fc15317c4f1f785f06a40e95dfa17d18a4b3f"
+    }
+  ],
+  "meshes": [
+    {
+      "id": "farHind",
+      "path": "Assets/Art/PetMotion/Mesh_farHind.asset",
+      "sha256": "776001736a9c9521b61dc36d082d454067579f75e385b8842115491a0eaac762"
+    },
+    {
+      "id": "farFront",
+      "path": "Assets/Art/PetMotion/Mesh_farFront.asset",
+      "sha256": "7e7209cc5b22510b012ad3dfbe7e204d8759bad2c5eec4d4b5b448e01f40de14"
+    },
+    {
+      "id": "body",
+      "path": "Assets/Art/PetMotion/Mesh_body.asset",
+      "sha256": "e881778ab62ccf080a850cfa2af3b65258bd3e13cf6d9c0f988b83b08f3ebaeb"
+    },
+    {
+      "id": "nearHind",
+      "path": "Assets/Art/PetMotion/Mesh_nearHind.asset",
+      "sha256": "d1be615f28c70c0ae461b6e1d406161c2c14bb392bc32db60bca93aa134d4fdd"
+    },
+    {
+      "id": "nearFront",
+      "path": "Assets/Art/PetMotion/Mesh_nearFront.asset",
+      "sha256": "477f96d98550e935c65c8a804453321c0404de419508722fccba27b95cd009b7"
+    },
+    {
+      "id": "sit",
+      "path": "Assets/Art/PetMotion/Mesh_sit.asset",
+      "sha256": "6411bfae14c60718772c52ce9a8e820d6c52ace5050ae797d8fbdf227416e23d"
+    },
+    {
+      "id": "side",
+      "path": "Assets/Art/PetMotion/Mesh_side.asset",
+      "sha256": "47c2f351aeeb64de432a9c08cbb3c064199db69d624c2c53dc5667e66b5861ad"
+    },
+    {
+      "id": "original",
+      "path": "Assets/Art/PetMotion/Mesh_original.asset",
+      "sha256": "c5b86f55356c7f1961b9618d218913c31e89ce8e316a1ee0f4d08f3df0ec5cb7"
+    }
+  ]
+}

@@ -13,12 +13,12 @@ const refine = process.argv.includes('--refine');
 const removeCharacter = process.argv.includes('--remove-character');
 const prefix = removeCharacter ? 'clean-' : refine ? 'simplified-' : '';
 const runtime = removeCharacter ? `${source}/clean.jpg` : refine ? `${source}/simplified.jpg` :
-  'unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt/T_CityMap_Neighborhood.jpg';
+  'unity/HomelessPetHelper/Assets/Art/CityMap/T_CityMap_Neighborhood.jpg';
 for (const file of [`${source}/${prefix}master.png`, runtime]) {
   if (await access(file).then(() => true, () => false)) throw new Error(`Refusing to overwrite ${file}`);
 }
 await mkdir(source, { recursive: true });
-const reference = 'unity/HomelessPetHelper/Assets/EditorScenes/StationCareArt/T_Station_CatTemporary.png';
+const reference = 'unity/HomelessPetHelper/Assets/Art/Station/T_Station_CatTemporary.png';
 const styleSheet = removeCharacter ? await readFile(`${source}/simplified-master.png`) : await sharp({ create: { width: 768, height: 1344, channels: 3, background: '#ffffff' } })
   .composite([{ input: await readFile(reference), gravity: 'centre' }]).png().toBuffer();
 if (!removeCharacter && !refine) await writeFile(`${source}/style-reference.png`, styleSheet);

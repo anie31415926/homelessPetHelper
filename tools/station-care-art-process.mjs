@@ -4,7 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 const require = createRequire(import.meta.url);
 const sharp = require(require.resolve('sharp', process.env.CODEX_NODE_MODULES ?
   { paths: [process.env.CODEX_NODE_MODULES] } : undefined));
-const folder = 'unity/HomelessPetHelper/Assets/EditorScenes/StationCareArt';
+const folder = 'unity/HomelessPetHelper/Assets/Art/Station';
 for (const kind of ['Dog', 'Cat']) {
   const master = await readFile(`art-source/station-care-temporary/${kind}-master.png`);
   const { data, info } = await sharp(master).resize(512, 512, { fit: 'inside' }).ensureAlpha().raw()

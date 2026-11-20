@@ -1,3 +1,6 @@
+using HomelessPetHelper.Game.CityMap;
+using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Game.Station;
 using System;
 using System.Linq;
 using HomelessPetHelper.Editor.StationPreview;

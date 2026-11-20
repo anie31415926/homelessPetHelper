@@ -2,7 +2,25 @@
 
 2026-11-19。用户认可上一版近腿复制后的体量，认为已可用、仅有毛边，允许尝试其他动画。本批保留被认可的腿部对照，新增整身动作实验，不替换Unity、正式规则、存档或美术。
 
-## Unity 接入（最新检查点）
+## Main运行时迁移（2026-11-20）
+
+Unity图集/材质/mesh/clip/Shader/Widget已保持GUID迁到`Assets/Art/PetMotion/`，预览场景/文案/夹具仍在EditorScenes。Main已用该rig展示逆塔防动物，暂停随战斗冻结、退出面板停用；护理仍用配对静态图。public原图与六动作不变，不接跨姿态过渡。
+
+唯一台账将当前Main图集按temporary/first-play记账，不代表最终资源批准；Main当前静态图片12项/1067.9KiB为移交前快照。全量图形EditMode522/522、PlayMode40/40及安装缺件等边界见[Main记录](../../docs/Main正式流程与资源迁移.md)。后续图集补齐任务已接手派生链，其结果另验；下文preview-only/未接Main为各历史批次事实。
+
+## Unity 裁边与共享优化（最新检查点）
+
+2026-11-20 已完成用户指定的坐标保留裁边/UV、共享素材和曲线精简。Unity菜单/六动作不变；`tools/pet-motion-atlas.mjs` 从八原PNG生成876×924共享图集，2px透明边，原RGBA不重画，`atlas.json`保存原尺寸、offset、区域与源哈希。原public文件及Unity旧拷贝都不改；Unity当前rig只引用新图集/一个材质，旧拷贝/材质留作历史引用不再是rig依赖。台账原条目runtime回到仍使用的public图，新派生独立一项，全部temporary/preview-only。
+
+通用排布/合图现只有 `tools/lib/image-atlas.mjs` 一个归属（契约见同目录README），旧 `pet-rig-process.mjs` 固定3×3及新动作紧凑图集都复用；动物脚本只负责选择源图、裁边元数据、输出，mesh脚本负责UV。未重生旧原型图片，不使用Unity只读图集审计当作生成工具。
+
+导出schema2，保留剩余顶点的原坐标/四权重/骨点/bind pose，去除裁区外网格并重映射UV/局部裁区UV；不重新插值关节。六原生动画去掉无效IK目标曲线，并使用0.05位置/0.08度/0.0002缩放简化，时长和循环语义不变，不重写运动。mesh和clip保持原GUID，现有Widget通过Prefab Mode更新，面板/场景未重建。
+
+实测：基础RGBA32 7.06→3.09MiB，蒙皮顶点14063→5525，关键点32424→17679，动画源16.55→9.45MiB；rig-only Windows64 LZ4 1517647→1148042bytes，不是微信下载。源PNG当前依赖556476→518906bytes；原图保留导致全库源图统计增加为33张/2381.0KiB，不伪称仓库图片总量降低。坐姿超计划提醒保留。
+
+图形PlayMode10/10（无跳过），旧提交A/B最大保留顶点差0.34源坐标单位、深浅底96组图像对照，6比例36截图/安全区下拉、实例共享与独立播放通过；公共工具/图集与网格7/7、旧动作/姿态/rig/台账44/44、构建与源码检查通过。复现先`node tools/pet-motion-atlas.mjs`，再`node tools/pet-motion-unity.mjs`，`npm run test:atlas`及隔离Bake/PlayMode/Audit，完整证据、例外和边界见[Unity记录](../../docs/动物动作Unity接入与资源评估.md)。未改运行时模块、HTML玩法、Main、存档/正式许可或生产转换，未提交推送。
+
+## Unity 接入（历史基线）
 
 2026-11-19 用户授权已有样例接入 Unity，独立场景/Prefab 及六动作已接入，菜单 `Homeless Pet Helper > Preview > Open Animal Motion`。沿用同源像素、网格、权重和 Three 官方 CCD 的离线原生骨骼烘焙，不重新拆图，不用序列帧，不接旧趴下或跨姿态过渡。`tools/pet-motion-unity.mjs` 生成本目录 `unity-export.json`（不进 Assets）及小型测试顶点；Unity 只导入 8 张当前图，所有原 PNG 和 HTML 保留。唯一台账当前 runtime 改为 `Assets/EditorScenes/PetMotion/T_Pet_*.png`，原 public 路径为引用，仍是 temporary / preview-only。详细大小、来源核验、边界、验证及重跑方式见[Unity 接入记录](../../docs/动物动作Unity接入与资源评估.md)。下方“未改 Unity”为历史批次边界。
 

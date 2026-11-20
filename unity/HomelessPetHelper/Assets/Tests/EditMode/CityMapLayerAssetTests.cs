@@ -1,3 +1,6 @@
+using HomelessPetHelper.Game.CityMap;
+using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Game.Station;
 using System;
 using System.IO;
 using System.Linq;
@@ -11,7 +14,7 @@ namespace HomelessPetHelper.Tests.EditMode
 {
     public sealed class CityMapLayerAssetTests
     {
-        private const string ArtFolder = "Assets/EditorScenes/CityMapArt/";
+        private const string ArtFolder = "Assets/Art/CityMap/";
         private const string PanelPath = "Assets/Prefabs/Panels/Panel_CityMap.prefab";
 
         [Serializable] private sealed class Layout
@@ -133,7 +136,9 @@ namespace HomelessPetHelper.Tests.EditMode
             }
             finally { UnityEngine.Object.DestroyImmediate(source); }
             string[] dependencies = AssetDatabase.GetDependencies("Assets/Scenes/Main.unity", true);
-            Assert.That(dependencies.Any(path => path.StartsWith(ArtFolder, StringComparison.Ordinal)), Is.False);
+            Assert.That(dependencies.Any(path => path.StartsWith(ArtFolder, StringComparison.Ordinal)), Is.True);
+            Assert.That(dependencies.Any(path => path.StartsWith("Assets/EditorScenes/", StringComparison.Ordinal)),
+                Is.False);
         }
     }
 }

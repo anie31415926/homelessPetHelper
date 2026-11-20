@@ -1,9 +1,17 @@
 {
   "name": "HomelessPetHelper.Tests.RescueCase",
   "rootNamespace": "HomelessPetHelper.Tests.RescueCase",
-  "references": ["HomelessPetHelper.Editor", "HomelessPetHelper.Modules.Rescue",
-    "HomelessPetHelper.Modules.Animals"],
-  "includePlatforms": ["Editor"],
-  "optionalUnityReferences": ["TestAssemblies"],
+  "references": [
+    "HomelessPetHelper.Editor",
+    "HomelessPetHelper.Modules.Rescue",
+    "HomelessPetHelper.Modules.Animals",
+    "HomelessPetHelper.Game"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
   "autoReferenced": false
 }

@@ -1,3 +1,6 @@
+using HomelessPetHelper.Game.CityMap;
+using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Game.Station;
 using System;
 using HomelessPetHelper.Editor.OptionPreview;
 using HomelessPetHelper.Modules.Rescue.UI;
@@ -194,7 +197,7 @@ namespace HomelessPetHelper.Editor.RescueCase
             fit.aspectRatio = 1;
             Image cat = Rect("Cat", scene.transform).AddComponent<Image>();
             cat.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(
-                "Assets/EditorScenes/StationCareArt/T_Station_CatTemporary.png");
+                "Assets/Art/Station/T_Station_CatTemporary.png");
             cat.raycastTarget = false;
             cat.preserveAspect = true;
             Place(cat.rectTransform, new Vector2(0.52f, 0.26f), new Vector2(0.52f, 0.26f),

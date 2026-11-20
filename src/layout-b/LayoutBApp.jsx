@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ArrowDownLeft, ArrowDownRight, Check, Clock3, Fish, Footprints, Pause, Pin, Play, RotateCcw } from 'lucide-react';
 import { copy } from './copy.js';
 import { HOLD_DURATION_MS, useHoldConfirm } from './useHoldConfirm.js';
-import catImage from '../../unity/HomelessPetHelper/Assets/EditorScenes/StationCareArt/T_Station_CatTemporary.png';
+import catImage from '../../unity/HomelessPetHelper/Assets/Art/Station/T_Station_CatTemporary.png';
 import backdrop from '../../art-source/rescue-layout-b/clean-backdrop.jpg';
 
 const icons = { space: Footprints, wait: Clock3, food: Fish };

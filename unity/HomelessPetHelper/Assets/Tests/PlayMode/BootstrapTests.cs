@@ -23,11 +23,13 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator MainSceneInitializesStationWithoutUi()
+        public IEnumerator MainSceneInitializesOneSharedStationAndSavedUi()
         {
             Assert.That(_bootstrap.Flow, Is.Not.Null);
             Assert.That(_bootstrap.Flow.Stage, Is.EqualTo(RescueStage.Station));
-            Assert.That(Object.FindObjectsOfType<Canvas>(), Is.Empty);
+            Assert.That(Object.FindObjectsOfType<Canvas>(), Is.Not.Empty);
+            Assert.That(Object.FindObjectOfType<HomelessPetHelper.Game.MainGameRoot>().Presenter.Session.Flow,
+                Is.SameAs(_bootstrap.Flow));
             Assert.That(Camera.main, Is.Not.Null);
             Assert.That(Camera.main.orthographic, Is.True);
             yield return null;
@@ -45,6 +47,8 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(_bootstrap.Flow.TryAdvance(RescueSignal.Depart, out var failure), Is.False);
             Assert.That(failure, Is.EqualTo(TransitionFailure.Suspended));
             _bootstrap.SendMessage("OnApplicationPause", false);
+            Assert.That(_bootstrap.Flow.IsSuspended, Is.True, "Shared UI owns explicit resume.");
+            Object.FindObjectOfType<HomelessPetHelper.Game.MainGameRoot>().Presenter.Session.SetSuspended(false);
             Assert.That(_bootstrap.Flow.IsSuspended, Is.False);
             Assert.That(_bootstrap.Flow.Stage, Is.EqualTo(RescueStage.Map));
             Assert.That(_bootstrap.Flow.TryAdvance(RescueSignal.Depart, out _), Is.True);

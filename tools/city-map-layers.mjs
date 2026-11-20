@@ -5,7 +5,7 @@ const require = createRequire(import.meta.url);
 const sharp = require(require.resolve('sharp', process.env.CODEX_NODE_MODULES ?
   { paths: [process.env.CODEX_NODE_MODULES] } : undefined));
 const folder = 'art-source/city-map-layered';
-const output = 'unity/HomelessPetHelper/Assets/EditorScenes/CityMapArt';
+const output = 'unity/HomelessPetHelper/Assets/Art/CityMap';
 const plan = JSON.parse(await readFile(`${folder}/derivation.json`, 'utf8'));
 const { width, height } = plan;
 const pixels = await sharp(plan.source).removeAlpha().raw().toBuffer();

@@ -7,8 +7,8 @@ import {
 import { animal, createDuel, playMove, previewGroup, togglePin, completeRescue, withdraw,
     CARDS, EVENTS, INTENTS, MODES, TOKENS, GOAL_NAMES } from './engine.js';
 import { useHoldConfirm } from '../layout-b/useHoldConfirm.js';
-import catImage from '../../unity/HomelessPetHelper/Assets/EditorScenes/StationCareArt/T_Station_CatTemporary.png';
-import dogImage from '../../unity/HomelessPetHelper/Assets/EditorScenes/StationCareArt/T_Station_DogTemporary.png';
+import catImage from '../../unity/HomelessPetHelper/Assets/Art/Station/T_Station_CatTemporary.png';
+import dogImage from '../../unity/HomelessPetHelper/Assets/Art/Station/T_Station_DogTemporary.png';
 import backdrop from '../../art-source/rescue-layout-b/clean-backdrop.jpg';
 
 const icons = { Fish, Leaf, Volleyball, House, Volume2, Footprints, VolumeX, Move, Shuffle, MessageCircle, Camera };

@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "padding": 2,
+  "texture": "Atlas",
+  "width": 876,
+  "height": 924,
+  "regions": [
+    {
+      "id": "original",
+      "input": "public/pet-mesh/cat-side.png",
+      "sourceWidth": 452,
+      "sourceHeight": 512,
+      "left": 8,
+      "top": 10,
+      "width": 437,
+      "height": 491,
+      "sha256": "b1889c797e975a625a746ab530a4c7d9231a068ca387871b5306b2fedfd9b727",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "body",
+      "input": "public/pet-motion/body.png",
+      "sourceWidth": 452,
+      "sourceHeight": 512,
+      "left": 8,
+      "top": 10,
+      "width": 437,
+      "height": 486,
+      "sha256": "71dd8b5c58765cbe60ead2343b61e0972d09c2eaf5ecefb7494275052855d898",
+      "x": 437,
+      "y": 0
+    },
+    {
+      "id": "near-front",
+      "input": "public/pet-motion/near-front.png",
+      "sourceWidth": 452,
+      "sourceHeight": 512,
+      "left": 102,
+      "top": 321,
+      "width": 92,
+      "height": 179,
+      "sha256": "db56e591dfce43c8fb2fcdcf7be4453b740c40a05ea9eb74165a3b5663516902",
+      "x": 324,
+      "y": 734
+    },
+    {
+      "id": "near-hind",
+      "input": "public/pet-motion/near-hind.png",
+      "sourceWidth": 452,
+      "sourceHeight": 512,
+      "left": 244,
+      "top": 318,
+      "width": 116,
+      "height": 183,
+      "sha256": "c0f45afbff80abb7183965581e2e36ec767f6eb26bbe54e2cfc89d8ae8ae2b49",
+      "x": 116,
+      "y": 734
+    },
+    {
+      "id": "far-front-copy",
+      "input": "public/pet-limbs/far-front-copy.png",
+      "sourceWidth": 452,
+      "sourceHeight": 512,
+      "left": 77,
+      "top": 311,
+      "width": 92,
+      "height": 182,
+      "sha256": "48a8b0f7c51d9cb9128c0f4cfe6d261561c147404e5cb417f7379614d0fcec6b",
+      "x": 232,
+      "y": 734
+    },
+    {
+      "id": "far-hind-copy",
+      "input": "public/pet-limbs/far-hind-copy.png",
+      "sourceWidth": 452,
+      "sourceHeight": 512,
+      "left": 213,
+      "top": 307,
+      "width": 116,
+      "height": 186,
+      "sha256": "10d71bac1ed843b89419cb67d9f39bbd7bd065fc1fedb174b581a93306cdf15e",
+      "x": 0,
+      "y": 734
+    },
+    {
+      "id": "sit-rest",
+      "input": "public/pet-motion/sit-rest.png",
+      "sourceWidth": 452,
+      "sourceHeight": 512,
+      "left": 9,
+      "top": 62,
+      "width": 434,
+      "height": 438,
+      "sha256": "edaa5d690554b4d4634c8240d267600766095d1a46031bf2866c10422638d06f",
+      "x": 437,
+      "y": 486
+    },
+    {
+      "id": "side-rest",
+      "input": "public/pet-motion/side-rest.png",
+      "sourceWidth": 452,
+      "sourceHeight": 512,
+      "left": 19,
+      "top": 257,
+      "width": 414,
+      "height": 243,
+      "sha256": "2b10c5765fb20c1bd83377b7008455b3efb793cd9931c2103c4e2cf7ab1ad341",
+      "x": 0,
+      "y": 491
+    }
+  ]
+}

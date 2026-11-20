@@ -1,7 +1,14 @@
 {
   "name": "HomelessPetHelper.Tests.PetMotion",
   "rootNamespace": "HomelessPetHelper.Tests.PetMotion",
-  "references": ["HomelessPetHelper.Modules.PetMotion", "HomelessPetHelper.Modules.Rescue.UI", "UnityEngine.UI"],
-  "optionalUnityReferences": ["TestAssemblies"],
+  "references": [
+    "HomelessPetHelper.Modules.PetMotion",
+    "HomelessPetHelper.Modules.Rescue.UI",
+    "UnityEngine.UI",
+    "HomelessPetHelper.Game"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
   "autoReferenced": false
 }

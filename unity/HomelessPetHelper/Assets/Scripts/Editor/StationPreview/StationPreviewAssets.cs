@@ -1,3 +1,6 @@
+using HomelessPetHelper.Game.CityMap;
+using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Game.Station;
 using System;
 using HomelessPetHelper.Editor.OptionPreview;
 using HomelessPetHelper.Modules.Rescue.UI;
@@ -15,9 +18,9 @@ namespace HomelessPetHelper.Editor.StationPreview
     {
         public const string ScenePath = "Assets/EditorScenes/SC_StationWhiteboard.unity";
         public const string PanelPath = "Assets/Prefabs/Panels/Panel_StationWhiteboard.prefab";
-        public const string TextPath = "Assets/EditorScenes/StationPreviewText.json";
+        public const string TextPath = "Assets/Settings/Game/StationPreviewText.json";
         public const string ArtFolder = "Assets/EditorScenes/StationArt";
-        public const string CareArtFolder = "Assets/EditorScenes/StationCareArt";
+        public const string CareArtFolder = "Assets/Art/Station";
 
         [MenuItem("Homeless Pet Helper/Preview/Open Station Whiteboard")]
         public static void OpenScene()

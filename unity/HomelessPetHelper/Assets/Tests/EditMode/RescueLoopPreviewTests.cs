@@ -1,3 +1,6 @@
+using HomelessPetHelper.Game.CityMap;
+using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Game.Station;
 using System;
 using System.Collections;
 using System.IO;
@@ -85,7 +88,9 @@ namespace HomelessPetHelper.Tests.EditMode
                 config.CreateRules(new HomelessPetHelper.Modules.Outing.PointUnlockState(), requests),
                 requests, config.TimePolicy))
             using (var presenter = new StationPreviewSession(_station,
-                AssetDatabase.LoadAssetAtPath<TextAsset>(StationPreviewAssets.TextPath), shortDay))
+                AssetDatabase.LoadAssetAtPath<TextAsset>(StationPreviewAssets.TextPath),
+                HomelessPetHelper.Editor.RuntimePreviewContent.Load().Artwork,
+                HomelessPetHelper.Editor.RuntimePreviewContent.Load().Font, shortDay))
             {
                 Assert.That(shortDay.Clock.TryAdvance(shortDay.Clock.Current.Version, elapsed, out _, out _), Is.True);
                 presenter.ShowSharedStation(false);

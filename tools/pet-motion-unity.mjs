@@ -7,6 +7,7 @@ import { MeshBasicMaterial } from 'three';
 import { createMotionBody, createMotionLimb, applyMotionBody, applyMotionLimb, sampleMotion, MOTIONS, UNIT } from '../src/pet-layers/motion.js';
 import { createSitRest, applySitRest } from '../src/pet-layers/sit-rest.js';
 import { createSideRest, applySideRest } from '../src/pet-layers/side-rest.js';
+import { trimRig } from './pet-motion-atlas.mjs';
 
 // This host's Node 24 optimizer produced unstable duration constants in this large offline bake.
 // Keep the reproducible authoring step interpreted; the Unity runtime is unaffected.
@@ -28,6 +29,15 @@ const definitions = [
     ['side', 'side-rest', () => createSideRest(material)],
 ];
 const skins = definitions.map(([id, texture, create, kind]) => ({ id, texture, skin: create(), kind }));
+const requiredBones = new Map(skins.map(({skin})=>{
+    const indices=skin.geometry.attributes.skinIndex.array,weights=skin.geometry.attributes.skinWeight.array;
+    const bones=new Set();
+    for(let i=0;i<weights.length;i++) if(weights[i]>0) {
+        let bone=skin.skeleton.bones[indices[i]];
+        while(bone?.isBone) { bones.add(bone);bone=bone.parent; }
+    }
+    return [skin,bones];
+}));
 const rigs = skins.map(({ id, texture, skin }) => {
     const g = skin.geometry;
     return { id, texture,
@@ -76,6 +86,8 @@ function bake(action, duration) {
                 else applyMotionLimb(skin, pose, pose.feet[id], kind);
             }
             for (const bone of skin.skeleton.bones) {
+                // Offline CCD targets have no skin influence or weighted descendants in Unity.
+                if (!requiredBones.get(skin).has(bone)) continue;
                 const names = [bone.name]; let parent = bone.parent;
                 while (parent?.isBone) { names.unshift(parent.name); parent = parent.parent; }
                 const p = `${id === 'sit' || id === 'side' ? '' : 'Stand/'}${id}/${names.join('/')}`;
@@ -99,7 +111,7 @@ function bake(action, duration) {
             const a = Math.max(0, (times[i] - duration + .15) / .15);
             track.values[i] += (first - track.values[i]) * a*a*(3-2*a);
         }
-        const tolerance = track.property.includes('Scale') ? .0001 : track.property.includes('Euler') ? .03 : .03;
+        const tolerance = track.property.includes('Scale') ? .0002 : track.property.includes('Euler') ? .08 : .05;
         const reduced = track.step ? {times, values: track.values} : reduce(times,track.values,tolerance);
         if (track.step) {
             const keep = reduced.values.map((v,i) => i === 0 || v !== reduced.values[i-1] || i === count ? i : -1).filter(i=>i>=0);
@@ -111,8 +123,12 @@ function bake(action, duration) {
 }
 const takeSpecs = [['idle',20*Math.PI], ['look',20*Math.PI], ['tread',22],
     ['walk',MOTIONS.walk*2], ['sit',MOTIONS.sit], ['side',MOTIONS.side]];
-const data = { schema:1, sampleRate:60, amount:.8, loopClosureSeconds:.15,
-    rigs, takes:takeSpecs.map(([action,duration]) => bake(action,duration)) };
+const atlas = JSON.parse(fs.readFileSync(path.join(root,'art-source/pet-motion/atlas.json'),'utf8'));
+const optimizedRigs = rigs.map(r=>trimRig(r,atlas));
+const data = { schema:2, sampleRate:60, amount:.8, loopClosureSeconds:.15,
+    reductionTolerance:{position:.05,rotationDegrees:.08,scale:.0002},
+    rigs:optimizedRigs, sources:['original','sit-rest','side-rest'].map(texture=>trimRig({...rigs[2],id:texture,texture},atlas)),
+    takes:takeSpecs.map(([action,duration]) => bake(action,duration)) };
 for (const take of data.takes) {
     const expected = takeSpecs.find(([id])=>id===take.id)[1];
     if (Math.abs(take.duration-expected)>.000001) throw new Error('Incorrect take duration');
@@ -126,7 +142,7 @@ if (process.argv.includes('--check')) {
 console.log(JSON.stringify({bytes:Buffer.byteLength(content), rigs:rigs.length,
     takes:data.takes.map(t=>({id:t.id, duration:t.duration, curves:t.curves.length, keys:t.curves.reduce((n,c)=>n+c.times.length,0)}))},null,2));
 const fixtures = [];
-for (const action of ['idle','look','tread','walk','sit','side']) for (const time of [.85, 1.36]) {
+for (const action of ['idle','look','tread','walk','sit','side']) for (const time of [.02,.15,.29,.85,1.36,2.63,4.81,5.2]) {
     const pose = sampleMotion(time,action,.8);
     for (const {id,skin,kind} of skins) {
         if (action === 'sit' || action === 'side') {
@@ -137,8 +153,10 @@ for (const action of ['idle','look','tread','walk','sit','side']) for (const tim
             if (id === 'body') applyMotionBody(skin,pose);
             else applyMotionLimb(skin,pose,pose.feet[id],kind);
         }
-        const indices = [451,820,1254,1610,1880];
+        const retained = optimizedRigs.find(r=>r.id===id).sourceVertices;
+        const indices = [1,2,3,4,5].map(i=>Math.floor(retained.length*i/6));
         const vertices = indices.map(index => {
+            index = retained[index];
             const v = skin.mesh.getVertexPosition(index, skin.mesh.position.clone());
             return [(v.x * (pose.mirror ? -1 : 1) + pose.x * UNIT), v.y - pose.down * UNIT, v.z].map(round);
         }).flat();
@@ -146,7 +164,7 @@ for (const action of ['idle','look','tread','walk','sit','side']) for (const tim
     }
 }
 const fixturePath = path.join(root,'unity/HomelessPetHelper/Assets/EditorScenes/PetMotion/PetMotionFixtures.json');
-const fixtureContent = JSON.stringify({fixtures})+'\n';
+const fixtureContent = JSON.stringify({fixtures,meshes:optimizedRigs.map(({id,sourceVertices})=>({id,sourceVertices}))})+'\n';
 if (process.argv.includes('--check')) {
     if (fs.readFileSync(fixturePath,'utf8') !== fixtureContent) throw new Error('Stale Unity pet fixtures');
 } else fs.writeFileSync(fixturePath,fixtureContent);

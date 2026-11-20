@@ -48,6 +48,9 @@ namespace HomelessPetHelper.Editor
                 throw new InvalidOperationException($"Desktop build failed: {report.summary.result}");
             }
 
+            File.Copy("Assets/Art/Fonts/OFL.txt", Path.Combine(Path.GetDirectoryName(destination),
+                "NotoSansSC-OFL.txt"), true);
+
             UnityEngine.Debug.Log($"Desktop build succeeded. Size: {report.summary.totalSize} bytes.");
         }
     }

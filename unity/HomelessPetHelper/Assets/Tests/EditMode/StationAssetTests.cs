@@ -12,7 +12,7 @@ namespace HomelessPetHelper.Tests.EditMode
         [TestCase("Dog")]
         public void TemporaryCareArtRespectsPreviewImageBudgetAndAlignedMask(string kind)
         {
-            string path = "Assets/EditorScenes/StationCareArt/T_Station_" + kind + "Temporary";
+            string path = "Assets/Art/Station/T_Station_" + kind + "Temporary";
             var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path + ".png");
             var importer = (TextureImporter)AssetImporter.GetAtPath(path + ".png");
             Assert.That(sprite, Is.Not.Null);

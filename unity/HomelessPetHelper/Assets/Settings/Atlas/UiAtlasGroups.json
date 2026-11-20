@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "groups": [
+    {
+      "id": "CityMap",
+      "lifetime": "CityMap panel, currently statically referenced by Main",
+      "maxSize": 1024,
+      "padding": 4,
+      "includeInBuild": false,
+      "decision": "Candidate only. Keep standalone sprites until measured batching benefit justifies page memory. See docs/图集工具与验证.md.",
+      "textures": [
+        "Assets/Art/CityMap/Animals/T_Animal_CatCalico.png",
+        "Assets/Art/CityMap/Animals/T_Animal_CatOrange.png",
+        "Assets/Art/CityMap/Animals/T_Animal_DogWhite.png",
+        "Assets/Art/CityMap/Animals/T_Animal_Rabbit.png",
+        "Assets/Art/CityMap/T_CityPlace_Parking.png",
+        "Assets/Art/CityMap/T_CityPlace_Porch.png",
+        "Assets/Art/CityMap/T_CityPlace_Shelter.png",
+        "Assets/Art/CityMap/T_CityPlace_Yard.png"
+      ]
+    }
+  ]
+}
