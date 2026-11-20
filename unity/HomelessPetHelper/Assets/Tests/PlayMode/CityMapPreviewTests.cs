@@ -88,6 +88,36 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator FocusApplicationAndManualPauseComposeAndReopenedMapIgnoresHiddenInput()
+        {
+            yield return Load();
+            string status = Label("Status").text;
+            Toggle pause = _view.GetComponentInChildren<Toggle>();
+            pause.isOn = true;
+            _view.SendMessage("OnApplicationFocus", false);
+            _view.SendMessage("OnApplicationPause", true);
+            _view.SendMessage("OnApplicationFocus", true);
+            pause.isOn = false;
+            Assert.That(Button("Primary").IsInteractable(), Is.False);
+            Click("Primary");
+            Assert.That(Label("Status").text, Is.EqualTo(status));
+            _view.SendMessage("OnApplicationPause", false);
+            Assert.That(Button("Primary").IsInteractable(), Is.True);
+            pause.isOn = true;
+            _view.gameObject.SetActive(false);
+            Click("Primary");
+            Click("Cancel");
+            _view.gameObject.SetActive(true);
+            Assert.That(_view.IsSuspended, Is.False, "A new visible map resets the manual pause input.");
+            Assert.That(Label("Heading").text, Is.EqualTo(Copy("parking")));
+            Assert.That(Button("Primary").IsInteractable(), Is.True);
+            Assert.That(Label("Departure").text,
+                Is.EqualTo(Copy("departure.preview", 5, Copy("space.required"))));
+            Assert.That(Label("Status").text, Is.EqualTo(status));
+            yield return SceneManager.LoadSceneAsync("Assets/Scenes/Main.unity");
+        }
+
+        [UnityTest]
         public IEnumerator MapRendersSixRatiosWithBoundMarkersAndInsetControls()
         {
             yield return Load();
@@ -179,6 +209,8 @@ namespace HomelessPetHelper.Tests.PlayMode
                 var settings = label.GetGenerationSettings(label.rectTransform.rect.size);
                 float height = new TextGenerator().GetPreferredHeight(label.text, settings) / label.pixelsPerUnit;
                 Assert.That(height, Is.LessThanOrEqualTo(label.rectTransform.rect.height + 2), label.name);
+                if (!string.IsNullOrWhiteSpace(label.text))
+                    Assert.That(label.cachedTextGenerator.vertexCount, Is.GreaterThan(4), label.name);
             }
         }
 

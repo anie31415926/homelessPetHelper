@@ -78,12 +78,37 @@ namespace HomelessPetHelper.Game.CityMap
         public void ValidateText(OptionPreviewText text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
+            foreach (string key in new[]
+            {
+                "title", "pause", "point.Locked", "point.HasHelpRequest", "point.NoRequest",
+                "space.required", "space.directReception", "unavailable.reunion", "unavailable.exploration",
+                "request.unavailable", "depart", "return", "reopen", "arrived.detail", "arrived.exploring",
+                "station", "cancelled", "paused", "ready", "full", "failure", "shelter"
+            }) ValidateTextEntry(text, key);
+            // Use the same argument types as rendering, so numeric formats are checked too.
+            ValidateTextEntry(text, "status", 0, 0L);
+            ValidateTextEntry(text, "arrived", string.Empty);
+            ValidateTextEntry(text, "returned", 0L);
+            ValidateTextEntry(text, "returned.exploring", 0L);
+            ValidateTextEntry(text, "detail.noRequest", string.Empty);
+            ValidateTextEntry(text, "detail.request", string.Empty, string.Empty);
+            ValidateTextEntry(text, "departure.rescue", 0L, string.Empty);
+            ValidateTextEntry(text, "departure.preview", 0L, string.Empty);
             foreach (MapPointDefinition point in Definition.Points)
             {
-                text.Get(point.DisplayNameKey);
-                text.Get(GetDetailKey(point.PointId));
+                ValidateTextEntry(text, point.DisplayNameKey);
+                ValidateTextEntry(text, GetDetailKey(point.PointId));
             }
-            foreach (HelpRequestTemplate template in _templates) text.Get(template.TextKey);
+            foreach (HelpRequestTemplate template in _templates) ValidateTextEntry(text, template.TextKey);
+        }
+
+        private static void ValidateTextEntry(OptionPreviewText text, string key, params object[] values)
+        {
+            try { text.Get(key, values); }
+            catch (FormatException error)
+            {
+                throw new ArgumentException("Invalid city map text format for key: " + key, nameof(text), error);
+            }
         }
 
         public CityMapRules CreateRules(PointUnlockState unlocks, RequestPoolState pool) =>

@@ -5,8 +5,10 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Text.RegularExpressions;
+using HomelessPetHelper.Bootstrap;
 using HomelessPetHelper.Editor.CityMap;
 using HomelessPetHelper.Editor.OptionPreview;
+using HomelessPetHelper.Modules.Outing;
 using HomelessPetHelper.Modules.Outing.UI;
 using NUnit.Framework;
 using UnityEditor;
@@ -68,6 +70,9 @@ namespace HomelessPetHelper.Tests.EditMode
                     {
                         Button button = fixture.PointButtons[index];
                         Assert.That(button.GetComponentInChildren<Text>().text, Is.EqualTo("Place " + index));
+                        Assert.That(button.GetComponentsInChildren<Text>().Single(text => text.name == "State").text,
+                            Is.EqualTo(new OptionPreviewText(fixture.Text).Get(count > 1 && index == count - 1 ?
+                                "point.Locked" : "point.NoRequest")));
                         if (count > 1 && index == count - 1)
                         {
                             Assert.That(button.interactable, Is.False);
@@ -122,10 +127,10 @@ namespace HomelessPetHelper.Tests.EditMode
                 }
                 finally { UnityEngine.Object.DestroyImmediate(wrong); }
             }
-            foreach (string error in new[] { "duplicate-id", "duplicate-button", "missing-label" })
+            foreach (string error in new[] { "duplicate-id", "duplicate-button", "missing-label", "missing-state" })
             {
-                string message = error == "missing-label" ? "Incomplete city map point binding" :
-                    "Duplicate city map point ID or button";
+                string message = error.StartsWith("missing", StringComparison.Ordinal) ?
+                    "Incomplete city map point binding" : "Duplicate city map point ID or button";
                 LogAssert.Expect(LogType.Exception, new Regex("InvalidOperationException: " + message));
                 using (var fixture = new Fixture(4, attachPresenter: false, corrupt: error))
                 {
@@ -154,7 +159,7 @@ namespace HomelessPetHelper.Tests.EditMode
             var source = new TextAsset(AssetDatabase.LoadAssetAtPath<TextAsset>(CityMapAssets.ConfigPath).text
                 .Replace("\"initialCapacity\": 2", "\"initialCapacity\": 0")
                 .Replace("\"explorationMinutes\": 5", "\"explorationMinutes\": 9")
-                .Replace("\"textKey\": \"parking.detail\"", "\"textKey\": \"yard.detail\""));
+                .Replace("\"textKey\": \"parking.rescue\"", "\"textKey\": \"yard.detail\""));
             TextAsset text = AssetDatabase.LoadAssetAtPath<TextAsset>(CityMapAssets.TextPath);
             var copy = new OptionPreviewText(text);
             staging.SetActive(true);
@@ -167,8 +172,14 @@ namespace HomelessPetHelper.Tests.EditMode
                     Text feedback = root.GetComponentsInChildren<Text>(true).Single(item => item.name == "Feedback");
                     Text status = root.GetComponentsInChildren<Text>(true).Single(item => item.name == "Status");
                     Button primary = root.GetComponentsInChildren<Button>(true).Single(item => item.name == "Primary");
-                    Assert.That(details.text, Is.EqualTo(copy.Get("yard.detail")),
+                    Assert.That(root.GetComponentsInChildren<Text>(true).Single(item => item.name == "Heading").text,
+                        Is.EqualTo(copy.Get("porch")), "Direct reception can still depart when the station is full.");
+                    root.GetComponentsInChildren<Button>(true).Single(item => item.name == "Parking").onClick.Invoke();
+                    Assert.That(details.text, Is.EqualTo(copy.Get("detail.request",
+                        copy.Get("parking.detail"), copy.Get("yard.detail"))),
                         "Request template owns its text key.");
+                    Assert.That(primary.interactable, Is.False, "Capacity is previewed before a rejected click.");
+                    Assert.That(feedback.text, Is.EqualTo(copy.Get("full")));
                     primary.onClick.Invoke();
                     Assert.That(feedback.text, Is.EqualTo(copy.Get("full")));
                     Assert.That(status.text, Is.EqualTo(copy.Get("status", 0, 0)));
@@ -184,6 +195,126 @@ namespace HomelessPetHelper.Tests.EditMode
             {
                 UnityEngine.Object.DestroyImmediate(staging);
                 UnityEngine.Object.DestroyImmediate(source);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator OpeningRecommendationUsesCurrentRequestsCapacityRestrictionsAndStableIds()
+        {
+            yield return new EnterPlayMode();
+            using (var fixture = new Fixture(4, attachPresenter: false))
+            {
+                var scenarios = new (string Name, int ExpectedIndex, bool CanDepart)[]
+                {
+                    ("initial", 0, true), ("resolved", 2, true), ("accepted", 2, true),
+                    ("closed-initial", 2, true), ("unsupported-initial", 2, true),
+                    ("full", 0, false), ("all-unsupported", 0, false),
+                    ("only-open-point", 1, true), ("all-closed", 0, false),
+                    ("no-requests", 0, true), ("no-open-initial-no-requests", 2, true)
+                };
+                foreach (var scenario in scenarios) AssertRecommendation(fixture, scenario);
+            }
+        }
+
+        private static void AssertRecommendation(Fixture fixture,
+            (string Name, int ExpectedIndex, bool CanDepart) scenario)
+        {
+            var configSource = new TextAsset(JsonUtility.ToJson(CreateConfig(4)));
+            try
+            {
+                var config = new CityMapPreviewConfig(configSource);
+                using (var session = CreateSelectionSession(config, scenario.Name))
+                {
+                    RequestState[] states = session.Requests.Requests.Select(request => request.State).ToArray();
+                    using (var presenter = new CityMapPresenter(fixture.View, fixture.Text, config, session,
+                        departureRestriction: plan => scenario.Name == "all-unsupported" ||
+                            scenario.Name == "unsupported-initial" && plan.PointId == "site-0" ? "blocked" : null))
+                    {
+                        Assert.That(fixture.Label("Heading").text, Is.EqualTo("Place " + scenario.ExpectedIndex),
+                            scenario.Name);
+                        Assert.That(fixture.Button("Primary").IsInteractable(), Is.EqualTo(scenario.CanDepart),
+                            scenario.Name);
+                        Assert.That(session.Requests.Requests.Select(request => request.State), Is.EqualTo(states));
+                        Assert.That(session.Outing.Session.HasDeparted, Is.False);
+                        Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero);
+                        Assert.That(session.Station.Animals, Is.Empty);
+                        if (scenario.Name == "all-closed") return;
+                        fixture.PointButtons[1].onClick.Invoke();
+                        presenter.ShowFeedback("refresh");
+                        Assert.That(fixture.Label("Heading").text, Is.EqualTo("Place 1"),
+                            "Refreshing restrictions must preserve manual selection.");
+                    }
+                }
+            }
+            finally { UnityEngine.Object.DestroyImmediate(configSource); }
+        }
+
+        private static GameLoopSession CreateSelectionSession(CityMapPreviewConfig config, string scenario)
+        {
+            var unlocks = new PointUnlockState();
+            var pool = new RequestPoolState();
+            if (!scenario.EndsWith("no-requests", StringComparison.Ordinal))
+                for (int index = 0; index < 3; index++)
+                    Assert.That(pool.TryAdd(new HelpRequest(Guid.NewGuid(), "help", "site-" + index, 1), out _),
+                        Is.True);
+            if (scenario == "resolved" || scenario == "accepted")
+            {
+                Guid id = pool.Requests.Single(request => request.PointId == "site-0").RequestId;
+                Assert.That(pool.TryTransition(id, RequestSignal.Accept, out _), Is.True);
+                if (scenario == "resolved")
+                    Assert.That(pool.TryTransition(id, RequestSignal.Resolve, out _), Is.True);
+            }
+            if (scenario == "closed-initial" || scenario == "only-open-point" ||
+                scenario == "no-open-initial-no-requests") unlocks.Close("site-0");
+            if (scenario == "only-open-point") unlocks.Close("site-2");
+            if (scenario == "all-closed")
+                foreach (var point in config.Definition.Points) unlocks.Close(point.PointId);
+            var rules = new CityMapRules(config.Definition, unlocks, pool,
+                new[] { new HelpRequestTemplate("help", "yard.rescue", "dog", Array.Empty<string>()) });
+            var session = new GameLoopSession(scenario == "full" ? 0 : 4,
+                config.MinutesPerDay, rules, pool, config.TimePolicy);
+            Assert.That(session.TryOpenMap(Guid.NewGuid(), config.Seed, out _), Is.True);
+            return session;
+        }
+
+        [UnityTest]
+        public IEnumerator InvalidTextLeavesNoPresenterListenersOrGameplayChanges()
+        {
+            yield return new EnterPlayMode();
+            using (var fixture = new Fixture(4, attachPresenter: false))
+            {
+                var configSource = new TextAsset(JsonUtility.ToJson(CreateConfig(4)));
+                var table = JsonUtility.FromJson<TextTable>(fixture.Text.text);
+                table.entries.Single(entry => entry.key == "returned").value = "{1}";
+                var badText = new TextAsset(JsonUtility.ToJson(table));
+                try
+                {
+                    var config = new CityMapPreviewConfig(configSource);
+                    using (var session = CreateSelectionSession(config, "initial"))
+                    {
+                        var error = Assert.Throws<ArgumentException>(() =>
+                            new CityMapPresenter(fixture.View, badText, config, session));
+                        Assert.That(error.Message, Does.Contain("returned"));
+                        fixture.Button("Primary").onClick.Invoke();
+                        Assert.That(session.Outing.Session.HasDeparted, Is.False);
+                        Assert.That(session.Requests.Requests.All(request => request.State == RequestState.Available),
+                            Is.True);
+                        Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero);
+                        using (var presenter = new CityMapPresenter(fixture.View, fixture.Text, config, session))
+                        {
+                            fixture.Button("Primary").onClick.Invoke();
+                            Assert.That(session.Outing.Session.HasDeparted, Is.True);
+                            int accepted = session.Requests.Requests.Count(request =>
+                                request.State == RequestState.Accepted);
+                            Assert.That(accepted, Is.EqualTo(1));
+                        }
+                    }
+                }
+                finally
+                {
+                    UnityEngine.Object.DestroyImmediate(configSource);
+                    UnityEngine.Object.DestroyImmediate(badText);
+                }
             }
         }
 
@@ -237,6 +368,8 @@ namespace HomelessPetHelper.Tests.EditMode
                         node.GetComponentsInChildren<Image>()
                         .Single(image => image != button.image);
                     binding.FindPropertyRelative("_label").objectReferenceValue = node.GetComponentInChildren<Text>();
+                    binding.FindPropertyRelative("_stateLabel").objectReferenceValue = node
+                        .GetComponentsInChildren<Text>().Single(label => label.name == "State");
                 }
                 CorruptBinding(bindings, corrupt);
                 serialized.ApplyModifiedPropertiesWithoutUndo();
@@ -274,10 +407,11 @@ namespace HomelessPetHelper.Tests.EditMode
                     second.FindPropertyRelative("_pointId").stringValue =
                         first.FindPropertyRelative("_pointId").stringValue;
                 else if (corrupt == "duplicate-button")
-                    foreach (string field in new[] { "_button", "_highlight", "_label" })
+                    foreach (string field in new[] { "_button", "_highlight", "_label", "_stateLabel" })
                         second.FindPropertyRelative(field).objectReferenceValue =
                             first.FindPropertyRelative(field).objectReferenceValue;
-                else second.FindPropertyRelative("_label").objectReferenceValue = null;
+                else second.FindPropertyRelative(corrupt == "missing-state" ? "_stateLabel" : "_label")
+                    .objectReferenceValue = null;
             }
         }
     }

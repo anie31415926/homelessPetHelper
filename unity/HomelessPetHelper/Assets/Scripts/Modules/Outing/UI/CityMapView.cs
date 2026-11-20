@@ -12,11 +12,14 @@ namespace HomelessPetHelper.Modules.Outing.UI
         [SerializeField] private Text _status;
         [SerializeField] private Text _heading;
         [SerializeField] private Text _details;
+        [SerializeField] private Text _departure;
         [SerializeField] private Text _feedback;
         [SerializeField] private string _backgroundId;
         [SerializeField] private CityMapPointBinding[] _pointBindings;
         [SerializeField] private Color _selectedColor = new Color32(255, 214, 122, 255);
         [SerializeField] private Color _normalColor = new Color32(255, 255, 255, 245);
+        [SerializeField] private Color _helpColor = new Color32(255, 230, 184, 255);
+        [SerializeField] private Color _lockedColor = new Color32(210, 214, 210, 255);
         [SerializeField] private Button _primary;
         [SerializeField] private Text _primaryLabel;
         [SerializeField] private Button _cancel;
@@ -40,7 +43,7 @@ namespace HomelessPetHelper.Modules.Outing.UI
 
         private void Awake()
         {
-            if (_status == null || _heading == null || _details == null || _feedback == null ||
+            if (_status == null || _heading == null || _details == null || _departure == null || _feedback == null ||
                 string.IsNullOrWhiteSpace(_backgroundId) ||
                 _pointBindings == null || _pointBindings.Length == 0 ||
                 _primary == null || _primaryLabel == null || _cancel == null || _pause == null)
@@ -66,12 +69,14 @@ namespace HomelessPetHelper.Modules.Outing.UI
         private void OnEnable()
         {
             if (!_initialized) return;
+            _manualPause = false;
             for (int i = 0; i < _pointBindings.Length; i++)
                 _pointBindings[i].Button.onClick.AddListener(_pointClicks[i]);
             _primary.onClick.AddListener(OnPrimary);
             _cancel.onClick.AddListener(OnCancel);
             _pause.onValueChanged.AddListener(OnPause);
             _listening = true;
+            PauseChanged?.Invoke(IsSuspended);
         }
 
         private void OnDisable()
@@ -95,29 +100,40 @@ namespace HomelessPetHelper.Modules.Outing.UI
                     "City map definition does not match saved background/point bindings.");
         }
 
-        public void RenderPoint(string pointId, string label, bool selected, bool interactable)
+        public void RenderPoint(string pointId, string label, string stateLabel, PointDisplayState state,
+            bool selected, bool interactable)
         {
             if (!_points.TryGetValue(pointId, out CityMapPointBinding point))
                 throw new ArgumentException("Unbound city map point: " + pointId, nameof(pointId));
-            point.Render(label, interactable, selected ? _selectedColor : _normalColor);
+            Color color = state == PointDisplayState.Locked ? _lockedColor : selected ? _selectedColor :
+                state == PointDisplayState.HasHelpRequest ? _helpColor : _normalColor;
+            point.Render(label, stateLabel, interactable, color);
         }
 
-        public void Render(string status, string heading, string details, string feedback,
-            string command, bool selecting, bool paused)
+        public void Render(string status, string heading, string details, string departure, string feedback,
+            string command, bool selecting, bool paused, bool canAct)
         {
             _status.text = status;
             _heading.text = heading;
             _details.text = details;
+            _departure.text = departure;
             _feedback.text = feedback;
             _primaryLabel.text = command;
-            _primary.interactable = !paused;
+            _primary.interactable = !paused && canAct;
             _cancel.gameObject.SetActive(selecting);
             _cancel.interactable = !paused;
             _pause.SetIsOnWithoutNotify(paused);
         }
 
-        private void OnPrimary() => PrimaryClicked?.Invoke();
-        private void OnCancel() => CancelClicked?.Invoke();
+        private void OnPrimary()
+        {
+            if (isActiveAndEnabled && _primary.IsInteractable()) PrimaryClicked?.Invoke();
+        }
+
+        private void OnCancel()
+        {
+            if (isActiveAndEnabled && _cancel.isActiveAndEnabled && _cancel.IsInteractable()) CancelClicked?.Invoke();
+        }
         private void OnPause(bool value)
         {
             _manualPause = value;

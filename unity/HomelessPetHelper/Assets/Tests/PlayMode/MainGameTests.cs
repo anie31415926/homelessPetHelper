@@ -4,6 +4,8 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using HomelessPetHelper.Game;
+using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Modules.Outing;
 using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Rescue;
 using HomelessPetHelper.Modules.Siege;
@@ -49,6 +51,47 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(_root.Presenter.Session.Activity, Is.TypeOf<SiegeRescueActivity>());
             return (SiegeRescueActivity)_root.Presenter.Session.Activity;
         }
+
+        [UnityTest]
+        public IEnumerator MapPreviewsSupportedDepartureAndRejectsUnavailableOrChangedRequestsWithoutSideEffects()
+        {
+            Click(_station, "Restart");
+            var session = _root.Presenter.Session;
+            var outing = session.Outing.Session;
+            var content = Resources.FindObjectsOfTypeAll<GameContent>().Single(item => item.name == "GameContent");
+            var copy = new OptionPreviewText(content.MapText);
+            Assert.That(MapLabel("Departure"), Is.EqualTo(copy.Get("departure.rescue", 35,
+                copy.Get("space.required"))));
+            Assert.That(session.Requests.Requests.All(request => request.State == RequestState.Available), Is.True);
+            Assert.That(outing.HasDeparted, Is.False);
+            Click(_map, "Porch");
+            Button primary = FindButton(_map, "Primary");
+            Assert.That(primary.IsInteractable(), Is.False);
+            Assert.That(MapLabel("Feedback"), Is.EqualTo(copy.Get("unavailable.reunion")));
+            primary.onClick.Invoke();
+            Assert.That(outing.Stage, Is.EqualTo(OutingStage.MapSelecting));
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero);
+            Assert.That(session.Requests.Requests.All(request => request.State == RequestState.Available), Is.True);
+            Click(_map, "Parking");
+            Assert.That(primary.IsInteractable(), Is.True);
+            var request = session.Requests.Requests.Single(item => item.PointId == "parking");
+            Assert.That(session.Requests.TryTransition(request.RequestId, RequestSignal.Accept, out _), Is.True);
+            primary.onClick.Invoke();
+            Assert.That(primary.IsInteractable(), Is.False, "Command must recheck a stale enabled button.");
+            Assert.That(MapLabel("Feedback"), Is.EqualTo(copy.Get("request.unavailable")));
+            Assert.That(outing.HasDeparted, Is.False);
+            Assert.That(session.Activity, Is.Null);
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero);
+            Click(_map, "Cancel");
+            primary.onClick.Invoke();
+            Assert.That(_station.gameObject.activeInHierarchy, Is.True, "Hidden map input cannot reopen an outing.");
+            Assert.That(outing.IsSettled, Is.True);
+            yield return null;
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        private string MapLabel(string name) => _map.GetComponentsInChildren<Text>(true)
+            .Single(label => label.name == name).text;
 
         [UnityTest]
         public IEnumerator SavedMainControlsCompleteSiegeArrivalCareAndReentryWithOneIndividual()
@@ -234,6 +277,11 @@ namespace HomelessPetHelper.Tests.PlayMode
                 yield return null;
                 yield return null;
                 Canvas.ForceUpdateCanvases();
+                if (view is CityMapView)
+                    foreach (Text label in view.GetComponentsInChildren<Text>())
+                        if (!string.IsNullOrWhiteSpace(label.text))
+                            Assert.That(label.cachedTextGenerator.vertexCount, Is.GreaterThan(4),
+                                "Visible map text: " + label.name + " at " + size);
                 camera.Render();
                 var previous = RenderTexture.active;
                 RenderTexture.active = target;

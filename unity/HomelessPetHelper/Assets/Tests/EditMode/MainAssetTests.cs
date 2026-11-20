@@ -56,11 +56,11 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(content.Font.HasCharacter('救'), Is.True);
             Assert.That(content.Font.HasCharacter('助'), Is.True);
             Assert.That(dependencies, Does.Contain("Assets/Settings/Game/ApproachConfig.json"));
-            var approachSource = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.TextAsset>(
-                "Assets/Settings/Game/ApproachText.json");
-            foreach (char character in approachSource.text)
-                if (character > 127 && !char.IsWhiteSpace(character))
-                    Assert.That(content.Font.HasCharacter(character), Is.True, "approach glyph: " + character);
+            foreach (TextAsset source in new[] { content.ApproachText, content.MapText })
+                foreach (char character in source.text)
+                    if (character > 127 && !char.IsWhiteSpace(character))
+                        Assert.That(content.Font.HasCharacter(character), Is.True,
+                            source.name + " glyph: " + character);
             var stationText = new OptionPreviewText(content.StationText);
             foreach (var key in new[] { "save.loadFailed", "save.writeFailed", "save.recovered", "loop.dog",
                 "save.outingBoundary", "save.careBoundary" })

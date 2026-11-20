@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using HomelessPetHelper.Game;
+using HomelessPetHelper.Game.Text;
 using HomelessPetHelper.Modules.Outing;
 using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Siege;
@@ -67,6 +68,22 @@ namespace HomelessPetHelper.Tests.PlayMode
             var catCoat = _root.Presenter.Progress.Care.Get(cat).Capture();
             Assert.That(catCoat.CopyDirt().RemovedFraction, Is.GreaterThan(0));
             Click(_station, "Restart");
+            var content = Resources.FindObjectsOfTypeAll<GameContent>().Single(item => item.name == "GameContent");
+            var mapCopy = new OptionPreviewText(content.MapText);
+            Assert.That(_map.GetComponentsInChildren<Text>(true).Single(text => text.name == "Heading").text,
+                Is.EqualTo(mapCopy.Get("yard")), "Reopening after cat rescue recommends the remaining dog request.");
+            Assert.That(Button(_map, "Primary").IsInteractable(), Is.True);
+            Click(_map, "Parking");
+            string detail = _map.GetComponentsInChildren<Text>(true).Single(text => text.name == "Details").text;
+            Assert.That(detail, Is.EqualTo(mapCopy.Get("detail.noRequest", mapCopy.Get("parking.detail"))));
+            Assert.That(detail, Does.Not.Contain(mapCopy.Get("parking.rescue")));
+            Assert.That(Button(_map, "Parking").GetComponentsInChildren<Text>()
+                .Single(text => text.name == "State").text, Is.EqualTo(mapCopy.Get("point.NoRequest")));
+            Assert.That(Button(_map, "Primary").IsInteractable(), Is.False);
+            Assert.That(_map.GetComponentsInChildren<Text>(true).Single(text => text.name == "Feedback").text,
+                Is.EqualTo(mapCopy.Get("unavailable.exploration")));
+            Button(_map, "Primary").onClick.Invoke();
+            Assert.That(_root.Presenter.Session.Outing.Session.HasDeparted, Is.False);
             Click(_map, "Yard");
             Click(_map, "Primary"); MainApproachDriver.Complete();
             var dogActivity = (SiegeRescueActivity)_root.Presenter.Session.Activity;
@@ -101,6 +118,15 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return CaptureStation();
             Click(_station, "Animal1");
             Assert.That(_station.GetComponentsInChildren<Text>(true).Any(text => text.text.Contains("救助狗狗")), Is.True);
+            Click(_station, "Back");
+            Click(_station, "Restart");
+            Assert.That(_map.GetComponentsInChildren<Text>(true).Single(text => text.name == "Heading").text,
+                Is.EqualTo(mapCopy.Get("parking")), "With no supported request, keep an open place for inspection.");
+            Assert.That(Button(_map, "Primary").IsInteractable(), Is.False);
+            Assert.That(session.Outing.Session.HasDeparted, Is.False);
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(minutes));
+            Assert.That(session.Station.Animals.Count, Is.EqualTo(2));
+            Click(_map, "Cancel");
             LogAssert.NoUnexpectedReceived();
         }
 

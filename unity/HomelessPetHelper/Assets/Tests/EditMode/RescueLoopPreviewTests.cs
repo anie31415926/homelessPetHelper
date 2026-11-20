@@ -212,6 +212,7 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(_loop.Session.Station.Animals, Is.Empty);
             Click(_station, "Restart");
             Assert.That(_map.gameObject.activeSelf, Is.True);
+            Assert.That(VisibleText(_map), Does.Contain("25"), "Route-free preview uses its actual time policy.");
             CaptureSixRatios(_map, "map");
             Click(_map, "Primary");
             Assert.That(_rescue.gameObject.activeSelf, Is.True);
@@ -278,6 +279,8 @@ namespace HomelessPetHelper.Tests.EditMode
                 Assert.That(Button(_map, "Primary").IsInteractable(), Is.False);
                 _map.SendMessage("OnApplicationFocus", true);
                 Click(_map, "Porch");
+                Assert.That(_map.GetComponentsInChildren<Text>().Single(text => text.name == "Departure").text,
+                    Does.Contain("5").And.Not.Contain("25"), "Reunion preview only supports arrival and return.");
                 Click(_map, "Primary");
                 Assert.That(_loop.Session.Activity, Is.Null, "No fake owner handoff or kitten substitution.");
                 Click(_map, "Primary");
@@ -332,7 +335,8 @@ namespace HomelessPetHelper.Tests.EditMode
             Guid first = _loop.Session.Station.Animals[0].AnimalId;
             Click(_station, "Restart");
             Click(_map, "Yard");
-            Click(_map, "Primary");
+            Assert.That(Button(_map, "Primary").interactable, Is.False);
+            Button(_map, "Primary").onClick.Invoke();
             Assert.That(_loop.Session.Activity, Is.Null);
             Assert.That(_loop.Session.Outing.Session.HasDeparted, Is.False);
             Assert.That(_loop.Session.Station.Animals.Count, Is.EqualTo(2));

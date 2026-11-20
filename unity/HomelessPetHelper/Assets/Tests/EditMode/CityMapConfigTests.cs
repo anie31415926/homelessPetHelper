@@ -1,4 +1,5 @@
 using HomelessPetHelper.Game.CityMap;
+using HomelessPetHelper.Game;
 using HomelessPetHelper.Game.Text;
 using HomelessPetHelper.Game.Station;
 using System;
@@ -7,6 +8,7 @@ using HomelessPetHelper.Editor.CityMap;
 using HomelessPetHelper.Editor.OptionPreview;
 using HomelessPetHelper.Modules.Outing;
 using NUnit.Framework;
+using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -129,6 +131,100 @@ namespace HomelessPetHelper.Tests.EditMode
                 Assert.That(plan.EntryKind, Is.EqualTo(MapEntryKind.Exploration));
             }
             finally { UnityEngine.Object.DestroyImmediate(source); }
+        }
+
+        [TestCase("title")]
+        [TestCase("pause")]
+        [TestCase("status")]
+        [TestCase("point.Locked")]
+        [TestCase("space.required")]
+        [TestCase("departure.rescue")]
+        [TestCase("unavailable.reunion")]
+        [TestCase("unavailable.exploration")]
+        [TestCase("request.unavailable")]
+        [TestCase("returned.exploring")]
+        [TestCase("full")]
+        [TestCase("shelter")]
+        public void MissingMapCopyIsRejectedDuringValidationWithItsKey(string key)
+        {
+            TextAsset source = ChangedText(key, null);
+            try
+            {
+                var error = Assert.Throws<ArgumentException>(() => new CityMapPreviewConfig(Source())
+                    .ValidateText(new OptionPreviewText(source)));
+                Assert.That(error.Message, Does.Contain(key));
+            }
+            finally { UnityEngine.Object.DestroyImmediate(source); }
+        }
+
+        [TestCase("status", "{2}")]
+        [TestCase("status", "{0")]
+        [TestCase("detail.request", "{2}")]
+        [TestCase("detail.noRequest", "{1}")]
+        [TestCase("departure.rescue", "{2}")]
+        [TestCase("departure.preview", "{0:Q}")]
+        [TestCase("returned", "{1}")]
+        [TestCase("arrived", "{1}")]
+        [TestCase("parking", "{0}")]
+        [TestCase("parking.detail", "broken }")]
+        [TestCase("parking.rescue", "{0}")]
+        [TestCase("full", "{0}")]
+        public void InvalidMapFormatIsRejectedWithTheKeyAndOriginalCause(string key, string value)
+        {
+            TextAsset source = ChangedText(key, value);
+            try
+            {
+                var error = Assert.Throws<ArgumentException>(() => new CityMapPreviewConfig(Source())
+                    .ValidateText(new OptionPreviewText(source)));
+                Assert.That(error.Message, Does.Contain(key));
+                Assert.That(error.InnerException, Is.TypeOf<FormatException>());
+            }
+            finally { UnityEngine.Object.DestroyImmediate(source); }
+        }
+
+        [TestCase("status", "{1:N0} / {0:D2}")]
+        [TestCase("detail.request", "{1} {{help}} {0}")]
+        [TestCase("departure.rescue", "{1} {0:D2}")]
+        [TestCase("ready", "{{ready}}")]
+        public void LegalReorderedArgumentsFormatsAndEscapedBracesRemainValid(string key, string value)
+        {
+            TextAsset source = ChangedText(key, value);
+            try
+            {
+                Assert.DoesNotThrow(() => new CityMapPreviewConfig(Source())
+                    .ValidateText(new OptionPreviewText(source)));
+            }
+            finally { UnityEngine.Object.DestroyImmediate(source); }
+        }
+
+        [Test]
+        public void MainContentRejectsBadMapTextBeforeCreatingGameplay()
+        {
+            var content = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameContent>(
+                "Assets/Settings/Game/GameContent.asset"));
+            TextAsset source = ChangedText("returned", "{1}");
+            try
+            {
+                var serialized = new SerializedObject(content);
+                serialized.FindProperty("_mapText").objectReferenceValue = source;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                var error = Assert.Throws<ArgumentException>(content.Validate);
+                Assert.That(error.Message, Does.Contain("returned"));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(content);
+                UnityEngine.Object.DestroyImmediate(source);
+            }
+        }
+
+        private static TextAsset ChangedText(string key, string replacement)
+        {
+            var table = JObject.Parse(AssetDatabase.LoadAssetAtPath<TextAsset>(CityMapAssets.TextPath).text);
+            JToken entry = table["entries"].Single(item => (string)item["key"] == key);
+            if (replacement == null) entry.Remove();
+            else entry["value"] = replacement;
+            return new TextAsset(table.ToString());
         }
 
         private static TextAsset Source() => AssetDatabase.LoadAssetAtPath<TextAsset>(CityMapAssets.ConfigPath);

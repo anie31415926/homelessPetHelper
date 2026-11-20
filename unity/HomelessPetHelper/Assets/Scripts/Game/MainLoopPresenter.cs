@@ -26,6 +26,7 @@ namespace HomelessPetHelper.Game
         private readonly CityMapPreviewConfig _config;
         private readonly StationPreviewSession _stationPresenter;
         private readonly OptionPreviewText _text;
+        private readonly OptionPreviewText _mapText;
         private readonly AudioService _audio;
         private readonly Func<int> _outingSeedSource;
         private CityMapPresenter _mapPresenter;
@@ -48,6 +49,7 @@ namespace HomelessPetHelper.Game
             content.Validate();
             _config = content.CreateMapConfig();
             _text = new OptionPreviewText(content.StationText);
+            _mapText = new OptionPreviewText(content.MapText);
             Progress = new MainProgressSession(_config, content.Artwork, progressStorage);
             _map.gameObject.SetActive(false);
             _siege.gameObject.SetActive(false);
@@ -100,8 +102,18 @@ namespace HomelessPetHelper.Game
             _map.gameObject.SetActive(true);
             Session.SetSuspended(false);
             _mapPresenter = new CityMapPresenter(_map, _content.MapText, _config, Session,
-                EnterApproach, () => ShowStation(false));
+                EnterApproach, () => ShowStation(false), GetDepartureRestriction, hasOpeningRoute: true);
             _mapPresenter.ShowFeedback(_text.Get("save.outingBoundary"));
+        }
+
+        private string GetDepartureRestriction(MapDeparturePlan plan)
+        {
+            if (plan.EntryKind == MapEntryKind.OwnerReunion) return _mapText.Get("unavailable.reunion");
+            if (plan.EntryKind == MapEntryKind.Exploration) return _mapText.Get("unavailable.exploration");
+            if (!Session.Requests.TryGet(plan.RequestId, out var request) ||
+                _config.GetRescue(request.TemplateId) == null)
+                return _mapText.Get("request.unavailable");
+            return null;
         }
 
         private void EnterApproach()

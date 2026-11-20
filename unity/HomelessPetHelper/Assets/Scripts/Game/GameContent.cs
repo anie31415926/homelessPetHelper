@@ -38,7 +38,9 @@ namespace HomelessPetHelper.Game
                 throw new InvalidOperationException("Missing game content bindings.");
             Artwork.Get(false, out _);
             Artwork.Get(true, out _);
-            CreateMapConfig().ValidateRescues(CreateSiegeCatalog());
+            var map = CreateMapConfig();
+            map.ValidateText(new Text.OptionPreviewText(_mapText));
+            map.ValidateRescues(CreateSiegeCatalog());
             new Modules.Siege.UI.SiegeText(_siegeText).Validate(CreateSiegeCatalog());
             CreateApproachCatalog();
             Approach.ApproachPanelView.ValidateText(new Text.OptionPreviewText(_approachText));

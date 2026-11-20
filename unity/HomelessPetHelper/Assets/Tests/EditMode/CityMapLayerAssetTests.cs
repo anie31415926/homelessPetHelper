@@ -58,7 +58,8 @@ namespace HomelessPetHelper.Tests.EditMode
                     1f - (float)layer.y / layout.height)));
                 Assert.That(image.preserveAspect, Is.True);
                 Assert.That(image.color, Is.EqualTo(Color.white));
-                Assert.That(image.GetComponentsInChildren<Text>(true).Length, Is.EqualTo(1));
+                Assert.That(image.GetComponentsInChildren<Text>(true).Length,
+                    Is.EqualTo(layer.name == "Shelter" ? 1 : 2));
                 Assert.That(image.GetComponent<Button>() != null, Is.EqualTo(layer.name != "Shelter"));
             }
             MonoBehaviour view = root.GetComponents<MonoBehaviour>()
@@ -77,11 +78,16 @@ namespace HomelessPetHelper.Tests.EditMode
                 var button = (Button)binding.FindPropertyRelative("_button").objectReferenceValue;
                 var plate = (Image)binding.FindPropertyRelative("_highlight").objectReferenceValue;
                 var label = (Text)binding.FindPropertyRelative("_label").objectReferenceValue;
+                var stateLabel = (Text)binding.FindPropertyRelative("_stateLabel").objectReferenceValue;
                 Assert.That(plate.transform.parent, Is.SameAs(button.transform));
                 Assert.That(plate, Is.Not.SameAs(button.image));
                 Assert.That(plate.raycastTarget, Is.True);
                 Assert.That(label.transform.IsChildOf(plate.transform), Is.True);
+                Assert.That(stateLabel, Is.Not.Null);
+                Assert.That(stateLabel, Is.Not.SameAs(label));
+                Assert.That(stateLabel.transform.IsChildOf(plate.transform), Is.True);
             }
+            Assert.That(serialized.FindProperty("_departure").objectReferenceValue, Is.Not.Null);
         }
 
         [TestCase("Parking", 208, 190)]

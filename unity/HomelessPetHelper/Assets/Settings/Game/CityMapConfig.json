@@ -21,9 +21,9 @@
       "openByDefault": true, "sceneTemplateIds": ["porch"] }
   ],
   "requestTemplates": [
-    { "id": "ordinary", "textKey": "parking.detail", "animalDefinitionId": "cat.shy", "allowedPointIds": ["parking"] },
+    { "id": "ordinary", "textKey": "parking.rescue", "animalDefinitionId": "cat.shy", "allowedPointIds": ["parking"] },
     { "id": "ordinary-dog", "textKey": "yard.rescue", "animalDefinitionId": "dog", "allowedPointIds": ["yard"] },
-    { "id": "reunion", "textKey": "porch.detail", "animalDefinitionId": "dog", "allowedPointIds": ["porch"] }
+    { "id": "reunion", "textKey": "porch.reunion", "animalDefinitionId": "dog", "allowedPointIds": ["porch"] }
   ],
   "rescueEncounters": [
     { "templateId": "ordinary", "animalDefinitionId": "cat.shy", "encounterId": "cat", "dogArtwork": false,
