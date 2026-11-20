@@ -6,105 +6,18 @@ namespace HomelessPetHelper.Modules.Siege
 {
     internal static class SiegeAnimal
     {
-        internal static void Act(SiegeState s, SiegeCatalog c)
+        internal static void ChooseNext(SiegeState s, SiegeCatalog c, IntentKind previous, string lane)
         {
             var a = s.AnimalState;
-            var previous = a.Intent;
-            string lane = a.IntentLane;
-            switch (previous)
+            var hold = previous == IntentKind.Guard ? SiegeHold.FindTarget(s, c) : null;
+            if (hold != null)
             {
-                case IntentKind.Guard:
-                    a.GuardLane = lane;
-                    a.GuardUntilMs = s.ElapsedMs + c.Rules.GuardDurationMs;
-                    a.NextSlapMs = s.ElapsedMs;
-                    SiegeEntities.Record(s, c, "event.guard");
-                    break;
-                case IntentKind.Sweep:
-                    foreach (var unit in s.Troops)
-                        if (unit.Hp > 0 && SiegeEntities.Position(c, unit).Distance(a.SweepCenter) <= a.SweepRadius)
-                            SiegeEntities.Hit(unit, c.Rules.SweepDamage, c.Rules.SweepPush);
-                    a.GuardUntilMs = s.ElapsedMs;
-                    a.RecoveryUntilMs = s.ElapsedMs + c.Rules.SweepRecoveryMs;
-                    s.VisualEffects.Add(
-                        new Effect
-                        {
-                            Kind = "sweep",
-                            From = a.SweepCenter,
-                            Radius = a.SweepRadius,
-                            UntilMs = s.ElapsedMs + 650,
-                        }
-                    );
-                    SiegeEntities.Record(s, c, "event.sweep");
-                    break;
-                case IntentKind.Build:
-                    Build(s, c);
-                    break;
-                case IntentKind.Repair:
-                    Repair(s, c);
-                    break;
-                default:
-                    throw new InvalidOperationException("Unknown animal intent.");
+                SiegeAnimalCasting.Plan(s, c, IntentKind.Hold, new SkillTarget(hold.LaneId, unitId: hold.Id));
+                return;
             }
-            a.Actions++;
-            a.Charge = 0;
-            SiegeCombat.RemoveLost(s, c);
-            ChooseNext(s, c, previous, lane);
-        }
-
-        private static void Build(SiegeState s, SiegeCatalog c)
-        {
-            var a = s.AnimalState;
-            var pad = c.Pads.FirstOrDefault(x => x.Id == a.IntentPad);
-            if (pad == null || a.BuildsLeft <= 0 || s.Defenses.Any(x => x.Id == pad.Id))
-                return;
-            s.Defenses.Add(
-                new Tower
-                {
-                    Id = pad.Id,
-                    LaneId = pad.LaneId,
-                    Distance = c.Lane(pad.LaneId).Length * pad.At,
-                    Hp = c.Tower.Hp,
-                    Status = TowerStatus.Building,
-                    ReadyAtMs = s.ElapsedMs + c.Rules.BuildDurationMs,
-                    NextShotMs = s.ElapsedMs + c.Rules.BuildDurationMs,
-                }
-            );
-            a.BuildsLeft--;
-        }
-
-        private static void Repair(SiegeState s, SiegeCatalog c)
-        {
-            var a = s.AnimalState;
-            var tower = s.Defenses.FirstOrDefault(x => x.Id == a.IntentPad);
-            if (
-                tower == null
-                || tower.Status != TowerStatus.Active
-                || tower.Hp <= 0
-                || tower.Hp >= c.Tower.Hp
-                || a.RepairsLeft <= 0
-                || a.RepairTowerId != null
-                || s.ElapsedMs < a.NextRepairMs
-            )
-                return;
-            a.RepairsLeft--;
-            a.NextRepairMs = s.ElapsedMs + c.Rules.RepairCooldownMs;
-            a.RepairTowerId = tower.Id;
-            a.RepairReadyAtMs = s.ElapsedMs + c.Rules.RepairDurationMs;
-            SiegeEntities.Record(s, c, "event.repairStart");
-        }
-
-        private static void ChooseNext(SiegeState s, SiegeCatalog c, IntentKind previous, string lane)
-        {
-            var a = s.AnimalState;
-            if (previous == IntentKind.Guard)
+            if (previous == IntentKind.Guard || previous == IntentKind.Hold)
             {
-                a.Intent = IntentKind.Sweep;
-                a.IntentLane = lane;
-                a.IntentPad = null;
-                a.SeenTurn = s.Turn + 1;
-                a.SweepCenter = c.Lane(lane).PointAt(c.Lane(lane).Length * c.Rules.SweepCenterAt);
-                a.SweepRadius = c.Rules.SweepRadius;
-                SiegeEntities.Record(s, c, "event.warning");
+                SiegeAnimalCasting.Plan(s, c, IntentKind.Sweep, new SkillTarget(lane));
                 return;
             }
             var pressure = c
@@ -128,21 +41,17 @@ namespace HomelessPetHelper.Modules.Siege
                 .Select(x => x.Lane.Id)
                 .ToArray();
             Tower repair = null;
-            if (a.RepairsLeft > 0 && a.RepairTowerId == null && s.ElapsedMs >= a.NextRepairMs)
+            if (a.RepairsLeft > 0 && a.RepairTowerId == null && s.ElapsedMs >= a.SkillReadyAtMs(IntentKind.Repair))
                 repair = s
                     .Defenses.Where(x =>
-                        x.Status == TowerStatus.Active && x.Hp > 0 && x.Hp <= c.Tower.Hp * c.Rules.RepairThreshold
+                        x.Status == TowerStatus.Active && x.Hp > 0 && x.Hp <= c.Defense(x).Hp * c.Rules.RepairThreshold
                     )
                     .OrderBy(x => Array.IndexOf(pressure, x.LaneId))
                     .ThenBy(x => x.Hp)
                     .FirstOrDefault();
             if (repair != null)
             {
-                a.Intent = IntentKind.Repair;
-                a.IntentLane = repair.LaneId;
-                a.IntentPad = repair.Id;
-                a.SeenTurn = s.Turn + 1;
-                SiegeEntities.Record(s, c, "event.repairPlan");
+                SiegeAnimalCasting.Plan(s, c, IntentKind.Repair, new SkillTarget(repair.LaneId, repair.Id));
                 return;
             }
             var pad = c
@@ -152,18 +61,11 @@ namespace HomelessPetHelper.Modules.Siege
                 .FirstOrDefault();
             if (a.BuildsLeft > 0 && a.Actions + 1 >= c.Rules.BuildOnAnimalTurn && pad != null)
             {
-                a.Intent = IntentKind.Build;
-                a.IntentLane = pad.LaneId;
-                a.IntentPad = pad.Id;
-                a.SeenTurn = s.Turn + 1;
-                SiegeEntities.Record(s, c, "event.build");
+                SiegeAnimalCasting.Plan(s, c, IntentKind.Build, new SkillTarget(pad.LaneId, pad.Id));
             }
             else
             {
-                a.Intent = IntentKind.Guard;
-                a.IntentLane = pressure[0];
-                a.IntentPad = null;
-                a.SeenTurn = s.Turn;
+                SiegeAnimalCasting.Plan(s, c, IntentKind.Guard, new SkillTarget(pressure[0]));
             }
         }
     }

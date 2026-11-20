@@ -13,18 +13,23 @@ namespace HomelessPetHelper.Modules.Siege
         public bool Paused => _state.Paused;
         public int ElapsedMs => _state.ElapsedMs;
 
-        public SiegeSession(SiegeCatalog catalog, uint seed, string profile, string sessionId)
+        public SiegeSession(SiegeCatalog catalog, uint seed, string profile, string sessionId,
+            string encounterId = null)
         {
             Catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
             var preset = catalog.Profile(profile);
             if (preset == null || string.IsNullOrWhiteSpace(sessionId))
                 throw new ArgumentException("Invalid siege identity.");
+            var encounter = encounterId == null ? null : catalog.Content.Encounter(encounterId);
+            if (encounterId != null && encounter == null)
+                throw new ArgumentException("Unknown siege encounter: " + encounterId);
             _state = new SiegeState
             {
                 SessionId = sessionId,
                 Seed = seed,
                 Rng = seed,
                 Profile = profile,
+                EncounterId = encounterId,
                 Phase = BattlePhase.Decision,
                 Turn = 1,
                 Energy = catalog.Rules.OpeningEnergy,
@@ -34,19 +39,25 @@ namespace HomelessPetHelper.Modules.Siege
             a.Stamina = preset.Stamina;
             a.BuildsLeft = catalog.Rules.AnimalBuilds;
             a.RepairsLeft = catalog.Rules.AnimalRepairs;
-            a.IntentLane = catalog.Lanes.FirstOrDefault(x => x.Id == "mid" && x.Open)?.Id
+            string openingLane = catalog.Lanes.FirstOrDefault(x => x.Id == "mid" && x.Open)?.Id
                 ?? catalog.Lanes.First(x => x.Open).Id;
-            a.SeenTurn = 1;
+            SiegeAnimalCasting.Plan(_state, catalog, IntentKind.Guard, new SkillTarget(openingLane));
+            int towerIndex = 0;
             foreach (var pad in catalog.Pads.Where(x => x.Initial && catalog.Lane(x.LaneId).Open))
+            {
+                string typeId = encounter == null ? null
+                    : encounter.InitialTowerIds[towerIndex++ % encounter.InitialTowerIds.Count];
                 _state.Defenses.Add(
                     new Tower
                     {
                         Id = pad.Id,
+                        DefinitionId = typeId,
                         LaneId = pad.LaneId,
                         Distance = catalog.Lane(pad.LaneId).Length * pad.At,
-                        Hp = catalog.Tower.Hp,
+                        Hp = typeId == null ? catalog.Tower.Hp : catalog.Content.Tower(typeId).Hp,
                     }
                 );
+            }
             SiegeEntities.Draw(_state, catalog, catalog.Rules.HandSize);
             SiegeEntities.Record(_state, catalog, "event.start");
         }
@@ -113,12 +124,7 @@ namespace HomelessPetHelper.Modules.Siege
                 SiegeEntities.Record(s, Catalog, "event.turn");
                 return;
             }
-            if (
-                a.Charge >= 1
-                && s.ElapsedMs >= a.RecoveryUntilMs
-                && (a.Intent == IntentKind.Guard || s.ResolvedTurn >= a.SeenTurn)
-            )
-                SiegeAnimal.Act(s, Catalog);
+            SiegeAnimalCasting.TryRelease(s, Catalog);
         }
 
         /// <summary>Preview and commit share validation. Rejection leaves state, identity and RNG unchanged.</summary>
@@ -212,6 +218,8 @@ namespace HomelessPetHelper.Modules.Siege
                 var unit = s.Troops.FirstOrDefault(x => x.Id == o.RerouteUnitId.Value);
                 if (unit == null || unit.Reroutes < 1 || unit.TransitRemainingMs > 0 || unit.LaneId == o.RerouteLaneId)
                     return "reason.reroute";
+                if (unit.HeldUntilMs > s.ElapsedMs)
+                    return "reason.held";
                 if (Catalog.Lane(o.RerouteLaneId)?.Open != true)
                     return "reason.lane";
                 SiegeEntities.Reroute(unit, Catalog, o.RerouteLaneId);

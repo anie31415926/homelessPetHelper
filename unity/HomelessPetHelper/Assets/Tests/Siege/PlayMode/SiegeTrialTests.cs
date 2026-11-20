@@ -30,6 +30,8 @@ namespace HomelessPetHelper.Tests.Siege.PlayMode
             Assert.That(_view.Snapshot, Is.Not.Null);
             if (_view.Snapshot.Paused)
                 Click("Pause");
+            while (_view.Snapshot.EncounterId != null)
+                Click("Encounter");
         }
 
         private Button Button(string name) => _view.GetComponentsInChildren<Button>(true).Single(x => x.name == name);

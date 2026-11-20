@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261120-猫狗攻防首批-01a1f2fb.md",
+  "sessionId": "01a1f2fb-5a63-78d3-8185-fe95c0afc75f",
+  "phase": "delivery",
+  "readAt": "2026-11-20T08:10:12.786Z",
+  "writePaths": [
+    "art-source/resource-catalog.json",
+    "docs/协作任务/20261120-猫狗攻防首批-01a1f2fb.md",
+    "docs/协作执行记录/20261120-猫狗攻防首批-01a1f2fb/",
+    "docs/逆塔防猫狗攻防内容方案.md",
+    "docs/逆塔防猫狗首批实现记录.md",
+    "src/siege/content-text.zh-CN.json",
+    "src/siege/content.json",
+    "src/siege/unity-text.zh-CN.json",
+    "tests/siege-content.test.mjs",
+    "tools/siege-content.mjs",
+    "tools/siege-unity-data.mjs",
+    "unity/HomelessPetHelper/Assets/Art/Fonts/NotoSansSC-Game.ttf",
+    "unity/HomelessPetHelper/Assets/Art/Fonts/README.md",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_SiegeTrial.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/Siege/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/",
+    "unity/HomelessPetHelper/Assets/Settings/Siege/",
+    "unity/HomelessPetHelper/Assets/Tests/Siege/"
+  ],
+  "contextDigest": "29f514212fdb51c4f5e210cfdd45658d9e33f43a4ce7801a64d6468963e57a38",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "7885eae668288128a423d5d16434fabc0d169a9434ee34ee3f82d9fade177476"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261120-猫狗攻防首批-01a1f2fb.md",
+      "sha256": "43fa42bd8f38d23a9a4efddb6fb4d893e2aa88585b600bb713e27e9a3c5fc109"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "97b67c4e0e1c0963b73175b37b3c61244e2b52653f73ed28a8884611824ae8b6"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "258e1c22e3a77a262cce0e6ca5fcf9ac940bafc8f5c1e2c8598ece1f41d2798b"
+    }
+  ]
+}

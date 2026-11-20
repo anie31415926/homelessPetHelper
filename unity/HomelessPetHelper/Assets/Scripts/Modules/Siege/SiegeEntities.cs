@@ -15,7 +15,8 @@ namespace HomelessPetHelper.Modules.Siege
                 Hp = definition.Hp,
                 NextAttackMs = s.ElapsedMs,
                 NextAuraMs = s.ElapsedMs,
-                Brace = definition.Ability == "brace" ? 1 : 0,
+                Brace = definition.Ability == "brace" || definition.Ability == "braceAura" ? 1 : 0,
+                AbilityCharges = definition.Ability == "braceAura" ? 1 : 0,
                 Reroutes = definition.Ability == "reroute" ? 1 : 0,
             };
             s.Troops.Add(unit);
@@ -26,16 +27,26 @@ namespace HomelessPetHelper.Modules.Siege
         {
             var anchor = s.Troops.First(x => x.Id == anchorId);
             var definition = c.Unit(anchor.DefinitionId);
-            double fraction = s.Troops.Where(x => ids.Contains(x.Id)).Sum(x => x.Hp) / (definition.Hp * 3);
+            var materials = s.Troops.Where(x => ids.Contains(x.Id)).ToArray();
+            double fraction = materials.Sum(x => x.Hp) / (definition.Hp * 3);
+            if (s.EncounterId != null)
+                foreach (var material in s.Troops.Where(x => ids.Contains(x.Id)))
+                    s.VisualEffects.Add(new SiegeState.Effect { Kind = "mergePart", From = Position(c, material),
+                        To = Position(c, anchor), Visual = definition.Icon,
+                        StartMs = s.ElapsedMs, UntilMs = s.ElapsedMs + 450 });
             s.Troops.RemoveAll(x => ids.Contains(x.Id));
             var merged = Spawn(s, c.Unit(definition.UpgradeId), anchor.LaneId);
             merged.Distance = anchor.Distance;
             merged.Hp = Math.Max(0.01, c.Unit(merged.DefinitionId).Hp * fraction);
+            SiegeAnimalCasting.TransferMerge(s, materials, merged);
+            SiegeHold.TransferMerge(s, materials, merged);
             s.VisualEffects.Add(
                 new SiegeState.Effect
                 {
                     Kind = "merge",
                     From = Position(c, merged),
+                    StartMs = s.ElapsedMs,
+                    Visual = c.Unit(merged.DefinitionId).Icon,
                     UntilMs = s.ElapsedMs + 650,
                 }
             );
@@ -77,16 +88,25 @@ namespace HomelessPetHelper.Modules.Siege
             return false;
         }
 
-        internal static void Hit(SiegeState.Unit unit, double damage, double push = 0)
+        internal static void Hit(SiegeState.Unit unit, double damage, double push = 0, int elapsedMs = 0)
         {
             if (unit.Shield > 0)
                 unit.Shield--;
             else
                 unit.Hp -= damage;
+            if (unit.HeldUntilMs > elapsedMs)
+                return;
             if (push > 0 && unit.Brace > 0)
+            {
                 unit.Brace--;
+                unit.BraceReadyMs = elapsedMs + unit.BraceRearmMs;
+            }
             else if (push > 0 && unit.TransitRemainingMs == 0)
+            {
                 unit.Distance = Math.Max(0, unit.Distance - push);
+                unit.BurstHitsLeft = 0;
+                unit.NextAttackMs = Math.Max(unit.NextAttackMs, unit.BurstCooldownMs);
+            }
         }
 
         internal static void Reroute(SiegeState.Unit unit, SiegeCatalog c, string laneId)
@@ -99,6 +119,8 @@ namespace HomelessPetHelper.Modules.Siege
             unit.TransitTo = lane.PointAt(unit.Distance);
             unit.TransitRemainingMs = c.Rules.RerouteDurationMs;
             unit.Reroutes--;
+            unit.BurstHitsLeft = 0;
+            unit.NextAttackMs = Math.Max(unit.NextAttackMs, unit.BurstCooldownMs);
         }
 
         internal static SiegePoint Position(SiegeCatalog c, SiegeState.Unit unit) => SiegeGeometry.Position(c, unit);
@@ -116,7 +138,10 @@ namespace HomelessPetHelper.Modules.Siege
             {
                 if (s.Bag.Count == 0)
                 {
-                    foreach (var unit in c.Units.Where(x => x.Bag))
+                    var encounter = s.EncounterId == null ? null : c.Content.Encounter(s.EncounterId);
+                    var supply = encounter == null ? c.Units.Where(x => x.Bag)
+                        : encounter.UnitIds.Select(id => c.Unit(id));
+                    foreach (var unit in supply)
                         for (int i = 0; i < c.Rules.BagCopies; i++)
                             s.Bag.Add(unit.Id);
                     for (int i = s.Bag.Count - 1; i > 0; i--)

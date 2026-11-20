@@ -60,6 +60,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _retry,
             _newSeed,
             _profile;
+        [SerializeField] private Button _encounter;
         private SiegeCatalog _catalog;
         private SiegeText _text;
         private SiegeSession _session;
@@ -69,6 +70,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private int _profileIndex,
             _laneIndex = 1,
             _destinationIndex;
+        private int _encounterIndex = 1;
         private int? _card,
             _rerouteId;
         private readonly List<int> _materialIds = new List<int>();
@@ -136,6 +138,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _retry.onClick.AddListener(Restart);
             _newSeed.onClick.AddListener(NewSeed);
             _profile.onClick.AddListener(Profile);
+            _encounter.onClick.AddListener(Encounter);
             _field.UnitClicked += SelectUnit;
             _field.TowerClicked += SelectTower;
             if (_catalog != null)
@@ -160,6 +163,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _retry.onClick.RemoveListener(Restart);
             _newSeed.onClick.RemoveListener(NewSeed);
             _profile.onClick.RemoveListener(Profile);
+            _encounter.onClick.RemoveListener(Encounter);
             _field.UnitClicked -= SelectUnit;
             _field.TowerClicked -= SelectTower;
             _handPool?.Dispose();
@@ -205,6 +209,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _materialsPanel.SetActive(false);
             _newSeed.gameObject.SetActive(!_external);
             _profile.gameObject.SetActive(!_external);
+            _encounter.gameObject.SetActive(!_external);
             if (_external)
             {
                 _tower = null;
@@ -226,7 +231,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 _catalog,
                 _seedValue,
                 _catalog.Profiles[_profileIndex].Id,
-                Guid.NewGuid().ToString("N")
+                Guid.NewGuid().ToString("N"),
+                _encounterIndex == 0 ? null : _catalog.Content.Encounters[_encounterIndex - 1].Id
             );
             _tower = null;
             _laneIndex = 1;
@@ -246,6 +252,12 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private void Profile()
         {
             _profileIndex = (_profileIndex + 1) % _catalog.Profiles.Count;
+            Restart();
+        }
+
+        private void Encounter()
+        {
+            _encounterIndex = (_encounterIndex + 1) % (_catalog.Content.Encounters.Count + 1);
             Restart();
         }
 
@@ -458,14 +470,21 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 s.Energy
             );
             string kind = a.Intent.ToString().ToLowerInvariant();
+            var encounter = s.EncounterId == null ? null : _catalog.Content.Encounter(s.EncounterId);
+            string intentKey = encounter == null ? "unity." + kind
+                : a.Intent == IntentKind.Guard ? encounter.GuardNameKey
+                : a.Intent == IntentKind.Sweep ? encounter.SweepNameKey
+                : a.Intent == IntentKind.Hold ? encounter.HoldNameKey : "unity." + kind;
             _intent.text = _text.Format(
                 "unity.intent",
                 _text.Get(_catalog.Conditions(a.Vigilance, a.Stamina).NameKey),
-                _text.Get("unity." + kind),
+                _text.Get(intentKey),
                 _text.Get(_catalog.Lane(a.IntentLane).NameKey),
                 a.BuildsLeft,
                 a.RepairsLeft
             );
+            if (a.Intent == IntentKind.Hold)
+                _intent.text += _text.Format("unity.holdTarget", a.IntentUnitId);
             _playerBar.SetValueWithoutNotify((float)s.PlayerChargeMs / _catalog.Rules.PlayerPeriodMs);
             _animalBar.SetValueWithoutNotify((float)a.Charge);
             bool valid = _session.TryOrder(Plan(), false, out string reason, out int cost);
@@ -483,12 +502,20 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 if (_externalFeedback == null && s.Phase == BattlePhase.Timeout)
                     _feedback.text = _text.Get("game.timeout");
             }
-            if (a.RecoveryUntilMs > s.ElapsedMs)
+            if (a.HeldUnitId != 0)
+                _feedback.text += " · " + _text.Format("unity.holding", a.HeldUnitId,
+                    (a.HoldUntilMs - s.ElapsedMs) / 1000.0);
+            else if (a.RecoveryUntilMs > s.ElapsedMs)
                 _feedback.text += " · " + _text.Get("unity.recovering");
             if (a.RepairTowerId != null)
                 _feedback.text += " · " + _text.Get("unity.repairing");
+            int heldUntil = s.Units.Where(x => _materialIds.Contains(x.Id))
+                .Select(x => x.HeldUntilMs).DefaultIfEmpty(0).Max();
+            if (decision && _mergePlanned && heldUntil > s.ElapsedMs && _error == null && valid)
+                _feedback.text = _text.Format("unity.holdCarry", (heldUntil - s.ElapsedMs) / 1000.0);
             _seed.text = _text.Format("unity.seed", _seedValue);
             SetLabel(_profile, _text.Format("unity.profile", _text.Get(_catalog.Profiles[_profileIndex].NameKey)));
+            SetLabel(_encounter, encounter == null ? _text.Get("unity.legacy") : _text.Get(encounter.NameKey));
             _submit.interactable = decision && valid;
             SetLabel(
                 _submit,
@@ -504,7 +531,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
                     _rerouteId.HasValue
                     || (
                         _materialIds.Count == 1
-                        && s.Units.Any(x => x.Id == _materialIds[0] && x.Reroutes > 0 && x.TransitRemainingMs == 0)
+                        && s.Units.Any(x => x.Id == _materialIds[0] && x.Reroutes > 0
+                            && x.TransitRemainingMs == 0 && x.HeldUntilMs <= s.ElapsedMs)
                     )
                 );
             _destination.interactable = decision && _rerouteId.HasValue;
@@ -584,7 +612,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                             _text.Get(_catalog.Lane(unit.LaneId).NameKey),
                             unit.Hp,
                             d.Hp
-                        ),
+                        ) + HoldLabel(s, unit),
                         _materialIds.Contains(unit.Id),
                         decision && unit.TransitRemainingMs == 0,
                         SelectUnit
@@ -593,16 +621,27 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _rosterPool.Trim(s.Units.Count);
         }
 
+        private string HoldLabel(SiegeState s, Unit unit) => unit.HeldUntilMs > s.ElapsedMs
+            ? _text.Format("unity.held", (unit.HeldUntilMs - s.ElapsedMs) / 1000.0)
+            : unit.HoldProtectedUntilMs > s.ElapsedMs ? _text.Get("unity.holdProtected") : string.Empty;
+
         private void RenderDetail(SiegeState s)
         {
             var tower = s.Towers.FirstOrDefault(x => x.Id == _tower);
             if (tower != null)
             {
+                var defense = _catalog.Defense(tower);
+                if (tower.DefinitionId != null)
+                {
+                    _detail.text = _text.Format("unity.towerType", _text.Get(defense.NameKey),
+                        Math.Max(0, tower.Hp), defense.Hp, defense.Range);
+                    return;
+                }
                 _detail.text = _text.Format(
                     "unity.tower",
                     Math.Max(0, tower.Hp),
-                    _catalog.Tower.Hp,
-                    _catalog.Tower.Range
+                    defense.Hp,
+                    defense.Range
                 );
                 return;
             }

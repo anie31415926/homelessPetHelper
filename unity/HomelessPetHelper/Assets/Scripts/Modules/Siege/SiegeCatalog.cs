@@ -12,6 +12,8 @@ namespace HomelessPetHelper.Modules.Siege
         public IReadOnlyList<SiegeProfileDefinition> Profiles { get; }
         public IReadOnlyList<SiegeLane> Lanes { get; }
         public IReadOnlyList<SiegePadDefinition> Pads { get; }
+        public SiegeContentCatalog Content { get; }
+        private readonly SiegeTowerTypeDefinition _legacyTower;
         public double Width { get; }
         public double Height { get; }
 
@@ -100,9 +102,18 @@ namespace HomelessPetHelper.Modules.Siege
                 "tower"
             );
             Tower = new SiegeTowerDefinition(data.tower);
+            _legacyTower = new SiegeTowerTypeDefinition(new SiegeCatalogData.TowerTypeDto
+            {
+                id = "legacy", nameKey = "unity.tower", visual = "legacy", attack = "single",
+                hp = data.tower.hp, damage = data.tower.damage, range = data.tower.range,
+                periodMs = data.tower.periodMs, slowFactor = 1,
+            });
             Unique(data.units?.Select(x => x?.id), "units");
-            Units = Array.AsReadOnly(data.units.Select(x => new SiegeUnitDefinition(x)).ToArray());
+            var allUnits = data.units.Concat(data.contentUnits ?? Array.Empty<SiegeCatalogData.UnitDto>()).ToArray();
+            Unique(allUnits.Select(x => x?.id), "all units");
+            Units = Array.AsReadOnly(allUnits.Select(x => new SiegeUnitDefinition(x)).ToArray());
             ValidateUnits(data);
+            Content = new SiegeContentCatalog(data, this);
             Unique(data.animalStates?.Select(x => x?.id), "profiles");
             Profiles = Array.AsReadOnly(data.animalStates.Select(x => new SiegeProfileDefinition(x)).ToArray());
             Require(
@@ -137,6 +148,9 @@ namespace HomelessPetHelper.Modules.Siege
 
         public SiegeUnitDefinition Unit(string id) => Units.FirstOrDefault(x => x.Id == id);
 
+        public SiegeTowerTypeDefinition Defense(SiegeState.Tower tower) =>
+            tower.DefinitionId == null ? _legacyTower : Content.Tower(tower.DefinitionId);
+
         public SiegeLane Lane(string id) => Lanes.FirstOrDefault(x => x.Id == id);
 
         public SiegeProfileDefinition Profile(string id) => Profiles.FirstOrDefault(x => x.Id == id);
@@ -154,7 +168,7 @@ namespace HomelessPetHelper.Modules.Siege
 
         private void ValidateUnits(SiegeCatalogData data)
         {
-            foreach (var u in data.units)
+            foreach (var u in data.units.Concat(data.contentUnits ?? Array.Empty<SiegeCatalogData.UnitDto>()))
             {
                 ValidateNumbers(u);
                 Require(
@@ -168,7 +182,8 @@ namespace HomelessPetHelper.Modules.Siege
                         && u.cost <= Rules.EnergyCap,
                     "unit numbers"
                 );
-                Require(new[] { "none", "aura", "brace", "reroute" }.Contains(u.ability), "ability");
+                Require(new[] { "none", "aura", "brace", "reroute", "burst", "braceAura" }
+                    .Contains(u.ability), "ability");
                 Require(!string.IsNullOrWhiteSpace(u.nameKey) && !string.IsNullOrWhiteSpace(u.detailKey), "unit text");
                 Require(
                     string.IsNullOrEmpty(u.upgradeId)
@@ -177,6 +192,10 @@ namespace HomelessPetHelper.Modules.Siege
                 );
                 Require(!u.bag || !string.IsNullOrEmpty(u.upgradeId), "base upgrade");
                 Require(u.ability != "aura" || (u.abilityRadius > 0 && u.abilityPeriodMs > 0), "aura");
+                Require(u.ability != "burst" || (u.burstHits >= 2 && u.burstHits <= 5
+                    && u.burstIntervalMs > 0), "burst");
+                Require(u.ability != "braceAura" || (u.abilityRadius > 0 && u.auraTargets > 0
+                    && u.auraTargets <= 4 && u.auraRearmMs > 0), "brace aura");
             }
             Require(Units.Any(x => x.Bag && x.Cost > 0), "bag empty");
         }

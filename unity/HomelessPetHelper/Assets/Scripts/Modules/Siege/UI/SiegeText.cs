@@ -61,6 +61,15 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 Get(p.NameKey);
             foreach (var lane in c.Lanes)
                 Get(lane.NameKey);
+            foreach (var encounter in c.Content.Encounters)
+            {
+                Get(encounter.NameKey);
+                Get(encounter.GuardNameKey);
+                Get(encounter.SweepNameKey);
+                if (encounter.HoldDurationMs > 0) Get(encounter.HoldNameKey);
+            }
+            foreach (var tower in c.Content.Towers)
+                Get(tower.NameKey);
         }
     }
 }

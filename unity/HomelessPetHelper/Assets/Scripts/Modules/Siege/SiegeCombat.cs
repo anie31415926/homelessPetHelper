@@ -9,17 +9,21 @@ namespace HomelessPetHelper.Modules.Siege
         internal static void Advance(SiegeState s, SiegeCatalog c)
         {
             s.VisualEffects.RemoveAll(x => x.UntilMs <= s.ElapsedMs);
-            Repair(s, c);
+            s.Zones.RemoveAll(x => x.UntilMs <= s.ElapsedMs);
+            SiegeAnimalCasting.Advance(s, c);
+            SiegeRepair.AdvanceWork(s, c);
             Cover(s, c);
+            BraceAllies(s, c);
             Move(s, c);
-            TowersAttack(s, c);
-            GuardAttack(s, c);
+            SiegeDefenses.Advance(s, c);
+            SiegeGuard.AdvanceEffect(s, c);
             if (
                 s.AnimalState.RepairTowerId != null
                 && s.Defenses.Any(x => x.Id == s.AnimalState.RepairTowerId && x.Status == TowerStatus.Destroyed)
             )
-                Repair(s, c);
+                SiegeRepair.AdvanceWork(s, c);
             RemoveLost(s, c);
+            SiegeAnimalCasting.Advance(s, c);
             while (SiegeEntities.NaturalMerge(s, c)) { }
         }
 
@@ -30,31 +34,30 @@ namespace HomelessPetHelper.Modules.Siege
             s.Stats.Lost += s.Troops.RemoveAll(x => x.Hp <= 0);
         }
 
-        private static void Repair(SiegeState s, SiegeCatalog c)
+        private static void BraceAllies(SiegeState s, SiegeCatalog c)
         {
-            var a = s.AnimalState;
-            if (a.RepairTowerId == null)
-                return;
-            var tower = s.Defenses.FirstOrDefault(x => x.Id == a.RepairTowerId);
-            if (tower == null || tower.Status != TowerStatus.Active || tower.Hp <= 0)
+            foreach (var unit in s.Troops)
             {
-                a.RepairTowerId = null;
-                SiegeEntities.Record(s, c, "event.repairStopped");
-            }
-            else if (s.ElapsedMs >= a.RepairReadyAtMs)
-            {
-                tower.Hp = Math.Min(c.Tower.Hp, tower.Hp + c.Rules.RepairAmount);
-                s.Stats.Repairs++;
-                a.RepairTowerId = null;
-                s.VisualEffects.Add(
-                    new Effect
-                    {
-                        Kind = "repair",
-                        From = c.Lane(tower.LaneId).PointAt(tower.Distance),
-                        UntilMs = s.ElapsedMs + 650,
-                    }
-                );
-                SiegeEntities.Record(s, c, "event.repaired");
+                var d = c.Unit(unit.DefinitionId);
+                if (unit.Hp <= 0 || d.Ability != "braceAura" || unit.AbilityCharges <= 0
+                    || unit.TransitRemainingMs > 0)
+                    continue;
+                var targets = s.Troops.Where(x => x.Id != unit.Id && x.Hp > 0 && x.Brace == 0
+                    && s.ElapsedMs >= x.BraceReadyMs && x.TransitRemainingMs == 0
+                    && SiegeEntities.Position(c, unit).Distance(SiegeEntities.Position(c, x)) <= d.AbilityRadius)
+                    .OrderBy(x => SiegeEntities.Position(c, unit).Distance(SiegeEntities.Position(c, x)))
+                    .ThenBy(x => x.Id).Take(d.AuraTargets).ToArray();
+                if (targets.Length == 0)
+                    continue;
+                unit.AbilityCharges--;
+                foreach (var target in targets)
+                {
+                    target.Brace = 1;
+                    target.BraceRearmMs = d.AuraRearmMs;
+                    s.VisualEffects.Add(new Effect { Kind = "brace", From = SiegeEntities.Position(c, unit),
+                        To = SiegeEntities.Position(c, target), StartMs = s.ElapsedMs, UntilMs = s.ElapsedMs + 500 });
+                }
+                SiegeEntities.Record(s, c, "event.braced");
             }
         }
 
@@ -79,7 +82,7 @@ namespace HomelessPetHelper.Modules.Siege
         {
             foreach (var unit in s.Troops)
             {
-                if (unit.Hp <= 0)
+                if (unit.Hp <= 0 || unit.HeldUntilMs > s.ElapsedMs)
                     continue;
                 if (unit.TransitRemainingMs > 0)
                 {
@@ -105,8 +108,14 @@ namespace HomelessPetHelper.Modules.Siege
                 );
                 unit.Distance = Math.Min(
                     Math.Max(unit.Distance, limit),
-                    unit.Distance + d.Speed * c.Rules.StepMs / 1000
+                    unit.Distance + d.Speed * MovementFactor(s, c, unit) * c.Rules.StepMs / 1000
                 );
+                if (unit.BurstHitsLeft > 0 && (target == null || target.Id != unit.BurstTowerId
+                    || target.Distance - unit.Distance > d.Reach))
+                {
+                    unit.BurstHitsLeft = 0;
+                    unit.NextAttackMs = Math.Max(unit.NextAttackMs, unit.BurstCooldownMs);
+                }
                 if (target != null && target.Distance - unit.Distance <= d.Reach && s.ElapsedMs >= unit.NextAttackMs)
                     AttackTower(s, c, unit, target);
                 if (unit.Distance < lane.Length)
@@ -119,11 +128,30 @@ namespace HomelessPetHelper.Modules.Siege
             s.Troops.RemoveAll(x => x.Arrived);
         }
 
+        private static double MovementFactor(SiegeState s, SiegeCatalog c, Unit unit)
+        {
+            double factor = 1;
+            var position = SiegeEntities.Position(c, unit);
+            foreach (var zone in s.Zones)
+                if (position.Distance(zone.Center) <= zone.Radius)
+                    factor = Math.Min(factor, zone.Factor);
+            return factor;
+        }
+
         private static void AttackTower(SiegeState s, SiegeCatalog c, Unit unit, Tower tower)
         {
             var d = c.Unit(unit.DefinitionId);
+            if (d.Ability == "burst" && !unit.BurstUsed)
+            {
+                unit.BurstUsed = true;
+                unit.BurstTowerId = tower.Id;
+                unit.BurstHitsLeft = d.BurstHits;
+                unit.BurstCooldownMs = s.ElapsedMs + d.AttackMs;
+            }
             tower.Hp -= d.Damage;
-            unit.NextAttackMs = s.ElapsedMs + d.AttackMs;
+            if (unit.BurstHitsLeft > 0)
+                unit.BurstHitsLeft--;
+            unit.NextAttackMs = s.ElapsedMs + (unit.BurstHitsLeft > 0 ? d.BurstIntervalMs : d.AttackMs);
             s.VisualEffects.Add(
                 new Effect
                 {
@@ -131,6 +159,7 @@ namespace HomelessPetHelper.Modules.Siege
                     From = SiegeEntities.Position(c, unit),
                     To = c.Lane(tower.LaneId).PointAt(tower.Distance),
                     UntilMs = s.ElapsedMs + 160,
+                    StartMs = s.ElapsedMs,
                 }
             );
             if (tower.Hp > 0)
@@ -140,62 +169,5 @@ namespace HomelessPetHelper.Modules.Siege
             SiegeEntities.Record(s, c, "event.destroyed");
         }
 
-        private static void TowersAttack(SiegeState s, SiegeCatalog c)
-        {
-            foreach (var tower in s.Defenses)
-            {
-                if (tower.Status == TowerStatus.Building && s.ElapsedMs >= tower.ReadyAtMs)
-                    tower.Status = TowerStatus.Active;
-                if (tower.Status != TowerStatus.Active || s.ElapsedMs < tower.NextShotMs)
-                    continue;
-                var point = c.Lane(tower.LaneId).PointAt(tower.Distance);
-                var target = s
-                    .Troops.Where(x => x.Hp > 0 && point.Distance(SiegeEntities.Position(c, x)) <= c.Tower.Range)
-                    .OrderByDescending(x => x.Distance / c.Lane(x.LaneId).Length)
-                    .ThenBy(x => x.Id)
-                    .FirstOrDefault();
-                if (target == null)
-                    continue;
-                SiegeEntities.Hit(target, c.Tower.Damage);
-                tower.NextShotMs = s.ElapsedMs + c.Tower.PeriodMs;
-                s.VisualEffects.Add(
-                    new Effect
-                    {
-                        Kind = "towerShot",
-                        From = point,
-                        To = SiegeEntities.Position(c, target),
-                        UntilMs = s.ElapsedMs + 180,
-                    }
-                );
-            }
-        }
-
-        private static void GuardAttack(SiegeState s, SiegeCatalog c)
-        {
-            var a = s.AnimalState;
-            var r = c.Rules;
-            if (a.GuardLane == null || s.ElapsedMs >= a.GuardUntilMs || s.ElapsedMs < a.NextSlapMs)
-                return;
-            double reach = c.Lane(a.GuardLane).Length * r.GuardStart - r.SlapReach;
-            var target = s
-                .Troops.Where(x =>
-                    x.Hp > 0 && x.LaneId == a.GuardLane && x.TransitRemainingMs == 0 && x.Distance >= reach
-                )
-                .OrderByDescending(x => x.Distance)
-                .ThenBy(x => x.Id)
-                .FirstOrDefault();
-            if (target == null)
-                return;
-            s.VisualEffects.Add(
-                new Effect
-                {
-                    Kind = "slap",
-                    From = SiegeEntities.Position(c, target),
-                    UntilMs = s.ElapsedMs + 350,
-                }
-            );
-            SiegeEntities.Hit(target, r.SlapDamage, r.SlapPush);
-            a.NextSlapMs = s.ElapsedMs + r.SlapPeriodMs;
-        }
     }
 }

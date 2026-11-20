@@ -13,12 +13,21 @@ namespace HomelessPetHelper.Modules.Siege.UI
     {
         [SerializeField]
         private Image _cat;
+        [Serializable]
+        private sealed class AnimalVisual
+        {
+            public string Id;
+            public Sprite Sprite;
+        }
+        [SerializeField] private AnimalVisual[] _animalVisuals = Array.Empty<AnimalVisual>();
+        private Sprite _legacySprite;
         private SiegeCatalog _catalog;
         private SiegeState _state;
         private HashSet<int> _selected = new HashSet<int>();
         private int _lastUnit;
         private string _tower;
         private bool _interactive;
+        private SiegeCatalog _validatedCatalog;
         public event Action<int> UnitClicked;
         public event Action<string> TowerClicked;
         private static readonly Color Ink = new Color32(58, 79, 73, 255);
@@ -36,6 +45,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
             rectTransform.rect.center
             + new Vector2((float)(p.X - _catalog.Width / 2), (float)(_catalog.Height / 2 - p.Y)) * Scale;
 
+        private float PropScale => _state?.EncounterId == null ? Scale
+            : Mathf.Max(Scale, .6f / (canvas == null ? 1 : canvas.scaleFactor));
+
         public void Show(
             SiegeCatalog catalog,
             SiegeState state,
@@ -44,6 +56,23 @@ namespace HomelessPetHelper.Modules.Siege.UI
             bool interactive
         )
         {
+            if (_validatedCatalog != catalog)
+            {
+                foreach (var encounter in catalog.Content.Encounters)
+                    foreach (string id in encounter.UnitIds)
+                        if (!SiegeTokenArt.Supports(catalog.Unit(id).Icon)
+                            || !SiegeTokenArt.Supports(catalog.Unit(catalog.Unit(id).UpgradeId).Icon))
+                            throw new InvalidOperationException("Missing siege unit visual: " + id);
+                foreach (var defense in catalog.Content.Towers)
+                    if (!SiegeTokenArt.SupportsTower(defense.Visual))
+                        throw new InvalidOperationException("Missing siege tower visual: " + defense.Id);
+                foreach (var encounter in catalog.Content.Encounters)
+                    if (_animalVisuals.Count(x => x.Id == encounter.AnimalVisual && x.Sprite != null) != 1)
+                        throw new InvalidOperationException("Missing/duplicate siege animal visual: "
+                            + encounter.AnimalVisual);
+                if (_legacySprite == null) _legacySprite = _cat.sprite;
+                _validatedCatalog = catalog;
+            }
             _catalog = catalog;
             _state = state;
             _selected = new HashSet<int>(selected);
@@ -56,10 +85,36 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             if (_catalog == null || _cat == null)
                 return;
-            _cat.rectTransform.anchoredPosition = Local(new SiegePoint(301, 38));
+            var encounter = _state?.EncounterId == null ? null : _catalog.Content.Encounter(_state.EncounterId);
+            bool jumping = encounter != null && encounter.SweepDelayMs > 0;
+            var sprite = encounter == null ? _legacySprite
+                : _animalVisuals.First(x => x.Id == encounter.AnimalVisual).Sprite;
+            if (sprite != null) _cat.sprite = sprite;
+            Vector2 home = Local(new SiegePoint(301, 38));
+            Vector2 position = home;
+            float jump = 0;
+            if (jumping && _state != null)
+            {
+                var a = _state.AnimalState;
+                if (a.ImpactAtMs > _state.ElapsedMs)
+                {
+                    float t = (float)(_state.ElapsedMs - a.LeapStartMs) / (a.ImpactAtMs - a.LeapStartMs);
+                    position = Vector2.Lerp(home, Local(a.SweepCenter), t);
+                    jump = Mathf.Sin(t * Mathf.PI) * 18 * Scale;
+                }
+                else if (a.LeapStartMs > 0 && a.RecoveryUntilMs > _state.ElapsedMs)
+                {
+                    float back = Mathf.Clamp01((a.RecoveryUntilMs - _state.ElapsedMs) / 450f);
+                    position = Vector2.Lerp(home, Local(a.SweepCenter), back);
+                }
+            }
+            _cat.rectTransform.anchoredPosition = position + Vector2.up * jump;
             _cat.rectTransform.sizeDelta = Vector2.one * (78 * Scale);
             bool acting = _state != null && _state.Effects.Any(x => x.Kind == "slap" || x.Kind == "sweep");
             _cat.rectTransform.localRotation = Quaternion.Euler(0, 0, acting ? -9 : 0);
+            bool winding = jumping && _state != null && _state.AnimalState.Intent == IntentKind.Sweep
+                && _state.AnimalState.Charge > .5;
+            _cat.rectTransform.localScale = winding ? new Vector3(1.05f, .9f, 1) : Vector3.one;
         }
 
         protected override void OnPopulateMesh(VertexHelper vh)
@@ -85,16 +140,18 @@ namespace HomelessPetHelper.Modules.Siege.UI
                     new Color32(169, 189, 178, 255)
                 );
             DrawIntent(vh);
+            DrawZones(vh);
             DrawTowers(vh);
             foreach (var unit in _state.Units)
                 DrawUnit(vh, unit);
+            DrawHold(vh);
             DrawEffects(vh);
         }
 
         private void DrawIntent(VertexHelper vh)
         {
             var a = _state.AnimalState;
-            if (a.Intent == IntentKind.Sweep)
+            if ((a.Intent == IntentKind.Sweep && a.HeldUnitId == 0) || a.ImpactAtMs > _state.ElapsedMs)
             {
                 Circle(vh, Local(a.SweepCenter), (float)a.SweepRadius * Scale, new Color32(233, 122, 108, 35));
                 Ring(vh, Local(a.SweepCenter), (float)a.SweepRadius * Scale, 1.5f * Scale, Coral);
@@ -119,23 +176,101 @@ namespace HomelessPetHelper.Modules.Siege.UI
             }
         }
 
+        private void DrawHold(VertexHelper vh)
+        {
+            var a = _state.AnimalState;
+            bool active = a.HeldUnitId != 0;
+            if (!active && a.Intent != IntentKind.Hold)
+                return;
+            var d = _catalog.Content.Encounter(_state.EncounterId);
+            Vector2 origin = Local(new SiegePoint(d.HoldOriginX, d.HoldOriginY));
+            var target = _state.Units.FirstOrDefault(x => x.Id == (active ? a.HeldUnitId : a.IntentUnitId));
+            if (!active)
+            {
+                DrawHoldRange(vh, d);
+                if (target == null) return;
+                Vector2 point = Local(SiegeEntitiesPosition(target));
+                Line(vh, origin, point, Scale, new Color32(224, 176, 64, 150));
+                Ring(vh, point, 15 * PropScale, 2 * PropScale, new Color32(224, 176, 64, 255));
+                return;
+            }
+            if (target == null) return;
+            float t = Mathf.Clamp01((_state.ElapsedMs - a.HoldStartedMs) / 200f);
+            Vector2 held = Local(SiegeEntitiesPosition(target));
+            Vector2 paw = Vector2.Lerp(held + Vector2.up * 20 * PropScale, held, t);
+            Vector2 shoulder = origin + new Vector2(-9, -22) * Scale;
+            Line(vh, shoulder, paw, 7 * PropScale, new Color32(108, 83, 66, 255));
+            Line(vh, shoulder, paw, 5 * PropScale, new Color32(245, 190, 126, 255));
+            SiegeTokenArt.Paw(vh, paw + Vector2.up * 6 * PropScale, 12 * PropScale);
+            Ring(vh, held, 17 * PropScale, 2 * PropScale, Coral);
+        }
+
+        private void DrawHoldRange(VertexHelper vh, SiegeEncounterDefinition definition)
+        {
+            // Only the reachable arc belongs on the map, not over the surrounding HUD.
+            var bounds = new Rect(0, 0, (float)_catalog.Width, (float)_catalog.Height);
+            var origin = new Vector2((float)definition.HoldOriginX, (float)definition.HoldOriginY);
+            for (int i = 0; i < 120; i++)
+            {
+                float angle = i * Mathf.PI / 60;
+                float next = (i + 1) * Mathf.PI / 60;
+                var from = origin + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * (float)definition.HoldRange;
+                var to = origin + new Vector2(Mathf.Cos(next), Mathf.Sin(next)) * (float)definition.HoldRange;
+                if (bounds.Contains(from) && bounds.Contains(to))
+                    Line(vh, Local(new SiegePoint(from.x, from.y)), Local(new SiegePoint(to.x, to.y)),
+                        Scale, new Color32(224, 176, 64, 180));
+            }
+        }
+
+        private void DrawZones(VertexHelper vh)
+        {
+            foreach (var zone in _state.SlowZones)
+            {
+                var center = Local(zone.Center);
+                float radius = (float)zone.Radius * Scale;
+                Circle(vh, center, radius, new Color32(100, 176, 211, 38));
+                Ring(vh, center, radius, Scale, new Color32(100, 176, 211, 130));
+                for (int i = -1; i <= 1; i++)
+                    if (zone.Visual == "thread")
+                        Line(vh, center + new Vector2(-radius * .6f, i * radius * .3f),
+                            center + new Vector2(radius * .6f, i * radius * .3f + radius * .2f),
+                            Scale, new Color32(229, 119, 139, 190));
+                    else
+                        Ring(vh, center + new Vector2(i * radius * .45f, i % 2 * radius * .25f),
+                            radius * .22f, Scale, new Color32(100, 176, 211, 180));
+            }
+        }
+
         private void DrawTowers(VertexHelper vh)
         {
             foreach (var tower in _state.Towers)
             {
+                var d = _catalog.Defense(tower);
                 Vector2 point = Local(_catalog.Lane(tower.LaneId).PointAt(tower.Distance));
                 if (tower.Id == _tower && tower.Status != TowerStatus.Destroyed)
                 {
-                    Circle(vh, point, (float)_catalog.Tower.Range * Scale, new Color32(224, 112, 104, 20));
-                    Ring(vh, point, (float)_catalog.Tower.Range * Scale, Scale, Coral);
+                    Circle(vh, point, (float)d.Range * Scale, new Color32(224, 112, 104, 20));
+                    Ring(vh, point, (float)d.Range * Scale, Scale, Coral);
                 }
                 Color tint = tower.Status == TowerStatus.Destroyed ? new Color32(172, 181, 174, 255) : Coral;
-                Quad(vh, point, new Vector2(16, 18) * Scale, tint);
+                if (tower.DefinitionId != null && tower.Status != TowerStatus.Destroyed)
+                {
+                    float unfold = tower.Status == TowerStatus.Building
+                        ? Mathf.Lerp(.3f, 1, 1 - (tower.ReadyAtMs - _state.ElapsedMs)
+                            / (float)_catalog.Rules.BuildDurationMs) : 1;
+                    SiegeTokenArt.Tower(vh, d.Visual, point, 11 * PropScale * unfold, tower.WindingUp);
+                }
+                else Quad(vh, point, new Vector2(16, 18) * Scale, tint);
+                if (tower.WindingUp && tower.Status == TowerStatus.Active)
+                {
+                    Circle(vh, Local(tower.LockedPoint), (float)d.Radius * Scale, new Color32(233, 122, 108, 35));
+                    Ring(vh, Local(tower.LockedPoint), (float)d.Radius * Scale, 1.5f * Scale, Coral);
+                }
                 if (tower.Status == TowerStatus.Building)
                     Ring(vh, point, 13 * Scale, Scale, Ink);
                 if (tower.Status == TowerStatus.Destroyed)
                     continue;
-                Bar(vh, point + Vector2.up * 15 * Scale, (float)(tower.Hp / _catalog.Tower.Hp), Coral);
+                Bar(vh, point + Vector2.up * 18 * PropScale, (float)(tower.Hp / d.Hp), Coral);
                 if (_state.AnimalState.RepairTowerId == tower.Id)
                     Ring(vh, point, 15 * Scale, 3 * Scale, Mint);
             }
@@ -145,13 +280,23 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             var d = _catalog.Unit(unit.DefinitionId);
             Vector2 point = Local(SiegeEntitiesPosition(unit));
-            Color tint = d.Bag ? Mint : new Color32(71, 112, 183, 255);
-            float radius = (d.Bag ? 7 : 10) * Scale;
+            bool basic = !string.IsNullOrEmpty(d.UpgradeId);
+            Color tint = basic ? Mint : new Color32(71, 112, 183, 255);
+            float radius = (basic ? 8 : 11) * PropScale;
             if (_selected.Contains(unit.Id))
                 Ring(vh, point, radius + 4 * Scale, 2 * Scale, Ink);
             if (unit.Shield > 0)
                 Ring(vh, point, radius + 2 * Scale, Scale, new Color32(130, 182, 224, 255));
-            if (d.Icon == "truck" || d.Icon == "shield")
+            if (_state.EncounterId != null)
+            {
+                float phase = (float)(unit.Distance / 8 + unit.Id * .7);
+                Vector2 bob = Vector2.up * Mathf.Abs(Mathf.Sin(phase)) * 1.5f * Scale;
+                SiegeTokenArt.Draw(vh, d.Icon, point + bob, radius, phase, unit.Brace > 0);
+                if (unit.Brace > 0)
+                    Line(vh, point + new Vector2(-radius, -radius), point + new Vector2(radius, -radius),
+                        2 * Scale, new Color32(224, 173, 80, 255));
+            }
+            else if (d.Icon == "truck" || d.Icon == "shield")
             {
                 Quad(vh, point, new Vector2(radius * 2, radius * 1.6f), tint);
                 Circle(vh, point + new Vector2(-radius * .6f, -radius), radius * .3f, Ink);
@@ -173,7 +318,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 Circle(vh, point, radius, tint);
                 Circle(vh, point, radius * .35f, Color.white);
             }
-            Bar(vh, point + Vector2.up * (radius + 5 * Scale), (float)(unit.Hp / d.Hp), tint);
+            Bar(vh, point + Vector2.up * (radius + 5 * PropScale), (float)(unit.Hp / d.Hp), tint);
         }
 
         private SiegePoint SiegeEntitiesPosition(Unit unit) => SiegeGeometry.Position(_catalog, unit);
@@ -182,6 +327,25 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             foreach (var effect in _state.Effects)
             {
+                float duration = Mathf.Max(1, effect.UntilMs - effect.StartMs);
+                float t = Mathf.Clamp01((_state.ElapsedMs - effect.StartMs) / duration);
+                if (effect.Kind == "mergePart")
+                {
+                    SiegeTokenArt.Draw(vh, effect.Visual, Vector2.Lerp(Local(effect.From), Local(effect.To), t),
+                        (1 - t * .7f) * 8 * Scale, t * 4);
+                    continue;
+                }
+                if (effect.Kind == "brace")
+                {
+                    Line(vh, Local(effect.From), Local(effect.To), 2 * Scale, new Color32(224, 173, 80, 220));
+                    continue;
+                }
+                if (effect.Kind == "towerShot" && effect.Visual != null && effect.Visual != "legacy")
+                {
+                    Circle(vh, Vector2.Lerp(Local(effect.From), Local(effect.To), t),
+                        3.5f * Scale, effect.Visual == "kennel" ? new Color32(255, 241, 202, 255) : Coral);
+                    continue;
+                }
                 if (effect.Kind == "towerShot" || effect.Kind == "unitShot")
                     Line(
                         vh,
@@ -190,10 +354,10 @@ namespace HomelessPetHelper.Modules.Siege.UI
                         1.5f * Scale,
                         effect.Kind == "towerShot" ? Coral : Mint
                     );
-                else if (effect.Kind == "sweep")
+                else if (effect.Kind == "sweep" || effect.Kind == "push")
                 {
                     Circle(vh, Local(effect.From), (float)effect.Radius * Scale, new Color32(233, 122, 108, 72));
-                    Ring(vh, Local(effect.From), (float)effect.Radius * Scale, 4 * Scale, Coral);
+                    Ring(vh, Local(effect.From), (float)effect.Radius * Scale * Mathf.Max(.1f, t), 4 * Scale, Coral);
                 }
                 else
                     Ring(vh, Local(effect.From), 16 * Scale, 3 * Scale, effect.Kind == "slap" ? Coral : Mint);
@@ -213,7 +377,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             )
                 return;
             var units = _state
-                .Units.Where(x => Vector2.Distance(Local(SiegeEntitiesPosition(x)), local) <= 15 * Scale)
+                .Units.Where(x => Vector2.Distance(Local(SiegeEntitiesPosition(x)), local) <= 15 * PropScale)
                 .OrderBy(x => x.Id)
                 .ToArray();
             if (units.Length > 0 && _interactive)
@@ -224,7 +388,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 return;
             }
             var tower = _state.Towers.FirstOrDefault(x =>
-                Vector2.Distance(Local(_catalog.Lane(x.LaneId).PointAt(x.Distance)), local) <= 14 * Scale
+                Vector2.Distance(Local(_catalog.Lane(x.LaneId).PointAt(x.Distance)), local) <= 14 * PropScale
             );
             if (tower != null)
                 TowerClicked?.Invoke(tower.Id);
@@ -232,9 +396,10 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         private void Bar(VertexHelper vh, Vector2 p, float fill, Color tint)
         {
-            Quad(vh, p, new Vector2(20, 2.5f) * Scale, new Color32(206, 214, 208, 255));
-            float width = 20 * Mathf.Clamp01(fill) * Scale;
-            Quad(vh, p + Vector2.left * (20 * Scale - width) / 2, new Vector2(width, 2.5f * Scale), tint);
+            Quad(vh, p, new Vector2(20, 2.5f) * PropScale, new Color32(206, 214, 208, 255));
+            float width = 20 * Mathf.Clamp01(fill) * PropScale;
+            Quad(vh, p + Vector2.left * (20 * PropScale - width) / 2,
+                new Vector2(width, 2.5f * PropScale), tint);
         }
 
         private static void Quad(VertexHelper vh, Vector2 center, Vector2 size, Color tint)

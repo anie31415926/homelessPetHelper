@@ -98,6 +98,29 @@ namespace HomelessPetHelper.Editor.Siege
                     root.GetComponentInChildren<SiegeBattlefield>(true).GetComponent<LayoutElement>()
                 );
                 var view = new SerializedObject(root.GetComponent<SiegeTrialView>());
+                if (view.FindProperty("_encounter").objectReferenceValue == null)
+                {
+                    var profile = (Button)view.FindProperty("_profile").objectReferenceValue;
+                    var selector = UnityEngine.Object.Instantiate(profile.gameObject, profile.transform.parent, false);
+                    selector.name = "Encounter";
+                    selector.GetComponentInChildren<Text>().text = "猫咪阵地";
+                    Bind(root.GetComponent<SiegeTrialView>(), "_encounter", selector.GetComponent<Button>());
+                }
+                var visuals = new SerializedObject(field);
+                var entries = visuals.FindProperty("_animalVisuals");
+                if (entries.arraySize == 0)
+                {
+                    entries.arraySize = 2;
+                    var catEntry = entries.GetArrayElementAtIndex(0);
+                    catEntry.FindPropertyRelative("Id").stringValue = "cat";
+                    catEntry.FindPropertyRelative("Sprite").objectReferenceValue =
+                        AssetDatabase.LoadAssetAtPath<Sprite>(CatPath);
+                    var dogEntry = entries.GetArrayElementAtIndex(1);
+                    dogEntry.FindPropertyRelative("Id").stringValue = "dog";
+                    dogEntry.FindPropertyRelative("Sprite").objectReferenceValue =
+                        AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/CityMap/Animals/T_Animal_DogWhite.png");
+                    visuals.ApplyModifiedPropertiesWithoutUndo();
+                }
                 var text = new SiegeText(AssetDatabase.LoadAssetAtPath<TextAsset>(TextPath));
                 foreach (var name in new[] { "_playerBar", "_animalBar" })
                 {
