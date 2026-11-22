@@ -72,13 +72,16 @@ namespace HomelessPetHelper.Game.Approach
             {
                 string tool = action.Substring("approach.tool.".Length);
                 var button = tool == "Litter" ? _litter : tool == "Weeds" ? _weeds : tool == "Mud" ? _mud : null;
-                if (button == null || !button.gameObject.activeInHierarchy) return false;
+                if (button == null || !GuideTargetRules.IsClickable(button.Button)) return false;
                 targets.Add((RectTransform)button.transform);
                 return true;
             }
             int separator = action.LastIndexOf('.');
             if (separator < 0 || !int.TryParse(action.Substring(separator + 1), out int cell) ||
                 cell < 0 || cell >= Board.CellCount) return false;
+            // A hole over a board that is closed, suspended or hidden would be the only opening in the mask.
+            if (!CanAct || !Board.isActiveAndEnabled || !Board.Cell(cell).gameObject.activeInHierarchy)
+                return false;
             if (action.StartsWith("approach.clean.", StringComparison.Ordinal) && _session.DebrisAt(cell) < 0)
                 return false;
             if (action.StartsWith("approach.box.", StringComparison.Ordinal) && !_session.HasBox(cell))

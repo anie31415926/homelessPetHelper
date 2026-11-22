@@ -70,18 +70,25 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 var state = _session.Snapshot;
                 int before = targets.Count;
                 for (int index = 0; index < state.Hand.Count; index++)
-                    if (_catalog.Unit(state.Hand[index].DefinitionId).Cost <= state.Energy)
-                        targets.Add((RectTransform)_handPool.Get(index).transform);
+                {
+                    var cell = _handPool.Get(index);
+                    if (cell.IsClickable && _catalog.Unit(state.Hand[index].DefinitionId).Cost <= state.Energy)
+                        targets.Add((RectTransform)cell.transform);
+                }
                 return targets.Count > before;
             }
             if (action == "siege.route")
             {
-                if (!_top.gameObject.activeInHierarchy) return false;
+                // All three lanes share one visibility/interactable state; a hole over any dead lane
+                // would be the only opening and trap the player behind the mask.
+                if (!GuideTargetRules.IsClickable(_top) || !GuideTargetRules.IsClickable(_mid) ||
+                    !GuideTargetRules.IsClickable(_bottom)) return false;
                 foreach (var button in new[] { _top, _mid, _bottom })
                     targets.Add((RectTransform)button.transform);
                 return true;
             }
             if (action != "siege.submit") return false;
+            if (!GuideTargetRules.IsClickable(_submit)) return false;
             targets.Add((RectTransform)_submit.transform);
             return true;
         }

@@ -3,6 +3,7 @@ using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using HomelessPetHelper.Framework.UI;
 using HomelessPetHelper.Framework.UI.Motion;
 
 namespace HomelessPetHelper.Modules.Siege.UI
@@ -28,6 +29,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
         [SerializeField] private UiMotionFeedback _motion;
 
         public void BindMotion(MotionScope scope) { if (_motion != null) _motion.BindScope(scope); }
+
+        /// <summary>A guide must not open its only hole over a card the player cannot press.</summary>
+        public bool IsClickable => GuideTargetRules.IsClickable(_button);
 
         private void OnEnable() => _button.onClick.AddListener(Select);
 
