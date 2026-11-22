@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261122-UI与场景提交推送-01a1f74d.md",
+  "sessionId": "01a1f74d-412d-7613-a27d-fae91bb606ef",
+  "phase": "start",
+  "readAt": "2026-11-22T10:26:51.589Z",
+  "writePaths": [
+    "docs/协作任务/20261122-UI与场景提交推送-01a1f74d.md",
+    "docs/协作执行记录/20261122-UI与场景提交推送-01a1f74d/",
+    "docs/当前协作状态.md",
+    "test-results/delivery-20261122/",
+    "test-results/resource-catalog/"
+  ],
+  "contextDigest": "c08051fa822b3400178c8daf058f89dda42fde7d4df163ecc3a3327b6fbe06b7",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261122-UI与场景提交推送-01a1f74d.md",
+      "sha256": "e92f6b5249513b9250c46435cd2c772463ab4369a30ef7bdcd1d613a1e1ce07a"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "a296d3b3f9860e2f854e9847d03d57d221dc72fad9bacee361be2ae8873bfe96"
+    }
+  ]
+}
