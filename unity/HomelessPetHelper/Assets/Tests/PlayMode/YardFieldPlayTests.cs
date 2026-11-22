@@ -25,10 +25,16 @@ namespace HomelessPetHelper.Tests.PlayMode
     {
         private MainSceneStorageScope _storage;
         private int _seed;
+        private Camera _inputCamera;
+        private RenderTexture _inputTarget;
         [SetUp] public void SetUp()
         { _storage=new MainSceneStorageScope(); SceneManager.sceneLoaded+=Configure; }
         [TearDown] public void TearDown()
-        { SceneManager.sceneLoaded-=Configure; _storage.Dispose(); }
+        {
+            SceneManager.sceneLoaded-=Configure; _storage.Dispose();
+            if (_inputCamera != null) Object.DestroyImmediate(_inputCamera.gameObject);
+            if (_inputTarget != null) { _inputTarget.Release(); Object.DestroyImmediate(_inputTarget); }
+        }
         private void Configure(Scene scene,LoadSceneMode mode)
         {
             if(scene.name=="Main")scene.GetRootGameObjects()
@@ -69,6 +75,10 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Assert.That(field.Animal.sprite,Is.SameAs(sprite));
                 var activity=(SiegeRescueActivity)root.Presenter.Session.Activity;
                 var before=activity.Battle.Snapshot;
+                if (_inputCamera != null) Object.DestroyImmediate(_inputCamera.gameObject);
+                if (_inputTarget != null) { _inputTarget.Release(); Object.DestroyImmediate(_inputTarget); }
+                _inputCamera = StrategyUiPlayTests.PortraitInput(siege.GetComponent<Canvas>(), out _inputTarget);
+                yield return null; yield return null; Canvas.ForceUpdateCanvases();
                 siege.Scene.GetComponentsInChildren<SiegeChoiceCell>().First().GetComponent<Button>().onClick.Invoke();
                 Canvas.ForceUpdateCanvases();
                 Assert.That(MainApproachDriver.Button(siege,"Top").gameObject.activeInHierarchy,Is.True);
@@ -87,7 +97,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Assert.That(activity.Battle.Snapshot.Energy,Is.EqualTo(before.Energy));
                 card.OnBeginDrag(pointer); Canvas.ForceUpdateCanvases();
                 var portal=(RectTransform)MainApproachDriver.Button(siege,"Mid").transform;
-                pointer.position=RectTransformUtility.WorldToScreenPoint(null,
+                pointer.position=RectTransformUtility.WorldToScreenPoint(_inputCamera,
                     portal.TransformPoint(portal.rect.center));
                 card.OnDrag(pointer);
                 MainApproachDriver.Click(siege,"Clear");
@@ -97,7 +107,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Assert.That(activity.Battle.Snapshot.Energy,Is.EqualTo(before.Energy));
                 Assert.That(activity.Battle.Snapshot.Units,Is.Empty);
                 card.OnBeginDrag(pointer); Canvas.ForceUpdateCanvases();
-                pointer.position=RectTransformUtility.WorldToScreenPoint(null,
+                pointer.position=RectTransformUtility.WorldToScreenPoint(_inputCamera,
                     portal.TransformPoint(portal.rect.center));
                 card.OnDrag(pointer); card.OnEndDrag(pointer);
                 Assert.That(siege.Scene.Plan.DeployLane,Is.EqualTo("mid"));
@@ -122,6 +132,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         private static IEnumerator Capture(Component view,string name)
         {
             var canvas=view.GetComponent<Canvas>();
+            var oldMode = canvas.renderMode; var oldCamera = canvas.worldCamera;
             var camera=new GameObject("YardCapture",typeof(Camera)).GetComponent<Camera>();
             camera.clearFlags=CameraClearFlags.SolidColor; camera.backgroundColor=Color.white;
             camera.cullingMask=1<<canvas.gameObject.layer;
@@ -152,7 +163,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Object.Destroy(image); camera.targetTexture=null; target.Release(); Object.Destroy(target);
                 safeRect.anchorMin=originalMin; safeRect.anchorMax=originalMax; safeView.enabled=true;
             }
-            canvas.renderMode=RenderMode.ScreenSpaceOverlay; canvas.worldCamera=null;
+            canvas.renderMode=oldMode; canvas.worldCamera=oldCamera;
             Object.Destroy(camera.gameObject); yield return null; Canvas.ForceUpdateCanvases(); yield return null;
         }
         private static void CheckBounds(Component view)

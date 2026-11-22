@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261122-正式关卡设计与重玩-01a1f74d.md",
+  "sessionId": "01a1f74d-412d-7613-a27d-fae91bb606ef",
+  "phase": "start",
+  "readAt": "2026-11-22T12:49:09.158Z",
+  "writePaths": [
+    "art-source/level-design-20261122/",
+    "art-source/resource-catalog.json",
+    "docs/协作任务/20261122-正式关卡设计与重玩-01a1f74d.md",
+    "docs/协作执行记录/20261122-正式关卡设计与重玩-01a1f74d/",
+    "docs/当前协作状态.md",
+    "docs/正式关卡设计与重复游玩方案.md",
+    "test-results/level-design/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_Approach.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Framework/UI/GuideTargetRules.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Framework/UI/GuideTargetRules.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Approach/ApproachPanelView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeChoiceCell.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeFieldView.cs",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/GuideTargetRulesTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/GuideTargetRulesTests.cs.meta"
+  ],
+  "contextDigest": "b0ec14f9214b18bdd743f464b0130c2a7ccde228a8b1e1edd07f38e2da15e228",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261122-正式关卡设计与重玩-01a1f74d.md",
+      "sha256": "e8c62fe985fa79d0ef1b94ae799a98e95bce60c1bff16c854ba6688d42fefb6e"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "b79fb850d66b8a56160add697db2b246defe0e412c5fed6e8bc6c419573ff8f6"
+    }
+  ]
+}

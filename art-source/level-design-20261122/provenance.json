@@ -1,0 +1,18 @@
+{
+  "referenceRoles": [
+    {
+      "path": "art-source/level-design-20261122/layout-reference.png",
+      "role": "layout-only",
+      "source": "test-results/level-visibility/final/rescue-expanded-390x844.png",
+      "sourceSha256": "324e58c23b2f94d8b746f710dd3f3104ae8a2007879aa281003f885398793c04",
+      "operation": "Pillow RGB resize 390x844 to 768x1664 Lanczos; small aspect discrepancy intentional reference only"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg",
+      "role": "palette-and-scene-style",
+      "sha256": "c4121c8ca2abcaf1fc6dfcdc72de3e82978909fa0012c78d3dabb66b5d6165f6",
+      "rights": "Existing temporary ComfyUI game image; model/reference rights review pending"
+    }
+  ],
+  "derivation": "master PNG -> RGB JPEG quality93; no crop/resize; not imported into Unity"
+}

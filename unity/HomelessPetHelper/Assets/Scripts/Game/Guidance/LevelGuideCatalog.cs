@@ -65,6 +65,20 @@ namespace HomelessPetHelper.Game.Guidance
             return new GuideSession(definition.mechanicId, steps);
         }
 
+        public void ValidateOpening(Modules.Approach.ApproachTemplate template)
+        {
+            if (template == null) throw new ArgumentNullException(nameof(template));
+            if (!_definitions.TryGetValue(template.Id, out var definition)) return;
+            foreach (var step in definition.steps)
+                foreach (string action in step.allowedActions)
+                {
+                    if (!action.StartsWith("approach.", StringComparison.Ordinal)) continue;
+                    string suffix = action.Substring(action.LastIndexOf('.') + 1);
+                    if (int.TryParse(suffix, out int cell) && !template.Contains(cell))
+                        throw new ArgumentException("Guide target is outside its opening template: " + action);
+                }
+        }
+
         private static void ValidateAction(string action)
         {
             if (action == "siege.card" || action == "siege.route" || action == "siege.submit") return;
@@ -73,7 +87,8 @@ namespace HomelessPetHelper.Game.Guidance
             foreach (string prefix in new[] { "approach.clean.", "approach.box.", "approach.move.",
                 "approach.bridge." })
                 if (action.StartsWith(prefix, StringComparison.Ordinal) &&
-                    int.TryParse(action.Substring(prefix.Length), out int cell) && cell >= 0 && cell < 56) return;
+                    int.TryParse(action.Substring(prefix.Length), out int cell) && cell >= 0 &&
+                    cell < Modules.Approach.ApproachCatalog.MaxCells) return;
             throw new ArgumentException("Unknown guide action: " + action);
         }
     }

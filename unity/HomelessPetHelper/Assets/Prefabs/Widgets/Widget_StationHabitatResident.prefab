@@ -821,6 +821,8 @@ MonoBehaviour:
   _cage: {fileID: 1040629157279978244}
   _selected: {fileID: 1036849394229616411}
   _select: {fileID: 7009535645679776801}
+  _stillCoat: {fileID: 949638987408985005}
+  _motionCoat: {fileID: 9136540943576206291}
 --- !u!223 &4528015923729325136
 Canvas:
   m_ObjectHideFlags: 0
@@ -947,6 +949,7 @@ GameObject:
   - component: {fileID: 4093111237685066167}
   - component: {fileID: 6486433269428151221}
   - component: {fileID: 8513452006831651084}
+  - component: {fileID: 9136540943576206291}
   m_Layer: 0
   m_Name: AnimatedAnimal
   m_TagString: Untagged
@@ -1008,6 +1011,20 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
+--- !u!114 &9136540943576206291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6332407942679803819}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3b636e7c995400cb4b1f9fb5deacecb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 8513452006831651084}
+  _shader: {fileID: 4800000, guid: 4f6dd0319523405c98d3a5aecef55dfb, type: 3}
 --- !u!1 &6462911116301960280
 GameObject:
   m_ObjectHideFlags: 0
@@ -1323,6 +1340,7 @@ GameObject:
   - component: {fileID: 596232905415940900}
   - component: {fileID: 3928543485726267000}
   - component: {fileID: 6839084756133433819}
+  - component: {fileID: 949638987408985005}
   m_Layer: 0
   m_Name: StillAnimal
   m_TagString: Untagged
@@ -1387,6 +1405,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &949638987408985005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7948674171384017823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3b636e7c995400cb4b1f9fb5deacecb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 6839084756133433819}
+  _shader: {fileID: 4800000, guid: 4f6dd0319523405c98d3a5aecef55dfb, type: 3}
 --- !u!1 &8760772965931227046
 GameObject:
   m_ObjectHideFlags: 0

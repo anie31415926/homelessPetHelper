@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261122-正式关卡首批与策略操作-01a1f74d.md",
+  "sessionId": "01a1f74d-412d-7613-a27d-fae91bb606ef",
+  "phase": "resume",
+  "readAt": "2026-11-22T14:15:14.210Z",
+  "writePaths": [
+    "docs/协作任务/20261122-正式关卡首批与策略操作-01a1f74d.md",
+    "docs/协作执行记录/20261122-正式关卡首批与策略操作-01a1f74d/",
+    "docs/当前协作状态.md",
+    "docs/正式关卡设计与重复游玩方案.md",
+    "docs/正式关卡首批实现.md",
+    "test-results/strategy-implementation/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_Approach.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_SiegeTrial.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_LevelOverlays.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/HomelessPetHelper.Editor.asmdef",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/LevelUi/FieldSamplePreview.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/LevelUi/FieldSamplePreview.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/LevelUi/StrategyLevelUpgrade.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/LevelUi/StrategyLevelUpgrade.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Framework/UI/PopupContentLayout.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Approach/",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Field/",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/GameContent.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Guidance/LevelGuideCatalog.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainGameRoot.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainLoopPresenter.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Settings.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Settings/",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/UI/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Approach/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/",
+    "unity/HomelessPetHelper/Assets/Settings/Game/",
+    "unity/HomelessPetHelper/Assets/Settings/Siege/SiegeTrialText.json",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PlayMode/StationHabitatMainTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/Support/"
+  ],
+  "contextDigest": "e5d6f9a9293c534b9ed8c1d54fa7a75ebeab70212805b309ed03bcb2862813ed",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261122-正式关卡首批与策略操作-01a1f74d.md",
+      "sha256": "591baec9be31cc6649fcc9ba0940204cd3b77e53367b3d04541590fe6986db36"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "b1e9c7633724c0d317c77f48b4352dc3fceee59c59ec7e9717b0d1b7a5e6bed4"
+    }
+  ]
+}

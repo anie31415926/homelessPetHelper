@@ -33,10 +33,10 @@ namespace HomelessPetHelper.Game.Station
             var definition = _config.GetAnimalPresentation(animal.DefinitionId) ??
                 throw new ArgumentException("Missing care configuration.");
             _artwork.Get(definition.DogArtwork, out var mask);
-            int seed = _care.Count * 2;
+            int seed = Modules.Animals.UI.AnimalCoatPattern.Seed(animal.AnimalId);
             care = new StationCoatCare(_session.Station, _session.StationSessionId, animalId, _session.Clock,
-                StationCoatFields.Create(mask, seed, false, animal.Coat.Dirtiness == 0),
-                StationCoatFields.Create(mask, seed, true, animal.Coat.LooseFur == 0),
+                StationCoatFields.Create(mask, seed, false, animal.Coat.Dirtiness),
+                StationCoatFields.Create(mask, seed, true, animal.Coat.LooseFur),
                     definition.WashMinutes, definition.GroomMinutes);
             _care.Add(animalId, care);
             return care;

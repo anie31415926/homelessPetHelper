@@ -19,9 +19,13 @@ namespace HomelessPetHelper.Game.UI
         [SerializeField] private Button _saveSettings, _cancelSettings, _resetSettings, _confirm, _cancel;
         [SerializeField] private UiText _objectivesText, _confirmationText, _settingsStatus, _notice;
         [SerializeField] private AudioSettingsView _audio;
+        [SerializeField] private Toggle _pauseAtDecision;
+        public bool PauseAtDecisionDraft => _pauseAtDecision.isOn;
+        public void SetPlaySettings(bool pause) => _pauseAtDecision.SetIsOnWithoutNotify(pause);
         [SerializeField] private GuideMaskGraphic _guideMask;
         [SerializeField] private GameObject _guideCaption;
         [SerializeField] private UiText _guideText;
+        [SerializeField] private GuideCaptionLayout _guideLayout;
         [SerializeField] private UiText[] _localizedLabels;
         [SerializeField] private string[] _labelKeys;
         private LevelOverlaySession _session;
@@ -68,6 +72,7 @@ namespace HomelessPetHelper.Game.UI
             _guideMask.gameObject.SetActive(true);
             _guideCaption.SetActive(true);
             _guideText.text = caption;
+            _guideLayout.SetTargets(targets);
         }
         public void HideGuide()
         { _guideMask.gameObject.SetActive(false); _guideCaption.SetActive(false); }

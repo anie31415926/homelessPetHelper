@@ -1,0 +1,9 @@
+{
+  "name": "HomelessPetHelper.Modules.Animals.UI",
+  "rootNamespace": "HomelessPetHelper.Modules.Animals.UI",
+  "references": [
+    "HomelessPetHelper.Modules.Animals",
+    "UnityEngine.UI"
+  ],
+  "autoReferenced": false
+}

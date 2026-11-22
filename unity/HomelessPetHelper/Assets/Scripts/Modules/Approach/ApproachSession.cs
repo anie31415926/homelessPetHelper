@@ -192,6 +192,8 @@ namespace HomelessPetHelper.Modules.Approach
                 Visit(cell + Template.Columns, ref write);
             }
             IsComplete = _reachable[Template.Animal];
+            foreach (int cell in Template.RequiredClearCells)
+                if (_blocked[cell]) { IsComplete = false; break; }
         }
 
         private void Visit(int cell, ref int write)

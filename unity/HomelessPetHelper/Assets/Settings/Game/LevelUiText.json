@@ -26,7 +26,7 @@
     },
     {
       "key": "settings.title",
-      "value": "声音设置"
+      "value": "游戏设置"
     },
     {
       "key": "settings.master",
@@ -58,7 +58,7 @@
     },
     {
       "key": "settings.note",
-      "value": "调整立即生效，保存后保留。"
+      "value": "声音即时预览；玩法选项保存后生效。"
     },
     {
       "key": "settings.saveFailed",
@@ -94,7 +94,7 @@
     },
     {
       "key": "confirm.resetAudio",
-      "value": "将声音设置恢复为默认值？\n确认后可继续调整，点击保存才写入存档。"
+      "value": "将声音与玩法设置恢复默认？\n确认后可继续调整，点击保存才写入存档。"
     },
     {
       "key": "confirm.replay",
@@ -162,15 +162,27 @@
     },
     {
       "key": "guide.siege.card",
-      "value": "选择一张手牌，准备部署道具。"
+      "value": "拖动手牌开始部署。"
     },
     {
       "key": "guide.siege.route",
-      "value": "点击场内一个路口，选择道具的出发路线。"
+      "value": "拖到亮起的路线后松手。"
     },
     {
       "key": "guide.siege.submit",
-      "value": "确认计划后点击执行。只有实际部署才会消耗资源。"
+      "value": "点执行，确认部署。"
+    },
+    {
+      "key": "settings.pauseAtDecision",
+      "value": "回合开始时暂停"
+    },
+    {
+      "key": "settings.pauseNote",
+      "value": "开启：暂停思考后执行。关闭：战场持续推进，蓄力满时可执行一次行动。"
+    },
+    {
+      "key": "settings.playSaveFailed",
+      "value": "声音已保存，玩法选项保存失败；原玩法偏好已保留。可重试；若原存档损坏则保留原档。"
     }
   ]
 }

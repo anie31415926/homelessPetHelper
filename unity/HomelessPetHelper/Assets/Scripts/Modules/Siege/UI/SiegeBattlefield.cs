@@ -1,4 +1,6 @@
 using System;
+using HomelessPetHelper.Modules.Animals;
+using HomelessPetHelper.Modules.Animals.UI;
 using System.Collections.Generic;
 using System.Linq;
 using HomelessPetHelper.Framework.UI;
@@ -16,6 +18,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
         public override Texture mainTexture => _spritePalette == null ? base.mainTexture : _spritePalette.Texture;
         [SerializeField]
         private Image _cat;
+        [SerializeField] private AnimalCoatView _coat;
+        public void ShowAnimal(AnimalSnapshot snapshot) => _coat.Show(snapshot);
         [SerializeField] private SiegeCarryOverlay _carryOverlay;
         [Serializable]
         private sealed class AnimalVisual
@@ -35,7 +39,11 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private Sprite _sceneAnimal;
         private float _animalWidth;
         private string _ghostDefinition, _ghostLane, _previewLane;
-        private bool _ghostSelected;
+        private bool _ghostSelected, _showRoutes;
+        [SerializeField] private RectTransform _routeViewport;
+        [SerializeField, Min(1)] private float _routeDropRadius = 72;
+        [SerializeField, Min(0)] private float _routeAmbiguity = 6;
+        public event Action<string> LaneClicked;
         public event Action EmptyClicked;
         private SiegeCatalog _validatedCatalog;
         public event Action<int> UnitClicked;
@@ -43,16 +51,19 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         public void ConfigureScene(Sprite animal, float width)
         {
-            if (animal == null || width <= 0) throw new ArgumentException("Invalid field animal.");
+            if (animal == null || width <= 0 || _routeViewport == null)
+                throw new ArgumentException("Invalid field animal or route viewport.");
             _sceneMode = true; _sceneAnimal = animal; _animalWidth = width;
             _cat.preserveAspect = true;
             _cat.rectTransform.anchorMin = _cat.rectTransform.anchorMax = new Vector2(.5f, .5f);
             _cat.rectTransform.pivot = new Vector2(.5f, .15f);
         }
 
-        public void ShowPlan(string definition, string lane, bool selected, string previewLane)
+        public void ShowPlan(string definition, string lane, bool selected, string previewLane,
+            bool showRoutes = false)
         {
             _ghostDefinition = definition; _ghostLane = lane; _ghostSelected = selected; _previewLane = previewLane;
+            _showRoutes = showRoutes;
             SetVerticesDirty();
         }
 
@@ -76,9 +87,12 @@ namespace HomelessPetHelper.Modules.Siege.UI
                     rectTransform.rect.height / (float)_catalog.Height
                 );
 
-        private Vector2 Local(SiegePoint p) =>
-            rectTransform.rect.center
-            + new Vector2((float)(p.X - _catalog.Width / 2), (float)(_catalog.Height / 2 - p.Y)) * Scale;
+        private Vector2 ProjectionScale => _sceneMode
+            ? new Vector2(rectTransform.rect.width / (float)_catalog.Width,
+                rectTransform.rect.height / (float)_catalog.Height) : Vector2.one * Scale;
+
+        private Vector2 Local(SiegePoint p) => rectTransform.rect.center + Vector2.Scale(
+            new Vector2((float)(p.X - _catalog.Width / 2), (float)(_catalog.Height / 2 - p.Y)), ProjectionScale);
 
         private float PropScale => _state?.EncounterId == null ? Scale
             : Mathf.Max(Scale, .6f / (canvas == null ? 1 : canvas.scaleFactor));
@@ -173,13 +187,13 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 return;
             foreach (var lane in _catalog.Lanes)
             {
-                if (_sceneMode && lane.Id != _previewLane) continue;
+                if (_sceneMode && !_showRoutes && lane.Id != _previewLane) continue;
                 for (int i = 1; i < lane.Points.Count; i++)
                     Line(
                         vh,
                         Local(lane.Points[i - 1]),
                         Local(lane.Points[i]),
-                        (_sceneMode ? 2 : 13) * Scale,
+                        (_sceneMode ? lane.Id == _previewLane ? 7 : 3 : 13) * Scale,
                         _sceneMode ? new Color32(116, 153, 128, 120) : new Color32(222, 233, 226, 255)
                     );
             }
@@ -217,8 +231,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if ((a.Intent == IntentKind.Sweep && a.HeldUnitId == 0 && a.Cast?.Kind != IntentKind.Carry)
                 || a.ImpactAtMs > _state.ElapsedMs)
             {
-                Circle(vh, Local(a.SweepCenter), (float)a.SweepRadius * Scale, new Color32(233, 122, 108, 35));
-                Ring(vh, Local(a.SweepCenter), (float)a.SweepRadius * Scale, 1.5f * Scale, Coral);
+                Area(vh, a.SweepCenter, a.SweepRadius, new Color32(233, 122, 108, 35));
+                AreaOutline(vh, a.SweepCenter, a.SweepRadius, 1.5f * Scale, Coral);
             }
             if (a.GuardLane != null && a.GuardUntilMs > _state.ElapsedMs)
             {
@@ -334,8 +348,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             {
                 var center = Local(zone.Center);
                 float radius = (float)zone.Radius * Scale;
-                Circle(vh, center, radius, new Color32(100, 176, 211, 38));
-                Ring(vh, center, radius, Scale, new Color32(100, 176, 211, 130));
+                Area(vh, zone.Center, zone.Radius, new Color32(100, 176, 211, 38));
+                AreaOutline(vh, zone.Center, zone.Radius, Scale, new Color32(100, 176, 211, 130));
                 for (int i = -1; i <= 1; i++)
                     if (zone.Visual == "thread")
                         Line(vh, center + new Vector2(-radius * .6f, i * radius * .3f),
@@ -355,8 +369,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 Vector2 point = Local(_catalog.Lane(tower.LaneId).PointAt(tower.Distance));
                 if (tower.Id == _tower && tower.Status != TowerStatus.Destroyed)
                 {
-                    Circle(vh, point, (float)d.Range * Scale, new Color32(224, 112, 104, 20));
-                    Ring(vh, point, (float)d.Range * Scale, Scale, Coral);
+                    Area(vh, _catalog.Lane(tower.LaneId).PointAt(tower.Distance), d.Range,
+                        new Color32(224, 112, 104, 20));
+                    AreaOutline(vh, _catalog.Lane(tower.LaneId).PointAt(tower.Distance), d.Range, Scale, Coral);
                 }
                 Color tint = tower.Status == TowerStatus.Destroyed ? new Color32(172, 181, 174, 255) : Coral;
                 if (tower.DefinitionId != null && tower.Status != TowerStatus.Destroyed)
@@ -369,8 +384,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 else Quad(vh, point, new Vector2(16, 18) * Scale, tint);
                 if (tower.WindingUp && tower.Status == TowerStatus.Active)
                 {
-                    Circle(vh, Local(tower.LockedPoint), (float)d.Radius * Scale, new Color32(233, 122, 108, 35));
-                    Ring(vh, Local(tower.LockedPoint), (float)d.Radius * Scale, 1.5f * Scale, Coral);
+                    Area(vh, tower.LockedPoint, d.Radius, new Color32(233, 122, 108, 35));
+                    AreaOutline(vh, tower.LockedPoint, d.Radius, 1.5f * Scale, Coral);
                 }
                 if (tower.Status == TowerStatus.Building)
                     Ring(vh, point, 13 * Scale, Scale, Ink);
@@ -471,6 +486,33 @@ namespace HomelessPetHelper.Modules.Siege.UI
             }
         }
 
+        /// <summary>Screen-space path distance; shared segments and equally near lanes are ambiguous.</summary>
+        public string PickLane(Vector2 screen, Camera camera)
+        {
+            if (_catalog == null || _routeViewport == null || rectTransform.rect.width <= 0 ||
+                rectTransform.rect.height <= 0 ||
+                !RectTransformUtility.RectangleContainsScreenPoint(_routeViewport, screen, camera) ||
+                !RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, screen, camera,
+                    out var local)) return null;
+            string best = null;
+            float first = float.PositiveInfinity, second = float.PositiveInfinity;
+            foreach (var lane in _catalog.Lanes)
+            {
+                if (!lane.Open) continue;
+                float distance = float.PositiveInfinity;
+                for (int i = 1; i < lane.Points.Count; i++)
+                {
+                    Vector2 a = Local(lane.Points[i - 1]), b = Local(lane.Points[i]);
+                    Vector2 delta = b - a;
+                    float t = Mathf.Clamp01(Vector2.Dot(local - a, delta) / delta.sqrMagnitude);
+                    distance = Mathf.Min(distance, Vector2.Distance(local, a + delta * t));
+                }
+                if (distance < first) { second = first; first = distance; best = lane.Id; }
+                else second = Mathf.Min(second, distance);
+            }
+            return first <= _routeDropRadius && second - first > _routeAmbiguity ? best : null;
+        }
+
         public void OnPointerClick(PointerEventData eventData)
         {
             if (
@@ -486,6 +528,11 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (_sceneMode && _interactive && _ghostDefinition != null && _ghostLane != null &&
                 Vector2.Distance(Local(_catalog.Lane(_ghostLane).PointAt(0)), local) <= 17 * PropScale)
             { UnitClicked?.Invoke(SiegeOrder.NewUnit); return; }
+            if (_showRoutes && _interactive)
+            {
+                string lane = PickLane(eventData.position, eventData.pressEventCamera);
+                if (lane != null) { LaneClicked?.Invoke(lane); return; }
+            }
             var units = _state
                 .Units.Where(x => !x.IsCarried
                     && Vector2.Distance(Local(SiegeEntitiesPosition(x)), local) <= 15 * PropScale)
@@ -538,6 +585,24 @@ namespace HomelessPetHelper.Modules.Siege.UI
             Vector2 n = new Vector2(-(b - a).y, (b - a).x).normalized * width / 2;
             Triangle(vh, a - n, a + n, b + n, tint);
             Triangle(vh, a - n, b + n, b - n, tint);
+        }
+
+        private void Area(VertexHelper vh, SiegePoint point, double radius, Color tint)
+        {
+            Vector2 center = Local(point), axes = ProjectionScale * (float)radius;
+            const int segments = 36;
+            for (int index = 0; index < segments; index++)
+                Triangle(vh, center, center + Vector2.Scale(Direction(index, segments), axes),
+                    center + Vector2.Scale(Direction(index + 1, segments), axes), tint);
+        }
+
+        private void AreaOutline(VertexHelper vh, SiegePoint point, double radius, float width, Color tint)
+        {
+            Vector2 center = Local(point), axes = ProjectionScale * (float)radius;
+            const int segments = 36;
+            for (int index = 0; index < segments; index++)
+                Line(vh, center + Vector2.Scale(Direction(index, segments), axes),
+                    center + Vector2.Scale(Direction(index + 1, segments), axes), width, tint);
         }
 
         private static void Circle(VertexHelper vh, Vector2 center, float radius, Color tint)

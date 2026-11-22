@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "pointId": "yard",
+  "layoutId": "yard.main",
   "width": 360,
   "height": 480,
   "animalWidth": 43,
@@ -139,5 +140,6 @@
       "nameKey": "field.lane.bottom"
     }
   ],
-  "catWidth": 31
+  "catWidth": 31,
+  "introductory": true
 }

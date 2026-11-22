@@ -5,7 +5,9 @@
     "HomelessPetHelper.Modules.Siege",
     "HomelessPetHelper.Modules.Rescue.UI",
     "UnityEngine.UI",
-    "HomelessPetHelper.Framework.UI"
+    "HomelessPetHelper.Framework.UI",
+    "HomelessPetHelper.Modules.Animals.UI",
+    "HomelessPetHelper.Modules.Animals"
   ],
   "autoReferenced": false
 }

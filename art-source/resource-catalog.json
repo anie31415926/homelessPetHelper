@@ -4068,6 +4068,135 @@
         "rights": "pending",
         "target": "pending"
       }
+    },
+    {
+      "id": "level-design.rescue",
+      "name": "救助关卡全屏手绘界面参考",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "关卡设计候选，未接入Unity，不代表玩法定案",
+      "use": "768×1664竖屏界面整体构图参考；全屏场地、紧凑角落HUD与底部操作",
+      "plannedBytes": 2621440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/level-design-20261122/rescue/concept.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/level-design-20261122/rescue/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/level-design-20261122/rescue/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/level-design-20261122/rescue/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/level-design-20261122/rescue/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "ComfyUI",
+        "record": "art-source/level-design-20261122/README.md",
+        "notes": "本机ComfyUI 0.37.1 / Qwen Image 2.1；实际API作业成功，完整模型/seed/24步Euler CFG4与正负提示保留workflow；JPG由母图转换quality93，不缩放；只作构图参考，视觉/来源/渠道验收待定。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "level-design.clearing",
+      "name": "清障关卡全屏手绘界面参考",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "关卡设计候选，未接入Unity，不代表玩法定案",
+      "use": "768×1664竖屏界面整体构图参考；全屏场地、紧凑角落HUD与底部操作",
+      "plannedBytes": 2621440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/level-design-20261122/clearing-v2/concept.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/level-design-20261122/clearing-v2/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/level-design-20261122/clearing-v2/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/level-design-20261122/clearing-v2/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/level-design-20261122/clearing-v2/submission.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/level-design-20261122/clearing/concept.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/level-design-20261122/clearing/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/level-design-20261122/clearing/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/level-design-20261122/clearing/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/level-design-20261122/clearing/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "ComfyUI",
+        "record": "art-source/level-design-20261122/README.md",
+        "notes": "本机ComfyUI 0.37.1 / Qwen Image 2.1；实际API作业成功，完整模型/seed/24步Euler CFG4与正负提示保留workflow；JPG由母图转换quality93，不缩放；只作构图参考，视觉/来源/渠道验收待定。 当前选择第三作业clearing-v2，第一清障初稿作为历史reference保留；增加石径、花坛与分区物件，未按生成拓扑定义正式三路。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "level-design.layout-reference",
+      "name": "本轮界面生图构图参考",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "生成参考，非游戏素材",
+      "use": "实际Unity截图等比近似放大到768×1664，供ComfyUI参考布局；不是生成成果",
+      "plannedBytes": 524288,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/level-design-20261122/layout-reference.png"
+        }
+      ],
+      "generation": {
+        "tool": "Pillow LANCZOS，实际截图派生",
+        "record": "art-source/level-design-20261122/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
     }
   ]
 }

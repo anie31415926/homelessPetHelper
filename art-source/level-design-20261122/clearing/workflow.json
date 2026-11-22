@@ -1,0 +1,132 @@
+{
+  "job": {
+    "slug": "clearing",
+    "seed": 2026112292,
+    "steps": 24,
+    "references": [
+      "art-source/level-design-20261122/layout-reference.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Use case: ui-mockup. Create one full-screen 768x1664 portrait mobile game interface concept for a cozy stray-cat-and-dog rescue game. Image 1 is the existing game layout to REDESIGN with a much larger playable scene; image 2 supplies the actual residential-yard scenery, watercolor palette and perspective. Fresh cute hand-drawn colored-pencil outlines, light watercolor, sage green foliage, warm ivory paper, peach accents, soft natural daylight, clean readable shapes. Keep the yard floor and vegetation continuous edge-to-edge behind all UI. No phone frame. The central 78 percent of screen height is unobstructed interactive outdoor scenery. Use actual paths among flowerbeds and garden furniture, never three straight graphic lines. Animals have believable natural body proportions relative to crates and potted plants, no huge heads. At the very top only two compact corner HUD clusters, a tiny pause button left and tiny objective button right; top CENTER contains scenery only, safe for a camera cutout. Do not put a wide opaque header, sidebar, huge dialog, or text panel over the field. All HUD paper has a delicate hand-drawn outline and restrained decoration. Show the SAME yard in the preceding route-clearing stage with three garden entrances. A wooden crate partly blocks a stone path, a small pile of twigs blocks another, and weeds and a shallow muddy patch obstruct the third; other pots and garden furniture are fixed scenery. Show one crate selected with a fine mint outline and a short translucent destination marker on an adjacent free paving tile, keeping the wooden crate fully visible. A small dusty kitten peeks from behind the upper garden bench. Bottom only: a slim tray with three illustrated tools, glove, small rake and brush, occupying at most 10 percent of screen height. One small circular completion icon at bottom right. No large progress panels. Show route clearing through believable physical garden objects, not an abstract grid. Use icons and small numerals only, no long text.",
+    "negative": "photorealism, 3d render, glossy plastic, bevel buttons, heavy black strokes, brown parchment, huge UI, broad opaque header, sidebar, large speech bubble, long text, straight route lines, abstract grid, giant animals, chibi proportions, phone frame, watermark, logo"
+  },
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Use case: ui-mockup. Create one full-screen 768x1664 portrait mobile game interface concept for a cozy stray-cat-and-dog rescue game. Image 1 is the existing game layout to REDESIGN with a much larger playable scene; image 2 supplies the actual residential-yard scenery, watercolor palette and perspective. Fresh cute hand-drawn colored-pencil outlines, light watercolor, sage green foliage, warm ivory paper, peach accents, soft natural daylight, clean readable shapes. Keep the yard floor and vegetation continuous edge-to-edge behind all UI. No phone frame. The central 78 percent of screen height is unobstructed interactive outdoor scenery. Use actual paths among flowerbeds and garden furniture, never three straight graphic lines. Animals have believable natural body proportions relative to crates and potted plants, no huge heads. At the very top only two compact corner HUD clusters, a tiny pause button left and tiny objective button right; top CENTER contains scenery only, safe for a camera cutout. Do not put a wide opaque header, sidebar, huge dialog, or text panel over the field. All HUD paper has a delicate hand-drawn outline and restrained decoration. Show the SAME yard in the preceding route-clearing stage with three garden entrances. A wooden crate partly blocks a stone path, a small pile of twigs blocks another, and weeds and a shallow muddy patch obstruct the third; other pots and garden furniture are fixed scenery. Show one crate selected with a fine mint outline and a short translucent destination marker on an adjacent free paving tile, keeping the wooden crate fully visible. A small dusty kitten peeks from behind the upper garden bench. Bottom only: a slim tray with three illustrated tools, glove, small rake and brush, occupying at most 10 percent of screen height. One small circular completion icon at bottom right. No large progress panels. Show route clearing through believable physical garden objects, not an abstract grid. Use icons and small numerals only, no long text.",
+        "negative_prompt": "photorealism, 3d render, glossy plastic, bevel buttons, heavy black strokes, brown parchment, huge UI, broad opaque header, sidebar, large speech bubble, long text, straight route lines, abstract grid, giant animals, chibi proportions, phone frame, watermark, logo",
+        "resolution": 0,
+        "images.image_1": [
+          "20",
+          0
+        ],
+        "images.image_2": [
+          "21",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112292,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "level-design-20261122/clearing"
+      }
+    },
+    "20": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "level-design-20261122/layout-reference.png"
+      }
+    },
+    "21": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "level-design-20261122/yard.jpg"
+      }
+    }
+  }
+}

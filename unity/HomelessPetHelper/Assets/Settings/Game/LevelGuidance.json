@@ -64,7 +64,7 @@
     },
     {
       "contextId": "siege.field",
-      "mechanicId": "siege.deploy.v1",
+      "mechanicId": "siege.drag-deploy.v2",
       "steps": [
         {
           "captionKey": "guide.siege.card",
@@ -86,6 +86,259 @@
           "completionAction": "siege.submit",
           "allowedActions": [
             "siege.submit"
+          ]
+        }
+      ]
+    },
+    {
+      "contextId": "field.parking.pockets.puzzle",
+      "mechanicId": "approach.puzzle.v1",
+      "steps": [
+        {
+          "captionKey": "guide.puzzle.box",
+          "completionAction": "approach.box.46",
+          "allowedActions": [
+            "approach.box.46"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.move",
+          "completionAction": "approach.move.47",
+          "allowedActions": [
+            "approach.move.47"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.box",
+          "completionAction": "approach.box.45",
+          "allowedActions": [
+            "approach.box.45"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.move",
+          "completionAction": "approach.move.46",
+          "allowedActions": [
+            "approach.move.46"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.bridge",
+          "completionAction": "approach.bridge.38",
+          "allowedActions": [
+            "approach.bridge.38"
+          ]
+        }
+      ]
+    },
+    {
+      "contextId": "field.parking.pockets.cleanup",
+      "mechanicId": "approach.cleanup.v1",
+      "steps": [
+        {
+          "captionKey": "guide.cleanup.tool",
+          "completionAction": "approach.tool.Litter",
+          "allowedActions": [
+            "approach.tool.Litter"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.clean",
+          "completionAction": "approach.clean.45",
+          "allowedActions": [
+            "approach.clean.45"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.weeds",
+          "completionAction": "approach.tool.Weeds",
+          "allowedActions": [
+            "approach.tool.Weeds"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.clearWeeds",
+          "completionAction": "approach.clean.38",
+          "allowedActions": [
+            "approach.clean.38"
+          ]
+        }
+      ]
+    },
+    {
+      "contextId": "field.yard.staging.puzzle",
+      "mechanicId": "approach.puzzle.v1",
+      "steps": [
+        {
+          "captionKey": "guide.puzzle.box",
+          "completionAction": "approach.box.45",
+          "allowedActions": [
+            "approach.box.45"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.move",
+          "completionAction": "approach.move.38",
+          "allowedActions": [
+            "approach.move.38"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.box",
+          "completionAction": "approach.box.47",
+          "allowedActions": [
+            "approach.box.47"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.move",
+          "completionAction": "approach.move.46",
+          "allowedActions": [
+            "approach.move.46"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.box",
+          "completionAction": "approach.box.46",
+          "allowedActions": [
+            "approach.box.46"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.move",
+          "completionAction": "approach.move.39",
+          "allowedActions": [
+            "approach.move.39"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.bridge",
+          "completionAction": "approach.bridge.33",
+          "allowedActions": [
+            "approach.bridge.33"
+          ]
+        }
+      ]
+    },
+    {
+      "contextId": "field.yard.staging.cleanup",
+      "mechanicId": "approach.cleanup.v1",
+      "steps": [
+        {
+          "captionKey": "guide.cleanup.tool",
+          "completionAction": "approach.tool.Litter",
+          "allowedActions": [
+            "approach.tool.Litter"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.clean",
+          "completionAction": "approach.clean.45",
+          "allowedActions": [
+            "approach.clean.45"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.weeds",
+          "completionAction": "approach.tool.Weeds",
+          "allowedActions": [
+            "approach.tool.Weeds"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.clearWeeds",
+          "completionAction": "approach.clean.40",
+          "allowedActions": [
+            "approach.clean.40"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.clearWeeds",
+          "completionAction": "approach.clean.33",
+          "allowedActions": [
+            "approach.clean.33"
+          ]
+        }
+      ]
+    },
+    {
+      "contextId": "field.porch.plank.puzzle",
+      "mechanicId": "approach.puzzle.v1",
+      "steps": [
+        {
+          "captionKey": "guide.puzzle.bridge",
+          "completionAction": "approach.bridge.38",
+          "allowedActions": [
+            "approach.bridge.38"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.box",
+          "completionAction": "approach.box.45",
+          "allowedActions": [
+            "approach.box.45"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.move",
+          "completionAction": "approach.move.31",
+          "allowedActions": [
+            "approach.move.31"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.bridge",
+          "completionAction": "approach.bridge.33",
+          "allowedActions": [
+            "approach.bridge.33"
+          ]
+        }
+      ]
+    },
+    {
+      "contextId": "field.porch.plank.cleanup",
+      "mechanicId": "approach.cleanup.v1",
+      "steps": [
+        {
+          "captionKey": "guide.cleanup.tool",
+          "completionAction": "approach.tool.Litter",
+          "allowedActions": [
+            "approach.tool.Litter"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.clean",
+          "completionAction": "approach.clean.45",
+          "allowedActions": [
+            "approach.clean.45"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.weeds",
+          "completionAction": "approach.tool.Weeds",
+          "allowedActions": [
+            "approach.tool.Weeds"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.clearWeeds",
+          "completionAction": "approach.clean.40",
+          "allowedActions": [
+            "approach.clean.40"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.tool",
+          "completionAction": "approach.tool.Litter",
+          "allowedActions": [
+            "approach.tool.Litter"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.clean",
+          "completionAction": "approach.clean.33",
+          "allowedActions": [
+            "approach.clean.33"
           ]
         }
       ]

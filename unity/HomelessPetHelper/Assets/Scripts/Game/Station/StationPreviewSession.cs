@@ -456,7 +456,7 @@ namespace HomelessPetHelper.Game.Station
             {
                 StationResidentPresentation resident = _residents[_summary.Arrival.AnimalId];
                 _view.ShowSummary(_text.Get("summaryBody", resident.Name, _summary.Arrival.Condition.Dirtiness),
-                    resident.Art);
+                    resident.Art, _summary.Arrival.AnimalAtArrival);
             }
             else if (_selected < 0)
             {
@@ -512,7 +512,7 @@ namespace HomelessPetHelper.Game.Station
                 bool observing = StationHabitatPlacement.NeedsObservation(Care(index).BasicAssessment, current);
                 bool cat = arrival.AnimalDefinitionId == "cat.shy" || arrival.AnimalDefinitionId == "preview.cat";
                 _sceneResidents.Add(new StationSceneResident(arrival.AnimalId, index, Resident(index).Name,
-                    Resident(index).Art, cat, observing));
+                    Resident(index).Art, cat, observing, current));
             }
             _view.Scene.Show(_sceneResidents, _selected);
         }

@@ -890,11 +890,11 @@
     },
     {
       "key": "field.plan",
-      "value": "计划费用 {0} · 行动后剩余 {1}"
+      "value": "费用 {0} · 余 {1}"
     },
     {
       "key": "field.deploy",
-      "value": "点道路入口，或拖手牌到入口"
+      "value": "拖手牌到场内路线，松手自动选路"
     },
     {
       "key": "field.ready",
@@ -902,7 +902,7 @@
     },
     {
       "key": "field.pauseInfo",
-      "value": "继续救助，或返回救助站。外出途中未保存，退出后从上次站内记录继续。"
+      "value": "将手牌拖到场景中分开的路线段，松手后点击执行。拖到路外或重合路段不会选路。点场内道具可合体或使用已有改道能力。设置中可选择回合暂停思考，或让战场持续推进；暂停菜单和后台始终暂停。"
     },
     {
       "key": "field.reroute",
@@ -910,7 +910,7 @@
     },
     {
       "key": "field.cancel",
-      "value": "撤销计划"
+      "value": "撤销"
     },
     {
       "key": "field.discard",
@@ -942,7 +942,7 @@
     },
     {
       "key": "field.compactStatus",
-      "value": "信任 {0:0}/{1:0}\n剩余 {2:0}秒"
+      "value": "信任 {0:0}/{1:0} · {2:0}秒"
     },
     {
       "key": "field.help",
@@ -963,6 +963,10 @@
     {
       "key": "field.planned",
       "value": "已计划"
+    },
+    {
+      "key": "field.dropOutside",
+      "value": "请拖到分开的路线段；此次未消耗资源。"
     }
   ]
 }

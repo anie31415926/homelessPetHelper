@@ -50,6 +50,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         [SerializeField]
         private SiegeBattlefield _field;
+        public SiegeBattlefield Battlefield => _field;
 
         [SerializeField]
         private SiegeChoiceCell _cellPrefab;
@@ -109,7 +110,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private Action<bool> _suspensionChanged;
         private string _externalFeedback;
         public SiegeState Snapshot => _session?.Snapshot;
-        public bool IsBattleRunning => _session != null && _session.Phase == BattlePhase.Running && !_session.Paused;
+        public bool IsBattleRunning => _session != null && _session.IsAdvancing;
 
         public void BindEncounter(SiegeSession session, TextAsset text, Action completed,
             Action returnRequested, Action<bool> suspensionChanged)

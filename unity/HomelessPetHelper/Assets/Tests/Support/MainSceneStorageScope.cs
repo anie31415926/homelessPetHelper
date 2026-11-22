@@ -9,15 +9,17 @@ namespace HomelessPetHelper.Tests.Support
     public sealed class MainSceneStorageScope : IDisposable
     {
         private readonly Func<ISaveStorage> _createStorage;
-        private readonly Func<ISaveStorage> _createGuidance, _createAudio;
+        private readonly Func<ISaveStorage> _createGuidance, _createAudio, _createPlay;
         private readonly bool _freshGuidance;
         public MainSceneStorageScope(Func<ISaveStorage> createStorage = null, bool freshGuidance = false,
-            Func<ISaveStorage> createGuidanceStorage = null, Func<ISaveStorage> createAudioStorage = null)
+            Func<ISaveStorage> createGuidanceStorage = null, Func<ISaveStorage> createAudioStorage = null,
+            Func<ISaveStorage> createPlayStorage = null)
         {
             _createStorage = createStorage ?? (() => new MemorySaveStorage());
             _createGuidance = createGuidanceStorage ?? (() => new MemorySaveStorage());
             _createAudio = createAudioStorage ?? (() => new MemorySaveStorage());
             _freshGuidance = freshGuidance;
+            _createPlay = createPlayStorage ?? (() => new MemorySaveStorage());
             SceneManager.sceneLoaded += Configure;
         }
 
@@ -29,7 +31,7 @@ namespace HomelessPetHelper.Tests.Support
                     game.ConfigureProgressStorage(_createStorage());
                     var guidance = _createGuidance();
                     if (!_freshGuidance) SeedReturningPlayer(guidance);
-                    game.ConfigurePreferenceStorage(_createAudio(), guidance);
+                    game.ConfigurePreferenceStorage(_createAudio(), guidance, _createPlay());
                 }
         }
 

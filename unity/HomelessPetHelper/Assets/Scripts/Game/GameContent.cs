@@ -74,11 +74,17 @@ namespace HomelessPetHelper.Game
             map.ValidateText(new Text.OptionPreviewText(_mapText));
             map.ValidateRescues(CreateSiegeCatalog());
             new Modules.Siege.UI.SiegeText(_siegeText).Validate(CreateSiegeCatalog());
-            CreateApproachCatalog();
+            var guides = CreateGuides();
+            var opening = CreateApproachCatalog();
+            foreach (Modules.Approach.ApproachMode mode in Enum.GetValues(typeof(Modules.Approach.ApproachMode)))
+                guides.ValidateOpening(opening.Get(mode));
             foreach (var field in CreateFields().Layouts)
+            {
                 new Modules.Siege.UI.SiegeText(_siegeText).Validate(CreateFieldSiegeCatalog(field));
+                foreach (Modules.Approach.ApproachMode mode in Enum.GetValues(typeof(Modules.Approach.ApproachMode)))
+                    guides.ValidateOpening(field.Opening.Get(mode));
+            }
             Approach.ApproachPanelView.ValidateText(new Text.OptionPreviewText(_approachText));
-            CreateGuides();
         }
     }
 }

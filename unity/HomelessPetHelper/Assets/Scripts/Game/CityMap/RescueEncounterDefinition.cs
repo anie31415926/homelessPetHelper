@@ -1,3 +1,6 @@
+using System;
+using HomelessPetHelper.Modules.Animals;
+
 namespace HomelessPetHelper.Game.CityMap
 {
     /// <summary>Explicit, provisional healthy encounters. Rescue victory never supplies a diagnosis.</summary>
@@ -17,6 +20,17 @@ namespace HomelessPetHelper.Game.CityMap
         public int GroomMinutes { get; }
         public int Dirtiness { get; }
         public int LooseFur { get; }
+        public AnimalDisposition InitialDisposition { get; }
+        public AnimalDisposition RescuedDisposition { get; }
+
+        public AnimalIndividual CreateIndividual()
+        {
+            if (!KnownHealthy) throw new InvalidOperationException("An explicit health source is required.");
+            return new AnimalIndividual(Guid.NewGuid(), AnimalDefinitionId,
+                InitialDisposition, new AnimalHealthSnapshot(Array.Empty<AnimalHealthProblem>()),
+                new AnimalCarePermissions(AcceptsTouch, AcceptsWash, AcceptsGroom),
+                new AnimalCoatCondition(Dirtiness, LooseFur));
+        }
 
         internal RescueEncounterDefinition(CityMapPreviewConfigData.RescueEncounter source)
         {
@@ -34,6 +48,13 @@ namespace HomelessPetHelper.Game.CityMap
             GroomMinutes = source.groomMinutes;
             Dirtiness = source.dirtiness;
             LooseFur = source.looseFur;
+            // Version 1 content without these optional fields retains the documented original sample.
+            var initial = source.initialDisposition;
+            InitialDisposition = new AnimalDisposition(IsHungry, initial?.emotion ?? AnimalEmotion.Nervous,
+                initial?.stress ?? AnimalStress.None, initial?.behavior ?? AnimalBehavior.Watching);
+            var rescued = source.rescuedDisposition;
+            RescuedDisposition = new AnimalDisposition(IsHungry, rescued?.emotion ?? AnimalEmotion.Relaxed,
+                rescued?.stress ?? AnimalStress.None, rescued?.behavior ?? AnimalBehavior.PermittingApproach);
         }
     }
 }

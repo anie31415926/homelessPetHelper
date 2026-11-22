@@ -1,4 +1,5 @@
 using System;
+using HomelessPetHelper.Modules.Animals;
 using UnityEngine;
 
 namespace HomelessPetHelper.Modules.Station.UI.Habitat
@@ -11,12 +12,16 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         public Sprite Art { get; }
         public bool AnimatedCat { get; }
         public bool Observing { get; }
+        public AnimalSnapshot Snapshot { get; }
 
         public StationSceneResident(Guid animalId, int index, string name, Sprite art,
-            bool animatedCat, bool observing)
+            bool animatedCat, bool observing, AnimalSnapshot snapshot = null)
         {
             if (animalId == Guid.Empty || index < 0 || string.IsNullOrWhiteSpace(name) || art == null)
                 throw new ArgumentException("Incomplete station scene resident.");
+            if (snapshot != null && snapshot.AnimalId != animalId)
+                throw new ArgumentException("Resident snapshot identity mismatch.");
+            Snapshot = snapshot;
             AnimalId = animalId;
             Index = index;
             Name = name;

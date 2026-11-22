@@ -79,16 +79,19 @@ namespace HomelessPetHelper.Editor.Approach
 
         private static ApproachBoardView Board(Transform parent, Font font)
         {
+            var source = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Settings/Game/ApproachConfig.json");
+            var template = new ApproachCatalog(JsonUtility.FromJson<ApproachCatalogData>(source.text))
+                .Get(ApproachMode.Cleanup);
             var area = Rect("BoardArea", parent, new Vector2(.045f, .247f), new Vector2(.955f, .818f));
             var board = Rect("Board", area, Vector2.zero, Vector2.one);
             var ratio = board.gameObject.AddComponent<AspectRatioFitter>();
             ratio.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
-            ratio.aspectRatio = (float)ApproachCatalog.BoardColumns / ApproachCatalog.BoardRows;
+            ratio.aspectRatio = (float)template.Columns / template.Rows;
             board.gameObject.AddComponent<Image>().color = new Color32(232, 238, 220, 255);
             var view = board.gameObject.AddComponent<ApproachBoardView>();
             MainSceneAuthor.Bind(view, "_rect", board);
-            var cells = new ApproachCellView[ApproachCatalog.BoardColumns * ApproachCatalog.BoardRows];
-            for (int cell = 0; cell < cells.Length; cell++) cells[cell] = Cell(board, font, cell);
+            var cells = new ApproachCellView[template.Columns * template.Rows];
+            for (int cell = 0; cell < cells.Length; cell++) cells[cell] = Cell(board, font, cell, template);
             var serialized = new SerializedObject(view);
             var array = serialized.FindProperty("_cells");
             array.arraySize = cells.Length;
@@ -97,10 +100,10 @@ namespace HomelessPetHelper.Editor.Approach
             return view;
         }
 
-        private static ApproachCellView Cell(Transform parent, Font font, int index)
+        private static ApproachCellView Cell(Transform parent, Font font, int index, ApproachTemplate template)
         {
-            int col = index % ApproachCatalog.BoardColumns, row = index / ApproachCatalog.BoardColumns;
-            float width = 1f / ApproachCatalog.BoardColumns, height = 1f / ApproachCatalog.BoardRows;
+            int col = index % template.Columns, row = index / template.Columns;
+            float width = 1f / template.Columns, height = 1f / template.Rows;
             var rect = Rect("Cell" + index, parent, new Vector2(col * width, 1 - (row + 1) * height),
                 new Vector2((col + 1) * width, 1 - row * height));
             rect.offsetMin = new Vector2(2, 2);

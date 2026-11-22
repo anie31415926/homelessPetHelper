@@ -84,6 +84,8 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
 
         private static void Click(Component view, string name)
         {
+            if (view is SiegeTrialView siege && siege.Scene != null)
+            { MainApproachDriver.Click(view, name); return; }
             if (view is StationPanelView station && station.Scene != null && name.StartsWith("Animal",
                 StringComparison.Ordinal))
             {

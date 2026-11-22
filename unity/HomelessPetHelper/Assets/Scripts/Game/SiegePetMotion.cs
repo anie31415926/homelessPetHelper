@@ -1,3 +1,5 @@
+using HomelessPetHelper.Modules.Animals;
+using HomelessPetHelper.Modules.Animals.UI;
 using HomelessPetHelper.Modules.PetMotion;
 using HomelessPetHelper.Modules.Siege;
 using HomelessPetHelper.Modules.Siege.UI;
@@ -9,6 +11,8 @@ namespace HomelessPetHelper.Game
     {
         [SerializeField] private PetMotionPlayer _player;
         [SerializeField] private SiegeTrialView _view;
+        [SerializeField] private AnimalCoatView _coat;
+        public void ShowAnimal(AnimalSnapshot snapshot) => _coat.Show(snapshot);
 
         private void OnEnable() => _player.gameObject.SetActive(true);
         private void OnDisable()

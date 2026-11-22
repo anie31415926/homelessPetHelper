@@ -208,7 +208,7 @@ namespace HomelessPetHelper.Game.Field
             {
                 var point = Local(_layout.CellPoint(cell));
                 char terrain = template.Terrain(cell);
-                if (terrain == '#') DrawSprite(mesh, "hedge", point, size * 1.15f, Ambient(MotionCue.Foliage, cell));
+                if (terrain == '#') DrawHedgeSprites(mesh, point, size, cell);
                 else if (terrain == '~') DrawSprite(mesh, "water", point, size, Ambient(MotionCue.Water, cell));
                 else if (cell % 2 == 0) DrawSprite(mesh, "stones", point, size * .35f);
                 if (_snapshot.Bridge == cell) DrawSprite(mesh, "bridge", point, size * .96f, Placement(cell));
@@ -223,6 +223,18 @@ namespace HomelessPetHelper.Game.Field
                 DrawSprite(mesh, DebrisVisual(debris.Tool), Local(_layout.CellPoint(debris.Cell)), size * .9f, pose);
             }
             DrawEffects(mesh, size);
+        }
+
+        private void DrawHedgeSprites(VertexHelper mesh, Vector2 center, Vector2 size, int cell)
+        {
+            float height = _layout.Grid.height / _snapshot.Template.Rows * rectTransform.rect.height / _layout.Height;
+            int count = Mathf.Max(1, Mathf.CeilToInt(height / size.y));
+            for (int index = 0; index < count; index++)
+            {
+                float offset = (index + .5f) / count * height - height / 2;
+                DrawSprite(mesh, "hedge", center + Vector2.up * offset, size * 1.15f,
+                    Ambient(MotionCue.Foliage, cell));
+            }
         }
 
         private void DrawSprite(VertexHelper mesh, string id, Vector2 center, Vector2 size) =>

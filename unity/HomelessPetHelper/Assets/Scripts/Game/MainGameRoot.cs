@@ -27,14 +27,18 @@ namespace HomelessPetHelper.Game
         private ISaveStorage _progressStorage;
         private Func<int> _outingSeedSource;
         private bool _started;
-        private ISaveStorage _audioStorage, _guidanceStorage;
+        private ISaveStorage _audioStorage, _guidanceStorage, _playStorage;
+        private bool _injectedPreferences;
+        public Settings.PlaySettingsSession PlaySettings { get; private set; }
         public Guidance.GuidanceProgressSession Guidance { get; private set; }
 
-        public void ConfigurePreferenceStorage(ISaveStorage audio, ISaveStorage guidance)
+        public void ConfigurePreferenceStorage(ISaveStorage audio, ISaveStorage guidance, ISaveStorage play = null)
         {
             if (_started) throw new InvalidOperationException("Configure UI storage before Start.");
             _audioStorage = audio ?? throw new ArgumentNullException(nameof(audio));
             _guidanceStorage = guidance ?? throw new ArgumentNullException(nameof(guidance));
+            _playStorage = play;
+            _injectedPreferences = true;
         }
 
         /// <summary>
@@ -60,6 +64,8 @@ namespace HomelessPetHelper.Game
                 _siege == null || _approach == null)
                 throw new InvalidOperationException("Incomplete Main scene bindings.");
             Audio = new MainAudioSession(transform, _content.AudioCatalog, _audioStorage ?? CreateAudioStorage());
+            PlaySettings = new Settings.PlaySettingsSession(_playStorage ??
+                (_injectedPreferences ? null : CreatePlayStorage()));
             Guidance = new Guidance.GuidanceProgressSession(_guidanceStorage ?? CreateGuidanceStorage());
             foreach (AudioScope scope in _audioScopes)
             {
@@ -67,7 +73,7 @@ namespace HomelessPetHelper.Game
                 scope.Bind(Audio.Playback);
             }
             Presenter = new MainLoopPresenter(_station, _map, _siege, _approach, _content, Audio.Playback,
-                _progressStorage ?? CreateProgressStorage(), _outingSeedSource, Audio, Guidance);
+                _progressStorage ?? CreateProgressStorage(), _outingSeedSource, Audio, Guidance, PlaySettings);
             _bootstrap.BindSession(Presenter.Session);
             if (Audio.PersistenceError != null)
                 Debug.LogWarning("Audio preferences are session-only; original save is preserved. " +
@@ -100,6 +106,15 @@ namespace HomelessPetHelper.Game
             return new WeChatSaveStorage("homeless-pet.audio.v1");
 #else
             return new FileSaveStorage(Path.Combine(Application.persistentDataPath, "audio-preferences"));
+#endif
+        }
+
+        private static ISaveStorage CreatePlayStorage()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return new WeChatSaveStorage("homeless-pet.play.v1");
+#else
+            return new FileSaveStorage(Path.Combine(Application.persistentDataPath, "play-preferences"));
 #endif
         }
 

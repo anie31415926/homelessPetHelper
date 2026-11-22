@@ -1,4 +1,6 @@
 using System;
+using HomelessPetHelper.Modules.Animals;
+using HomelessPetHelper.Modules.Animals.UI;
 using System.Collections.Generic;
 using System.Linq;
 using HomelessPetHelper.Modules.Station.Cleaning;
@@ -20,6 +22,7 @@ namespace HomelessPetHelper.Modules.Station.UI
         [SerializeField] private Text _progress;
         [SerializeField] private Text _feedback;
         [SerializeField] private Image _summaryAnimal;
+        [SerializeField] private AnimalCoatView _summaryCoat;
         [SerializeField] private DirtSurfaceView _surface;
         [SerializeField] private StationAnimalView[] _animals;
         [SerializeField] private RectTransform _rosterContent;
@@ -92,10 +95,11 @@ namespace HomelessPetHelper.Modules.Station.UI
             if (_chrome != null) _chrome.SetPage(summary, detail, caring);
         }
 
-        public void ShowSummary(string body, Sprite art)
+        public void ShowSummary(string body, Sprite art, AnimalSnapshot animal = null)
         {
             _summaryBody.text = body;
             _summaryAnimal.sprite = art;
+            _summaryCoat.Show(animal);
         }
 
         public void SetStatus(string clock, string capacity, string feedback)

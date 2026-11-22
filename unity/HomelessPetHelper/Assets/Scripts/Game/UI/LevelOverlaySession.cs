@@ -16,6 +16,7 @@ namespace HomelessPetHelper.Game.UI
         private readonly LevelOverlayView _view;
         private readonly LevelOverlayBindings _bindings;
         private readonly MainAudioSession _audio;
+        private readonly Settings.PlaySettingsSession _play;
         private readonly GuidanceProgressSession _progress;
         private readonly OptionPreviewText _text;
         private readonly List<RectTransform> _targets = new List<RectTransform>(16);
@@ -33,12 +34,13 @@ namespace HomelessPetHelper.Game.UI
         private bool CanInteract => !_disposed && _focused && !_backgrounded;
 
         public LevelOverlaySession(LevelOverlayView view, LevelOverlayBindings bindings, MainAudioSession audio,
-            GuidanceProgressSession progress, OptionPreviewText text)
+            GuidanceProgressSession progress, OptionPreviewText text, Settings.PlaySettingsSession play = null)
         {
             if (view == null) throw new ArgumentNullException(nameof(view));
             _view = view;
             _bindings = bindings ?? throw new ArgumentNullException(nameof(bindings));
             _audio = audio;
+            _play = play;
             _progress = progress;
             _text = text ?? throw new ArgumentNullException(nameof(text));
             _view.Open(this, text);
@@ -72,6 +74,7 @@ namespace HomelessPetHelper.Game.UI
             if (!CanInteract || _audio == null || !_stack.TryPush(LevelPopupKind.Pause, LevelPopupKind.Settings))
                 return;
             _settingsBefore = _audio.Playback.Preferences;
+            _view.SetPlaySettings(_play == null || _play.PauseAtDecision);
             _saveNeedsReload = false;
             _view.Audio.Bind(_settingsBefore, ApplyAudio);
             _view.SetSettingsStatus(string.Empty);
@@ -96,6 +99,10 @@ namespace HomelessPetHelper.Game.UI
                 _view.SetSettingsStatus(_text.Get("settings.saveFailed"));
                 return;
             }
+            // Audio is committed separately. Cancellation must not roll back that successful write.
+            _settingsBefore = _audio.Playback.Preferences;
+            if (_play != null && !_play.TrySave(_view.PauseAtDecisionDraft))
+            { _view.SetSettingsStatus(_text.Get("settings.playSaveFailed")); return; }
             _settingsBefore = null;
             if (_view != null) _view.Audio.Unbind();
             CloseTop(LevelPopupKind.Settings);
@@ -158,6 +165,7 @@ namespace HomelessPetHelper.Game.UI
             {
                 _audio.Playback.ApplyPreferences(AudioPreferences.Default);
                 _view.Audio.Refresh(_audio.Playback.Preferences);
+                _view.SetPlaySettings(true);
             }
             else if (action == Confirmation.ReplayGuide)
             {

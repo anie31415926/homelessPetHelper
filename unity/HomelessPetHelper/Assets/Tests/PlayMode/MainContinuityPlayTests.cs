@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using HomelessPetHelper.Game;
 using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Modules.Animals.UI;
 using HomelessPetHelper.Modules.Outing;
 using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Siege;
@@ -63,7 +64,14 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return Load();
             Assert.That(_storage.Writes, Is.Zero);
             Click(_station, "Restart");
-            Click(_map, "Primary"); MainApproachDriver.Complete();
+            Click(_map, "Primary");
+            var encountered = _root.Presenter.OutingAnimal;
+            MainApproachDriver.Complete();
+            var animated = _siege.Scene != null
+                ? _siege.GetComponent<Game.Field.OutingFieldView>().Animal.GetComponent<AnimalCoatView>()
+                : _siege.GetComponentsInChildren<RawImage>().Single(image => image.name == "AnimatedAnimal")
+                    .GetComponent<AnimalCoatView>();
+            Assert.That(animated.Snapshot, Is.SameAs(encountered));
             var catActivity = (SiegeRescueActivity)_root.Presenter.Session.Activity;
             Assert.That(catActivity.Battle.Snapshot.EncounterId, Is.EqualTo("cat"));
             yield return Win();

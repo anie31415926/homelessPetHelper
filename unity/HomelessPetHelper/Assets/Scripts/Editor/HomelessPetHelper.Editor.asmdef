@@ -18,10 +18,16 @@
     "HomelessPetHelper.Modules.PetMotion",
     "HomelessPetHelper.Framework.Audio.UI",
     "HomelessPetHelper.Modules.Approach",
-    "HomelessPetHelper.Framework.UI"
+    "HomelessPetHelper.Framework.UI",
+    "HomelessPetHelper.Modules.Animals.UI",
+    "HomelessPetHelper.Framework.Persistence"
   ],
   "includePlatforms": [
     "Editor"
   ],
-  "autoReferenced": false
+  "autoReferenced": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "Newtonsoft.Json.dll"
+  ]
 }

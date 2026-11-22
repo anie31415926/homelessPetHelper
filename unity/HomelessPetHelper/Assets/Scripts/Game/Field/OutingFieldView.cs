@@ -1,4 +1,6 @@
 using System;
+using HomelessPetHelper.Modules.Animals;
+using HomelessPetHelper.Modules.Animals.UI;
 using HomelessPetHelper.Modules.Approach;
 using HomelessPetHelper.Framework.UI.Motion;
 using UnityEngine;
@@ -11,7 +13,10 @@ namespace HomelessPetHelper.Game.Field
     {
         [SerializeField] private RectTransform _frame, _grid;
         [SerializeField] private Image _background, _animal;
+        [SerializeField] private AnimalCoatView _coat;
+        public void ShowAnimal(AnimalSnapshot snapshot) => _coat.Show(snapshot);
         [SerializeField] private Sprite _cat, _dog;
+        [SerializeField] private bool _fitPlayableArea;
         [SerializeField] private OutingFieldGraphic _terrain;
         [SerializeField] private GameObject _sceneRoot;
         [SerializeField] private MotionScope _motion;
@@ -35,7 +40,7 @@ namespace HomelessPetHelper.Game.Field
             _background.sprite = background;
             _background.GetComponent<AspectRatioFitter>().aspectRatio =
                 background.rect.width / background.rect.height;
-            _frame.GetComponent<AspectRatioFitter>().aspectRatio = layout.Width / layout.Height;
+            ConfigureFrame(layout);
             _animal.sprite = dog ? _dog : _cat;
             _animal.preserveAspect = true;
             var grid = layout.Grid;
@@ -54,6 +59,21 @@ namespace HomelessPetHelper.Game.Field
             _terrain.Configure(layout);
             if (snapshot != null) Show(snapshot);
             else if (opening != null) Refresh(opening);
+        }
+
+        private void ConfigureFrame(OutingFieldLayout layout)
+        {
+            var fitter = _frame.GetComponent<AspectRatioFitter>();
+            fitter.enabled = !_fitPlayableArea;
+            if (!_fitPlayableArea) { fitter.aspectRatio = layout.Width / layout.Height; return; }
+            // Presentation uses the playable bounds, while model coordinates and travel times stay intact.
+            float cellHeight = layout.Grid.height / layout.Opening.Get(ApproachMode.Cleanup).Rows;
+            float top = Mathf.Max(0, layout.Grid.y - cellHeight * 1.5f);
+            float bottom = Mathf.Min(layout.Height, layout.Grid.yMax + cellHeight);
+            float height = bottom - top;
+            _frame.anchorMin = new Vector2(0, 1 - (layout.Height - top) / height);
+            _frame.anchorMax = new Vector2(1, 1 + top / height);
+            _frame.offsetMin = _frame.offsetMax = Vector2.zero;
         }
 
         public void Refresh(ApproachSession opening)

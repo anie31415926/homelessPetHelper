@@ -166,6 +166,7 @@ MonoBehaviour:
   _progress: {fileID: 1296094468309546569}
   _feedback: {fileID: 3995601517184799452}
   _summaryAnimal: {fileID: 2010646976238043917}
+  _summaryCoat: {fileID: 4064586479848006273}
   _surface: {fileID: 1275294677891664579}
   _animals:
   - {fileID: 7142891451818223185}
@@ -6848,6 +6849,7 @@ GameObject:
   - component: {fileID: 3009427601275682458}
   - component: {fileID: 7728972745790431050}
   - component: {fileID: 2010646976238043917}
+  - component: {fileID: 4064586479848006273}
   m_Layer: 0
   m_Name: Animal
   m_TagString: Untagged
@@ -6912,6 +6914,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4064586479848006273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7416386372801461429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3b636e7c995400cb4b1f9fb5deacecb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 2010646976238043917}
+  _shader: {fileID: 4800000, guid: 4f6dd0319523405c98d3a5aecef55dfb, type: 3}
 --- !u!1 &7449512422141604271
 GameObject:
   m_ObjectHideFlags: 0

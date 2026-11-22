@@ -14,7 +14,8 @@ namespace HomelessPetHelper.Game.Field
         public sealed class Data
         {
             public int schemaVersion;
-            public string pointId;
+            public string pointId, layoutId;
+            public bool introductory;
             public float width, height, animalWidth, catWidth;
             public GridData grid;
             public ApproachCatalogData approach;
@@ -38,6 +39,11 @@ namespace HomelessPetHelper.Game.Field
         private readonly Data _data;
         public ApproachCatalog Opening { get; }
         public string PointId => _data.pointId;
+        public bool Introductory => _data.introductory;
+        public string LayoutId { get; }
+        public int Columns => Opening.Get(ApproachMode.Cleanup).Columns;
+        public int Rows => Opening.Get(ApproachMode.Cleanup).Rows;
+        public int CellCount => Columns * Rows;
         public float Width => _data.width;
         public float Height => _data.height;
         public float AnimalWidth => _data.animalWidth;
@@ -58,7 +64,16 @@ namespace HomelessPetHelper.Game.Field
                     Grid.xMax > Width || Grid.yMax > Height ||
                 _data.routes == null || _data.routes.Length != 3)
                 throw new ArgumentException("Invalid outing field frame.");
-            Opening = new ApproachCatalog(_data.approach);
+            if (_data.routes.Any(route => route == null || route.cells == null))
+                throw new ArgumentException("Missing field route cells.");
+            Opening = new ApproachCatalog(_data.approach,
+                _data.routes.SelectMany(route => route.cells).Distinct().ToArray());
+            LayoutId = string.IsNullOrEmpty(_data.layoutId) ? PointId : _data.layoutId;
+            if (string.IsNullOrWhiteSpace(LayoutId) || LayoutId != LayoutId.Trim() ||
+                PointId != PointId.Trim()) throw new ArgumentException("Invalid field identity.");
+            var puzzle = Opening.Get(ApproachMode.Puzzle);
+            if (puzzle.Columns != Columns || puzzle.Rows != Rows)
+                throw new ArgumentException("Opening variants must share field dimensions.");
             var ids = new HashSet<string>(StringComparer.Ordinal);
             var portals = new HashSet<int>();
             foreach (var route in _data.routes)
@@ -78,11 +93,10 @@ namespace HomelessPetHelper.Game.Field
 
         public Vector2 CellPoint(int cell)
         {
-            if (cell < 0 || cell >= ApproachCatalog.BoardColumns * ApproachCatalog.BoardRows)
+            if (cell < 0 || cell >= CellCount)
                 throw new ArgumentOutOfRangeException(nameof(cell));
-            return new Vector2(Grid.x + (cell % ApproachCatalog.BoardColumns + .5f) * Grid.width /
-                ApproachCatalog.BoardColumns, Grid.y + (cell / ApproachCatalog.BoardColumns + .5f) *
-                Grid.height / ApproachCatalog.BoardRows);
+            return new Vector2(Grid.x + (cell % Columns + .5f) * Grid.width / Columns,
+                Grid.y + (cell / Columns + .5f) * Grid.height / Rows);
         }
 
         public Vector2 Portal(int lane) => CellPoint(_data.routes[lane].portalCell);

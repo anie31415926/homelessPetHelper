@@ -179,6 +179,7 @@ GameObject:
   - component: {fileID: 318591737}
   - component: {fileID: 318591736}
   - component: {fileID: 318591735}
+  - component: {fileID: 318591738}
   m_Layer: 0
   m_Name: AnimatedAnimal
   m_TagString: Untagged
@@ -255,6 +256,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 318591733}
   m_CullTransparentMesh: 1
+--- !u!114 &318591738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318591733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3b636e7c995400cb4b1f9fb5deacecb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 318591736}
+  _shader: {fileID: 4800000, guid: 4f6dd0319523405c98d3a5aecef55dfb, type: 3}
 --- !u!114 &338754076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -593,6 +608,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _player: {fileID: 1107155498}
   _view: {fileID: 919538584}
+  _coat: {fileID: 318591738}
 --- !u!1 &919538587 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6460257057564021020, guid: a7ad53fe19cb5ea4ca7de4309dbb084c, type: 3}

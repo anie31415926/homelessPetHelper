@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261122-正式关卡提交推送-01a1f74d.md",
+  "sessionId": "01a1f74d-412d-7613-a27d-fae91bb606ef",
+  "phase": "resume",
+  "readAt": "2026-11-22T14:46:04.221Z",
+  "writePaths": [
+    "art-source/level-design-20261122/",
+    "art-source/resource-catalog.json",
+    "docs/UI排版与可读性规范.md",
+    "docs/conventions/PROJECT_BASELINE.md",
+    "docs/关卡可见性修复与开路设计参考.md",
+    "docs/协作任务/20261122-关卡可见性与开路设计参考-01a1f74d.md",
+    "docs/协作任务/20261122-关卡确认与逆塔防界面-01a1f74d.md",
+    "docs/协作任务/20261122-场地数据与动物连续状态-01a1f74d.md",
+    "docs/协作任务/20261122-正式关卡提交推送-01a1f74d.md",
+    "docs/协作任务/20261122-正式关卡设计与重玩-01a1f74d.md",
+    "docs/协作任务/20261122-正式关卡首批与策略操作-01a1f74d.md",
+    "docs/协作执行记录/20261122-关卡可见性与开路设计参考-01a1f74d/",
+    "docs/协作执行记录/20261122-关卡确认与逆塔防界面-01a1f74d/",
+    "docs/协作执行记录/20261122-场地数据与动物连续状态-01a1f74d/",
+    "docs/协作执行记录/20261122-正式关卡提交推送-01a1f74d/",
+    "docs/协作执行记录/20261122-正式关卡设计与重玩-01a1f74d/",
+    "docs/协作执行记录/20261122-正式关卡首批与策略操作-01a1f74d/",
+    "docs/地图配置与扩展.md",
+    "docs/场地数据与动物连续状态.md",
+    "docs/小院现场试玩实现.md",
+    "docs/当前协作状态.md",
+    "docs/正式关卡设计与重复游玩方案.md",
+    "docs/正式关卡首批实现.md",
+    "test-results/strategy-push/",
+    "unity/HomelessPetHelper/"
+  ],
+  "contextDigest": "74fc163b546308b9efbee3cf6c7f8490ff4f7c0e1235828cddc20e8dab086a6a",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261122-正式关卡提交推送-01a1f74d.md",
+      "sha256": "f1b74b475116f9e78b7054f3d83f7eddee3c6fb7ef079dd6fd93b3652ce47d32"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "1b8389a08e2fd168b24bfc1a8d081294e96eee85d2e787c6fffd4f88f41a9734"
+    }
+  ]
+}

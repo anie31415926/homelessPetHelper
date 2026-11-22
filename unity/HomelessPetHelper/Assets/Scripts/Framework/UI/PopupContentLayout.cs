@@ -13,8 +13,14 @@ namespace HomelessPetHelper.Framework.UI
         private Vector2 _size = Vector2.negativeInfinity;
         private float _preferred = -1, _fixedHeight = -1;
 
-        private void OnEnable() { _size = Vector2.negativeInfinity; _scroll.verticalNormalizedPosition = 1; }
-        private void LateUpdate()
+        private void OnEnable()
+        {
+            _size = Vector2.negativeInfinity; _scroll.verticalNormalizedPosition = 1;
+            Canvas.preWillRenderCanvases += Refresh;
+        }
+        private void OnDisable() => Canvas.preWillRenderCanvases -= Refresh;
+        private void LateUpdate() => Refresh();
+        private void Refresh()
         {
             var parent = (RectTransform)_page.parent;
             float preferred = LayoutUtility.GetPreferredHeight(_content);

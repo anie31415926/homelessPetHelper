@@ -24,6 +24,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         private MainSceneStorageScope _scope;
         private MemorySaveStorage _storage;
         private MainGameRoot _root;
+        private GameContent _fixtureContent;
         private ApproachPanelView _view;
         private StationPanelView _station;
         private CityMapView _map;
@@ -42,13 +43,27 @@ namespace HomelessPetHelper.Tests.PlayMode
         {
             SceneManager.sceneLoaded -= Configure;
             _scope.Dispose();
+            if (_fixtureContent != null) UnityEngine.Object.DestroyImmediate(_fixtureContent);
         }
 
         private void Configure(Scene scene, LoadSceneMode mode)
         {
             if (scene.name != "Main") return;
-            scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<MainGameRoot>(true))
-                .Single().ConfigureOutingSeedSource(() => _seed);
+            var root = scene.GetRootGameObjects().SelectMany(item =>
+                item.GetComponentsInChildren<MainGameRoot>(true)).Single();
+            root.ConfigureOutingSeedSource(() => _seed);
+            // This fixture deliberately covers the retained legacy opening and original yard tutorial.
+            // Formal samples are exercised separately through the actual new composition.
+            var binding = new UnityEditor.SerializedObject(root).FindProperty("_content");
+            if (_fixtureContent != null) UnityEngine.Object.DestroyImmediate(_fixtureContent);
+            var content = UnityEngine.Object.Instantiate((GameContent)binding.objectReferenceValue);
+            _fixtureContent = content;
+            var data = new UnityEditor.SerializedObject(content);
+            var fields = data.FindProperty("_fieldConfigs"); fields.arraySize = 1;
+            fields.GetArrayElementAtIndex(0).objectReferenceValue =
+                UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Settings/Game/YardFieldConfig.json");
+            data.ApplyModifiedPropertiesWithoutUndo();
+            binding.objectReferenceValue = content; binding.serializedObject.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private IEnumerator Load(int seed)

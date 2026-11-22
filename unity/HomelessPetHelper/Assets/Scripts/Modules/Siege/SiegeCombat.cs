@@ -6,11 +6,11 @@ namespace HomelessPetHelper.Modules.Siege
 {
     internal static class SiegeCombat
     {
-        internal static void Advance(SiegeState s, SiegeCatalog c)
+        internal static void Advance(SiegeState s, SiegeCatalog c, bool continuous = false)
         {
             s.VisualEffects.RemoveAll(x => x.UntilMs <= s.ElapsedMs);
             s.Zones.RemoveAll(x => x.UntilMs <= s.ElapsedMs);
-            SiegeAnimalCasting.Advance(s, c);
+            SiegeAnimalCasting.Advance(s, c, continuous);
             SiegeRepair.AdvanceWork(s, c);
             Cover(s, c);
             BraceAllies(s, c);
@@ -23,7 +23,7 @@ namespace HomelessPetHelper.Modules.Siege
             )
                 SiegeRepair.AdvanceWork(s, c);
             RemoveLost(s, c);
-            SiegeAnimalCasting.Advance(s, c);
+            SiegeAnimalCasting.Advance(s, c, continuous);
             while (SiegeEntities.NaturalMerge(s, c)) { }
         }
 

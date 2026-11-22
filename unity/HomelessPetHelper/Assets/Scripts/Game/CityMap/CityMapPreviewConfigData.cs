@@ -1,4 +1,5 @@
 using System;
+using HomelessPetHelper.Modules.Animals;
 
 namespace HomelessPetHelper.Game.CityMap
 {
@@ -25,7 +26,16 @@ namespace HomelessPetHelper.Game.CityMap
             public string templateId = string.Empty, animalDefinitionId = string.Empty, encounterId = string.Empty;
             public string rescueProfile = string.Empty;
             public bool dogArtwork, knownHealthy, isHungry, acceptsTouch, acceptsWash, acceptsGroom;
+            public Disposition initialDisposition, rescuedDisposition;
             public int dirtiness, looseFur, washMinutes, groomMinutes;
+        }
+
+        [Serializable]
+        internal sealed class Disposition
+        {
+            public AnimalEmotion emotion;
+            public AnimalStress stress;
+            public AnimalBehavior behavior;
         }
 
         [Serializable]

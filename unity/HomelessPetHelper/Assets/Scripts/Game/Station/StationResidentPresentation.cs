@@ -51,8 +51,10 @@ namespace HomelessPetHelper.Game.Station
                 Art = art,
                 Name = text.Get(dogArtwork ? "loop.dog" : "loop.animal", index + 1),
                 SharedCare = sharedCare ?? new StationCoatCare(station, stationId, arrival.AnimalId, clock,
-                    StationCoatFields.Create(mask, index * 2, false, animal.Coat.Dirtiness == 0),
-                    StationCoatFields.Create(mask, index * 2, true, animal.Coat.LooseFur == 0), 20, 12)
+                    StationCoatFields.Create(mask, Modules.Animals.UI.AnimalCoatPattern.Seed(animal.AnimalId),
+                        false, animal.Coat.Dirtiness),
+                    StationCoatFields.Create(mask, Modules.Animals.UI.AnimalCoatPattern.Seed(animal.AnimalId),
+                        true, animal.Coat.LooseFur), 20, 12)
             };
         }
 

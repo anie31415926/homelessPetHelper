@@ -40,5 +40,8 @@ MonoBehaviour:
   _approachText: {fileID: 4900000, guid: 82bec45c2b854f4da3bc5f55845b47ef, type: 3}
   _fieldConfigs:
   - {fileID: 4900000, guid: 34dfe2dd90bf498fa0bf0b4a39554354, type: 3}
+  - {fileID: 4900000, guid: be8360c758634d28bfceb6a21fde9c0c, type: 3}
+  - {fileID: 4900000, guid: 27d8d728829047aca08a304bf24c1263, type: 3}
+  - {fileID: 4900000, guid: 2bf206d297f6439384220c52e4fd2589, type: 3}
   _levelUiText: {fileID: 4900000, guid: f1dc85fc5fd94e3a9aa5cac0a4944d60, type: 3}
   _levelGuidance: {fileID: 4900000, guid: 1f7d9d879dc449988548e2de06960542, type: 3}

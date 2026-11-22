@@ -104,7 +104,6 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return null;
             yield return null;
             yield return Capture(_siege, "siege");
-            AssertAnimatedAnimalVisible();
             yield return Win(activity);
             var session = _root.Presenter.Session;
             Assert.That(session.Flow.Stage, Is.EqualTo(RescueStage.Rescued));
@@ -175,7 +174,9 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(activity.Battle.ElapsedMs, Is.EqualTo(elapsed));
             _siege.SendMessage("OnApplicationPause", true);
             _siege.SendMessage("OnApplicationFocus", true);
-            Click(_siege, "Pause");
+            var blockedResume = MainApproachDriver.Button(_siege, "Resume");
+            Assert.That(blockedResume.IsInteractable(), Is.False);
+            blockedResume.onClick.Invoke();
             Assert.That(activity.IsSuspended, Is.True, "Focus recovery cannot override application pause.");
             _siege.SendMessage("OnApplicationPause", false);
             Click(_siege, "Pause");
@@ -188,7 +189,12 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(_root.Presenter.Session.Flow.IsSuspended, Is.False);
             var individual = activity.Individual.Current;
             _root.Presenter.Session.Station.SetSuspended(true);
-            Click(_siege, "Retry");
+            // Refuse at the business boundary. A popup confirmation deliberately resumes the whole
+            // session before transport, so a UI-owned pause cannot simulate an independent rejection.
+            var condition = new Modules.Station.AnimalIntakeCondition(
+                Modules.Station.StationHealthAssessment.Unchecked, individual.Coat.Dirtiness,
+                individual.Health.Problems.Select(problem => problem.InstanceId).ToArray());
+            Assert.That(_root.Presenter.Session.TryReturnRescued(condition, out _), Is.False);
             Assert.That(_root.Presenter.Session.Activity, Is.SameAs(activity));
             Assert.That(activity.Individual.Current, Is.SameAs(individual));
             Assert.That(_root.Presenter.Session.Clock.Current.ElapsedMinutes, Is.Zero);
@@ -229,6 +235,19 @@ namespace HomelessPetHelper.Tests.PlayMode
 
         private void AssertAnimatedAnimalVisible()
         {
+            if (_siege.Scene != null)
+            {
+                var animal = _siege.GetComponent<Game.Field.OutingFieldView>().Animal;
+                Assert.That(animal.isActiveAndEnabled, Is.True);
+                Assert.That(animal.sprite, Is.Not.Null);
+                Assert.That(animal.sprite.texture, Is.Not.Null);
+                Assert.That(animal.canvasRenderer.GetAlpha(), Is.GreaterThan(.9f));
+                Assert.That(animal.GetComponent<Modules.Animals.UI.AnimalCoatView>().Snapshot,
+                    Is.SameAs(_root.Presenter.OutingAnimal));
+                Assert.That(animal.rectTransform.rect.width, Is.GreaterThan(0));
+                Assert.That(animal.rectTransform.rect.height, Is.GreaterThan(0));
+                return;
+            }
             var raw = _siege.GetComponentsInChildren<RawImage>().Single(image => image.name == "AnimatedAnimal");
             var target = (RenderTexture)raw.texture;
             Assert.That(target, Is.Not.Null);
@@ -262,7 +281,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             button.onClick.Invoke();
         }
 
-        private static IEnumerator Capture(Component view, string name)
+        private IEnumerator Capture(Component view, string name)
         {
             var canvas = view.GetComponent<Canvas>();
             var camera = new GameObject("MainCapture", typeof(Camera)).GetComponent<Camera>();
@@ -291,6 +310,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                             Assert.That(label.cachedTextGenerator.vertexCount, Is.GreaterThan(4),
                                 "Visible map text: " + label.name + " at " + size);
                         }
+                if (view is SiegeTrialView) AssertAnimatedAnimalVisible();
                 camera.Render();
                 var previous = RenderTexture.active;
                 RenderTexture.active = target;

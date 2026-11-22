@@ -18,6 +18,9 @@ MonoBehaviour:
   touchSize: 144
   cardWidth: 240
   cardHeight: 384
+  fieldCardHeight: 312
+  fieldHeaderHeight: 240
+  guideMaxWidth: 840
   actionWidth: 192
   actionHeight: 168
   captionHeight: 96

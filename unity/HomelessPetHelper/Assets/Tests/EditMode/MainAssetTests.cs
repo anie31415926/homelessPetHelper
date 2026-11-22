@@ -29,7 +29,9 @@ namespace HomelessPetHelper.Tests.EditMode
             foreach (var board in new[] { legacy, scene })
             {
                 Assert.That(board, Is.Not.Null);
-                Assert.That(board.CellCount, Is.EqualTo(ApproachCatalog.BoardColumns * ApproachCatalog.BoardRows));
+                Assert.That(board.CellCount, Is.EqualTo(new ApproachCatalog(JsonUtility.FromJson<ApproachCatalogData>(
+                    AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Settings/Game/ApproachConfig.json").text))
+                    .Get(ApproachMode.Cleanup).CellCount));
                 Assert.That(board.GetComponentsInChildren<ApproachCellView>(true).Length, Is.EqualTo(board.CellCount));
                 Assert.That(Enumerable.Range(0, board.CellCount).Select(board.Cell).Distinct().Count(),
                     Is.EqualTo(board.CellCount));

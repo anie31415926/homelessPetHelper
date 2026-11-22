@@ -336,7 +336,9 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(backdrop, Has.Length.EqualTo(1), "A modal and guide must never stack dim layers.");
             var dim = backdrop.Single();
             AssertCanvasCoverage(canvas, dim);
-            Assert.That(dim.color, Is.EqualTo((Color)new Color32(0, 0, 0, 88)), "Shared neutral dim style.");
+            byte opacity = dim is GuideMaskGraphic ? (byte)56 : (byte)88;
+            Assert.That(dim.color, Is.EqualTo((Color)new Color32(0, 0, 0, opacity)),
+                "Guidance stays light; modal pages keep their shared neutral dim style.");
             Assert.That(dim.raycastTarget, Is.True);
             var mesh = dim.canvasRenderer.GetMesh();
             Assert.That(mesh, Is.Not.Null);

@@ -24,6 +24,31 @@ namespace HomelessPetHelper.Tests.Support
         {
             Canvas.ForceUpdateCanvases();
             Assert.That(view.Session.IsComplete, Is.False);
+            string id = view.Session.Template.Id;
+            if (id.StartsWith("field.parking.pockets", StringComparison.Ordinal) ||
+                id.StartsWith("field.yard.staging", StringComparison.Ordinal) ||
+                id.StartsWith("field.porch.plank", StringComparison.Ordinal))
+            {
+                if (view.Session.Template.Mode == ApproachMode.Cleanup)
+                {
+                    foreach (int cell in id.Contains("parking") ? new[] { 45, 38 } : new[] { 45, 40, 33 })
+                        Clean(view, cell);
+                }
+                else if (id.Contains("parking"))
+                { Drag(view, 46, 47); Drag(view, 45, 46); Drag(view, 38, 38); }
+                else if (id.Contains("staging"))
+                {
+                    Drag(view, 45, 38); Drag(view, 47, 46); Drag(view, 46, 39);
+                    Drag(view, 33, 33);
+                }
+                else
+                {
+                    Drag(view, 38, 38); Drag(view, 45, 31);
+                    Drag(view, 33, 33);
+                }
+                Assert.That(view.Session.IsComplete, Is.True, id);
+                return;
+            }
             bool yard = view.Session.Template.Id.StartsWith("field.yard.", StringComparison.Ordinal);
             if (yard && view.Session.Template.Mode == ApproachMode.Puzzle)
             { Drag(view, 43, 44); Drag(view, 36, 36); }
@@ -76,10 +101,10 @@ namespace HomelessPetHelper.Tests.Support
         public static PointerEventData Pointer(ApproachPanelView view, int cell, int pointerId = 7)
         {
             var rect = (RectTransform)view.Board.transform;
-            int col = cell % ApproachCatalog.BoardColumns, row = cell / ApproachCatalog.BoardColumns;
+            int col = cell % view.Session.Template.Columns, row = cell / view.Session.Template.Columns;
             var point = new Vector3(Mathf.Lerp(rect.rect.xMin, rect.rect.xMax,
-                (col + .5f) / ApproachCatalog.BoardColumns), Mathf.Lerp(rect.rect.yMax, rect.rect.yMin,
-                    (row + .5f) / ApproachCatalog.BoardRows));
+                (col + .5f) / view.Session.Template.Columns), Mathf.Lerp(rect.rect.yMax, rect.rect.yMin,
+                    (row + .5f) / view.Session.Template.Rows));
             return new PointerEventData(EventSystem.current) { pointerId = pointerId,
                 position = RectTransformUtility.WorldToScreenPoint(null, rect.TransformPoint(point)) };
         }

@@ -11,6 +11,9 @@ namespace HomelessPetHelper.Modules.Siege
             new SiegeGuard(), new SiegeSweep(), new SiegeBuild(), new SiegeRepair(), new SiegeHold(), new SiegeCarry(),
         };
 
+        private static bool CanRun(SiegeState state, bool continuous) => !state.Paused &&
+            (state.Phase == BattlePhase.Running || continuous && state.Phase == BattlePhase.Decision);
+
         private static SiegeAnimalSkill Skill(IntentKind kind)
         {
             foreach (var skill in Skills)
@@ -30,13 +33,13 @@ namespace HomelessPetHelper.Modules.Siege
             skill.Plan(s, c);
         }
 
-        internal static bool TryRelease(SiegeState s, SiegeCatalog c)
+        internal static bool TryRelease(SiegeState s, SiegeCatalog c, bool continuous = false)
         {
             var a = s.AnimalState;
             var skill = Skill(a.Intent);
-            if (s.Phase != BattlePhase.Running || s.Paused || a.Charge < 1 || a.Cast != null
+            if (!CanRun(s, continuous) || a.Charge < 1 || a.Cast != null
                 || s.ElapsedMs < a.RecoveryUntilMs || s.ElapsedMs < a.SkillReadyAtMs(skill.Kind)
-                || (skill.RequiresDecision && s.ResolvedTurn < a.SeenTurn))
+                || (!continuous && skill.RequiresDecision && s.ResolvedTurn < a.SeenTurn))
                 return false;
             a.Cast = new SkillCast
             {
@@ -52,17 +55,17 @@ namespace HomelessPetHelper.Modules.Siege
             if (a.Cast.RecoveryMs > 0 || a.Cast.ResolveAtMs > a.Cast.StartedMs)
                 a.RecoveryUntilMs = a.Cast.ResolveAtMs + a.Cast.RecoveryMs;
             skill.Begin(s, c);
-            Advance(s, c);
+            Advance(s, c, continuous);
             SiegeCombat.RemoveLost(s, c);
             SiegeAnimal.ChooseNext(s, c, skill.Kind, a.IntentLane);
             return true;
         }
 
-        internal static void Advance(SiegeState s, SiegeCatalog c)
+        internal static void Advance(SiegeState s, SiegeCatalog c, bool continuous = false)
         {
             var a = s.AnimalState;
             var cast = a.Cast;
-            if (cast == null || s.Phase != BattlePhase.Running || s.Paused) return;
+            if (cast == null || !CanRun(s, continuous)) return;
             var skill = Skill(cast.Kind);
             if (cast.Phase == CastPhase.Windup && s.ElapsedMs >= cast.ResolveAtMs)
                 Resolve(s, c, skill);

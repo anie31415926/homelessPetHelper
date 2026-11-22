@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261122-关卡确认与逆塔防界面-01a1f74d.md",
+  "sessionId": "01a1f74d-412d-7613-a27d-fae91bb606ef",
+  "phase": "delivery",
+  "readAt": "2026-11-22T13:08:29.800Z",
+  "writePaths": [
+    "docs/协作任务/20261122-关卡确认与逆塔防界面-01a1f74d.md",
+    "docs/协作执行记录/20261122-关卡确认与逆塔防界面-01a1f74d/",
+    "docs/当前协作状态.md",
+    "docs/正式关卡设计与重复游玩方案.md",
+    "test-results/level-design/"
+  ],
+  "contextDigest": "69c1b6a8bc6f453332634808190d41cfd39374df177ac66a7a7cae3deeafdd81",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261122-关卡确认与逆塔防界面-01a1f74d.md",
+      "sha256": "7fcbb49dd77b133ed96c297b649f4f42eba8335e11716f97aca5f32f1d709da7"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "142d8c195ba6a2f70dc6c63fd64c946eaafc693b943d2a224542a53834a8efb4"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 using System;
+using HomelessPetHelper.Modules.Animals.UI;
 using HomelessPetHelper.Modules.Station.Habitat;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         [SerializeField] private GameObject _cage;
         [SerializeField] private GameObject _selected;
         [SerializeField] private Button _select;
+        [SerializeField] private AnimalCoatView _stillCoat, _motionCoat;
         private StationHabitatRenderer _renderer;
         private StationSceneResident _resident;
         private bool _suspended;
@@ -39,6 +41,8 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _place = place;
             _name.text = resident.Name;
             _stillImage.sprite = resident.Art;
+            _stillCoat.Show(resident.Snapshot);
+            _motionCoat.Show(resident.Snapshot);
             _stillImage.gameObject.SetActive(!resident.AnimatedCat);
             _motionImage.gameObject.SetActive(resident.AnimatedCat);
             _cage.SetActive(resident.Observing);

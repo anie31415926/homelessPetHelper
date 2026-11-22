@@ -5,14 +5,13 @@ namespace HomelessPetHelper.Modules.Approach
 {
     public sealed class ApproachCatalog
     {
-        // Matches the first static board prefab. Larger boards require an explicit UI revision.
-        public const int BoardColumns = 7;
-        public const int BoardRows = 8;
+        // Resource safety bound, not a level size. Dimensions come from each template's rows.
+        public const int MaxCells = 1024;
         private readonly ApproachTemplate[] _templates = new ApproachTemplate[2];
         public int UndoLimit { get; }
         public double MaxStepSeconds { get; }
 
-        public ApproachCatalog(ApproachCatalogData data)
+        public ApproachCatalog(ApproachCatalogData data, int[] requiredClearCells = null)
         {
             if (data == null || data.schemaVersion != 1 || data.templates == null ||
                 data.templates.Length != _templates.Length || data.undoLimit <= 0 || data.undoLimit > 100 ||
@@ -27,7 +26,7 @@ namespace HomelessPetHelper.Modules.Approach
                 int mode = (int)template.mode;
                 if (!ids.Add(template.id) || _templates[mode] != null)
                     throw new ArgumentException("Duplicate approach template or mode.");
-                _templates[mode] = new ApproachTemplate(template);
+                _templates[mode] = new ApproachTemplate(template, requiredClearCells);
             }
         }
 
@@ -49,17 +48,19 @@ namespace HomelessPetHelper.Modules.Approach
         {
             if (template == null || string.IsNullOrWhiteSpace(template.id) ||
                 !Enum.IsDefined(typeof(ApproachMode), template.mode) || template.rows == null ||
-                template.rows.Length != BoardRows || template.boxes == null ||
+                template.rows.Length == 0 || template.rows[0] == null || template.rows[0].Length == 0 ||
+                (long)template.rows.Length * template.rows[0].Length > MaxCells || template.boxes == null ||
                 template.bridgeCells == null || template.debris == null)
                 throw new ArgumentException("Invalid approach template.");
+            int columns = template.rows[0].Length, rows = template.rows.Length;
             foreach (string row in template.rows)
             {
-                if (row == null || row.Length != BoardColumns) throw new ArgumentException("Invalid board size.");
+                if (row == null || row.Length != columns) throw new ArgumentException("Invalid board size.");
                 foreach (char tile in row)
                     if (tile != '#' && tile != '.' && tile != '~') throw new ArgumentException("Invalid terrain.");
             }
-            bool Ground(int cell) => cell >= 0 && cell < BoardColumns * BoardRows &&
-                template.rows[cell / BoardColumns][cell % BoardColumns] == '.';
+            bool Ground(int cell) => cell >= 0 && cell < columns * rows &&
+                template.rows[cell / columns][cell % columns] == '.';
             if (!Ground(template.entrance) || !Ground(template.animal) || template.entrance == template.animal)
                 throw new ArgumentException("Invalid approach endpoints.");
             var occupied = new HashSet<int>();
@@ -73,8 +74,8 @@ namespace HomelessPetHelper.Modules.Approach
                     throw new ArgumentException("Invalid debris.");
             var bridges = new HashSet<int>();
             foreach (int cell in template.bridgeCells)
-                if (cell < 0 || cell >= BoardColumns * BoardRows || !bridges.Add(cell) ||
-                    template.rows[cell / BoardColumns][cell % BoardColumns] != '~')
+                if (cell < 0 || cell >= columns * rows || !bridges.Add(cell) ||
+                    template.rows[cell / columns][cell % columns] != '~')
                     throw new ArgumentException("Invalid bridge site.");
             if (template.mode == ApproachMode.Puzzle ?
                 template.debris.Length != 0 || template.boxes.Length == 0 || bridges.Count == 0 :

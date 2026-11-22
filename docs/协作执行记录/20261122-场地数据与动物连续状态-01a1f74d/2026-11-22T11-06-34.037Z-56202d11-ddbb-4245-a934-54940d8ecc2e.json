@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261122-场地数据与动物连续状态-01a1f74d.md",
+  "sessionId": "01a1f74d-412d-7613-a27d-fae91bb606ef",
+  "phase": "resume",
+  "readAt": "2026-11-22T11:06:34.037Z",
+  "writePaths": [
+    "docs/conventions/PROJECT_BASELINE.md",
+    "docs/协作任务/20261122-场地数据与动物连续状态-01a1f74d.md",
+    "docs/协作执行记录/20261122-场地数据与动物连续状态-01a1f74d/",
+    "docs/地图配置与扩展.md",
+    "docs/场地数据与动物连续状态.md",
+    "docs/小院现场试玩实现.md",
+    "docs/当前协作状态.md",
+    "test-results/field-animal-continuity/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_StationHabitatResident.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/AnimalState.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/AnimalState/",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/Approach/",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/Field/",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/HomelessPetHelper.Editor.asmdef",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Approach/",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Field/",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/GameContent.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Guidance/",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/HomelessPetHelper.Game.asmdef",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainLoopPresenter.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/SiegePetMotion.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/SiegeRescueActivity.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Station/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Animals/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Approach/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/",
+    "unity/HomelessPetHelper/Assets/Settings/Game/",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/",
+    "unity/HomelessPetHelper/Assets/Tests/Support/"
+  ],
+  "contextDigest": "ee3d07eed7a36eaf584bcf146061e901f0036c6c69bb3a9c4495061d0dbcd10e",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261122-场地数据与动物连续状态-01a1f74d.md",
+      "sha256": "0710eebc59623a61bdb6d3c34f9d5d53e5825428625a4308bc35f32d1ec62b78"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "5ee52f103f7ab4e352eaca6b5d9ace8d6efd8ad392ce5e45cf66be4e662e2198"
+    }
+  ]
+}

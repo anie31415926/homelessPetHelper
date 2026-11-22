@@ -12,6 +12,14 @@ namespace HomelessPetHelper.Modules.Siege
         public SiegeState.BattlePhase Phase => _state.Phase;
         public bool Paused => _state.Paused;
         public int ElapsedMs => _state.ElapsedMs;
+        public bool PauseAtDecision { get; private set; } = true;
+        private bool _decisionHold;
+        public bool IsAdvancing => !_state.Paused &&
+            (_state.Phase == BattlePhase.Running || _state.Phase == BattlePhase.Decision &&
+                !PauseAtDecision && !_decisionHold);
+
+        public void SetPauseAtDecision(bool pause) => PauseAtDecision = pause;
+        public void SetDecisionHold(bool held) => _decisionHold = held;
 
         public SiegeSession(SiegeCatalog catalog, uint seed, string profile, string sessionId,
             string encounterId = null)
@@ -76,16 +84,14 @@ namespace HomelessPetHelper.Modules.Siege
         {
             if (!SiegeCatalog.Finite(elapsedMs) || elapsedMs < 0 || elapsedMs > 1000)
                 throw new ArgumentOutOfRangeException(nameof(elapsedMs));
-            if (_state.Phase != BattlePhase.Running || _state.Paused)
-                return;
+            if (!IsAdvancing) return;
             _state.AccumulatorMs += elapsedMs;
-            while (_state.AccumulatorMs >= Catalog.Rules.StepMs && _state.Phase == BattlePhase.Running)
+            while (_state.AccumulatorMs >= Catalog.Rules.StepMs && IsAdvancing)
             {
                 _state.AccumulatorMs -= Catalog.Rules.StepMs;
                 Tick();
             }
-            if (_state.Phase != BattlePhase.Running)
-                _state.AccumulatorMs = 0;
+            if (!IsAdvancing) _state.AccumulatorMs = 0;
         }
 
         private void Tick()
@@ -96,7 +102,7 @@ namespace HomelessPetHelper.Modules.Siege
             s.ElapsedMs += r.StepMs;
             s.PlayerChargeMs = Math.Min(r.PlayerPeriodMs, s.PlayerChargeMs + r.StepMs);
             a.Charge = Math.Min(1, a.Charge + (double)r.StepMs / Catalog.Conditions(a.Vigilance, a.Stamina).PeriodMs);
-            SiegeCombat.Advance(s, Catalog);
+            SiegeCombat.Advance(s, Catalog, !PauseAtDecision && !_decisionHold);
             if (a.Vigilance == "high" && s.Progress >= r.Target * r.RelaxAtProgress)
             {
                 a.Vigilance = "watchful";
@@ -115,16 +121,16 @@ namespace HomelessPetHelper.Modules.Siege
                 return;
             }
             // A simultaneous full gauge opens strategy first; the animal keeps its pending charge.
-            if (s.PlayerChargeMs >= r.PlayerPeriodMs)
+            if (s.Phase == BattlePhase.Running && s.PlayerChargeMs >= r.PlayerPeriodMs)
             {
                 s.Turn++;
                 s.Phase = BattlePhase.Decision;
                 s.Energy = Math.Min(r.EnergyCap, s.Energy + r.TurnEnergy);
                 SiegeEntities.Draw(s, Catalog, r.TurnDraw);
                 SiegeEntities.Record(s, Catalog, "event.turn");
-                return;
+                if (PauseAtDecision || _decisionHold) return;
             }
-            SiegeAnimalCasting.TryRelease(s, Catalog);
+            SiegeAnimalCasting.TryRelease(s, Catalog, !PauseAtDecision && !_decisionHold);
         }
 
         /// <summary>Preview and commit share validation. Rejection leaves state, identity and RNG unchanged.</summary>

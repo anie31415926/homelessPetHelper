@@ -12,7 +12,8 @@ namespace HomelessPetHelper.Game
         public AnimalIndividual Individual { get; }
         public SiegeSession Battle { get; }
         public bool IsClosed { get; private set; }
-        private bool _suspended;
+        private bool _suspended, _outcomeApplied;
+        private readonly AnimalDisposition _rescuedDisposition;
         public bool IsSuspended => _suspended || Battle.Paused;
         public bool IsAssistanceRequested => false;
         public bool IsRescueComplete => !IsClosed && !IsSuspended && Battle.Phase == SiegeState.BattlePhase.Won;
@@ -21,31 +22,34 @@ namespace HomelessPetHelper.Game
             : this(sessionId, seed, catalog, null) { }
 
         public SiegeRescueActivity(Guid sessionId, int seed, SiegeCatalog catalog,
-            CityMap.RescueEncounterDefinition encounter)
+            CityMap.RescueEncounterDefinition encounter, AnimalIndividual individual = null)
         {
             if (encounter != null && !encounter.KnownHealthy)
                 throw new ArgumentException("An explicit health source is required.");
             if (sessionId == Guid.Empty) throw new ArgumentException("Missing outing identity.", nameof(sessionId));
             SessionId = sessionId;
-            Individual = new AnimalIndividual(Guid.NewGuid(), encounter?.AnimalDefinitionId ?? "cat.shy",
-                new AnimalDisposition(encounter?.IsHungry ?? true, AnimalEmotion.Nervous, AnimalStress.None,
+            if (individual != null && (encounter == null ||
+                individual.Current.DefinitionId != encounter.AnimalDefinitionId))
+                throw new ArgumentException("Animal does not belong to this encounter.");
+            Individual = individual ?? encounter?.CreateIndividual() ?? new AnimalIndividual(Guid.NewGuid(), "cat.shy",
+                new AnimalDisposition(true, AnimalEmotion.Nervous, AnimalStress.None,
                     AnimalBehavior.Watching),
                 new AnimalHealthSnapshot(Array.Empty<AnimalHealthProblem>()),
-                new AnimalCarePermissions(encounter?.AcceptsTouch ?? true, encounter?.AcceptsWash ?? true,
-                    encounter?.AcceptsGroom ?? true), new AnimalCoatCondition(encounter?.Dirtiness ?? 65,
-                        encounter?.LooseFur ?? 50));
+                new AnimalCarePermissions(true, true, true), new AnimalCoatCondition(65, 50));
+            _rescuedDisposition = encounter?.RescuedDisposition ?? new AnimalDisposition(true,
+                AnimalEmotion.Relaxed, AnimalStress.None, AnimalBehavior.PermittingApproach);
             Battle = new SiegeSession(catalog, unchecked((uint)seed), encounter?.RescueProfile ?? "calm",
                 sessionId.ToString("N"), encounter?.EncounterId);
         }
 
         public void SynchronizeOutcome()
         {
-            if (IsClosed || Battle.Phase != SiegeState.BattlePhase.Won) return;
+            if (IsClosed || _outcomeApplied || Battle.Phase != SiegeState.BattlePhase.Won) return;
             var current = Individual.Current;
-            if (current.Disposition.Behavior == AnimalBehavior.PermittingApproach) return;
             if (!Individual.TryApplyDisposition(current, new AnimalDisposition(current.Disposition.IsHungry,
-                AnimalEmotion.Relaxed, AnimalStress.None, AnimalBehavior.PermittingApproach)))
+                _rescuedDisposition.Emotion, _rescuedDisposition.Stress, _rescuedDisposition.Behavior)))
                 throw new InvalidOperationException("Animal changed while applying rescue outcome.");
+            _outcomeApplied = true;
         }
 
         public void SetSuspended(bool suspended)

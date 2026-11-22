@@ -44,6 +44,7 @@ namespace HomelessPetHelper.Game.Approach
             _pause, _return;
         [SerializeField] private Color _floorColor, _wallColor, _waterColor, _bridgeColor, _boxColor,
             _litterColor, _weedsColor, _mudColor, _selectedColor, _reachableColor;
+        [SerializeField] private Color _sceneSelectedColor = new Color32(147, 205, 173, 46);
         private ApproachSession _session;
         private OptionPreviewText _text;
         private Action _completed, _returnRequested;
@@ -121,6 +122,7 @@ namespace HomelessPetHelper.Game.Approach
             if (gameObject.activeInHierarchy) throw new InvalidOperationException("Bind a closed approach panel.");
             Unbind();
             _session = session ?? throw new ArgumentNullException(nameof(session));
+            Board.Configure(session.Template);
             _text = new OptionPreviewText(text);
             ValidateText(_text);
             if (Board.CellCount != session.Template.CellCount)
@@ -448,7 +450,7 @@ namespace HomelessPetHelper.Game.Approach
                 int remaining = active < 0 || Board.ContactCell != cell ? -1 :
                     (int)Math.Ceiling(100 * _session.RemainingWork(active) /
                         _session.Template.Debris[active].WorkSeconds);
-                Board.Cell(cell).Show(cell == _selectedBox ? _selectedColor : Color.clear,
+                Board.Cell(cell).Show(cell == _selectedBox ? _sceneSelectedColor : Color.clear,
                     string.Empty, remaining, _text);
                 return;
             }

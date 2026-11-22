@@ -20,7 +20,8 @@
     "HomelessPetHelper.Modules.Siege",
     "HomelessPetHelper.Modules.Approach",
     "HomelessPetHelper.Framework.UI",
-    "HomelessPetHelper.Framework.Audio"
+    "HomelessPetHelper.Framework.Audio",
+    "HomelessPetHelper.Modules.Animals.UI"
   ],
   "includePlatforms": [
     "Editor"
