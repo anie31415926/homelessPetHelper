@@ -11,12 +11,14 @@
     "HomelessPetHelper.Modules.Outing.UI",
     "HomelessPetHelper.Modules.WorldTime",
     "UnityEngine.UI",
+    "Unity.2D.Sprite.Editor",
     "HomelessPetHelper.Game",
     "HomelessPetHelper.Modules.Station.UI",
     "HomelessPetHelper.Modules.Siege.UI",
     "HomelessPetHelper.Modules.PetMotion",
     "HomelessPetHelper.Framework.Audio.UI",
-    "HomelessPetHelper.Modules.Approach"
+    "HomelessPetHelper.Modules.Approach",
+    "HomelessPetHelper.Framework.UI"
   ],
   "includePlatforms": [
     "Editor"

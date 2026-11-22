@@ -1,6 +1,11 @@
 {
   "name": "HomelessPetHelper.Modules.Siege.UI",
   "rootNamespace": "HomelessPetHelper.Modules.Siege.UI",
-  "references": ["HomelessPetHelper.Modules.Siege", "HomelessPetHelper.Modules.Rescue.UI", "UnityEngine.UI"],
+  "references": [
+    "HomelessPetHelper.Modules.Siege",
+    "HomelessPetHelper.Modules.Rescue.UI",
+    "UnityEngine.UI",
+    "HomelessPetHelper.Framework.UI"
+  ],
   "autoReferenced": false
 }

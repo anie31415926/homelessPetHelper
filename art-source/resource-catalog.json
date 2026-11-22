@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "firstPlayableScope": {
     "status": "draft",
-    "notes": "2026-11-20用户授权Main串联救助站→地图→逆塔防→回站护理，旧回合救助为备选。当前静态引用的12张图已按first-play记账（含预绑定的狗和地图角标，未做按需卸载）；草稿状态指最终美术、正式首批与微信下载仍未验收，不能因迁出Editor目录视作approved。"
+    "notes": "2026-11-21林缘接入的Unity只读审计确认当前Main依赖19张图片：地面、7地标、6现场和既有2角标/动物站内素材；未实现按需加载。森林已导入但Main未引用，整体预览只保留源目录，旧三花猫/兔角标无Main依赖且图集未IncludeInBuild，转preview-only。最终首批/许可及微信下载待验，不自动approved。2026-11-22小院现场试玩新增自然比例猫狗两张静态绑定PNG，共47517 bytes，按temporary/first-play登记；当前合计21项源图1619.8KiB，未实现按需卸载，微信下载仍未测。2026-11-22紧凑UI新增关卡共享控件页512×272、71132bytes，Unity只读审计确认Main静态引用22张图，共1729787bytes（1689.2KiB源文件），导入为RGBA32且关闭读写/mip；审计见test-results/compact-ui/image-resources.json。首批源规划线仍为1536KiB，超153.2KiB，未静默提高预算；微信转换和首次下载仍未测。 2026-11-22用户反馈后重新生成清新可爱UI，原共享页替换为512×360/48758bytes/14切片；Main仍22项图片源合计1707413bytes（1667.4KiB），超过1536KiB源规划线131.4KiB。源图减少22374bytes，RGBA32基础像素量由544KiB增加为720KiB，两种口径分开；审计test-results/soft-ui/image-resources.json，预算未提高，微信下载仍未测。 2026-11-22用户选择手绘版暂用，当前运行页82893bytes/14切片，Main仍22项图片源1741548bytes（1700.7KiB），超1536KiB源规划164.7KiB；与清新版同512×360、基础RGBA32仍720KiB。清新版另存Unity外；审计test-results/fullscreen-ui/image-resources.json，未提高预算，下载/真机未验。 2026-11-22清障与逆塔防新增8切片场地页51709bytes和19切片道具页75046bytes，均静态绑定计first-play。本轮Unity只读审计已确认Main24图源1868303bytes（1824.5KiB），见test-results/field-props/image-resources.json，不提高原1536KiB源规划线；新图不是按需卸载，微信下载未验。"
   },
   "budgets": {
     "firstPlaySourcePlanningBytes": 1572864,
@@ -1058,16 +1058,12 @@
       "id": "city-map.neighborhood",
       "name": "街区外出地图地面底图",
       "module": "CityMap",
-      "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "Main静态引用随场景加载；资源已移至Assets/Art，仍为临时美术，正式许可和微信下载待审。原开放条件不变。",
+      "status": "retired",
+      "loadTiming": "preview-only",
+      "availability": "旧地图临时图已由20261121林缘批次替换；母图/历史保留，仅供对照，不再拥有同路径Unity运行图片。",
       "use": "768×1344 不透明地面底图；保留道路与装饰民居，移除三处可交互地点及救助站建筑，后者以独立透明图叠加",
       "plannedBytes": 204800,
       "files": [
-        {
-          "role": "runtime",
-          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityMap_Neighborhood.jpg"
-        },
         {
           "role": "master",
           "path": "art-source/city-map-layered/terrain-master.png"
@@ -1158,16 +1154,12 @@
       "id": "city-map.place.parking",
       "name": "地图独立单车棚",
       "module": "CityMap",
-      "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "Main静态引用随场景加载；资源已移至Assets/Art，仍为临时美术，正式许可和微信下载待审。原开放条件不变。",
+      "status": "retired",
+      "loadTiming": "preview-only",
+      "availability": "旧地图临时图已由20261121林缘批次替换；母图/历史保留，仅供对照，不再拥有同路径Unity运行图片。",
       "use": "208×190 透明图，独立地点 Image/Button，可单独换图移动；名称与选择状态另叠；SC_RescueLoop 通过原 Panel_CityMap 复用，无新增图片副本",
       "plannedBytes": 61440,
       "files": [
-        {
-          "role": "runtime",
-          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityPlace_Parking.png"
-        },
         {
           "role": "workflow",
           "path": "unity/HomelessPetHelper/Assets/Settings/Atlas/UiAtlasGroups.json"
@@ -1192,17 +1184,12 @@
       "id": "city-map.place.yard",
       "name": "地图独立居民小院",
       "module": "CityMap",
-      "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "Main静态引用随场景加载；资源已移至Assets/Art，仍为临时美术，正式许可和微信下载待审。原开放条件不变。",
+      "status": "retired",
+      "loadTiming": "preview-only",
+      "availability": "旧地图临时图已由20261121林缘批次替换；母图/历史保留，仅供对照，不再拥有同路径Unity运行图片。",
       "use": "354×211 透明小院及邻树图，独立地点 Image/Button，可单独换图移动；名称与选择状态另叠",
       "plannedBytes": 61440,
-      "files": [
-        {
-          "role": "runtime",
-          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityPlace_Yard.png"
-        }
-      ],
+      "files": [],
       "generation": {
         "tool": "既有 ComfyUI 母图分层派生；tools/city-map-layers.mjs",
         "record": "art-source/city-map-layered/README.md",
@@ -1218,17 +1205,12 @@
       "id": "city-map.place.porch",
       "name": "地图独立临街门廊",
       "module": "CityMap",
-      "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "Main静态引用随场景加载；资源已移至Assets/Art，仍为临时美术，正式许可和微信下载待审。原开放条件不变。",
+      "status": "retired",
+      "loadTiming": "preview-only",
+      "availability": "旧地图临时图已由20261121林缘批次替换；母图/历史保留，仅供对照，不再拥有同路径Unity运行图片。",
       "use": "250×234 透明门廊图，独立地点 Image/Button，可单独换图移动；名称与选择状态另叠",
       "plannedBytes": 61440,
-      "files": [
-        {
-          "role": "runtime",
-          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityPlace_Porch.png"
-        }
-      ],
+      "files": [],
       "generation": {
         "tool": "既有 ComfyUI 母图分层派生；tools/city-map-layers.mjs",
         "record": "art-source/city-map-layered/README.md",
@@ -1244,17 +1226,12 @@
       "id": "city-map.place.shelter",
       "name": "地图独立救助站建筑",
       "module": "CityMap",
-      "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "Main静态引用随场景加载；资源已移至Assets/Art，仍为临时美术，正式许可和微信下载待审。原开放条件不变。",
+      "status": "retired",
+      "loadTiming": "preview-only",
+      "availability": "旧地图临时图已由20261121林缘批次替换；母图/历史保留，仅供对照，不再拥有同路径Unity运行图片。",
       "use": "294×218 透明救助站及邻树图，可独立替换；本轮仅视觉，不伪造第四个外出入口",
       "plannedBytes": 61440,
-      "files": [
-        {
-          "role": "runtime",
-          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityPlace_Shelter.png"
-        }
-      ],
+      "files": [],
       "generation": {
         "tool": "既有 ComfyUI 母图分层派生；tools/city-map-layers.mjs",
         "record": "art-source/city-map-layered/README.md",
@@ -1271,8 +1248,8 @@
       "name": "三花猫地图角标",
       "module": "CityMap",
       "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "Main静态引用随场景加载；资源已移至Assets/Art，仍为临时美术，正式许可和微信下载待审。原开放条件不变。",
+      "loadTiming": "preview-only",
+      "availability": "2026-11-21林缘接入的Unity只读审计确认：当前Main无依赖，原生图集IncludeInBuild=false且无packables；保留旧预览/制作素材，不计当前首批。",
       "use": "256×256 透明动物角标，UI 状态独立叠加",
       "plannedBytes": 61440,
       "files": [
@@ -1355,8 +1332,8 @@
       "name": "兔子地图角标",
       "module": "CityMap",
       "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "Main静态引用随场景加载；资源已移至Assets/Art，仍为临时美术，正式许可和微信下载待审。原开放条件不变。",
+      "loadTiming": "preview-only",
+      "availability": "2026-11-21林缘接入的Unity只读审计确认：当前Main无依赖，原生图集IncludeInBuild=false且无packables；保留旧预览/制作素材，不计当前首批。",
       "use": "256×256 透明动物角标，UI 状态独立叠加",
       "plannedBytes": 61440,
       "files": [
@@ -1591,6 +1568,2500 @@
         "seed": 2026111821,
         "record": "art-source/rescue-layout-b/README.md",
         "notes": "本地Qwen Image 2.1首图seed2026111821夹带参考猫；去猫重试2026111822初始化明显异常耗时，已定向取消，无成图。最终对首图空地做同高度铺面克隆与18px边缘羽化，完整坐标见postprocess.json；未移动地标，768² JPEG84，不放大。已人工查看无动物和烘焙UI，仍待用户观感、商用许可及目标链路审核。2026-11-18 用户允许接 Unity，按原文件字节导入 EditorScenes 的救助案例预览，不批准正式资源或首批；未进入 Main 场景依赖。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.forest-edge-concept",
+      "name": "林缘社区与后续森林地图画风计划",
+      "module": "CityMap",
+      "status": "planned",
+      "loadTiming": "preview-only",
+      "availability": "当前仅设计与用户参考归档；首图包含森林并承接下一张森林图。具体切换与后续开放条件未确认，不改变现有地点开放状态。",
+      "use": "未来首图地面背景的构图与画风计划；两张图片仅为户外/室内风格参考，不是候选成图。未来背景从720×1280或768×1344比较，地点建筑、文字和状态独立叠加；六处地点的全部图片不包含在本项预算中。",
+      "plannedBytes": 204800,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/map-style-20261121/references/forest-style.jpg"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/map-style-20261121/references/station-style.jpg"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/map-style-20261121/layout/forest-edge-layout-v1.svg"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/map-style-20261121/layout/forest-edge-layout-v1.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户风格参考；原生SVG布局示意与Chrome栅格预览",
+        "record": "art-source/map-style-20261121/README.md",
+        "notes": "两张JPEG从会话附件原样归档，作者与使用条件待确认；仅批准参考画风。后续按用户要求补900×1600布局示意，SVG为可编辑源、PNG由本机Chrome156.0.8078.80在1倍像素比导出；仅看六地点、森林和详情区位置，不是水彩效果稿或运行候选。未调用生图模型、未导入Unity。200KiB为未来首图背景源文件规划，不是参考/示意文件的运行字节。现有temporary/first-play条目不变。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.forest-edge.overview",
+      "name": "林缘社区整体构图候选",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "本轮仅ComfyUI候选供查看，不导入Unity；首图按用户认可布局制作，森林切换与开放条件仍未确认。",
+      "use": "无文字、UI和动物的环境候选；与林缘社区布局、暖光水彩画风一致，背景按内容区比例制作，不新增玩法。",
+      "plannedBytes": 204800,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/layout-reference.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/layout-reference.svg"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/overview/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/overview/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/forest-edge-20261121/overview/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/overview/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/overview/submission.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/edge-review.jpg"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/scenes-review.jpg"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmarks-review.jpg"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/derivation.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/derive.mjs"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/jobs.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/plan.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/review.mjs"
+        },
+        {
+          "role": "candidate",
+          "path": "art-source/forest-edge-20261121/assembled.jpg"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/assembled.png"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112101,
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.forest-edge.terrain",
+      "name": "林缘社区分层地面底图临时图",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "use": "无文字、UI和动物的环境候选；与林缘社区布局、暖光水彩画风一致，背景按内容区比例制作，不新增玩法。",
+      "plannedBytes": 204800,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/terrain/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/terrain/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/forest-edge-20261121/terrain/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/terrain/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/terrain/submission.json"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityMap_Neighborhood.jpg"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112102,
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.forest-edge.place.parking",
+      "name": "林缘地图独立单车棚临时图",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "use": "俯视地图独立透明地标，背景/文字/状态分层；从约256档显示尺寸比较，候选保留最多512长边。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmark-parking/placement.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmark-parking/candidate.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/landmark-parking/master.png"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityPlace_Parking.png"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI；批次run.mjs及jobs.json",
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "ComfyUI母图同源派生；完整轮廓/位置/抠白/缩放规则见art-source/forest-edge-20261121/derivation.json，执行derive.mjs。地点保持源像素、不放大；救助站单独模型生成后抠白缩小。超60KiB者转256色PNG，原RGBA保留master；候选透明边缘待用户/目标验收。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.forest-edge.place.yard",
+      "name": "林缘地图独立居民小院临时图",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "use": "俯视地图独立透明地标，背景/文字/状态分层；从约256档显示尺寸比较，候选保留最多512长边。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmark-yard/placement.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmark-yard/candidate.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/landmark-yard/master.png"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityPlace_Yard.png"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI；批次run.mjs及jobs.json",
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "ComfyUI母图同源派生；完整轮廓/位置/抠白/缩放规则见art-source/forest-edge-20261121/derivation.json，执行derive.mjs。地点保持源像素、不放大；救助站单独模型生成后抠白缩小。超60KiB者转256色PNG，原RGBA保留master；候选透明边缘待用户/目标验收。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.forest-edge.place.porch",
+      "name": "林缘地图独立临街门廊临时图",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "use": "俯视地图独立透明地标，背景/文字/状态分层；从约256档显示尺寸比较，候选保留最多512长边。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmark-porch/placement.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmark-porch/candidate.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/landmark-porch/master.png"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityPlace_Porch.png"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI；批次run.mjs及jobs.json",
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "ComfyUI母图同源派生；完整轮廓/位置/抠白/缩放规则见art-source/forest-edge-20261121/derivation.json，执行derive.mjs。地点保持源像素、不放大；救助站单独模型生成后抠白缩小。超60KiB者转256色PNG，原RGBA保留master；候选透明边缘待用户/目标验收。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.forest-edge.place.park",
+      "name": "林缘地图独立林缘公园临时图",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "use": "俯视地图独立透明地标，背景/文字/状态分层；从约256档显示尺寸比较，候选保留最多512长边。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmark-park/placement.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmark-park/candidate.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/landmark-park/master.png"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityPlace_Park.png"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI；批次run.mjs及jobs.json",
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "ComfyUI母图同源派生；完整轮廓/位置/抠白/缩放规则见art-source/forest-edge-20261121/derivation.json，执行derive.mjs。地点保持源像素、不放大；救助站单独模型生成后抠白缩小。超60KiB者转256色PNG，原RGBA保留master；候选透明边缘待用户/目标验收。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.forest-edge.place.market",
+      "name": "林缘地图独立市场后院临时图",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "use": "俯视地图独立透明地标，背景/文字/状态分层；从约256档显示尺寸比较，候选保留最多512长边。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmark-market/placement.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmark-market/candidate.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/landmark-market/master.png"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityPlace_Market.png"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI；批次run.mjs及jobs.json",
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "ComfyUI母图同源派生；完整轮廓/位置/抠白/缩放规则见art-source/forest-edge-20261121/derivation.json，执行derive.mjs。地点保持源像素、不放大；救助站单独模型生成后抠白缩小。超60KiB者转256色PNG，原RGBA保留master；候选透明边缘待用户/目标验收。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.forest-edge.place.riverside",
+      "name": "林缘地图独立河岸步道临时图",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "use": "俯视地图独立透明地标，背景/文字/状态分层；从约256档显示尺寸比较，候选保留最多512长边。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmark-riverside/placement.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmark-riverside/candidate.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/landmark-riverside/master.png"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityPlace_Riverside.png"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI；批次run.mjs及jobs.json",
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "ComfyUI母图同源派生；完整轮廓/位置/抠白/缩放规则见art-source/forest-edge-20261121/derivation.json，执行derive.mjs。地点保持源像素、不放大；救助站单独模型生成后抠白缩小。超60KiB者转256色PNG，原RGBA保留master；候选透明边缘待用户/目标验收。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.forest-edge.place.shelter",
+      "name": "林缘地图独立救助站临时图",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "use": "俯视地图独立透明地标，背景/文字/状态分层；从约256档显示尺寸比较，候选保留最多512长边。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/shelter-building/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/shelter-building/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/forest-edge-20261121/shelter-building/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/shelter-building/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/shelter-building/submission.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmark-shelter/placement.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/landmark-shelter/candidate.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/landmark-shelter/master.png"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityPlace_Shelter.png"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112103,
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "ComfyUI母图同源派生；完整轮廓/位置/抠白/缩放规则见art-source/forest-edge-20261121/derivation.json，执行derive.mjs。地点保持源像素、不放大；救助站单独模型生成后抠白缩小。超60KiB者转256色PNG，原RGBA保留master；候选透明边缘待用户/目标验收。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "rescue.forest-edge.scene.parking",
+      "name": "单车棚地点内背景临时图",
+      "module": "Rescue",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "use": "无文字、UI和动物的环境候选；与林缘社区布局、暖光水彩画风一致，背景按内容区比例制作，不新增玩法。",
+      "plannedBytes": 204800,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/scene-parking/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/scene-parking/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/forest-edge-20261121/scene-parking/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/scene-parking/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/scene-parking/submission.json"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Parking.jpg"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112111,
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "rescue.forest-edge.scene.yard",
+      "name": "居民小院地点内背景临时图",
+      "module": "Rescue",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "use": "无文字、UI和动物的环境候选；与林缘社区布局、暖光水彩画风一致，背景按内容区比例制作，不新增玩法。",
+      "plannedBytes": 204800,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/scene-yard/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/scene-yard/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/forest-edge-20261121/scene-yard/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/scene-yard/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/scene-yard/submission.json"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112112,
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "rescue.forest-edge.scene.porch",
+      "name": "临街门廊地点内背景临时图",
+      "module": "Rescue",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "use": "无文字、UI和动物的环境候选；与林缘社区布局、暖光水彩画风一致，背景按内容区比例制作，不新增玩法。",
+      "plannedBytes": 204800,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/scene-porch/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/scene-porch/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/forest-edge-20261121/scene-porch/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/scene-porch/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/scene-porch/submission.json"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Porch.jpg"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112113,
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "rescue.forest-edge.scene.park",
+      "name": "林缘公园地点内背景临时图",
+      "module": "Rescue",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "use": "无文字、UI和动物的环境候选；与林缘社区布局、暖光水彩画风一致，背景按内容区比例制作，不新增玩法。",
+      "plannedBytes": 204800,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/scene-park/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/scene-park/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/forest-edge-20261121/scene-park/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/scene-park/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/scene-park/submission.json"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Park.jpg"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112114,
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "rescue.forest-edge.scene.market",
+      "name": "市场后院地点内背景临时图",
+      "module": "Rescue",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "use": "无文字、UI和动物的环境候选；与林缘社区布局、暖光水彩画风一致，背景按内容区比例制作，不新增玩法。",
+      "plannedBytes": 204800,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/scene-market/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/scene-market/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/forest-edge-20261121/scene-market/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/scene-market/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/scene-market/submission.json"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Market.jpg"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112115,
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "rescue.forest-edge.scene.riverside",
+      "name": "河岸步道地点内背景临时图",
+      "module": "Rescue",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "use": "无文字、UI和动物的环境候选；与林缘社区布局、暖光水彩画风一致，背景按内容区比例制作，不新增玩法。",
+      "plannedBytes": 204800,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/scene-riverside/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/scene-riverside/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/forest-edge-20261121/scene-riverside/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/scene-riverside/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/scene-riverside/submission.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/scene-riverside-clean/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/scene-riverside-clean/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/forest-edge-20261121/scene-riverside-clean/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/scene-riverside-clean/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/scene-riverside-clean/submission.json"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Riverside.jpg"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112131,
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.forest-continuation",
+      "name": "后续森林衔接地图临时图",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "已导入Unity作为后续森林预留；Main不引用，切换和开放规则待讨论。",
+      "use": "无文字、UI和动物的环境候选；与林缘社区布局、暖光水彩画风一致，背景按内容区比例制作，不新增玩法。",
+      "plannedBytes": 204800,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/forest/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/forest/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/forest-edge-20261121/forest/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/forest/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/forest/submission.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/forest-edge-20261121/bridge-reference.png"
+        },
+        {
+          "role": "candidate",
+          "path": "art-source/forest-edge-20261121/forest-bridge/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/forest-edge-20261121/forest-bridge/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/forest-edge-20261121/forest-bridge/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/forest-bridge/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/forest-edge-20261121/forest-bridge/submission.json"
+        },
+        {
+          "role": "reference",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityMap_Forest.jpg"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112132,
+        "record": "art-source/forest-edge-20261121/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。 2026-11-21接入记录见docs/林缘美术Unity接入.md；选用文件和哈希见unity-import.json。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "field-animal.dog",
+      "name": "现场自然比例dog",
+      "module": "Rescue",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main小院的清路与救助静态绑定，猫狗均成为实际随包依赖；不代表按需加载、正式美术或微信下载验收。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/field-animals-20261122/dog/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/field-animals-20261122/dog/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-animals-20261122/dog/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-animals-20261122/dog/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-animals-20261122/dog/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-animals-20261122/derivation.json"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_DogNatural.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-animals-20261122/derivation.json"
+        }
+      ],
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      },
+      "use": "救助/开路现场全身动物Sprite，成年自然比例；现有站内和地图头像保持，来源/视觉/渠道仍待验。",
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112201,
+        "record": "art-source/field-animals-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      }
+    },
+    {
+      "id": "field-animal.cat",
+      "name": "现场自然比例cat",
+      "module": "Rescue",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main小院的清路与救助静态绑定，猫狗均成为实际随包依赖；不代表按需加载、正式美术或微信下载验收。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/field-animals-20261122/cat/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/field-animals-20261122/cat/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-animals-20261122/cat/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-animals-20261122/cat/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-animals-20261122/cat/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-animals-20261122/derivation.json"
+        },
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_CatNatural.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-animals-20261122/derivation.json"
+        }
+      ],
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      },
+      "use": "救助/开路现场全身动物Sprite，成年自然比例；现有站内和地图头像保持，来源/视觉/渠道仍待验。",
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112202,
+        "record": "art-source/field-animals-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      }
+    },
+    {
+      "id": "ui.level.paper",
+      "name": "关卡水彩纸底板母图",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "UI制作依据，仅母图候选；运行时使用派生的小型共享控件图",
+      "use": "为本轮关卡弹窗生成无字素材，文字与交互独立；派生九宫格和图标后再接入",
+      "plannedBytes": 98304,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/ui-watercolor-20261122/paper-guide.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/map-style-20261121/references/station-style.jpg"
+        },
+        {
+          "role": "candidate",
+          "path": "art-source/ui-watercolor-20261122/paper/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-watercolor-20261122/paper/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-watercolor-20261122/paper/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-watercolor-20261122/paper/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-watercolor-20261122/paper/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112201,
+        "record": "art-source/ui-watercolor-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.level.primary",
+      "name": "关卡水彩主按钮母图",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "UI制作依据，仅母图候选；运行时使用派生的小型共享控件图",
+      "use": "为本轮关卡弹窗生成无字素材，文字与交互独立；派生九宫格和图标后再接入",
+      "plannedBytes": 98304,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/ui-watercolor-20261122/button-guide.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/map-style-20261121/references/station-style.jpg"
+        },
+        {
+          "role": "candidate",
+          "path": "art-source/ui-watercolor-20261122/primary/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-watercolor-20261122/primary/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-watercolor-20261122/primary/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-watercolor-20261122/primary/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-watercolor-20261122/primary/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112202,
+        "record": "art-source/ui-watercolor-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.level.secondary",
+      "name": "关卡水彩次按钮母图",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "UI制作依据，仅母图候选；运行时使用派生的小型共享控件图",
+      "use": "为本轮关卡弹窗生成无字素材，文字与交互独立；派生九宫格和图标后再接入",
+      "plannedBytes": 98304,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/ui-watercolor-20261122/button-guide.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/map-style-20261121/references/station-style.jpg"
+        },
+        {
+          "role": "candidate",
+          "path": "art-source/ui-watercolor-20261122/secondary/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-watercolor-20261122/secondary/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-watercolor-20261122/secondary/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-watercolor-20261122/secondary/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-watercolor-20261122/secondary/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112203,
+        "record": "art-source/ui-watercolor-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.level.symbols",
+      "name": "关卡水彩功能图标母图",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "UI制作依据，仅母图候选；运行时使用派生的小型共享控件图",
+      "use": "为本轮关卡弹窗生成无字素材，文字与交互独立；派生九宫格和图标后再接入",
+      "plannedBytes": 98304,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/ui-watercolor-20261122/symbols-guide.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/map-style-20261121/references/station-style.jpg"
+        },
+        {
+          "role": "candidate",
+          "path": "art-source/ui-watercolor-20261122/symbols/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-watercolor-20261122/symbols/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-watercolor-20261122/symbols/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-watercolor-20261122/symbols/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-watercolor-20261122/symbols/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112204,
+        "record": "art-source/ui-watercolor-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.level.controls",
+      "name": "关卡弹窗手绘共享控件图",
+      "module": "CommonUI",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "现有Main小院清路和救助弹窗使用；静态Prefab依赖，不把隐藏当按需加载",
+      "use": "手绘14切片控件页512×360：浅纸纹、细灰绿铅笔轮廓、彩铅按钮与图标；保持原GUID、14切片几何、独立文字和已修复的专用滑块。全屏黑遮由共享Prefab配置。",
+      "plannedBytes": 98304,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/UI/T_UI_LevelControls.png"
+        },
+        {
+          "role": "workflow",
+          "path": "unity/HomelessPetHelper/Assets/Art/UI/LevelControlsSlices.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-soft-20261122/derivation.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/ui-soft-20261122/edge-review.jpg"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/ui-watercolor-20261122/edge-review.jpg"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-watercolor-20261122/derivation.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/ui-soft-20261122/preserved/T_UI_LevelControls.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-soft-20261122/preserved/LevelControlsSlices.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-handdrawn-20261122/derivation.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/ui-handdrawn-20261122/edge-review.jpg"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-handdrawn-20261122/unity-import.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机ComfyUI Qwen Image 2.1 INT8 ConvRot + Sharp派生",
+        "record": "art-source/ui-handdrawn-20261122/README.md",
+        "notes": "用户2026-11-22选择手绘版暂用。6次本机ComfyUI实际作业，选paper/primary/secondary/symbols-v2/knob五项；完整参数/历史在ui.handdrawn条目，derive.mjs记录去底与派生。运行页保持GUID及14切片。清新版源页/meta/切片保存到ui-soft-20261122/preserved；旧水彩来源继续保留。视觉已接受，许可及微信/真机仍待验。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.soft.paper",
+      "name": "清新UI-奶白圆角纸卡",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "用户授权重新生成的关卡控件候选，母图不导入Unity",
+      "use": "用于替换偏硬的旧UI素材；当前仅计划",
+      "plannedBytes": 131072,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-soft-20261122/paper/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-soft-20261122/paper/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-soft-20261122/paper/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-soft-20261122/paper/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-soft-20261122/paper/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112251,
+        "record": "art-source/ui-soft-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.soft.primary",
+      "name": "清新UI-嫩绿主按钮",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "用户授权重新生成的关卡控件候选，母图不导入Unity",
+      "use": "用于替换偏硬的旧UI素材；当前仅计划",
+      "plannedBytes": 131072,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-soft-20261122/primary/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-soft-20261122/primary/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-soft-20261122/primary/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-soft-20261122/primary/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-soft-20261122/primary/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112252,
+        "record": "art-source/ui-soft-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.soft.secondary",
+      "name": "清新UI-浅杏次按钮",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "用户授权重新生成的关卡控件候选，母图不导入Unity",
+      "use": "用于替换偏硬的旧UI素材；当前仅计划",
+      "plannedBytes": 131072,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-soft-20261122/secondary/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-soft-20261122/secondary/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-soft-20261122/secondary/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-soft-20261122/secondary/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-soft-20261122/secondary/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112253,
+        "record": "art-source/ui-soft-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.soft.symbols",
+      "name": "清新UI-彩色圆润功能图标",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "用户授权重新生成的关卡控件候选，母图不导入Unity",
+      "use": "用于替换偏硬的旧UI素材；当前仅计划",
+      "plannedBytes": 131072,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-soft-20261122/symbols/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-soft-20261122/symbols/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-soft-20261122/symbols/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-soft-20261122/symbols/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-soft-20261122/symbols/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112254,
+        "record": "art-source/ui-soft-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.soft.knob",
+      "name": "清新UI-圆形爪印滑钮",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "用户授权重新生成的关卡控件候选，母图不导入Unity",
+      "use": "用于替换偏硬的旧UI素材；当前仅计划",
+      "plannedBytes": 131072,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-soft-20261122/knob/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-soft-20261122/knob/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-soft-20261122/knob/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-soft-20261122/knob/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-soft-20261122/knob/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112255,
+        "record": "art-source/ui-soft-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.soft.guide.paper",
+      "name": "清新UI形状参考-paper",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "仅本批生成控制图，不是生成成品",
+      "use": "确定画布尺寸及构图；代码制作形状，不冒充AI输出",
+      "plannedBytes": 8192,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-soft-20261122/paper-guide.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp SVG rasterization",
+        "record": "art-source/ui-soft-20261122/prepare.mjs"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.soft.guide.button",
+      "name": "清新UI形状参考-button",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "仅本批生成控制图，不是生成成品",
+      "use": "确定画布尺寸及构图；代码制作形状，不冒充AI输出",
+      "plannedBytes": 8192,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-soft-20261122/button-guide.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp SVG rasterization",
+        "record": "art-source/ui-soft-20261122/prepare.mjs"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.soft.guide.symbols",
+      "name": "清新UI形状参考-symbols",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "仅本批生成控制图，不是生成成品",
+      "use": "确定画布尺寸及构图；代码制作形状，不冒充AI输出",
+      "plannedBytes": 8192,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-soft-20261122/symbols-guide.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp SVG rasterization",
+        "record": "art-source/ui-soft-20261122/prepare.mjs"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.soft.guide.knob",
+      "name": "清新UI形状参考-knob",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "仅本批生成控制图，不是生成成品",
+      "use": "确定画布尺寸及构图；代码制作形状，不冒充AI输出",
+      "plannedBytes": 8192,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-soft-20261122/knob-guide.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp SVG rasterization",
+        "record": "art-source/ui-soft-20261122/prepare.mjs"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.soft.edge-review",
+      "name": "清新UI深底边缘预览",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "仅检查抠图边缘，非运行素材",
+      "use": "512×352共享页2倍预览，单独记录派生来源",
+      "plannedBytes": 131072,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-soft-20261122/edge-review.jpg"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp",
+        "record": "art-source/ui-soft-20261122/derivation.json"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.handdrawn.paper",
+      "name": "手绘UI-paper",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立手绘风格候选；不覆盖已保留清新版",
+      "use": "生成后用于独立隔离工程风格对比，母图不进Unity",
+      "plannedBytes": 131072,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-handdrawn-20261122/paper/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-handdrawn-20261122/paper/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-handdrawn-20261122/paper/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-handdrawn-20261122/paper/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-handdrawn-20261122/paper/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112281,
+        "record": "art-source/ui-handdrawn-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.handdrawn.primary",
+      "name": "手绘UI-primary",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立手绘风格候选；不覆盖已保留清新版",
+      "use": "生成后用于独立隔离工程风格对比，母图不进Unity",
+      "plannedBytes": 131072,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-handdrawn-20261122/primary/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-handdrawn-20261122/primary/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-handdrawn-20261122/primary/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-handdrawn-20261122/primary/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-handdrawn-20261122/primary/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112282,
+        "record": "art-source/ui-handdrawn-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.handdrawn.secondary",
+      "name": "手绘UI-secondary",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立手绘风格候选；不覆盖已保留清新版",
+      "use": "生成后用于独立隔离工程风格对比，母图不进Unity",
+      "plannedBytes": 131072,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-handdrawn-20261122/secondary/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-handdrawn-20261122/secondary/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-handdrawn-20261122/secondary/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-handdrawn-20261122/secondary/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-handdrawn-20261122/secondary/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112283,
+        "record": "art-source/ui-handdrawn-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.handdrawn.symbols",
+      "name": "手绘UI-symbols",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立手绘风格候选；不覆盖已保留清新版",
+      "use": "生成后用于独立隔离工程风格对比，母图不进Unity",
+      "plannedBytes": 131072,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-handdrawn-20261122/symbols/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-handdrawn-20261122/symbols/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-handdrawn-20261122/symbols/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-handdrawn-20261122/symbols/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-handdrawn-20261122/symbols/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112284,
+        "record": "art-source/ui-handdrawn-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.handdrawn.knob",
+      "name": "手绘UI-knob",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立手绘风格候选；不覆盖已保留清新版",
+      "use": "生成后用于独立隔离工程风格对比，母图不进Unity",
+      "plannedBytes": 131072,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-handdrawn-20261122/knob/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-handdrawn-20261122/knob/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-handdrawn-20261122/knob/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-handdrawn-20261122/knob/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-handdrawn-20261122/knob/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112285,
+        "record": "art-source/ui-handdrawn-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.handdrawn.guide.paper",
+      "name": "手绘UI形状控制-paper",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "本批生成形状控制，非AI成品",
+      "use": "代码形状控制图，复用既有画布尺寸",
+      "plannedBytes": 8192,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-handdrawn-20261122/paper-guide.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp rasterization",
+        "record": "art-source/ui-handdrawn-20261122/prepare.mjs"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.handdrawn.guide.button",
+      "name": "手绘UI形状控制-button",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "本批生成形状控制，非AI成品",
+      "use": "代码形状控制图，复用既有画布尺寸",
+      "plannedBytes": 8192,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-handdrawn-20261122/button-guide.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp rasterization",
+        "record": "art-source/ui-handdrawn-20261122/prepare.mjs"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.handdrawn.guide.symbols",
+      "name": "手绘UI形状控制-symbols",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "本批生成形状控制，非AI成品",
+      "use": "代码形状控制图，复用既有画布尺寸",
+      "plannedBytes": 8192,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-handdrawn-20261122/symbols-guide.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp rasterization",
+        "record": "art-source/ui-handdrawn-20261122/prepare.mjs"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.handdrawn.guide.knob",
+      "name": "手绘UI形状控制-knob",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "本批生成形状控制，非AI成品",
+      "use": "代码形状控制图，复用既有画布尺寸",
+      "plannedBytes": 8192,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-handdrawn-20261122/knob-guide.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp rasterization",
+        "record": "art-source/ui-handdrawn-20261122/prepare.mjs"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.handdrawn.controls",
+      "name": "手绘UI14切片候选页",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "手绘派生源页留存；用户已选择临时接入，共享运行图归ui.level.controls计first-play",
+      "use": "512×360/14切片的生成候选存档；与当前运行页相同，不重复计作运行资源",
+      "plannedBytes": 73728,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-handdrawn-20261122/candidate/T_UI_LevelControls.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-handdrawn-20261122/candidate/LevelControlsSlices.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-handdrawn-20261122/derivation.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/ui-handdrawn-20261122/edge-review.jpg"
+        }
+      ],
+      "generation": {
+        "tool": "本机ComfyUI Qwen Image 2.1 INT8 ConvRot + Sharp派生",
+        "record": "art-source/ui-handdrawn-20261122/README.md",
+        "notes": "6次真实作业，最终选5项；本条保留Unity外派生候选与边缘依据，当前实际运行引用见ui.level.controls。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "ui.handdrawn.symbols-v2",
+      "name": "手绘UI独立图标二稿",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "修正初稿多余方框，独立候选不覆盖清新版",
+      "use": "8个无外围底框的手绘符号",
+      "plannedBytes": 131072,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/ui-handdrawn-20261122/symbols-v2/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/ui-handdrawn-20261122/symbols-v2/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/ui-handdrawn-20261122/symbols-v2/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-handdrawn-20261122/symbols-v2/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/ui-handdrawn-20261122/symbols-v2/submission.json"
+        }
+      ],
+      "generation": {
+        "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "model": "qwen_image_2.1_int8_convrot.safetensors",
+        "seed": 2026112286,
+        "record": "art-source/ui-handdrawn-20261122/README.md",
+        "notes": "完整提示、参考输入与模型参数见本项workflow.json；实际历史及提交ID已保存。临时候选，未导入Unity；视觉、许可、目标交付均待审核。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "field-props.source.garden",
+      "name": "手绘关卡物件母图-garden",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "本轮已实现清障/救助机制的素材制作，不新增规则",
+      "use": "四物件参考母图，裁切派生小型运行页，母图不导入Unity",
+      "plannedBytes": 98304,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/field-props-20261122/garden/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/field-props-20261122/garden/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-props-20261122/garden/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-props-20261122/garden/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-props-20261122/garden/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "record": "art-source/field-props-20261122/jobs.json",
+        "notes": "Real local ComfyUI job 95e256d8-6a42-4b04-b2c7-9287b5689598; full prompt, model, references, seed and parameters in workflow.json. White background, not native alpha."
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "field-props.source.cleanup",
+      "name": "手绘关卡物件母图-cleanup",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "本轮已实现清障/救助机制的素材制作，不新增规则",
+      "use": "四物件参考母图，裁切派生小型运行页，母图不导入Unity",
+      "plannedBytes": 98304,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/field-props-20261122/cleanup/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/field-props-20261122/cleanup/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-props-20261122/cleanup/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-props-20261122/cleanup/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-props-20261122/cleanup/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "record": "art-source/field-props-20261122/jobs.json",
+        "notes": "Real local ComfyUI job 88d61040-9a8a-4401-a4be-498633039347; full prompt, model, references, seed and parameters in workflow.json. White background, not native alpha."
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "field-props.source.cat-toys",
+      "name": "手绘关卡物件母图-cat-toys",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "本轮已实现清障/救助机制的素材制作，不新增规则",
+      "use": "四物件参考母图，裁切派生小型运行页，母图不导入Unity",
+      "plannedBytes": 98304,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/field-props-20261122/cat-toys/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/field-props-20261122/cat-toys/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-props-20261122/cat-toys/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-props-20261122/cat-toys/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-props-20261122/cat-toys/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "record": "art-source/field-props-20261122/jobs.json",
+        "notes": "Real local ComfyUI job 61cec7c9-962c-4f6e-b15a-2c09b5cfac4e; full prompt, model, references, seed and parameters in workflow.json. White background, not native alpha."
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "field-props.source.cat-upgrades",
+      "name": "手绘关卡物件母图-cat-upgrades",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "本轮已实现清障/救助机制的素材制作，不新增规则",
+      "use": "四物件参考母图，裁切派生小型运行页，母图不导入Unity",
+      "plannedBytes": 98304,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/field-props-20261122/cat-upgrades/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/field-props-20261122/cat-upgrades/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-props-20261122/cat-upgrades/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-props-20261122/cat-upgrades/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-props-20261122/cat-upgrades/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "record": "art-source/field-props-20261122/jobs.json",
+        "notes": "Real local ComfyUI job 3c45dd30-a431-4b12-a52f-27eb0f15620c; full prompt, model, references, seed and parameters in workflow.json. White background, not native alpha."
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "field-props.source.dog-toys",
+      "name": "手绘关卡物件母图-dog-toys",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "本轮已实现清障/救助机制的素材制作，不新增规则",
+      "use": "四物件参考母图，裁切派生小型运行页，母图不导入Unity",
+      "plannedBytes": 98304,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/field-props-20261122/dog-toys/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/field-props-20261122/dog-toys/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-props-20261122/dog-toys/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-props-20261122/dog-toys/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-props-20261122/dog-toys/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "record": "art-source/field-props-20261122/jobs.json",
+        "notes": "Real local ComfyUI job eb43abb9-307b-4fc4-a21e-002ac35b9dd1; full prompt, model, references, seed and parameters in workflow.json. White background, not native alpha."
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "field-props.source.dog-upgrades",
+      "name": "手绘关卡物件母图-dog-upgrades",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "本轮已实现清障/救助机制的素材制作，不新增规则",
+      "use": "四物件参考母图，裁切派生小型运行页，母图不导入Unity",
+      "plannedBytes": 98304,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/field-props-20261122/dog-upgrades/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/field-props-20261122/dog-upgrades/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-props-20261122/dog-upgrades/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-props-20261122/dog-upgrades/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-props-20261122/dog-upgrades/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "record": "art-source/field-props-20261122/jobs.json",
+        "notes": "Real local ComfyUI job 60fd1942-0b20-4db7-aff3-8a2ef3e3d5c9; full prompt, model, references, seed and parameters in workflow.json. White background, not native alpha."
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "field-props.source.mechanisms",
+      "name": "手绘关卡物件母图-mechanisms",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "本轮已实现清障/救助机制的素材制作，不新增规则",
+      "use": "四物件参考母图，裁切派生小型运行页，母图不导入Unity",
+      "plannedBytes": 98304,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/field-props-20261122/mechanisms/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/field-props-20261122/mechanisms/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-props-20261122/mechanisms/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-props-20261122/mechanisms/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/field-props-20261122/mechanisms/history.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/spare-leaves.png"
+        }
+      ],
+      "generation": {
+        "tool": "本机ComfyUI Qwen Image 2.1 INT8 ConvRot",
+        "record": "art-source/field-props-20261122/jobs.json",
+        "notes": "Real local ComfyUI job e12fcb26-1016-4604-b853-ec21871cb36a; full prompt, model, references, seed and parameters in workflow.json. White background, not native alpha."
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "field-props.garden-atlas",
+      "name": "小院清障共享物件页",
+      "module": "Rescue",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "小院两阶段及现有逆塔防面板/手牌的静态引用；不把隐藏当按需加载",
+      "use": "8切片/264×436透明手绘物件，现有Graphic显式绑定统一Sprite配置；不含文字，保留判定/路径/清理状态",
+      "plannedBytes": 98304,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_GardenProps.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/T_Outing_GardenProps.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-props-20261122/derivation.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-props-20261122/unity-import.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/hedge.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/stones.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/water.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/bridge.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/box.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/debris.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/weeds.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/mud.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/edge-review.jpg"
+        }
+      ],
+      "generation": {
+        "tool": "ComfyUI母图与可追溯离线裁切派生",
+        "record": "art-source/field-props-20261122/README.md",
+        "notes": "Real ComfyUI masters: 7 sheets with saved workflows/history. Near-white flood, white fringe alpha unmatting, 256-color PNG, retain disconnected pieces, trim/resize/pad, shared MaxRects pack and white UV corner; complete source/output hashes in derivation.json. Imported through isolated incremental Prefab Mode; old graphic/prefab identities retained. Opaque-white PLTE entry restored after quantization so existing solid effects retain their original colors. Visual/rights/target acceptance pending."
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "field-props.siege-atlas",
+      "name": "猫狗逆塔防共享道具页",
+      "module": "Rescue",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "小院两阶段及现有逆塔防面板/手牌的静态引用；不把隐藏当按需加载",
+      "use": "19切片/512×468透明手绘物件，现有Graphic显式绑定统一Sprite配置；不含文字，保留判定/路径/清理状态",
+      "plannedBytes": 98304,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_SiegeProps.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/T_Outing_SiegeProps.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-props-20261122/derivation.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/field-props-20261122/unity-import.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/fish.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/yarn.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/feather.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/paw.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/bouquet.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/yarnLion.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/pinwheel.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/paper.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/bone.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/disc.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/rope.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/kennel.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/boneWheel.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/triDisc.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/ropeOctopus.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/bubbles.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/thread.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/scratch.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/derived/slippers.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/field-props-20261122/edge-review.jpg"
+        }
+      ],
+      "generation": {
+        "tool": "ComfyUI母图与可追溯离线裁切派生",
+        "record": "art-source/field-props-20261122/README.md",
+        "notes": "Real ComfyUI masters: 7 sheets with saved workflows/history. Near-white flood, white fringe alpha unmatting, 256-color PNG, retain disconnected pieces, trim/resize/pad, shared MaxRects pack and white UV corner; complete source/output hashes in derivation.json. Imported through isolated incremental Prefab Mode; old graphic/prefab identities retained. Opaque-white PLTE entry restored after quantization so existing solid effects retain their original colors. Visual/rights/target acceptance pending."
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "field-props.guide",
+      "name": "关卡物件四格尺寸参考",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "生成控制图，非游戏素材",
+      "use": "仅提供768×768画布和四格位置，不带线条",
+      "plannedBytes": 4096,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/field-props-20261122/grid-guide.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp确定性生成",
+        "record": "art-source/field-props-20261122/README.md"
       },
       "review": {
         "visual": "pending",

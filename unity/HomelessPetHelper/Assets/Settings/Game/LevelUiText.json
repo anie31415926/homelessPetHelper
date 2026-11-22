@@ -1,0 +1,176 @@
+{
+  "entries": [
+    {
+      "key": "menu.pause",
+      "value": "暂停"
+    },
+    {
+      "key": "menu.objectives",
+      "value": "目标"
+    },
+    {
+      "key": "pause.title",
+      "value": "已暂停"
+    },
+    {
+      "key": "pause.resume",
+      "value": "继续游戏"
+    },
+    {
+      "key": "pause.settings",
+      "value": "设置"
+    },
+    {
+      "key": "pause.return",
+      "value": "返回救助站"
+    },
+    {
+      "key": "settings.title",
+      "value": "声音设置"
+    },
+    {
+      "key": "settings.master",
+      "value": "总音量"
+    },
+    {
+      "key": "settings.music",
+      "value": "音乐音量"
+    },
+    {
+      "key": "settings.effects",
+      "value": "音效音量"
+    },
+    {
+      "key": "settings.mute",
+      "value": "静音"
+    },
+    {
+      "key": "settings.save",
+      "value": "保存并返回"
+    },
+    {
+      "key": "settings.cancel",
+      "value": "取消修改"
+    },
+    {
+      "key": "settings.reset",
+      "value": "恢复默认"
+    },
+    {
+      "key": "settings.note",
+      "value": "调整立即生效，保存后保留。"
+    },
+    {
+      "key": "settings.saveFailed",
+      "value": "设置保存失败，修改尚未保存。请重试或取消修改，原存档已保留。"
+    },
+    {
+      "key": "objectives.title",
+      "value": "本次目标"
+    },
+    {
+      "key": "objectives.close",
+      "value": "返回关卡"
+    },
+    {
+      "key": "objectives.replay",
+      "value": "重看操作指引"
+    },
+    {
+      "key": "confirm.title",
+      "value": "请确认"
+    },
+    {
+      "key": "confirm.yes",
+      "value": "确认"
+    },
+    {
+      "key": "confirm.no",
+      "value": "取消"
+    },
+    {
+      "key": "confirm.return",
+      "value": "现在返回救助站？\n本次尚未完成的救助将结束；外出途中不保存，下次启动从站内检查点继续。"
+    },
+    {
+      "key": "confirm.resetAudio",
+      "value": "将声音设置恢复为默认值？\n确认后可继续调整，点击保存才写入存档。"
+    },
+    {
+      "key": "confirm.replay",
+      "value": "重新演示当前关卡的操作指引？\n已经完成的操作不会撤销；当前状态不适合演示时，将提供文字说明。"
+    },
+    {
+      "key": "objective.done",
+      "value": "已完成"
+    },
+    {
+      "key": "objective.pending",
+      "value": "进行中"
+    },
+    {
+      "key": "objectives.opening",
+      "value": "安全通道：{0}\n{1}\n连通后，点击继续进入救助。旁侧杂物不必全部清完。"
+    },
+    {
+      "key": "objectives.rescue",
+      "value": "建立信任：{0} / {1}\n确认救助：{2}\n{3}"
+    },
+    {
+      "key": "guide.step",
+      "value": "{0} / {1}  {2}"
+    },
+    {
+      "key": "guide.complete",
+      "value": "操作指引已完成。之后可随时打开「目标」查看说明。"
+    },
+    {
+      "key": "guide.saveFailed",
+      "value": "指引已结束，但学习记录未保存。下次可能再次展示，原存档已保留。"
+    },
+    {
+      "key": "guide.targetUnavailable",
+      "value": "当前状态不适合演示这一步，请打开「目标」查看说明。"
+    },
+    {
+      "key": "guide.cleanup.tool",
+      "value": "先选择「拾杂物」。"
+    },
+    {
+      "key": "guide.cleanup.clean",
+      "value": "按住高亮处的杂物，直到清理完成。"
+    },
+    {
+      "key": "guide.cleanup.weeds",
+      "value": "接下来选择「除杂草」。"
+    },
+    {
+      "key": "guide.cleanup.clearWeeds",
+      "value": "按住高亮处的杂草，清出通道。"
+    },
+    {
+      "key": "guide.puzzle.box",
+      "value": "点击高亮的箱子，选中它。"
+    },
+    {
+      "key": "guide.puzzle.move",
+      "value": "点击旁边的空地，把箱子移开。"
+    },
+    {
+      "key": "guide.puzzle.bridge",
+      "value": "点击高亮的水沟，搭起小桥。"
+    },
+    {
+      "key": "guide.siege.card",
+      "value": "选择一张手牌，准备部署道具。"
+    },
+    {
+      "key": "guide.siege.route",
+      "value": "点击场内一个路口，选择道具的出发路线。"
+    },
+    {
+      "key": "guide.siege.submit",
+      "value": "确认计划后点击执行。只有实际部署才会消耗资源。"
+    }
+  ]
+}

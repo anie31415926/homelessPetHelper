@@ -10,6 +10,28 @@ namespace HomelessPetHelper.Modules.Siege.UI
 {
     public sealed class SiegeTrialView : MonoBehaviour
     {
+        [SerializeField] private Image _locationBackground;
+        [SerializeField] private SiegeFieldView _scene;
+        [SerializeField] private GameObject _legacyContent;
+        private bool _sceneMode;
+        private TextAsset _sceneCopy;
+        public SiegeFieldView Scene => _sceneMode ? _scene : null;
+
+        public void SetFieldMode(bool enabled)
+        {
+            if (gameObject.activeInHierarchy) throw new InvalidOperationException("Configure a closed siege view.");
+            _sceneMode = enabled;
+            _legacyContent.SetActive(!enabled);
+            _scene.gameObject.SetActive(false);
+        }
+
+        public void SetLocationBackground(Sprite background)
+        {
+            if (_locationBackground == null || background == null)
+                throw new InvalidOperationException("Missing location background binding.");
+            _locationBackground.sprite = background;
+        }
+
         [SerializeField]
         private TextAsset _data,
             _copy;
@@ -99,6 +121,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _session = session ?? throw new ArgumentNullException(nameof(session));
             _catalog = session.Catalog;
             _text = new SiegeText(text);
+            _sceneCopy = text;
             _text.Validate(_catalog);
             _completed = completed;
             _returnRequested = returnRequested;
@@ -109,6 +132,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         public void UnbindEncounter()
         {
+            if (_scene != null) _scene.Unbind();
             _completed = _returnRequested = null;
             _suspensionChanged = null;
             _session = null;
@@ -116,12 +140,19 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         public void ShowExternalFeedback(string feedback)
         {
+            if (_sceneMode) { _scene.ShowExternalFeedback(feedback); return; }
             _externalFeedback = feedback;
             Render();
         }
 
         private void OnEnable()
         {
+            if (_sceneMode)
+            {
+                _scene.Bind(_session, _sceneCopy, _completed, _returnRequested, _suspensionChanged);
+                _scene.gameObject.SetActive(true);
+                return;
+            }
             _top.onClick.AddListener(Top);
             _mid.onClick.AddListener(Mid);
             _bottom.onClick.AddListener(Bottom);
@@ -147,6 +178,12 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         private void OnDisable()
         {
+            if (_sceneMode)
+            {
+                _scene.gameObject.SetActive(false);
+                if (_external && _session != null) SetEncounterPaused(true);
+                return;
+            }
             _top.onClick.RemoveListener(Top);
             _mid.onClick.RemoveListener(Mid);
             _bottom.onClick.RemoveListener(Bottom);
@@ -263,6 +300,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         private void Update()
         {
+            if (_sceneMode) return;
             if (_session == null)
                 return;
             var phase = _session.Phase;
@@ -282,6 +320,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         private void OnApplicationFocus(bool focused)
         {
+            if (_sceneMode) { _scene.SetApplicationFocus(focused); return; }
             _hasFocus = focused;
             if (!focused)
                 Interrupt();
@@ -289,6 +328,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         private void OnApplicationPause(bool paused)
         {
+            if (_sceneMode) { _scene.SetApplicationPaused(paused); return; }
             _applicationPaused = paused;
             if (paused)
                 Interrupt();
@@ -589,11 +629,18 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 cell.SetSlotWidth(slotWidth);
                 cell.Bind(
                     card.Id,
-                    _text.Format("unity.card", _text.Get(definition.NameKey), definition.Cost),
+                    _text.Get(definition.NameKey),
                     _card == card.Id,
                     decision,
                     SelectCard
                 );
+            }
+            for (int index = 0; index < s.Hand.Count; index++)
+            {
+                var definition = _catalog.Unit(s.Hand[index].DefinitionId);
+                var cell = _handPool.Get(index);
+                cell.SetCost(definition.Cost, definition.Cost <= s.Energy, _text.Get("field.unaffordable"));
+                cell.SetArt(definition.Icon);
             }
             _handPool.Trim(s.Hand.Count);
             if (!_materialsPanel.activeSelf)

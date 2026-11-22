@@ -5,6 +5,9 @@ using HomelessPetHelper.Framework.Audio;
 using HomelessPetHelper.Game.CityMap;
 using HomelessPetHelper.Game.Approach;
 using HomelessPetHelper.Game.Progress;
+using HomelessPetHelper.Game.Field;
+using HomelessPetHelper.Game.UI;
+using HomelessPetHelper.Game.Guidance;
 using HomelessPetHelper.Framework.Persistence;
 using HomelessPetHelper.Game.Station;
 using HomelessPetHelper.Game.Text;
@@ -31,13 +34,23 @@ namespace HomelessPetHelper.Game
         private readonly Func<int> _outingSeedSource;
         private CityMapPresenter _mapPresenter;
         private SiegeRescueActivity _activity;
+        private readonly OutingFieldCatalog _fields;
+        private readonly OutingFieldView _battleScene;
+        private OutingFieldLayout _activeField;
         private bool _disposed;
+        private readonly MainAudioSession _audioSession;
+        private readonly GuidanceProgressSession _guidance;
+        private readonly LevelGuideCatalog _guides;
+        private readonly OptionPreviewText _uiText;
+        private LevelOverlaySession _overlays;
+        public LevelOverlaySession Overlays => _overlays;
         public MainProgressSession Progress { get; }
         public GameLoopSession Session => Progress.Session;
 
         public MainLoopPresenter(StationPanelView station, CityMapView map, SiegeTrialView siege,
             ApproachPanelView approach, GameContent content,
-            AudioService audio = null, ISaveStorage progressStorage = null, Func<int> outingSeedSource = null)
+            AudioService audio = null, ISaveStorage progressStorage = null, Func<int> outingSeedSource = null,
+            MainAudioSession audioSession = null, GuidanceProgressSession guidance = null)
         {
             _station = station;
             _map = map;
@@ -45,8 +58,15 @@ namespace HomelessPetHelper.Game
             _approach = approach ?? throw new ArgumentNullException(nameof(approach));
             _content = content;
             _audio = audio;
+            _audioSession = audioSession;
+            _guidance = guidance;
+            _guides = content.CreateGuides();
+            _uiText = content.CreateLevelUiText();
             _outingSeedSource = outingSeedSource;
             content.Validate();
+            _fields = content.CreateFields();
+            _battleScene = siege.GetComponent<OutingFieldView>();
+            if (_battleScene == null) throw new InvalidOperationException("Missing battle field scene binding.");
             _config = content.CreateMapConfig();
             _text = new OptionPreviewText(content.StationText);
             _mapText = new OptionPreviewText(content.MapText);
@@ -123,7 +143,9 @@ namespace HomelessPetHelper.Game
                 !Session.Requests.TryGet(outing.AcceptedRequestId, out var request)) return;
             var encounter = _config.GetRescue(request.TemplateId);
             if (encounter == null) throw new InvalidOperationException("Missing authored rescue encounter.");
-            var opening = _content.CreateApproachCatalog().Create(outing.SessionId, outing.Seed);
+            _activeField = _fields.Get(outing.SelectedPointId);
+            var opening = (_activeField == null ? _content.CreateApproachCatalog() : _activeField.Opening)
+                .Create(outing.SessionId, outing.Seed);
             if (!Session.TryStartOpeningRoute(opening, out var failure))
             {
                 opening.Dispose();
@@ -133,9 +155,52 @@ namespace HomelessPetHelper.Game
             _mapPresenter.Dispose();
             _mapPresenter = null;
             _map.gameObject.SetActive(false);
+            _approach.SetLocationBackground(_content.GetOutingBackground(outing.SelectedPointId));
+            _approach.ConfigureField(_activeField, _content.GetOutingBackground(outing.SelectedPointId),
+                encounter.DogArtwork, opening);
             _approach.Bind(opening, _content.ApproachText, encounter.DogArtwork, EnterSiege,
                 ReturnFromApproach, Session.SetSuspended);
             _approach.gameObject.SetActive(true);
+            if (_activeField != null)
+            {
+                _overlays = new LevelOverlaySession(_approach.Overlays,
+                    new LevelOverlayBindings(_approach.SetOverlaySuspended, ReturnFromApproach,
+                        DescribeOpeningObjectives, () => opening.IsComplete ? null :
+                            _guides.Create(opening.Template.Id),
+                        _approach.BindOverlay, _approach.ResolveGuideTarget,
+                        _approach.PauseTarget, _approach.ObjectivesTarget), _audioSession, _guidance, _uiText);
+            }
+        }
+
+        private string DescribeOpeningObjectives()
+        {
+            var opening = _approach.Session;
+            return _uiText.Get("objectives.opening", _uiText.Get(opening.IsComplete ? "objective.done" :
+                "objective.pending"), new OptionPreviewText(_content.ApproachText)
+                    .Get("field.instruction." + opening.Template.Mode));
+        }
+
+        private string DescribeRescueObjectives()
+        {
+            var battle = _activity.Battle.Snapshot;
+            return _uiText.Get("objectives.rescue", battle.Progress, _activity.Battle.Catalog.Rules.Target,
+                _uiText.Get(_activity.IsRescueComplete ? "objective.done" : "objective.pending"),
+                new Modules.Siege.UI.SiegeText(_content.SiegeText).Get("field.pauseInfo"));
+        }
+
+        private Framework.UI.GuideSession CreateRescueGuide()
+        {
+            var battle = _activity.Battle;
+            if (battle.Phase != Modules.Siege.SiegeState.BattlePhase.Decision) return null;
+            var state = battle.Snapshot;
+            if (!state.Hand.Any(card => battle.Catalog.Unit(card.DefinitionId).Cost <= state.Energy)) return null;
+            return _guides.Create("siege.field");
+        }
+
+        private void CloseOverlays()
+        {
+            _overlays?.Dispose();
+            _overlays = null;
         }
 
         private void ReturnFromApproach()
@@ -147,14 +212,22 @@ namespace HomelessPetHelper.Game
         private void EnterSiege()
         {
             if (_disposed) return;
+            CloseOverlays();
             var outing = Session.Outing.Session;
             if (outing.DeparturePlan.EntryKind != MapEntryKind.HelpRequest ||
                 !Session.Requests.TryGet(outing.AcceptedRequestId, out var request)) return;
             var encounter = _config.GetRescue(request.TemplateId);
             if (encounter == null)
                 throw new InvalidOperationException("No authored siege encounter for this request.");
+            FieldSceneSnapshot fieldSnapshot = null;
+            if (_activeField != null)
+            {
+                _activeField.ValidateBattleClear(_approach.Session);
+                fieldSnapshot = new FieldSceneSnapshot(_approach.Session);
+            }
             var activity = new SiegeRescueActivity(outing.SessionId, outing.Seed,
-                _content.CreateSiegeCatalog(), encounter);
+                _activeField == null ? _content.CreateSiegeCatalog() :
+                    _content.CreateFieldSiegeCatalog(_activeField), encounter);
             if (!Session.TryEnterRescueAfterOpening(activity, out var failure))
             {
                 activity.Dispose();
@@ -164,10 +237,26 @@ namespace HomelessPetHelper.Game
             _activity = activity;
             _approach.gameObject.SetActive(false);
             _approach.Unbind();
+            _siege.SetLocationBackground(_content.GetOutingBackground(outing.SelectedPointId));
+            _battleScene.Configure(_activeField, _content.GetOutingBackground(outing.SelectedPointId),
+                encounter.DogArtwork, null, fieldSnapshot);
+            _siege.SetFieldMode(_activeField != null);
+            if (_activeField != null)
+                _siege.Scene.Configure(_battleScene.Animal.sprite, _activeField.AnimalWidthFor(encounter.DogArtwork),
+                    Enumerable.Range(0, _activeField.LaneCount).Select(_activeField.Portal).ToArray());
             _siege.BindEncounter(activity.Battle, _content.SiegeText, ConfirmRescue, ReturnFromSiege,
                 Session.SetSuspended);
             _siege.gameObject.SetActive(true);
             Session.SetSuspended(false);
+            if (_activeField != null)
+            {
+                var scene = _siege.Scene;
+                _overlays = new LevelOverlaySession(_siege.GetComponent<LevelOverlayAnchor>().View,
+                    new LevelOverlayBindings(scene.SetOverlaySuspended, ReturnFromSiege,
+                        DescribeRescueObjectives, CreateRescueGuide, scene.BindOverlay,
+                        scene.ResolveGuideTarget, scene.PauseTarget, scene.ObjectivesTarget),
+                    _audioSession, _guidance, _uiText);
+            }
         }
 
         private void ConfirmRescue()
@@ -201,6 +290,7 @@ namespace HomelessPetHelper.Game
 
         private void ShowStation(bool arrival)
         {
+            CloseOverlays();
             _mapPresenter?.Dispose();
             _mapPresenter = null;
             _approach.gameObject.SetActive(false);
@@ -219,6 +309,7 @@ namespace HomelessPetHelper.Game
         {
             if (_disposed) return;
             _disposed = true;
+            CloseOverlays();
             _mapPresenter?.Dispose();
             _approach.Unbind();
             _siege.UnbindEncounter();

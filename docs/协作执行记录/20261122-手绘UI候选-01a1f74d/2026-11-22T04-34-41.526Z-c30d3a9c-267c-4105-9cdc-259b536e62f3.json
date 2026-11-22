@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261122-手绘UI候选-01a1f74d.md",
+  "sessionId": "01a1f74d-412d-7613-a27d-fae91bb606ef",
+  "phase": "delivery",
+  "readAt": "2026-11-22T04:34:41.526Z",
+  "writePaths": [
+    "art-source/resource-catalog.json",
+    "art-source/ui-handdrawn-20261122/",
+    "docs/协作任务/20261122-手绘UI候选-01a1f74d.md",
+    "docs/协作执行记录/20261122-手绘UI候选-01a1f74d/",
+    "docs/当前协作状态.md",
+    "docs/紧凑UI与水彩控件.md",
+    "test-results/handdrawn-ui/"
+  ],
+  "contextDigest": "387703e91059383188d106afe7c0d445f334697f2b4ad22036dbdba04a7d2343",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "7885eae668288128a423d5d16434fabc0d169a9434ee34ee3f82d9fade177476"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261122-手绘UI候选-01a1f74d.md",
+      "sha256": "6a00d4231ee3318cc61a09bdb13798267c0564dd2bfe65b26632a58ba1f4abcf"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "151a672dfbaa2af6bef9a797197d824bde147d65d21b360ecabea7b339177850"
+    }
+  ]
+}

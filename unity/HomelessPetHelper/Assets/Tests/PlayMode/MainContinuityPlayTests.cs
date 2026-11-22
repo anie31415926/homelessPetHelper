@@ -32,8 +32,20 @@ namespace HomelessPetHelper.Tests.PlayMode
         {
             _storage = new MemorySaveStorage();
             _scope = new MainSceneStorageScope(() => _storage);
+            SceneManager.sceneLoaded += Configure;
         }
-        [TearDown] public void TearDown() => _scope.Dispose();
+        [TearDown] public void TearDown()
+        {
+            SceneManager.sceneLoaded -= Configure;
+            _scope.Dispose();
+        }
+
+        private static void Configure(Scene scene, LoadSceneMode mode)
+        {
+            if (scene.name == "Main") scene.GetRootGameObjects()
+                .SelectMany(root => root.GetComponentsInChildren<MainGameRoot>(true))
+                .Single().ConfigureOutingSeedSource(() => 20261122);
+        }
 
         private IEnumerator Load()
         {
@@ -56,11 +68,16 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(catActivity.Battle.Snapshot.EncounterId, Is.EqualTo("cat"));
             yield return Win();
             Click(_siege, "Retry");
+            var layout = new UiLayoutCompliancePlayTests();
+            yield return layout.CaptureAndAssert(_station, "arrival-summary");
             var cat = _root.Presenter.Session.Station.Animals.Single().AnimalId;
             Click(_station, "Enter");
             Click(_station, "Animal0");
+            yield return layout.CaptureAndAssert(_station, "animal-detail");
             Click(_station, "Check");
+            yield return layout.CaptureAndAssert(_station, "animal-assessed");
             Click(_station, "Clean");
+            yield return layout.CaptureAndAssert(_station, "animal-care");
             Canvas.ForceUpdateCanvases();
             Stroke();
             Click(_station, "Finish");
@@ -189,7 +206,9 @@ namespace HomelessPetHelper.Tests.PlayMode
                 {
                     var cell = _siege.GetComponentsInChildren<SiegeChoiceCell>().FirstOrDefault();
                     if (cell != null) cell.GetComponent<Button>().onClick.Invoke();
-                    Click(_siege, "Top"); Click(_siege, "Submit");
+                    // Exercise the physical routes instead of feeding every card into one defense.
+                    string lane = new[] { "Top", "Mid", "Bottom" }[activity.Battle.Snapshot.Turn % 3];
+                    Click(_siege, lane); Click(_siege, "Submit");
                 }
                 activity.Battle.Advance(1000);
                 yield return null;
@@ -201,7 +220,9 @@ namespace HomelessPetHelper.Tests.PlayMode
 
         private void Stroke()
         {
+            Canvas.ForceUpdateCanvases();
             var rect = (RectTransform)_station.Surface.transform;
+            Assert.That(rect.rect.height, Is.GreaterThan(0), "Care must retain usable space at the current viewport.");
             for (int y = 2; y < 8; y++)
             for (int x = 2; x < 7; x++)
             {
@@ -217,10 +238,15 @@ namespace HomelessPetHelper.Tests.PlayMode
         {
             if (view is StationPanelView station && name.StartsWith("Animal", StringComparison.Ordinal))
                 return station.Scene.Cells[int.Parse(name.Substring(6))].SelectButton;
-            return view.GetComponentsInChildren<Button>(true).Single(button => button.name == name);
+            return MainApproachDriver.Button(view, name);
         }
         private static void Click(Component view, string name)
         {
+            if (view is SiegeTrialView sceneView && sceneView.Scene != null &&
+                (name == "Retry" || name == "Pause"))
+            { MainApproachDriver.Click(view, name); return; }
+            if (name == "Retry" && view is SiegeTrialView siege && siege.Scene != null &&
+                !Button(view, name).isActiveAndEnabled) MainApproachDriver.Click(view, "Pause");
             var button = Button(view, name);
             Assert.That(button.isActiveAndEnabled && button.IsInteractable(), Is.True, name);
             button.onClick.Invoke();

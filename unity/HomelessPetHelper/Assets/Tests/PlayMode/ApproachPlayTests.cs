@@ -112,34 +112,35 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(_view.Session.Template.Mode, Is.EqualTo(ApproachMode.Cleanup));
             var route = _view.Session;
             MainApproachDriver.Click(_view, "Weeds");
-            var blocked = MainApproachDriver.Pointer(_view, 9);
+            var blocked = MainApproachDriver.Pointer(_view, 36);
             _view.Board.OnPointerDown(blocked);
             _view.AdvanceContact(.05);
             _view.Board.OnPointerUp(blocked);
-            Assert.That(route.RemainingWork(route.DebrisAt(9)), Is.EqualTo(.8));
-            var entry = MainApproachDriver.Pointer(_view, 45);
+            Assert.That(route.RemainingWork(route.DebrisAt(36)), Is.EqualTo(1.1));
+            var entry = MainApproachDriver.Pointer(_view, 43);
             _view.Board.OnPointerDown(entry);
             _view.AdvanceContact(.05);
             _view.Board.OnPointerUp(entry);
-            Assert.That(route.RemainingWork(route.DebrisAt(45)), Is.EqualTo(.24), "Wrong tool has no effect.");
+            Assert.That(route.RemainingWork(route.DebrisAt(43)), Is.EqualTo(.8), "Wrong tool has no effect.");
             MainApproachDriver.Click(_view, "Litter");
             _view.Board.OnPointerDown(entry);
-            _view.Board.OnPointerDown(MainApproachDriver.Pointer(_view, 9, 8));
+            _view.Board.OnPointerDown(MainApproachDriver.Pointer(_view, 36, 8));
             _view.AdvanceContact(.05);
-            Assert.That(route.RemainingWork(route.DebrisAt(45)), Is.EqualTo(.19).Within(1e-10));
+            Assert.That(route.RemainingWork(route.DebrisAt(43)), Is.EqualTo(.75).Within(1e-10));
             _view.SendMessage("OnApplicationFocus", false);
             _view.AdvanceContact(.05);
             _view.SendMessage("OnApplicationFocus", true);
             Assert.That(route.IsSuspended, Is.True);
             MainApproachDriver.Click(_view, "Pause");
             _view.AdvanceContact(.05);
-            Assert.That(route.RemainingWork(route.DebrisAt(45)), Is.EqualTo(.19).Within(1e-10),
+            Assert.That(route.RemainingWork(route.DebrisAt(43)), Is.EqualTo(.75).Within(1e-10),
                 "Resuming does not reuse contact captured before the interruption.");
             yield return Capture("cleanup-partial");
             MainApproachDriver.Solve(_view);
             Assert.That(Enumerable.Range(0, route.Template.Debris.Count)
                 .Any(index => route.RemainingWork(index) > 0), Is.True);
-            var feedback = _view.GetComponentsInChildren<Text>().Single(text => text.name == "Feedback");
+            var feedback = _view.GetComponentsInChildren<Text>().Single(text =>
+                text.name == (_view.FieldScene.Layout == null ? "Feedback" : "FieldNotice"));
             string opened = feedback.text;
             var cleared = MainApproachDriver.Pointer(_view, 9);
             _view.Board.OnPointerDown(cleared);

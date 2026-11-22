@@ -1,0 +1,186 @@
+{
+  "prompt": [
+    6,
+    "e12fcb26-1016-4604-b853-ec21871cb36a",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Use case: stylized-concept. Create a NEW four-object game sprite sheet for an existing cozy animal rescue mobile game. Image 1 defines ONLY the blank canvas and four cell centers. Image 2 is the actual yard STYLE REFERENCE ONLY. Match gentle watercolor washes, subtle colored-pencil contours, matte paper grain INSIDE objects, spring sage greens, warm cream and muted coral. Objects must blend with a hand-painted courtyard, readable at 30 to 90 pixels. Slight three-quarter overhead view about 50 degrees unless specified. Natural believable proportions. No glossy plastic, no heavy black outline, no comic eyes unless specified.  Draw these objects at their exact positions: TOP LEFT: one simple handmade yarn frame mechanism: two pale wooden upright posts on a small wood base supporting a coral pink ball of yarn; TOP RIGHT: one homemade scratching mechanism: low wood base, angled ochre sisal scratch post topped by one coral fabric cat paw pad; BOTTOM LEFT: one small seesaw toy made of a wooden pivot with a coral slipper on one end and a blue slipper on the other; BOTTOM RIGHT: two small detached mint sage garden leaves, side by side, no stem or shrub. Arrange exactly FOUR separate free-floating objects in TWO columns and TWO rows. Top-left at (25%,25%), top-right (75%,25%), bottom-left (25%,75%), bottom-right (75%,75%). Each object must occupy no more than 65% of its cell, fully visible with generous white margins. Everything outside the object must be perfectly plain PURE WHITE #ffffff. No ground plane, no cast shadow, no enclosing tile, no sticker border, no frame, no grid lines. No letters, captions, numbers, logos, UI or watermark. Do not include courtyard scenery or animals. Keep all four objects separate and leave the spaces between them pure white.",
+          "negative_prompt": "text, captions, numbers, tile frames, border, grid lines, checkerboard, shadow, ground plane, scenery, animals, photorealistic, 3d render, glossy, plastic, black thick outlines, watermark",
+          "resolution": 0,
+          "images.image_1": [
+            "20",
+            0
+          ],
+          "images.image_2": [
+            "21",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112307,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "field-props-20261122/mechanisms"
+        }
+      },
+      "20": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "field-props-20261122/grid-guide.png"
+        }
+      },
+      "21": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "field-props-20261122/T_Outing_Yard.jpg"
+        }
+      }
+    },
+    {
+      "client_id": "field-props-20261122",
+      "create_time": 1795331787802
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "mechanisms_00001_.png",
+          "subfolder": "field-props-20261122",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "e12fcb26-1016-4604-b853-ec21871cb36a",
+          "timestamp": 1795331787803
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6",
+            "20",
+            "21"
+          ],
+          "prompt_id": "e12fcb26-1016-4604-b853-ec21871cb36a",
+          "timestamp": 1795331787805
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "e12fcb26-1016-4604-b853-ec21871cb36a",
+          "timestamp": 1795331806965
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "prompt": [
+    1,
+    "9c7074b4-41f1-4d9c-a97d-2210f2f469f7",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Use case: stylized-concept. A genuinely hand-drawn colored-pencil and light watercolor UI sprite for a cozy animal-rescue storybook mobile game. Image 1 controls canvas size and object shape ONLY. Image 2 shows the actual game yard for palette and mood ONLY; do NOT draw scenery. Fine warm gray-green pencil contours with slight human wobble and occasional double pencil strokes, visible short colored-pencil hatching, light watercolor pigment pooling on matte ivory drawing paper. Soft spring mint, warm cream and pale peach colors; restrained, cute, clean and readable at phone size. Flat graphic, absolutely no glossy gradient, no digital airbrushed glow, no 3D, no plastic bevels, no drop shadow. PURE WHITE #ffffff outside the object, clear closed silhouette for alpha extraction. No words, letters, numbers, logos or watermark. Draw ONE blank wide mint-green button, centered, occupying 90% width and 68% height. Rounded oblong shape, softly imperfect pencil-drawn border in muted medium sage, readable but not heavy. Visible fine colored-pencil strokes across a flat light spring-green watercolor wash; matte paper feel, no smooth glossy highlight, no inner bevel. Slight human irregularity in edges, symmetrical end caps. Keep center uniform enough for separately rendered dark text. No icons, plants, circles or extra decorations.",
+          "negative_prompt": "text, words, typography, numbers, watermark, screenshot, scenery, photorealistic, 3d, glossy, plastic, bevel, smooth digital gradient, airbrush, glowing outline, heavy black outline, dark brown frame, aged yellow parchment, distressed dirty paper, ripped edges, excessive ornaments, extra objects",
+          "resolution": 0,
+          "images.image_1": [
+            "20",
+            0
+          ],
+          "images.image_2": [
+            "21",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112282,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "ui-handdrawn-20261122/primary"
+        }
+      },
+      "20": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "ui-handdrawn-20261122/button-guide.png"
+        }
+      },
+      "21": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "ui-handdrawn-20261122/T_Outing_Yard.jpg"
+        }
+      }
+    },
+    {
+      "client_id": "ui-handdrawn-20261122",
+      "create_time": 1795321689106
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "primary_00001_.png",
+          "subfolder": "ui-handdrawn-20261122",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "9c7074b4-41f1-4d9c-a97d-2210f2f469f7",
+          "timestamp": 1795321689107
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6",
+            "21"
+          ],
+          "prompt_id": "9c7074b4-41f1-4d9c-a97d-2210f2f469f7",
+          "timestamp": 1795321689119
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "9c7074b4-41f1-4d9c-a97d-2210f2f469f7",
+          "timestamp": 1795321700997
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

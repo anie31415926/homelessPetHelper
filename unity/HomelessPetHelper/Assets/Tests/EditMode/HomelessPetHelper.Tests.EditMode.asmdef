@@ -18,7 +18,9 @@
     "HomelessPetHelper.Tests.Support",
     "HomelessPetHelper.Framework.Persistence",
     "HomelessPetHelper.Modules.Siege",
-    "HomelessPetHelper.Modules.Approach"
+    "HomelessPetHelper.Modules.Approach",
+    "HomelessPetHelper.Framework.UI",
+    "HomelessPetHelper.Framework.Audio"
   ],
   "includePlatforms": [
     "Editor"

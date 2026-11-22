@@ -247,11 +247,16 @@ namespace HomelessPetHelper.Tests.PlayMode
         {
             if (view is StationPanelView station && station.Scene != null && name.StartsWith("Animal",
                 StringComparison.Ordinal)) return station.Scene.Cells[int.Parse(name.Substring(6))].SelectButton;
-            return view.GetComponentsInChildren<Button>(true).Single(button => button.name == name);
+            return MainApproachDriver.Button(view, name);
         }
 
         private static void Click(Component view, string name)
         {
+            if (view is SiegeTrialView sceneView && sceneView.Scene != null &&
+                (name == "Retry" || name == "Pause"))
+            { MainApproachDriver.Click(view, name); return; }
+            if (name == "Retry" && view is SiegeTrialView siege && siege.Scene != null &&
+                !FindButton(view, name).isActiveAndEnabled) MainApproachDriver.Click(view, "Pause");
             var button = FindButton(view, name);
             Assert.That(button.isActiveAndEnabled && button.IsInteractable(), Is.True, name);
             button.onClick.Invoke();
@@ -280,8 +285,12 @@ namespace HomelessPetHelper.Tests.PlayMode
                 if (view is CityMapView)
                     foreach (Text label in view.GetComponentsInChildren<Text>())
                         if (!string.IsNullOrWhiteSpace(label.text))
+                        {
+                            LevelUiPlayTests.ScrollIntoView(label);
+                            camera.Render();
                             Assert.That(label.cachedTextGenerator.vertexCount, Is.GreaterThan(4),
                                 "Visible map text: " + label.name + " at " + size);
+                        }
                 camera.Render();
                 var previous = RenderTexture.active;
                 RenderTexture.active = target;

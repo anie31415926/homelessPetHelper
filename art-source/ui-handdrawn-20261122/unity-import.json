@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-22",
+  "authorization": "先暂时用手绘版，统一全屏黑遮",
+  "runtime": "Assets/Art/UI/T_UI_LevelControls.png",
+  "sha256": "fea0e89c46c0c53a02864049b40b57238a8d8c219f07d9671aad60cac31c9219",
+  "bytes": 82893,
+  "width": 512,
+  "height": 360,
+  "slices": 14,
+  "metaUnchanged": true,
+  "existingWidgetBindingsUnchanged": true,
+  "newBinding": "{fileID: 4552759867473235689}",
+  "prefabEvidence": "test-results/fullscreen-ui/prefab-import.json",
+  "preservedFresh": "art-source/ui-soft-20261122/preserved/T_UI_LevelControls.png",
+  "status": "temporary",
+  "verification": "本轮验证与最终快照见docs/协作任务/20261122-手绘接入与全屏遮罩-01a1f74d.md；微信/真机未验",
+  "finalVerification": {
+    "runId": "20261122T062440793Z-e126e7f2-ac58-4cd0-80f8-e0eb9f5ff203",
+    "summary": "test-results/unity/verify-20261122T062440793Z-e126e7f2-ac58-4cd0-80f8-e0eb9f5ff203/summary.json",
+    "inputFingerprint": "9cd129d49680807437cd339e1ffbe3b8dbf909bc70a6b2ab28df9628881c3c52",
+    "inputCount": 1205,
+    "editMode": 791,
+    "playMode": 83,
+    "screenshots": 102,
+    "mainImageSourceBytes": 1741548,
+    "mainImages": 22,
+    "deviceVerified": false
+  }
+}

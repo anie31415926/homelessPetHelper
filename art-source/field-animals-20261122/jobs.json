@@ -1,0 +1,24 @@
+[
+  {
+    "slug": "dog",
+    "assetId": "field-animal.dog",
+    "references": [
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Generate a NEW isolated full-body game sprite of one small adult mixed breed dog with tan and white short fur, floppy ears, a long natural muzzle, a normal adult dog head much smaller than the torso, four slim natural legs and paws, and a gently curved tail. The attached courtyard image is a STYLE REFERENCE ONLY: match its gentle hand-painted watercolor, soft warm colors, delicate natural detail and paper-grain paint. Do not include any courtyard or architecture. Animal anatomy MUST have REAL LIFE adult proportions, NOT a chibi or mascot, NO oversized head, NO giant eyes, NO short stubby legs. Three-quarter view from above at about 45 degrees, standing on all four paws facing lower left, whole animal including all paws and tail visible, quiet attentive expression. Center it within a generous flat solid DARK TEAL background color RGB 31 88 104, no ground, NO cast shadow, NO texture on the teal background, no text, no UI. Animal fills central 75 percent of image; naturally painted edges. Keep anatomical body shape clear at small scale.",
+    "negative": "chibi, mascot, big head, giant eyes, stubby legs, human limbs, extra legs, two heads, building, courtyard, text, logo, white background, checkerboard, shadows",
+    "seed": 2026112201,
+    "steps": 24
+  },
+  {
+    "slug": "cat",
+    "assetId": "field-animal.cat",
+    "references": [
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Generate a NEW isolated full-body game sprite of one adult orange tabby domestic cat with a small natural feline head, slender elongated body, normal legs and paws, a long curved tail. The attached courtyard image is a STYLE REFERENCE ONLY: match its gentle hand-painted watercolor, soft warm colors, delicate natural detail and paper-grain paint. Do not include any courtyard or architecture. Animal anatomy MUST have REAL LIFE adult proportions, NOT a chibi or mascot, NO oversized head, NO giant eyes, NO short stubby legs. Three-quarter view from above at about 45 degrees, standing on all four paws facing lower left, whole animal including all paws and tail visible, quiet attentive expression. Center it within a generous flat solid DARK TEAL background color RGB 31 88 104, no ground, NO cast shadow, NO texture on the teal background, no text, no UI. Animal fills central 75 percent of image; naturally painted edges. Keep anatomical body shape clear at small scale.",
+    "negative": "chibi, mascot, big head, giant eyes, stubby legs, human limbs, extra legs, two heads, building, courtyard, text, logo, white background, checkerboard, shadows",
+    "seed": 2026112202,
+    "steps": 24
+  }
+]

@@ -1,0 +1,133 @@
+{
+  "job": {
+    "slug": "knob",
+    "assetId": "ui.handdrawn.knob",
+    "seed": 2026112285,
+    "steps": 24,
+    "references": [
+      "art-source/ui-handdrawn-20261122/knob-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. A genuinely hand-drawn colored-pencil and light watercolor UI sprite for a cozy animal-rescue storybook mobile game. Image 1 controls canvas size and object shape ONLY. Image 2 shows the actual game yard for palette and mood ONLY; do NOT draw scenery. Fine warm gray-green pencil contours with slight human wobble and occasional double pencil strokes, visible short colored-pencil hatching, light watercolor pigment pooling on matte ivory drawing paper. Soft spring mint, warm cream and pale peach colors; restrained, cute, clean and readable at phone size. Flat graphic, absolutely no glossy gradient, no digital airbrushed glow, no 3D, no plastic bevels, no drop shadow. PURE WHITE #ffffff outside the object, clear closed silhouette for alpha extraction. No words, letters, numbers, logos or watermark. Draw ONE circular cream audio slider knob, centered, occupying 76% diameter of canvas. A clean ROUND disk with thin hand-drawn sage pencil double contour, slight pencil stroke variation but truly circular silhouette. Matte ivory paper interior, small coral-pink hand-drawn pawprint at center, four round toes and one pad, colored-pencil hatching. No plastic shine, no bevel, no square base, no perspective, no shadow. A readable little hand-drawn paper token.",
+    "negative": "text, words, typography, numbers, watermark, screenshot, scenery, photorealistic, 3d, glossy, plastic, bevel, smooth digital gradient, airbrush, glowing outline, heavy black outline, dark brown frame, aged yellow parchment, distressed dirty paper, ripped edges, excessive ornaments, extra objects"
+  },
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Use case: stylized-concept. A genuinely hand-drawn colored-pencil and light watercolor UI sprite for a cozy animal-rescue storybook mobile game. Image 1 controls canvas size and object shape ONLY. Image 2 shows the actual game yard for palette and mood ONLY; do NOT draw scenery. Fine warm gray-green pencil contours with slight human wobble and occasional double pencil strokes, visible short colored-pencil hatching, light watercolor pigment pooling on matte ivory drawing paper. Soft spring mint, warm cream and pale peach colors; restrained, cute, clean and readable at phone size. Flat graphic, absolutely no glossy gradient, no digital airbrushed glow, no 3D, no plastic bevels, no drop shadow. PURE WHITE #ffffff outside the object, clear closed silhouette for alpha extraction. No words, letters, numbers, logos or watermark. Draw ONE circular cream audio slider knob, centered, occupying 76% diameter of canvas. A clean ROUND disk with thin hand-drawn sage pencil double contour, slight pencil stroke variation but truly circular silhouette. Matte ivory paper interior, small coral-pink hand-drawn pawprint at center, four round toes and one pad, colored-pencil hatching. No plastic shine, no bevel, no square base, no perspective, no shadow. A readable little hand-drawn paper token.",
+        "negative_prompt": "text, words, typography, numbers, watermark, screenshot, scenery, photorealistic, 3d, glossy, plastic, bevel, smooth digital gradient, airbrush, glowing outline, heavy black outline, dark brown frame, aged yellow parchment, distressed dirty paper, ripped edges, excessive ornaments, extra objects",
+        "resolution": 0,
+        "images.image_1": [
+          "20",
+          0
+        ],
+        "images.image_2": [
+          "21",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112285,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "ui-handdrawn-20261122/knob"
+      }
+    },
+    "20": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "ui-handdrawn-20261122/knob-guide.png"
+      }
+    },
+    "21": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "ui-handdrawn-20261122/T_Outing_Yard.jpg"
+      }
+    }
+  }
+}

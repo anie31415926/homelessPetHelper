@@ -1,0 +1,133 @@
+{
+  "job": {
+    "slug": "symbols-v2",
+    "assetId": "ui.handdrawn.symbols-v2",
+    "seed": 2026112286,
+    "steps": 24,
+    "references": [
+      "art-source/ui-handdrawn-20261122/symbols-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. A genuinely hand-drawn colored-pencil and light watercolor UI sprite for a cozy animal-rescue storybook mobile game. Image 1 controls canvas size and object shape ONLY. Image 2 shows the actual game yard for palette and mood ONLY; do NOT draw scenery. Fine warm gray-green pencil contours with slight human wobble and occasional double pencil strokes, visible short colored-pencil hatching, light watercolor pigment pooling on matte ivory drawing paper. Soft spring mint, warm cream and pale peach colors; restrained, cute, clean and readable at phone size. Flat graphic, absolutely no glossy gradient, no digital airbrushed glow, no 3D, no plastic bevels, no drop shadow. PURE WHITE #ffffff outside the object, clear closed silhouette for alpha extraction. No words, letters, numbers, logos or watermark. Draw eight isolated small colored-pencil drawings on one entirely blank white sheet. These are free-floating symbols with NO enclosing shape of any kind. In the upper row from left to right: two rounded mint pause bars, a little cream checklist paper with green ticks, a peach flower-shaped cog, a simple cream cottage with green roof. In the lower row from left to right: a coral animal pawprint, a rounded mint play triangle, ONE sage eighth music note, a sage speaker with two curved sound waves. Arrange exactly four columns and two rows at evenly spaced centers (12.5%,37.5%,62.5%,87.5% width;25%,75% height). Every drawing occupies less than 50% cell width and height. Keep all the white space around each motif EMPTY. Never draw the cells, tile outlines, rectangular containers, sticker backing, bounding boxes, square backgrounds or framing lines. No drawing has an enclosing square outline. Fine warm gray-green pencil contour belongs ONLY to the object itself. Visible colored-pencil hatching, light watercolor fill, friendly picture-book art. The drawings sit directly on white, without shadows or backing. No rectangular shape except the actual checklist sheet. THE EMPTY SPACE BETWEEN ALL OBJECTS MUST REMAIN PURE WHITE WITH NO LINES.",
+    "negative": "text, words, typography, numbers, watermark, screenshot, scenery, photorealistic, 3d, glossy, plastic, bevel, smooth digital gradient, airbrush, glowing outline, heavy black outline, dark brown frame, aged yellow parchment, distressed dirty paper, ripped edges, excessive ornaments, extra objects, icon tiles, grid borders, square outlines, rounded-square frames, sticker backs, card containers"
+  },
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Use case: stylized-concept. A genuinely hand-drawn colored-pencil and light watercolor UI sprite for a cozy animal-rescue storybook mobile game. Image 1 controls canvas size and object shape ONLY. Image 2 shows the actual game yard for palette and mood ONLY; do NOT draw scenery. Fine warm gray-green pencil contours with slight human wobble and occasional double pencil strokes, visible short colored-pencil hatching, light watercolor pigment pooling on matte ivory drawing paper. Soft spring mint, warm cream and pale peach colors; restrained, cute, clean and readable at phone size. Flat graphic, absolutely no glossy gradient, no digital airbrushed glow, no 3D, no plastic bevels, no drop shadow. PURE WHITE #ffffff outside the object, clear closed silhouette for alpha extraction. No words, letters, numbers, logos or watermark. Draw eight isolated small colored-pencil drawings on one entirely blank white sheet. These are free-floating symbols with NO enclosing shape of any kind. In the upper row from left to right: two rounded mint pause bars, a little cream checklist paper with green ticks, a peach flower-shaped cog, a simple cream cottage with green roof. In the lower row from left to right: a coral animal pawprint, a rounded mint play triangle, ONE sage eighth music note, a sage speaker with two curved sound waves. Arrange exactly four columns and two rows at evenly spaced centers (12.5%,37.5%,62.5%,87.5% width;25%,75% height). Every drawing occupies less than 50% cell width and height. Keep all the white space around each motif EMPTY. Never draw the cells, tile outlines, rectangular containers, sticker backing, bounding boxes, square backgrounds or framing lines. No drawing has an enclosing square outline. Fine warm gray-green pencil contour belongs ONLY to the object itself. Visible colored-pencil hatching, light watercolor fill, friendly picture-book art. The drawings sit directly on white, without shadows or backing. No rectangular shape except the actual checklist sheet. THE EMPTY SPACE BETWEEN ALL OBJECTS MUST REMAIN PURE WHITE WITH NO LINES.",
+        "negative_prompt": "text, words, typography, numbers, watermark, screenshot, scenery, photorealistic, 3d, glossy, plastic, bevel, smooth digital gradient, airbrush, glowing outline, heavy black outline, dark brown frame, aged yellow parchment, distressed dirty paper, ripped edges, excessive ornaments, extra objects, icon tiles, grid borders, square outlines, rounded-square frames, sticker backs, card containers",
+        "resolution": 0,
+        "images.image_1": [
+          "20",
+          0
+        ],
+        "images.image_2": [
+          "21",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112286,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "ui-handdrawn-20261122/symbols-v2"
+      }
+    },
+    "20": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "ui-handdrawn-20261122/symbols-guide.png"
+      }
+    },
+    "21": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "ui-handdrawn-20261122/T_Outing_Yard.jpg"
+      }
+    }
+  }
+}

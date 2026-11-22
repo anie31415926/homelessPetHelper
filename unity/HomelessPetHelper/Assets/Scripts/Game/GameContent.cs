@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using HomelessPetHelper.Framework.Audio;
 using HomelessPetHelper.Game.CityMap;
 using HomelessPetHelper.Game.Station;
@@ -15,8 +17,18 @@ namespace HomelessPetHelper.Game
         [SerializeField] private Sprite _cat, _dog;
         [SerializeField] private TextAsset _catMask, _dogMask;
         [SerializeField] private Font _font;
+        [SerializeField] private OutingArtwork[] _outingArtwork = Array.Empty<OutingArtwork>();
         [SerializeField] private AudioCatalog _audioCatalog;
         [SerializeField] private TextAsset _approachConfig, _approachText;
+        [SerializeField] private TextAsset[] _fieldConfigs = Array.Empty<TextAsset>();
+        [SerializeField] private TextAsset _levelUiText, _levelGuidance;
+        public Text.OptionPreviewText CreateLevelUiText() => new Text.OptionPreviewText(_levelUiText);
+        public Guidance.LevelGuideCatalog CreateGuides() =>
+            new Guidance.LevelGuideCatalog(_levelGuidance, CreateLevelUiText());
+        public Field.OutingFieldCatalog CreateFields() => new Field.OutingFieldCatalog(_fieldConfigs,
+            CreateMapConfig().Definition.Points.Select(point => point.PointId));
+        public SiegeCatalog CreateFieldSiegeCatalog(Field.OutingFieldLayout field) =>
+            field.CreateBattleCatalog(_siegeData);
         public TextAsset ApproachText => _approachText;
         public ApproachCatalog CreateApproachCatalog() => _approachConfig != null ?
             new ApproachCatalog(JsonUtility.FromJson<ApproachCatalogData>(_approachConfig.text)) :
@@ -32,6 +44,25 @@ namespace HomelessPetHelper.Game
             new SiegeCatalog(JsonUtility.FromJson<SiegeCatalogData>(_siegeData.text)) :
             throw new InvalidOperationException("Missing siege content.");
 
+        public Sprite GetOutingBackground(string pointId)
+        {
+            foreach (OutingArtwork item in _outingArtwork)
+                if (item != null && item.PointId == pointId && item.Background != null) return item.Background;
+            throw new ArgumentException("Missing outing artwork: " + pointId, nameof(pointId));
+        }
+
+        private void ValidateArtwork(CityMapPreviewConfig map)
+        {
+            if (_outingArtwork == null) throw new InvalidOperationException("Missing outing artwork bindings.");
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            foreach (OutingArtwork item in _outingArtwork)
+                if (item == null || string.IsNullOrWhiteSpace(item.PointId) || item.PointId != item.PointId.Trim() ||
+                    !ids.Add(item.PointId) || item.Background == null ||
+                    !map.Definition.TryGetPoint(item.PointId, out _))
+                    throw new InvalidOperationException("Invalid or duplicate outing artwork binding.");
+            foreach (var point in map.Definition.Points) GetOutingBackground(point.PointId);
+        }
+
         public void Validate()
         {
             if (_font == null || _mapText == null || _stationText == null || _siegeText == null)
@@ -39,11 +70,15 @@ namespace HomelessPetHelper.Game
             Artwork.Get(false, out _);
             Artwork.Get(true, out _);
             var map = CreateMapConfig();
+            ValidateArtwork(map);
             map.ValidateText(new Text.OptionPreviewText(_mapText));
             map.ValidateRescues(CreateSiegeCatalog());
             new Modules.Siege.UI.SiegeText(_siegeText).Validate(CreateSiegeCatalog());
             CreateApproachCatalog();
+            foreach (var field in CreateFields().Layouts)
+                new Modules.Siege.UI.SiegeText(_siegeText).Validate(CreateFieldSiegeCatalog(field));
             Approach.ApproachPanelView.ValidateText(new Text.OptionPreviewText(_approachText));
+            CreateGuides();
         }
     }
 }

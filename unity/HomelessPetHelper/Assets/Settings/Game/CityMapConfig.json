@@ -18,7 +18,13 @@
     { "id": "yard", "nameKey": "yard", "detailKey": "yard.detail", "regionId": "nearby",
       "openByDefault": true, "sceneTemplateIds": ["yard"] },
     { "id": "porch", "nameKey": "porch", "detailKey": "porch.detail", "regionId": "nearby",
-      "openByDefault": true, "sceneTemplateIds": ["porch"] }
+      "openByDefault": true, "sceneTemplateIds": ["porch"] },
+    { "id": "park", "nameKey": "park", "detailKey": "park.detail", "regionId": "nearby",
+      "openByDefault": true, "sceneTemplateIds": ["park"] },
+    { "id": "market", "nameKey": "market", "detailKey": "market.detail", "regionId": "nearby",
+      "openByDefault": true, "sceneTemplateIds": ["market"] },
+    { "id": "riverside", "nameKey": "riverside", "detailKey": "riverside.detail", "regionId": "nearby",
+      "openByDefault": true, "sceneTemplateIds": ["riverside"] }
   ],
   "requestTemplates": [
     { "id": "ordinary", "textKey": "parking.rescue", "animalDefinitionId": "cat.shy", "allowedPointIds": ["parking"] },

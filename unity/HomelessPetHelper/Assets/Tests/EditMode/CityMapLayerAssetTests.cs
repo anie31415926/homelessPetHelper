@@ -44,7 +44,7 @@ namespace HomelessPetHelper.Tests.EditMode
                 Is.EqualTo(ArtFolder + "T_CityMap_Neighborhood.jpg"));
             Layout layout = JsonUtility.FromJson<Layout>(AssetDatabase.LoadAssetAtPath<TextAsset>(
                 ArtFolder + "CityMapLayers.json").text);
-            Assert.That(layout.layers.Length, Is.EqualTo(4));
+            Assert.That(layout.layers.Length, Is.EqualTo(7));
             foreach (Layer layer in layout.layers)
             {
                 string nodeName = layer.name == "Shelter" ? "ShelterArtwork" : layer.name;
@@ -90,10 +90,13 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(serialized.FindProperty("_departure").objectReferenceValue, Is.Not.Null);
         }
 
-        [TestCase("Parking", 208, 190)]
-        [TestCase("Yard", 354, 211)]
-        [TestCase("Porch", 250, 234)]
-        [TestCase("Shelter", 294, 218)]
+        [TestCase("Parking", 206, 165)]
+        [TestCase("Yard", 249, 187)]
+        [TestCase("Porch", 235, 220)]
+        [TestCase("Shelter", 204, 136)]
+        [TestCase("Park", 265, 105)]
+        [TestCase("Market", 198, 155)]
+        [TestCase("Riverside", 140, 105)]
         public void PlaceSpritesKeepNativeSizeTransparentSilhouettesAndBoundedImports(
             string name, int width, int height)
         {
@@ -116,7 +119,9 @@ namespace HomelessPetHelper.Tests.EditMode
                 Assert.That(source.width, Is.EqualTo(width));
                 Assert.That(source.height, Is.EqualTo(height));
                 Color32[] pixels = source.GetPixels32();
-                Assert.That(pixels.Count(pixel => pixel.a == 0), Is.GreaterThan(pixels.Length / 5));
+                Assert.That(new[] { pixels[0].a, pixels[source.width - 1].a,
+                    pixels[pixels.Length - source.width].a, pixels[pixels.Length - 1].a },
+                    Is.All.EqualTo((byte)0), "Landmark corners must not retain a rectangular background.");
                 Assert.That(pixels.Count(pixel => pixel.a == 255), Is.GreaterThan(pixels.Length / 5));
                 Assert.That(pixels.Any(pixel => pixel.a > 0 && pixel.a < 255), Is.True);
             }
@@ -130,14 +135,15 @@ namespace HomelessPetHelper.Tests.EditMode
             try
             {
                 Assert.That(source.LoadImage(File.ReadAllBytes(ArtFolder + "T_CityMap_Neighborhood.jpg")), Is.True);
-                // Sample the former roof/interior centers in source-image coordinates.
-                foreach (Vector2Int point in new[] { new Vector2Int(110, 810), new Vector2Int(600, 480),
-                    new Vector2Int(640, 980), new Vector2Int(160, 1040) })
+                Assert.That(source.width, Is.EqualTo(768));
+                Assert.That(source.height, Is.EqualTo(1024));
+                // Cleared landmark footprints retain the light terrain rather than baked roofs.
+                foreach (Vector2Int point in new[] { new Vector2Int(180, 730), new Vector2Int(190, 500),
+                    new Vector2Int(560, 750), new Vector2Int(380, 920) })
                 {
                     Color color = source.GetPixel(point.x, source.height - 1 - point.y);
-                    Assert.That(color.g, Is.GreaterThan(color.r * 1.15f));
-                    Assert.That(color.g, Is.GreaterThan(color.b * 1.15f));
-                    Assert.That(color.g, Is.GreaterThan(0.8f));
+                    Assert.That(color.grayscale, Is.GreaterThan(.65f));
+                    Assert.That(color.b, Is.LessThan(color.g));
                 }
             }
             finally { UnityEngine.Object.DestroyImmediate(source); }

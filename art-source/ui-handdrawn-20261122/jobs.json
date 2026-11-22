@@ -1,0 +1,74 @@
+[
+  {
+    "slug": "paper",
+    "assetId": "ui.handdrawn.paper",
+    "seed": 2026112281,
+    "steps": 24,
+    "references": [
+      "art-source/ui-handdrawn-20261122/paper-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. A genuinely hand-drawn colored-pencil and light watercolor UI sprite for a cozy animal-rescue storybook mobile game. Image 1 controls canvas size and object shape ONLY. Image 2 shows the actual game yard for palette and mood ONLY; do NOT draw scenery. Fine warm gray-green pencil contours with slight human wobble and occasional double pencil strokes, visible short colored-pencil hatching, light watercolor pigment pooling on matte ivory drawing paper. Soft spring mint, warm cream and pale peach colors; restrained, cute, clean and readable at phone size. Flat graphic, absolutely no glossy gradient, no digital airbrushed glow, no 3D, no plastic bevels, no drop shadow. PURE WHITE #ffffff outside the object, clear closed silhouette for alpha extraction. No words, letters, numbers, logos or watermark. Draw ONE blank cream paper dialog card, centered on canvas, occupying 88% width and height, with softly rounded slightly imperfect corners. A delicate medium sage pencil double outline, thin but clearly visible, with light colored-pencil hatching along the edge only; very subtle warm paper grain inside. Tiny pencil-drawn two-leaf sprigs only in the upper-left and lower-right corners, entirely inside a 12% corner area. The central 75% must remain plain light ivory and empty, with no decorative doodles under text. Make all four corners fit matching nine-slice areas, and leave the middle of the straight edges undecorated. Front view.",
+    "negative": "text, words, typography, numbers, watermark, screenshot, scenery, photorealistic, 3d, glossy, plastic, bevel, smooth digital gradient, airbrush, glowing outline, heavy black outline, dark brown frame, aged yellow parchment, distressed dirty paper, ripped edges, excessive ornaments, extra objects"
+  },
+  {
+    "slug": "primary",
+    "assetId": "ui.handdrawn.primary",
+    "seed": 2026112282,
+    "steps": 24,
+    "references": [
+      "art-source/ui-handdrawn-20261122/button-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. A genuinely hand-drawn colored-pencil and light watercolor UI sprite for a cozy animal-rescue storybook mobile game. Image 1 controls canvas size and object shape ONLY. Image 2 shows the actual game yard for palette and mood ONLY; do NOT draw scenery. Fine warm gray-green pencil contours with slight human wobble and occasional double pencil strokes, visible short colored-pencil hatching, light watercolor pigment pooling on matte ivory drawing paper. Soft spring mint, warm cream and pale peach colors; restrained, cute, clean and readable at phone size. Flat graphic, absolutely no glossy gradient, no digital airbrushed glow, no 3D, no plastic bevels, no drop shadow. PURE WHITE #ffffff outside the object, clear closed silhouette for alpha extraction. No words, letters, numbers, logos or watermark. Draw ONE blank wide mint-green button, centered, occupying 90% width and 68% height. Rounded oblong shape, softly imperfect pencil-drawn border in muted medium sage, readable but not heavy. Visible fine colored-pencil strokes across a flat light spring-green watercolor wash; matte paper feel, no smooth glossy highlight, no inner bevel. Slight human irregularity in edges, symmetrical end caps. Keep center uniform enough for separately rendered dark text. No icons, plants, circles or extra decorations.",
+    "negative": "text, words, typography, numbers, watermark, screenshot, scenery, photorealistic, 3d, glossy, plastic, bevel, smooth digital gradient, airbrush, glowing outline, heavy black outline, dark brown frame, aged yellow parchment, distressed dirty paper, ripped edges, excessive ornaments, extra objects"
+  },
+  {
+    "slug": "secondary",
+    "assetId": "ui.handdrawn.secondary",
+    "seed": 2026112283,
+    "steps": 24,
+    "references": [
+      "art-source/ui-handdrawn-20261122/button-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. A genuinely hand-drawn colored-pencil and light watercolor UI sprite for a cozy animal-rescue storybook mobile game. Image 1 controls canvas size and object shape ONLY. Image 2 shows the actual game yard for palette and mood ONLY; do NOT draw scenery. Fine warm gray-green pencil contours with slight human wobble and occasional double pencil strokes, visible short colored-pencil hatching, light watercolor pigment pooling on matte ivory drawing paper. Soft spring mint, warm cream and pale peach colors; restrained, cute, clean and readable at phone size. Flat graphic, absolutely no glossy gradient, no digital airbrushed glow, no 3D, no plastic bevels, no drop shadow. PURE WHITE #ffffff outside the object, clear closed silhouette for alpha extraction. No words, letters, numbers, logos or watermark. Draw ONE blank wide peach-cream button, centered, occupying 90% width and 68% height. Rounded oblong shape with softly imperfect pencil border in muted warm terracotta, thin and readable. Visible fine colored-pencil hatching across pale apricot watercolor wash, matte drawing paper feel. Slight human irregularity in edge. No glossy highlight, inner bevel, icons or extra decorations. Blank uniform center and symmetrical end caps.",
+    "negative": "text, words, typography, numbers, watermark, screenshot, scenery, photorealistic, 3d, glossy, plastic, bevel, smooth digital gradient, airbrush, glowing outline, heavy black outline, dark brown frame, aged yellow parchment, distressed dirty paper, ripped edges, excessive ornaments, extra objects"
+  },
+  {
+    "slug": "symbols",
+    "assetId": "ui.handdrawn.symbols",
+    "seed": 2026112284,
+    "steps": 24,
+    "references": [
+      "art-source/ui-handdrawn-20261122/symbols-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. A genuinely hand-drawn colored-pencil and light watercolor UI sprite for a cozy animal-rescue storybook mobile game. Image 1 controls canvas size and object shape ONLY. Image 2 shows the actual game yard for palette and mood ONLY; do NOT draw scenery. Fine warm gray-green pencil contours with slight human wobble and occasional double pencil strokes, visible short colored-pencil hatching, light watercolor pigment pooling on matte ivory drawing paper. Soft spring mint, warm cream and pale peach colors; restrained, cute, clean and readable at phone size. Flat graphic, absolutely no glossy gradient, no digital airbrushed glow, no 3D, no plastic bevels, no drop shadow. PURE WHITE #ffffff outside the object, clear closed silhouette for alpha extraction. No words, letters, numbers, logos or watermark. Draw EIGHT simple hand-drawn colored-pencil functional icons in exactly FOUR COLUMNS and TWO ROWS, evenly centered in equal square cells. TOP row left to right: two mint-green rounded pause bars; cream checklist sheet with three green ticks and tiny lines; a peach flower-shaped settings cog with small center hole; a cream house with muted green roof. BOTTOM row left to right: coral-pink animal paw print with four round toes and one rounded pad; a rounded mint-green play triangle; a sage musical eighth note; a pale sage speaker with two curved sound-wave marks. Each fills the central 48% of its cell. Fine warm gray-green pencil outlines, visible colored-pencil hatching and little watercolor wash, lovely handmade picture-book illustration, instantly recognizable silhouettes. No circular/square plates, backgrounds, shadow or labels. Pure white gaps between all icons.",
+    "negative": "text, words, typography, numbers, watermark, screenshot, scenery, photorealistic, 3d, glossy, plastic, bevel, smooth digital gradient, airbrush, glowing outline, heavy black outline, dark brown frame, aged yellow parchment, distressed dirty paper, ripped edges, excessive ornaments, extra objects"
+  },
+  {
+    "slug": "knob",
+    "assetId": "ui.handdrawn.knob",
+    "seed": 2026112285,
+    "steps": 24,
+    "references": [
+      "art-source/ui-handdrawn-20261122/knob-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. A genuinely hand-drawn colored-pencil and light watercolor UI sprite for a cozy animal-rescue storybook mobile game. Image 1 controls canvas size and object shape ONLY. Image 2 shows the actual game yard for palette and mood ONLY; do NOT draw scenery. Fine warm gray-green pencil contours with slight human wobble and occasional double pencil strokes, visible short colored-pencil hatching, light watercolor pigment pooling on matte ivory drawing paper. Soft spring mint, warm cream and pale peach colors; restrained, cute, clean and readable at phone size. Flat graphic, absolutely no glossy gradient, no digital airbrushed glow, no 3D, no plastic bevels, no drop shadow. PURE WHITE #ffffff outside the object, clear closed silhouette for alpha extraction. No words, letters, numbers, logos or watermark. Draw ONE circular cream audio slider knob, centered, occupying 76% diameter of canvas. A clean ROUND disk with thin hand-drawn sage pencil double contour, slight pencil stroke variation but truly circular silhouette. Matte ivory paper interior, small coral-pink hand-drawn pawprint at center, four round toes and one pad, colored-pencil hatching. No plastic shine, no bevel, no square base, no perspective, no shadow. A readable little hand-drawn paper token.",
+    "negative": "text, words, typography, numbers, watermark, screenshot, scenery, photorealistic, 3d, glossy, plastic, bevel, smooth digital gradient, airbrush, glowing outline, heavy black outline, dark brown frame, aged yellow parchment, distressed dirty paper, ripped edges, excessive ornaments, extra objects"
+  },
+  {
+    "slug": "symbols-v2",
+    "assetId": "ui.handdrawn.symbols-v2",
+    "seed": 2026112286,
+    "steps": 24,
+    "references": [
+      "art-source/ui-handdrawn-20261122/symbols-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. A genuinely hand-drawn colored-pencil and light watercolor UI sprite for a cozy animal-rescue storybook mobile game. Image 1 controls canvas size and object shape ONLY. Image 2 shows the actual game yard for palette and mood ONLY; do NOT draw scenery. Fine warm gray-green pencil contours with slight human wobble and occasional double pencil strokes, visible short colored-pencil hatching, light watercolor pigment pooling on matte ivory drawing paper. Soft spring mint, warm cream and pale peach colors; restrained, cute, clean and readable at phone size. Flat graphic, absolutely no glossy gradient, no digital airbrushed glow, no 3D, no plastic bevels, no drop shadow. PURE WHITE #ffffff outside the object, clear closed silhouette for alpha extraction. No words, letters, numbers, logos or watermark. Draw eight isolated small colored-pencil drawings on one entirely blank white sheet. These are free-floating symbols with NO enclosing shape of any kind. In the upper row from left to right: two rounded mint pause bars, a little cream checklist paper with green ticks, a peach flower-shaped cog, a simple cream cottage with green roof. In the lower row from left to right: a coral animal pawprint, a rounded mint play triangle, ONE sage eighth music note, a sage speaker with two curved sound waves. Arrange exactly four columns and two rows at evenly spaced centers (12.5%,37.5%,62.5%,87.5% width;25%,75% height). Every drawing occupies less than 50% cell width and height. Keep all the white space around each motif EMPTY. Never draw the cells, tile outlines, rectangular containers, sticker backing, bounding boxes, square backgrounds or framing lines. No drawing has an enclosing square outline. Fine warm gray-green pencil contour belongs ONLY to the object itself. Visible colored-pencil hatching, light watercolor fill, friendly picture-book art. The drawings sit directly on white, without shadows or backing. No rectangular shape except the actual checklist sheet. THE EMPTY SPACE BETWEEN ALL OBJECTS MUST REMAIN PURE WHITE WITH NO LINES.",
+    "negative": "text, words, typography, numbers, watermark, screenshot, scenery, photorealistic, 3d, glossy, plastic, bevel, smooth digital gradient, airbrush, glowing outline, heavy black outline, dark brown frame, aged yellow parchment, distressed dirty paper, ripped edges, excessive ornaments, extra objects, icon tiles, grid borders, square outlines, rounded-square frames, sticker backs, card containers"
+  }
+]

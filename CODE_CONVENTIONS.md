@@ -18,7 +18,7 @@
 | 新模块、目录/程序集、跨模块依赖、设计模式或框架选型 | [架构与模式](docs/conventions/topics/architecture.md) |
 | 复杂函数/接口、数值/时间/随机、集合、序列化或语言兼容 | [C# 详细规则](docs/conventions/topics/csharp.md) |
 | Unity 生命周期、异步/协程、事件订阅、取消、对象池清理 | [生命周期与异步](docs/conventions/topics/lifecycle-async.md) |
-| 面板/弹窗、绑定、列表、适配、文案与交互 | [UI](docs/conventions/topics/ui.md) |
+| UI设计/布局/改版及Review；面板/弹窗、绑定、列表、适配、文案与交互 | [UI工程专题](docs/conventions/topics/ui.md) + [项目UI排版与可读性规范（设计/实现前必读）](docs/UI排版与可读性规范.md) |
 | schema/源表、配置生成、远程覆盖与校验 | [配置](docs/conventions/topics/config.md) |
 | 图片分辨率、各模块图片总量、首包/下载预算 | [项目图片规格](docs/图片资源规格与首包预算.md) |
 | ComfyUI 生图/选图、图片台账、首批与后续加载清单、正式入库 | [图片台账流程](art-source/README.md) |

@@ -1,11 +1,17 @@
 {
   "entries": [
-    { "key": "title", "value": "救助站周边" },
+    { "key": "title", "value": "林缘社区" },
     { "key": "pause", "value": "暂停" },
     { "key": "status", "value": "空余安置位 {0}    ·    已用时 {1} 分钟" },
     { "key": "parking", "value": "单车棚" },
     { "key": "yard", "value": "居民小院" },
     { "key": "porch", "value": "临街门廊" },
+    { "key": "park", "value": "林缘公园" },
+    { "key": "market", "value": "市场后院" },
+    { "key": "riverside", "value": "河岸步道" },
+    { "key": "park.detail", "value": "长椅旁的小路通向树林。" },
+    { "key": "market.detail", "value": "市场后院摆着周转箱和小推车。" },
+    { "key": "riverside.detail", "value": "沿着木栏杆，可以看见溪水与步道。" },
     { "key": "parking.detail", "value": "单车棚旁有一片空地。" },
     { "key": "parking.rescue", "value": "居民提供了流浪猫线索。" },
     { "key": "yard.rescue", "value": "居民提供了流浪狗线索。" },

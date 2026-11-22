@@ -3,6 +3,7 @@ using System.Linq;
 using HomelessPetHelper.Game;
 using HomelessPetHelper.Game.Approach;
 using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Game.Field;
 using HomelessPetHelper.Modules.Approach;
 using HomelessPetHelper.Modules.Rescue.UI;
 using NUnit.Framework;
@@ -21,9 +22,29 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(prefab, Is.Not.Null);
             Assert.That(prefab.GetComponentsInChildren<MonoBehaviour>(true), Has.None.Null);
             Assert.That(prefab.GetComponent<ApproachPanelView>(), Is.Not.Null);
-            var board = prefab.GetComponentInChildren<ApproachBoardView>(true);
-            Assert.That(board.CellCount, Is.EqualTo(ApproachCatalog.BoardColumns * ApproachCatalog.BoardRows));
-            Assert.That(prefab.GetComponentsInChildren<ApproachCellView>(true).Length, Is.EqualTo(board.CellCount));
+            var view = new SerializedObject(prefab.GetComponent<ApproachPanelView>());
+            var legacy = (ApproachBoardView)view.FindProperty("_board").objectReferenceValue;
+            var scene = (ApproachBoardView)view.FindProperty("_sceneBoard").objectReferenceValue;
+            Assert.That(scene, Is.Not.SameAs(legacy));
+            foreach (var board in new[] { legacy, scene })
+            {
+                Assert.That(board, Is.Not.Null);
+                Assert.That(board.CellCount, Is.EqualTo(ApproachCatalog.BoardColumns * ApproachCatalog.BoardRows));
+                Assert.That(board.GetComponentsInChildren<ApproachCellView>(true).Length, Is.EqualTo(board.CellCount));
+                Assert.That(Enumerable.Range(0, board.CellCount).Select(board.Cell).Distinct().Count(),
+                    Is.EqualTo(board.CellCount));
+            }
+            Assert.That(prefab.GetComponentsInChildren<ApproachBoardView>(true).Length, Is.EqualTo(2));
+            var field = prefab.GetComponent<OutingFieldView>();
+            Assert.That(field, Is.Not.Null);
+            var background = (Image)new SerializedObject(field).FindProperty("_background").objectReferenceValue;
+            var safe = prefab.GetComponentInChildren<SafeAreaView>(true);
+            Assert.That(background.transform.parent, Is.SameAs(prefab.transform));
+            Assert.That(background.transform.GetSiblingIndex(), Is.EqualTo(safe.transform.GetSiblingIndex() - 1),
+                "The full-screen artwork must cover legacy fill and remain behind all safe-area controls.");
+            var terrain = prefab.GetComponentInChildren<OutingFieldGraphic>(true);
+            Assert.That(terrain.GetComponent<CanvasRenderer>(), Is.Not.Null);
+            Assert.That(terrain.raycastTarget, Is.False);
             Assert.That(prefab.GetComponentInChildren<SafeAreaView>(true), Is.Not.Null);
             var scaler = prefab.GetComponent<CanvasScaler>();
             Assert.That(scaler.uiScaleMode, Is.EqualTo(CanvasScaler.ScaleMode.ScaleWithScreenSize));
@@ -56,7 +77,10 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(content.Font.HasCharacter('救'), Is.True);
             Assert.That(content.Font.HasCharacter('助'), Is.True);
             Assert.That(dependencies, Does.Contain("Assets/Settings/Game/ApproachConfig.json"));
-            foreach (TextAsset source in new[] { content.ApproachText, content.MapText })
+            Assert.That(dependencies, Does.Contain("Assets/Settings/Game/YardFieldConfig.json"));
+            Assert.That(dependencies, Does.Contain("Assets/Art/Outing/T_Outing_DogNatural.png"));
+            Assert.That(dependencies, Does.Contain("Assets/Art/Outing/T_Outing_CatNatural.png"));
+            foreach (TextAsset source in new[] { content.ApproachText, content.MapText, content.SiegeText })
                 foreach (char character in source.text)
                     if (character > 127 && !char.IsWhiteSpace(character))
                         Assert.That(content.Font.HasCharacter(character), Is.True,

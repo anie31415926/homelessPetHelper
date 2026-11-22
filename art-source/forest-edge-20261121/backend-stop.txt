@@ -1,0 +1,1 @@
+Stopped only the backend and launcher created by this image task: 26272 / 97964.

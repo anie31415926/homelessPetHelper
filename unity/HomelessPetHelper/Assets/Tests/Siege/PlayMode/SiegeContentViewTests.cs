@@ -222,7 +222,8 @@ namespace HomelessPetHelper.Tests.Siege.PlayMode
                 yield return null;
                 var field = _view.GetComponentInChildren<SiegeBattlefield>();
                 Canvas.ForceUpdateCanvases();
-                Assert.That(field.canvasRenderer.GetMesh().vertexCount, Is.GreaterThan(4000));
+                AssertRenderedSprites(field, session.Snapshot.Units
+                    .Select(unit => catalog.Unit(unit.DefinitionId).Icon).ToArray());
                 var canvas = _view.GetComponent<Canvas>();
                 var camera = UnityEngine.Object.FindObjectOfType<Camera>();
                 canvas.renderMode = RenderMode.ScreenSpaceCamera; canvas.worldCamera = camera; canvas.planeDistance = 1;
@@ -394,7 +395,8 @@ namespace HomelessPetHelper.Tests.Siege.PlayMode
             var field = _view.GetComponentInChildren<SiegeBattlefield>();
             var overlay = _view.GetComponentInChildren<SiegeCarryOverlay>();
             Canvas.ForceUpdateCanvases();
-            Assert.That(overlay.canvasRenderer.GetMesh().vertexCount, Is.GreaterThan(50));
+            var carriedUnit = before.Units.Single(x => x.Id == id);
+            AssertRenderedSprites(overlay, session.Catalog.Unit(carriedUnit.DefinitionId).Icon);
             var positionOnLane = session.Position(before.Units.Single(x => x.Id == id));
             float scale = Mathf.Min(field.rectTransform.rect.width / (float)session.Catalog.Width,
                 field.rectTransform.rect.height / (float)session.Catalog.Height);
@@ -444,12 +446,31 @@ namespace HomelessPetHelper.Tests.Siege.PlayMode
             Assert.That(landed.HoldProtectedUntilMs, Is.EqualTo(end + data.encounters[1].carryProtectionMs));
             Assert.That(session.Snapshot.Stats.Carries, Is.EqualTo(1));
             yield return null; yield return null;
+            ScrollIntoView(field);
             Canvas.ForceUpdateCanvases();
+            camera.Render();
+            Assert.That(overlay.canvasRenderer.cull, Is.False, "Inspect the visible carry surface after landing.");
             Assert.That(overlay.canvasRenderer.GetMesh().vertexCount, Is.Zero);
             AssertBounds(canvas);
             Capture(camera, target, Path.Combine(folder, "carry-landed.png"));
             camera.targetTexture = null; target.Release(); UnityEngine.Object.Destroy(target);
             yield return SceneManager.LoadSceneAsync("Assets/Scenes/Main.unity");
+        }
+
+        private static void AssertRenderedSprites(Graphic graphic, params string[] spriteNames)
+        {
+            var sprites = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(graphic.mainTexture))
+                .OfType<Sprite>().ToDictionary(sprite => sprite.name);
+            var mesh = graphic.canvasRenderer.GetMesh();
+            Assert.That(mesh.vertexCount, Is.GreaterThan(0), graphic.name);
+            foreach (string name in spriteNames)
+            {
+                Assert.That(sprites.ContainsKey(name), Is.True, name + " texture is not bound");
+                var sprite = sprites[name];
+                foreach (var uv in sprite.uv)
+                    Assert.That(mesh.uv.Any(actual => Vector2.Distance(actual, uv) < .00001f),
+                        Is.True, name + " is missing from the rendered mesh");
+            }
         }
 
         private void AssertBounds(Canvas canvas)
@@ -459,7 +480,8 @@ namespace HomelessPetHelper.Tests.Siege.PlayMode
             foreach (var button in _view.GetComponentsInChildren<Button>())
             {
                 var rect = (RectTransform)button.transform;
-                Assert.That(rect.rect.width, Is.GreaterThanOrEqualTo(88), button.name);
+                Assert.That(rect.rect.width, Is.GreaterThanOrEqualTo(144), button.name);
+                ScrollIntoView(button);
                 rect.GetWorldCorners(corners);
                 foreach (var corner in corners)
                 {
@@ -475,6 +497,24 @@ namespace HomelessPetHelper.Tests.Siege.PlayMode
                 Assert.That(height, Is.LessThanOrEqualTo(label.rectTransform.rect.height + 2), label.name);
                 foreach (char c in label.text.Where(x => x >= 0x3000))
                     Assert.That(label.font.HasCharacter(c), Is.True, "Missing font glyph " + c);
+            }
+        }
+
+        private static void ScrollIntoView(Component control)
+        {
+            foreach (var scroll in control.GetComponentsInParent<ScrollRect>())
+            {
+                Assert.That(scroll.content, Is.Not.Null);
+                Assert.That(scroll.vertical, Is.True);
+                Assert.That(scroll.content.IsChildOf(scroll.viewport), Is.True);
+                var corners = new Vector3[4];
+                ((RectTransform)control.transform).GetWorldCorners(corners);
+                float top = scroll.viewport.InverseTransformPoint(corners[1]).y;
+                float bottom = scroll.viewport.InverseTransformPoint(corners[0]).y;
+                float shift = top > scroll.viewport.rect.yMax ? scroll.viewport.rect.yMax - top :
+                    bottom < scroll.viewport.rect.yMin ? scroll.viewport.rect.yMin - bottom : 0;
+                scroll.content.anchoredPosition += new Vector2(0, shift);
+                Canvas.ForceUpdateCanvases();
             }
         }
 

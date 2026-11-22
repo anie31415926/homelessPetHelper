@@ -122,7 +122,7 @@ namespace HomelessPetHelper.Tests.EditMode
                 Assert.That(_loop.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(1));
                 Assert.That(VisibleText(_rescue), Does.Contain("时间记录已变化"));
             }
-            CaptureSixRatios(_rescue, "return-refused");
+            yield return CaptureSixRatios(_rescue, "return-refused");
         }
 
         [UnityTest]
@@ -213,16 +213,16 @@ namespace HomelessPetHelper.Tests.EditMode
             Click(_station, "Restart");
             Assert.That(_map.gameObject.activeSelf, Is.True);
             Assert.That(VisibleText(_map), Does.Contain("25"), "Route-free preview uses its actual time policy.");
-            CaptureSixRatios(_map, "map");
+            yield return CaptureSixRatios(_map, "map");
             Click(_map, "Primary");
             Assert.That(_rescue.gameObject.activeSelf, Is.True);
-            CaptureSixRatios(_rescue, "rescue");
+            yield return CaptureSixRatios(_rescue, "rescue");
             Guid animalId = _loop.Trial.Individual.Current.AnimalId;
             CompleteRescue();
             Assert.That(_loop.Session.Flow.Stage, Is.EqualTo(RescueStage.Rescued));
             Click(_rescue, "Advance");
             Assert.That(_station.gameObject.activeSelf, Is.True);
-            CaptureSixRatios(_station, "arrival");
+            yield return CaptureSixRatios(_station, "arrival");
             Assert.That(_loop.Session.Station.Animals.Count, Is.EqualTo(1));
             Assert.That(_loop.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(25));
             AnimalSnapshot arrival = _loop.Session.LastArrival.Arrival.AnimalAtArrival;
@@ -232,7 +232,7 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(Button(_station, "Restart").interactable, Is.False);
             Click(_station, "Animal0");
             Click(_station, "Check");
-            CaptureSixRatios(_station, "care");
+            yield return CaptureSixRatios(_station, "care");
             Assert.That(_loop.Session.Flow.Stage, Is.EqualTo(RescueStage.Station));
             Click(_station, "Clean");
             Canvas.ForceUpdateCanvases();
@@ -264,7 +264,7 @@ namespace HomelessPetHelper.Tests.EditMode
             Click(_station, "Finish");
             Assert.That(_loop.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(after), "No duplicate work charge.");
             Click(_station, "Back");
-            CaptureSixRatios(_station, "station-resident");
+            yield return CaptureSixRatios(_station, "station-resident");
         }
 
         [UnityTest]
@@ -348,8 +348,12 @@ namespace HomelessPetHelper.Tests.EditMode
             // The inactive legacy roster remains compatible, but no longer takes room on the home screen.
             _station.EnsureRosterSize(7);
             Assert.That(_station.Animals.Length, Is.EqualTo(7));
-            var roster = _station.GetComponentInChildren<ScrollRect>(true);
+            var roster = _station.GetComponentsInChildren<ScrollRect>(true)
+                .Single(scroll => scroll.content != null &&
+                    scroll.content.GetComponentInChildren<StationAnimalView>(true) != null);
             Assert.That(roster.content.childCount, Is.EqualTo(7));
+            Assert.That(roster.content.GetComponentsInChildren<StationAnimalView>(true),
+                Is.EquivalentTo(_station.Animals));
             Assert.That(roster.gameObject.activeInHierarchy, Is.False);
         }
 
@@ -418,7 +422,7 @@ namespace HomelessPetHelper.Tests.EditMode
             button.onClick.Invoke();
         }
 
-        private static void CaptureSixRatios(Component view, string name)
+        private static IEnumerator CaptureSixRatios(Component view, string name)
         {
             Canvas canvas = view.GetComponent<Canvas>();
             var camera = new GameObject("LoopCapture", typeof(Camera)).GetComponent<Camera>();
@@ -435,7 +439,11 @@ namespace HomelessPetHelper.Tests.EditMode
             {
                 var target = new RenderTexture(size.x, size.y, 24);
                 camera.targetTexture = target;
-                Canvas.ForceUpdateCanvases();
+                for (int frame = 0; frame < 5; frame++)
+                {
+                    yield return null;
+                    Canvas.ForceUpdateCanvases();
+                }
                 camera.Render();
                 AssertLayout(view, canvas);
                 RenderTexture previous = RenderTexture.active;
@@ -464,6 +472,16 @@ namespace HomelessPetHelper.Tests.EditMode
             var corners = new Vector3[4];
             foreach (Selectable control in view.GetComponentsInChildren<Selectable>())
             {
+                foreach (var scroll in control.GetComponentsInParent<ScrollRect>())
+                {
+                    ((RectTransform)control.transform).GetWorldCorners(corners);
+                    float bottom = scroll.viewport.InverseTransformPoint(corners[0]).y;
+                    float top = scroll.viewport.InverseTransformPoint(corners[1]).y;
+                    float delta = top > scroll.viewport.rect.yMax ? scroll.viewport.rect.yMax - top :
+                        bottom < scroll.viewport.rect.yMin ? scroll.viewport.rect.yMin - bottom : 0;
+                    scroll.content.anchoredPosition += new Vector2(0, delta);
+                    Canvas.ForceUpdateCanvases();
+                }
                 ((RectTransform)control.transform).GetWorldCorners(corners);
                 foreach (Vector3 corner in corners)
                 {

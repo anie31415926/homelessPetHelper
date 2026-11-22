@@ -1,0 +1,122 @@
+{
+  "job": {
+    "slug": "terrain",
+    "assetId": "city-map.forest-edge.terrain",
+    "seed": 2026112102,
+    "steps": 24,
+    "references": [
+      "art-source/forest-edge-20261121/overview/master.png"
+    ],
+    "prompt": "Edit this SAME map to make its EMPTY TERRAIN LAYER for a game. Keep every tree, forest canopy, path, creek, bridge, lighting, perspective and watercolor pigment style in its exact current position. Remove completely the following seven landmark GROUPS, including their furniture, posts, plants belonging to buildings, ground patches and cast shadows: the upper-left park bench AND short fence; the curved wooden riverside boardwalk just below the main bridge; the middle-left cottage including its courtyard wall, laundry, entrance paving and pots; the middle-right market shed with cart, crates, awning and its ground shadow; the lower-left bicycle shelter with roof, bicycles, posts and box; the lower-right porch cottage with steps and all pots; the little bottom-center animal shelter building including all doorway and roof. Fill each removed group with uninterrupted soft pale yellow-green watercolor lawn matching neighboring grass. Preserve main cream road and its side branches, surrounding trees, stream, and the TOP straight wooden bridge unchanged. Result: NO house, roof, shed, cottage, bicycle, bench, fence, crate, cart, pot, boardwalk, kennel or building anywhere, just original forest, trees, winding lanes, creek, top bridge, flowers and empty grassy sites. Do not add new trees or shift any feature. No text, UI, animals or characters. Same 768x1024 portrait.",
+    "negative": "building, house, kennel, shed, roof, bicycle, bench, furniture, cart, pot, boardwalk, text, UI, people, animals, collage, changed roads"
+  },
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Edit this SAME map to make its EMPTY TERRAIN LAYER for a game. Keep every tree, forest canopy, path, creek, bridge, lighting, perspective and watercolor pigment style in its exact current position. Remove completely the following seven landmark GROUPS, including their furniture, posts, plants belonging to buildings, ground patches and cast shadows: the upper-left park bench AND short fence; the curved wooden riverside boardwalk just below the main bridge; the middle-left cottage including its courtyard wall, laundry, entrance paving and pots; the middle-right market shed with cart, crates, awning and its ground shadow; the lower-left bicycle shelter with roof, bicycles, posts and box; the lower-right porch cottage with steps and all pots; the little bottom-center animal shelter building including all doorway and roof. Fill each removed group with uninterrupted soft pale yellow-green watercolor lawn matching neighboring grass. Preserve main cream road and its side branches, surrounding trees, stream, and the TOP straight wooden bridge unchanged. Result: NO house, roof, shed, cottage, bicycle, bench, fence, crate, cart, pot, boardwalk, kennel or building anywhere, just original forest, trees, winding lanes, creek, top bridge, flowers and empty grassy sites. Do not add new trees or shift any feature. No text, UI, animals or characters. Same 768x1024 portrait.",
+        "negative_prompt": "building, house, kennel, shed, roof, bicycle, bench, furniture, cart, pot, boardwalk, text, UI, people, animals, collage, changed roads",
+        "resolution": 0,
+        "images.image_1": [
+          "20",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112102,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "forest-edge-20261121/terrain"
+      }
+    },
+    "20": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "forest-edge-20261121/master.png"
+      }
+    }
+  }
+}

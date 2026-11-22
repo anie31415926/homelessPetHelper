@@ -1,0 +1,185 @@
+{
+  "prompt": [
+    3,
+    "a0d36ab6-c170-48e2-917f-6d4783664768",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Use case: stylized-concept. Production asset for a cozy animal-rescue mobile game. Match the warm cream, sage green and soft watercolor paper material of reference image 2, but NEVER draw the scene from that reference. Image 1 specifies the canvas size and placement only. Orthographic front view. Pure white #FFFFFF background around the object, no cast shadow outside the object, no text, no letters, no numbers, no logo, no watermark, no interface screenshot. Render EIGHT separated small functional UI glyphs arranged in exactly FOUR COLUMNS and TWO ROWS, all evenly centered in their cells. No cell borders. Top row from left: two vertical pause bars; checklist sheet with three ticks; simple six-tooth settings cog; small house silhouette. Bottom row from left: single animal pawprint; right-pointing solid play triangle; single musical eighth note; small speaker with two sound waves. Each glyph is medium dark warm brown ink with slightly uneven handpainted edges, readable strong silhouette, simple cohesive flat shape. Each glyph occupies only the central 45% of its cell. No background circles, no squares, no labels, no additional objects. The entire area behind and between icons must remain PURE WHITE.",
+          "negative_prompt": "text, letters, labels, wallpaper, shadows, background colors, frames, buttons, scenery, overlapping icons, thin low contrast strokes, logos, watermarks",
+          "resolution": 0,
+          "images.image_1": [
+            "20",
+            0
+          ],
+          "images.image_2": [
+            "21",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112204,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "ui-watercolor-20261122/symbols"
+        }
+      },
+      "20": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "ui-watercolor-20261122/symbols-guide.png"
+        }
+      },
+      "21": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "ui-watercolor-20261122/station-style.jpg"
+        }
+      }
+    },
+    {
+      "client_id": "ui-watercolor-20261122",
+      "create_time": 1795290744487
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "symbols_00001_.png",
+          "subfolder": "ui-watercolor-20261122",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "a0d36ab6-c170-48e2-917f-6d4783664768",
+          "timestamp": 1795290744488
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6",
+            "21"
+          ],
+          "prompt_id": "a0d36ab6-c170-48e2-917f-6d4783664768",
+          "timestamp": 1795290744500
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "a0d36ab6-c170-48e2-917f-6d4783664768",
+          "timestamp": 1795290758743
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "slug": "paper",
+    "assetId": "ui.soft.paper",
+    "seed": 2026112251,
+    "steps": 24,
+    "references": [
+      "art-source/ui-soft-20261122/paper-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. Production UI sprite for a fresh, cute, cozy animal rescue mobile game. Use image 1 for canvas and shape placement ONLY; image 2 is the actual game watercolor yard for style and palette reference ONLY. Do not draw any scenery. Fresh storybook watercolor illustration, soft rounded friendly forms, pastel mint and cream with peach accents, clean luminous colors, very subtle brush texture. No aging, no sepia, no bronze, no heavy dark outlines, no sharp corners, no plastic shine, no embossed bevels, no 3D rendering, no realistic shadows. PURE WHITE #ffffff background outside the object with a clean silhouette suitable for alpha extraction. No text or letters or numbers or logos or watermark. Render ONE blank off-white rounded-square dialog card, centrally occupying 88% of canvas. Large soft rounded corners, a delicate pastel mint watercolor rim and a very fine warm gray-green contour, bright milky white interior. A tiny simple two-leaf sprout in each of the upper-left and lower-right corners only, contained fully within the corner area. Keep all central 75% completely blank and uniform for independently rendered text. Flat front view, identical rounded corner radius, no border ornaments running along edges. Friendly and airy but solid, no torn edge.",
+    "negative": "text, typography, letters, numbers, watermark, photorealistic, 3d render, glossy bevel, aged parchment, yellowed paper, distressed grain, brown outlines, dark olive, mustard, hard corners, metallic, heavy drop shadow, scenery, screenshot, extra objects"
+  },
+  {
+    "slug": "primary",
+    "assetId": "ui.soft.primary",
+    "seed": 2026112252,
+    "steps": 24,
+    "references": [
+      "art-source/ui-soft-20261122/button-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. Production UI sprite for a fresh, cute, cozy animal rescue mobile game. Use image 1 for canvas and shape placement ONLY; image 2 is the actual game watercolor yard for style and palette reference ONLY. Do not draw any scenery. Fresh storybook watercolor illustration, soft rounded friendly forms, pastel mint and cream with peach accents, clean luminous colors, very subtle brush texture. No aging, no sepia, no bronze, no heavy dark outlines, no sharp corners, no plastic shine, no embossed bevels, no 3D rendering, no realistic shadows. PURE WHITE #ffffff background outside the object with a clean silhouette suitable for alpha extraction. No text or letters or numbers or logos or watermark. Render ONE blank wide rounded capsule button, centered, occupying 90% width and 68% height. Fresh medium-light mint/leaf green, gentle watercolor shading, thin slightly darker sage contour, very subtle lighter line just inside top edge, very rounded corners. Calm spring garden feeling, cute friendly handmade appearance. Uniform green center, no icons or decorations. The two end caps must be symmetrical.",
+    "negative": "text, typography, letters, numbers, watermark, photorealistic, 3d render, glossy bevel, aged parchment, yellowed paper, distressed grain, brown outlines, dark olive, mustard, hard corners, metallic, heavy drop shadow, scenery, screenshot, extra objects"
+  },
+  {
+    "slug": "secondary",
+    "assetId": "ui.soft.secondary",
+    "seed": 2026112253,
+    "steps": 24,
+    "references": [
+      "art-source/ui-soft-20261122/button-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. Production UI sprite for a fresh, cute, cozy animal rescue mobile game. Use image 1 for canvas and shape placement ONLY; image 2 is the actual game watercolor yard for style and palette reference ONLY. Do not draw any scenery. Fresh storybook watercolor illustration, soft rounded friendly forms, pastel mint and cream with peach accents, clean luminous colors, very subtle brush texture. No aging, no sepia, no bronze, no heavy dark outlines, no sharp corners, no plastic shine, no embossed bevels, no 3D rendering, no realistic shadows. PURE WHITE #ffffff background outside the object with a clean silhouette suitable for alpha extraction. No text or letters or numbers or logos or watermark. Render ONE blank wide rounded capsule button, centered, occupying 90% width and 68% height. Pale peach/apricot cream, very subtle warm pink-peach contour, soft watercolor shading, lighter highlight just inside upper edge. Very rounded symmetrical end caps, uniform light apricot center, no icons or decorations. Light, fresh, friendly storybook style.",
+    "negative": "text, typography, letters, numbers, watermark, photorealistic, 3d render, glossy bevel, aged parchment, yellowed paper, distressed grain, brown outlines, dark olive, mustard, hard corners, metallic, heavy drop shadow, scenery, screenshot, extra objects"
+  },
+  {
+    "slug": "symbols",
+    "assetId": "ui.soft.symbols",
+    "seed": 2026112254,
+    "steps": 24,
+    "references": [
+      "art-source/ui-soft-20261122/symbols-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. Production UI sprite for a fresh, cute, cozy animal rescue mobile game. Use image 1 for canvas and shape placement ONLY; image 2 is the actual game watercolor yard for style and palette reference ONLY. Do not draw any scenery. Fresh storybook watercolor illustration, soft rounded friendly forms, pastel mint and cream with peach accents, clean luminous colors, very subtle brush texture. No aging, no sepia, no bronze, no heavy dark outlines, no sharp corners, no plastic shine, no embossed bevels, no 3D rendering, no realistic shadows. PURE WHITE #ffffff background outside the object with a clean silhouette suitable for alpha extraction. No text or letters or numbers or logos or watermark. Render EIGHT friendly little handpainted pastel UI icons in exactly FOUR COLUMNS and TWO ROWS, evenly centered in cells. Top row left to right: two thick mint green pause bars with rounded ends; a cream checklist sheet with mint ticks; a simple rounded flower-shaped peach settings cog; a cream little house with mint roof. Bottom row left to right: one coral-pink animal pawprint with four round toes; a mint green play triangle with rounded corners; a teal musical eighth note; a pale sage speaker with two curved sound waves. Each icon fills only the central 48% of its cell. Soft watercolor wash, gentle warm green or coral fine outlines. No circular or square backgrounds, no shadows, no labels, no extra elements. All space between icons stays pure white.",
+    "negative": "text, typography, letters, numbers, watermark, photorealistic, 3d render, glossy bevel, aged parchment, yellowed paper, distressed grain, brown outlines, dark olive, mustard, hard corners, metallic, heavy drop shadow, scenery, screenshot, extra objects"
+  },
+  {
+    "slug": "knob",
+    "assetId": "ui.soft.knob",
+    "seed": 2026112255,
+    "steps": 24,
+    "references": [
+      "art-source/ui-soft-20261122/knob-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. Production UI sprite for a fresh, cute, cozy animal rescue mobile game. Use image 1 for canvas and shape placement ONLY; image 2 is the actual game watercolor yard for style and palette reference ONLY. Do not draw any scenery. Fresh storybook watercolor illustration, soft rounded friendly forms, pastel mint and cream with peach accents, clean luminous colors, very subtle brush texture. No aging, no sepia, no bronze, no heavy dark outlines, no sharp corners, no plastic shine, no embossed bevels, no 3D rendering, no realistic shadows. PURE WHITE #ffffff background outside the object with a clean silhouette suitable for alpha extraction. No text or letters or numbers or logos or watermark. Render ONE round audio slider thumb viewed from the front, 76% of canvas diameter, centered. A perfectly circular milky cream biscuit-like disk with a thin soft mint contour and gentle watercolor shading, a single small pastel coral-pink animal pawprint in the center. Four round toes and one rounded paw pad, simple readable shape. Flat 2D, no perspective, no thick shadow, no outer square. The disk must be genuinely ROUND, not a rounded square.",
+    "negative": "text, typography, letters, numbers, watermark, photorealistic, 3d render, glossy bevel, aged parchment, yellowed paper, distressed grain, brown outlines, dark olive, mustard, hard corners, metallic, heavy drop shadow, scenery, screenshot, extra objects"
+  }
+]

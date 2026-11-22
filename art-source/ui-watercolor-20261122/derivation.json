@@ -1,0 +1,260 @@
+{
+  "atlas": "unity/HomelessPetHelper/Assets/Art/UI/T_UI_LevelControls.png",
+  "sha256": "b270ed5198f95cec07c1f45a9a775c69e5d94324b584c2dbd558d2ea60717bb7",
+  "bytes": 71132,
+  "width": 512,
+  "height": 272,
+  "padding": 4,
+  "processing": "Connected exterior white removal (min channel >=244) for surfaces; white removal also inside glyphs, glyph alpha normalized from ink, coverage below 24/255 removed; trim nonzero alpha; Lanczos contain resize; one 256-color PNG page, no baked labels.",
+  "sprites": [
+    {
+      "name": "Paper",
+      "source": "art-source/ui-watercolor-20261122/paper/master.png",
+      "sourceSha256": "c6c24150b8070935844412341d2f9fcde3d4ef5cee362e265f6d825c36a6c875",
+      "inputCell": null,
+      "crop": {
+        "x": 47,
+        "y": 47,
+        "width": 674,
+        "height": 671
+      },
+      "output": {
+        "x": 4,
+        "y": 4,
+        "width": 252,
+        "height": 252
+      },
+      "monochromeTintMask": false
+    },
+    {
+      "name": "Action",
+      "source": "art-source/ui-watercolor-20261122/primary/master.png",
+      "sourceSha256": "30a91df114d159e2402e9bcd030f1f3b55d50d7fc0ac2582538a77d79c351d7d",
+      "inputCell": null,
+      "crop": {
+        "x": 36,
+        "y": 38,
+        "width": 697,
+        "height": 178
+      },
+      "output": {
+        "x": 264,
+        "y": 4,
+        "width": 240,
+        "height": 64
+      },
+      "monochromeTintMask": false
+    },
+    {
+      "name": "Secondary",
+      "source": "art-source/ui-watercolor-20261122/secondary/master.png",
+      "sourceSha256": "eb65a111fb036367c3e6466d9ce9008083574d35b06cf4776e77e3c4ba7c6e07",
+      "inputCell": null,
+      "crop": {
+        "x": 36,
+        "y": 37,
+        "width": 695,
+        "height": 182
+      },
+      "output": {
+        "x": 264,
+        "y": 76,
+        "width": 240,
+        "height": 64
+      },
+      "monochromeTintMask": false
+    },
+    {
+      "name": "Pause",
+      "source": "art-source/ui-watercolor-20261122/symbols/master.png",
+      "sourceSha256": "d9c5b582677f9bf8b06d40058544b61b9ec1127b60d79c49d13c8d9d56d441ec",
+      "inputCell": {
+        "left": 0,
+        "top": 0,
+        "width": 256,
+        "height": 256
+      },
+      "crop": {
+        "x": 134,
+        "y": 103,
+        "width": 78,
+        "height": 95
+      },
+      "output": {
+        "x": 264,
+        "y": 152,
+        "width": 56,
+        "height": 56
+      },
+      "monochromeTintMask": true
+    },
+    {
+      "name": "Objectives",
+      "source": "art-source/ui-watercolor-20261122/symbols/master.png",
+      "sourceSha256": "d9c5b582677f9bf8b06d40058544b61b9ec1127b60d79c49d13c8d9d56d441ec",
+      "inputCell": {
+        "left": 256,
+        "top": 0,
+        "width": 256,
+        "height": 256
+      },
+      "crop": {
+        "x": 85,
+        "y": 92,
+        "width": 104,
+        "height": 119
+      },
+      "output": {
+        "x": 324,
+        "y": 152,
+        "width": 56,
+        "height": 56
+      },
+      "monochromeTintMask": true
+    },
+    {
+      "name": "Settings",
+      "source": "art-source/ui-watercolor-20261122/symbols/master.png",
+      "sourceSha256": "d9c5b582677f9bf8b06d40058544b61b9ec1127b60d79c49d13c8d9d56d441ec",
+      "inputCell": {
+        "left": 512,
+        "top": 0,
+        "width": 256,
+        "height": 256
+      },
+      "crop": {
+        "x": 53,
+        "y": 94,
+        "width": 118,
+        "height": 114
+      },
+      "output": {
+        "x": 384,
+        "y": 152,
+        "width": 56,
+        "height": 56
+      },
+      "monochromeTintMask": true
+    },
+    {
+      "name": "Home",
+      "source": "art-source/ui-watercolor-20261122/symbols/master.png",
+      "sourceSha256": "d9c5b582677f9bf8b06d40058544b61b9ec1127b60d79c49d13c8d9d56d441ec",
+      "inputCell": {
+        "left": 768,
+        "top": 0,
+        "width": 256,
+        "height": 256
+      },
+      "crop": {
+        "x": 20,
+        "y": 97,
+        "width": 127,
+        "height": 108
+      },
+      "output": {
+        "x": 444,
+        "y": 152,
+        "width": 56,
+        "height": 56
+      },
+      "monochromeTintMask": true
+    },
+    {
+      "name": "Paw",
+      "source": "art-source/ui-watercolor-20261122/symbols/master.png",
+      "sourceSha256": "d9c5b582677f9bf8b06d40058544b61b9ec1127b60d79c49d13c8d9d56d441ec",
+      "inputCell": {
+        "left": 0,
+        "top": 256,
+        "width": 256,
+        "height": 256
+      },
+      "crop": {
+        "x": 112,
+        "y": 51,
+        "width": 119,
+        "height": 110
+      },
+      "output": {
+        "x": 264,
+        "y": 212,
+        "width": 56,
+        "height": 56
+      },
+      "monochromeTintMask": true
+    },
+    {
+      "name": "Play",
+      "source": "art-source/ui-watercolor-20261122/symbols/master.png",
+      "sourceSha256": "d9c5b582677f9bf8b06d40058544b61b9ec1127b60d79c49d13c8d9d56d441ec",
+      "inputCell": {
+        "left": 256,
+        "top": 256,
+        "width": 256,
+        "height": 256
+      },
+      "crop": {
+        "x": 102,
+        "y": 57,
+        "width": 86,
+        "height": 101
+      },
+      "output": {
+        "x": 324,
+        "y": 212,
+        "width": 56,
+        "height": 56
+      },
+      "monochromeTintMask": true
+    },
+    {
+      "name": "Music",
+      "source": "art-source/ui-watercolor-20261122/symbols/master.png",
+      "sourceSha256": "d9c5b582677f9bf8b06d40058544b61b9ec1127b60d79c49d13c8d9d56d441ec",
+      "inputCell": {
+        "left": 512,
+        "top": 256,
+        "width": 256,
+        "height": 256
+      },
+      "crop": {
+        "x": 56,
+        "y": 51,
+        "width": 99,
+        "height": 111
+      },
+      "output": {
+        "x": 384,
+        "y": 212,
+        "width": 56,
+        "height": 56
+      },
+      "monochromeTintMask": true
+    },
+    {
+      "name": "Speaker",
+      "source": "art-source/ui-watercolor-20261122/symbols/master.png",
+      "sourceSha256": "d9c5b582677f9bf8b06d40058544b61b9ec1127b60d79c49d13c8d9d56d441ec",
+      "inputCell": {
+        "left": 768,
+        "top": 256,
+        "width": 256,
+        "height": 256
+      },
+      "crop": {
+        "x": 25,
+        "y": 67,
+        "width": 118,
+        "height": 85
+      },
+      "output": {
+        "x": 444,
+        "y": 212,
+        "width": 56,
+        "height": 56
+      },
+      "monochromeTintMask": true
+    }
+  ]
+}

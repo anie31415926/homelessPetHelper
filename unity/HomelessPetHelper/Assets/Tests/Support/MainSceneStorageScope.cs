@@ -9,9 +9,15 @@ namespace HomelessPetHelper.Tests.Support
     public sealed class MainSceneStorageScope : IDisposable
     {
         private readonly Func<ISaveStorage> _createStorage;
-        public MainSceneStorageScope(Func<ISaveStorage> createStorage = null)
+        private readonly Func<ISaveStorage> _createGuidance, _createAudio;
+        private readonly bool _freshGuidance;
+        public MainSceneStorageScope(Func<ISaveStorage> createStorage = null, bool freshGuidance = false,
+            Func<ISaveStorage> createGuidanceStorage = null, Func<ISaveStorage> createAudioStorage = null)
         {
             _createStorage = createStorage ?? (() => new MemorySaveStorage());
+            _createGuidance = createGuidanceStorage ?? (() => new MemorySaveStorage());
+            _createAudio = createAudioStorage ?? (() => new MemorySaveStorage());
+            _freshGuidance = freshGuidance;
             SceneManager.sceneLoaded += Configure;
         }
 
@@ -19,7 +25,30 @@ namespace HomelessPetHelper.Tests.Support
         {
             foreach (var root in scene.GetRootGameObjects())
                 foreach (var game in root.GetComponentsInChildren<MainGameRoot>(true))
+                {
                     game.ConfigureProgressStorage(_createStorage());
+                    var guidance = _createGuidance();
+                    if (!_freshGuidance) SeedReturningPlayer(guidance);
+                    game.ConfigurePreferenceStorage(_createAudio(), guidance);
+                }
+        }
+
+        private static void SeedReturningPlayer(ISaveStorage storage)
+        {
+            var progress = new Game.Guidance.GuidanceProgressSession(storage);
+            var content = UnityEngine.Resources.FindObjectsOfTypeAll<GameContent>();
+            foreach (var asset in content)
+            {
+                var catalog = asset.CreateGuides();
+                foreach (string context in new[] { "field.yard.cleanup", "field.yard.puzzle", "siege.field" })
+                {
+                    var guide = catalog.Create(context);
+                    while (guide.IsActive) guide.ReportSucceeded(guide.Current.CompletionAction);
+                    if (!progress.TryRecordCompleted(guide))
+                        throw new InvalidOperationException("Cannot prepare isolated returning-player UI progress.");
+                }
+                break;
+            }
         }
 
         public void Dispose() => SceneManager.sceneLoaded -= Configure;

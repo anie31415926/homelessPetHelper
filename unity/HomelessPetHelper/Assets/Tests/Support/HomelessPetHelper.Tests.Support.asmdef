@@ -4,7 +4,9 @@
     "HomelessPetHelper.Framework.Persistence",
     "HomelessPetHelper.Game",
     "HomelessPetHelper.Modules.Approach",
-    "UnityEngine.UI"
+    "UnityEngine.UI",
+    "HomelessPetHelper.Framework.UI",
+    "HomelessPetHelper.Framework.Audio"
   ],
   "optionalUnityReferences": [
     "TestAssemblies"

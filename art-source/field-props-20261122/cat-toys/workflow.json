@@ -1,0 +1,151 @@
+{
+  "job": {
+    "slug": "cat-toys",
+    "assetId": "field-props.source.cat-toys",
+    "seed": 2026112303,
+    "steps": 24,
+    "references": [
+      "art-source/field-props-20261122/grid-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "items": [
+      {
+        "id": "fish",
+        "description": "one small orange dried fish treat toy, side view facing right, clear tail and one eye"
+      },
+      {
+        "id": "yarn",
+        "description": "one coral pink ball of yarn with a loose trailing thread"
+      },
+      {
+        "id": "feather",
+        "description": "one mint teal feather cat teaser toy, a short pale wood handle and one long soft feather"
+      },
+      {
+        "id": "paw",
+        "description": "one natural orange tabby front paw viewed from below, three small toes and coral pink pads, no arm or cat"
+      }
+    ],
+    "prompt": "Use case: stylized-concept. Create a NEW four-object game sprite sheet for an existing cozy animal rescue mobile game. Image 1 defines ONLY the blank canvas and four cell centers. Image 2 is the actual yard STYLE REFERENCE ONLY. Match gentle watercolor washes, subtle colored-pencil contours, matte paper grain INSIDE objects, spring sage greens, warm cream and muted coral. Objects must blend with a hand-painted courtyard, readable at 30 to 90 pixels. Slight three-quarter overhead view about 50 degrees unless specified. Natural believable proportions. No glossy plastic, no heavy black outline, no comic eyes unless specified.  Draw these objects at their exact positions: TOP LEFT: one small orange dried fish treat toy, side view facing right, clear tail and one eye; TOP RIGHT: one coral pink ball of yarn with a loose trailing thread; BOTTOM LEFT: one mint teal feather cat teaser toy, a short pale wood handle and one long soft feather; BOTTOM RIGHT: one natural orange tabby front paw viewed from below, three small toes and coral pink pads, no arm or cat. Arrange exactly FOUR separate free-floating objects in TWO columns and TWO rows. Top-left at (25%,25%), top-right (75%,25%), bottom-left (25%,75%), bottom-right (75%,75%). Each object must occupy no more than 65% of its cell, fully visible with generous white margins. Everything outside the object must be perfectly plain PURE WHITE #ffffff. No ground plane, no cast shadow, no enclosing tile, no sticker border, no frame, no grid lines. No letters, captions, numbers, logos, UI or watermark. Do not include courtyard scenery or animals. Keep all four objects separate and leave the spaces between them pure white.",
+    "negative": "text, captions, numbers, tile frames, border, grid lines, checkerboard, shadow, ground plane, scenery, animals, photorealistic, 3d render, glossy, plastic, black thick outlines, watermark"
+  },
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Use case: stylized-concept. Create a NEW four-object game sprite sheet for an existing cozy animal rescue mobile game. Image 1 defines ONLY the blank canvas and four cell centers. Image 2 is the actual yard STYLE REFERENCE ONLY. Match gentle watercolor washes, subtle colored-pencil contours, matte paper grain INSIDE objects, spring sage greens, warm cream and muted coral. Objects must blend with a hand-painted courtyard, readable at 30 to 90 pixels. Slight three-quarter overhead view about 50 degrees unless specified. Natural believable proportions. No glossy plastic, no heavy black outline, no comic eyes unless specified.  Draw these objects at their exact positions: TOP LEFT: one small orange dried fish treat toy, side view facing right, clear tail and one eye; TOP RIGHT: one coral pink ball of yarn with a loose trailing thread; BOTTOM LEFT: one mint teal feather cat teaser toy, a short pale wood handle and one long soft feather; BOTTOM RIGHT: one natural orange tabby front paw viewed from below, three small toes and coral pink pads, no arm or cat. Arrange exactly FOUR separate free-floating objects in TWO columns and TWO rows. Top-left at (25%,25%), top-right (75%,25%), bottom-left (25%,75%), bottom-right (75%,75%). Each object must occupy no more than 65% of its cell, fully visible with generous white margins. Everything outside the object must be perfectly plain PURE WHITE #ffffff. No ground plane, no cast shadow, no enclosing tile, no sticker border, no frame, no grid lines. No letters, captions, numbers, logos, UI or watermark. Do not include courtyard scenery or animals. Keep all four objects separate and leave the spaces between them pure white.",
+        "negative_prompt": "text, captions, numbers, tile frames, border, grid lines, checkerboard, shadow, ground plane, scenery, animals, photorealistic, 3d render, glossy, plastic, black thick outlines, watermark",
+        "resolution": 0,
+        "images.image_1": [
+          "20",
+          0
+        ],
+        "images.image_2": [
+          "21",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112303,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "field-props-20261122/cat-toys"
+      }
+    },
+    "20": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "field-props-20261122/grid-guide.png"
+      }
+    },
+    "21": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "field-props-20261122/T_Outing_Yard.jpg"
+      }
+    }
+  }
+}

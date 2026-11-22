@@ -1,0 +1,132 @@
+{
+  "job": {
+    "slug": "primary",
+    "assetId": "ui.level.primary",
+    "seed": 2026112202,
+    "references": [
+      "art-source/ui-watercolor-20261122/button-guide.png",
+      "art-source/map-style-20261121/references/station-style.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. Production asset for a cozy animal-rescue mobile game. Match the warm cream, sage green and soft watercolor paper material of reference image 2, but NEVER draw the scene from that reference. Image 1 specifies the canvas size and placement only. Orthographic front view. Pure white #FFFFFF background around the object, no cast shadow outside the object, no text, no letters, no numbers, no logo, no watermark, no interface screenshot. Render ONE blank wide rounded rectangle game button, muted medium-dark moss/sage green, filling the center 90% width and 68% height of the canvas. Gentle small rounded corners (not a capsule), thin darker olive ink edge, lightly handpainted watercolor grain. Soft warm highlight inside top edge. Center solid mid sage green with NO writing or icons. Flat, calm, tactile. No leaves, flowers or other objects. Keep the button symmetrical, suitable for nine-slice stretch.",
+    "negative": "words, letters, typography, watermark, scenery, animals, buildings, landscapes, ornate fantasy frame, clutter, harsh bevel, glossy plastic, photographic, gradients to white outside, multiple panels"
+  },
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Use case: stylized-concept. Production asset for a cozy animal-rescue mobile game. Match the warm cream, sage green and soft watercolor paper material of reference image 2, but NEVER draw the scene from that reference. Image 1 specifies the canvas size and placement only. Orthographic front view. Pure white #FFFFFF background around the object, no cast shadow outside the object, no text, no letters, no numbers, no logo, no watermark, no interface screenshot. Render ONE blank wide rounded rectangle game button, muted medium-dark moss/sage green, filling the center 90% width and 68% height of the canvas. Gentle small rounded corners (not a capsule), thin darker olive ink edge, lightly handpainted watercolor grain. Soft warm highlight inside top edge. Center solid mid sage green with NO writing or icons. Flat, calm, tactile. No leaves, flowers or other objects. Keep the button symmetrical, suitable for nine-slice stretch.",
+        "negative_prompt": "words, letters, typography, watermark, scenery, animals, buildings, landscapes, ornate fantasy frame, clutter, harsh bevel, glossy plastic, photographic, gradients to white outside, multiple panels",
+        "resolution": 0,
+        "images.image_1": [
+          "20",
+          0
+        ],
+        "images.image_2": [
+          "21",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112202,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "ui-watercolor-20261122/primary"
+      }
+    },
+    "20": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "ui-watercolor-20261122/button-guide.png"
+      }
+    },
+    "21": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "ui-watercolor-20261122/station-style.jpg"
+      }
+    }
+  }
+}

@@ -1,3 +1,4 @@
+using HomelessPetHelper.Framework.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,8 +23,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
         internal static bool SupportsTower(string visual) => visual == "paper" || visual == "thread"
             || visual == "scratch" || visual == "kennel" || visual == "bubbles" || visual == "slippers";
 
-        internal static void Paw(VertexHelper mesh, Vector2 center, float size)
+        internal static void Paw(VertexHelper mesh, Vector2 center, float size, SceneSpritePalette palette = null)
         {
+            if (palette != null && palette.TryDraw(mesh, "paw", center, Vector2.one * size * 2)) return;
             var p = new Paint(mesh, center, size);
             var fur = new Color32(250, 204, 148, 235);
             p.Ellipse(0, 0, .85f, .7f, Ink);
@@ -38,8 +40,10 @@ namespace HomelessPetHelper.Modules.Siege.UI
         }
 
         internal static void Draw(VertexHelper mesh, string visual, Vector2 center, float size,
-            float phase, bool braced = true)
+            float phase, bool braced = true, SceneSpritePalette palette = null)
         {
+            if (palette != null && palette.TryDraw(mesh, visual, center, Vector2.one * size * 2,
+                Mathf.Sin(phase) * .12f)) return;
             var p = new Paint(mesh, center, size);
             switch (visual)
             {
@@ -87,8 +91,11 @@ namespace HomelessPetHelper.Modules.Siege.UI
             }
         }
 
-        internal static void Tower(VertexHelper mesh, string visual, Vector2 center, float size, bool winding)
+        internal static void Tower(VertexHelper mesh, string visual, Vector2 center, float size,
+            bool winding, SceneSpritePalette palette = null)
         {
+            if (palette != null && palette.TryDraw(mesh, visual, center,
+                new Vector2(2.2f, winding ? 1.8f : 2.2f) * size)) return;
             var p = new Paint(mesh, center, size);
             float squeeze = winding ? .25f : 0;
             p.Ellipse(0, -.75f, 1.1f, .22f, new Color32(57, 74, 73, 40));

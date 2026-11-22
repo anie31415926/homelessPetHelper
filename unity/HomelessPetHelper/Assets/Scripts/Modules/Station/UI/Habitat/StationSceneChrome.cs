@@ -1,11 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
+using HomelessPetHelper.Framework.UI;
 
 namespace HomelessPetHelper.Modules.Station.UI.Habitat
 {
     public sealed class StationSceneChrome : MonoBehaviour
     {
         [SerializeField] private RectTransform _detail;
+        [SerializeField] private RectTransform _content;
+        [SerializeField] private UiLayoutMetrics _metrics;
         [SerializeField] private StationPanelView _owner;
         [SerializeField] private GameObject _careStage;
         [SerializeField] private GameObject _careCommands;
@@ -20,14 +23,17 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         private string _message;
         private float _toastRemaining;
         private bool _suspended;
+        private bool _caring;
         public bool MenuIsOpen => _menu.activeSelf;
 
         public void SetSuspended(bool suspended) => _suspended = suspended;
 
         public void SetPage(bool summary, bool detail, bool caring)
         {
+            _caring = caring;
+            _detail.pivot = new Vector2(.5f, 0);
             _detail.anchorMin = Vector2.zero;
-            _detail.anchorMax = new Vector2(1, caring ? 1 : .36f);
+            _detail.anchorMax = new Vector2(1, caring ? 1 : 0);
             _detail.offsetMin = _detail.offsetMax = Vector2.zero;
             _careStage.SetActive(caring);
             _careCommands.SetActive(!caring);
@@ -35,6 +41,21 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _backdrop.gameObject.SetActive(detail && !summary && !caring);
             _footer.SetActive(!summary && !detail);
             if (summary || detail) _menu.SetActive(false);
+        }
+
+        private void LateUpdate()
+        {
+            var toast = (RectTransform)_toast.transform;
+            float parentHeight = ((RectTransform)toast.parent).rect.height;
+            float toastBottom = _detail.gameObject.activeSelf && !_caring ?
+                _detail.rect.height + _metrics.gap : parentHeight * .11f;
+            toast.anchoredPosition = new Vector2(toast.anchoredPosition.x,
+                toastBottom - toast.anchorMin.y * parentHeight);
+            if (_caring || !_detail.gameObject.activeSelf) return;
+            float height = Mathf.Min(_content.GetComponent<VerticalLayoutGroup>().preferredHeight,
+                ((RectTransform)_detail.parent).rect.height * .9f);
+            if (!Mathf.Approximately(height, _detail.rect.height))
+                _detail.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
         }
 
         public void Feedback(string message)

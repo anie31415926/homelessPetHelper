@@ -1,0 +1,144 @@
+[
+  {
+    "slug": "overview",
+    "assetId": "city-map.forest-edge.overview",
+    "seed": 2026112101,
+    "steps": 24,
+    "references": [
+      "art-source/forest-edge-20261121/layout-reference.png",
+      "art-source/map-style-20261121/references/forest-style.jpg",
+      "art-source/map-style-20261121/references/station-style.jpg"
+    ],
+    "prompt": "Create a finished watercolor storybook game map from image 1, which gives ONLY the composition. Image 2 is the REQUIRED art style: delicate fine warm pencil outlines, luminous cream sunlight, softly layered translucent watercolor, rounded pale yellow-green woodland trees, warm wood, gentle hand-painted details, pastel cozy storybook atmosphere. Image 3 supplies cream, pale wood and blush materials only, NOT its indoor room composition. Keep the recognizable layout of image 1 while replacing the flat vector style COMPLETELY with the watercolor look of image 2. A high oblique bird-eye neighborhood map fills the whole portrait canvas, with no horizon: actual deep woodland occupies the top quarter, a winding cream path leads north into those trees; a pale turquoise stream runs near the right edge and a small rustic wooden bridge crosses it in the upper quarter. Exactly seven separated landmark groups: upper-left a woodland-edge park with one wooden bench and a short low fence; upper-right a small safe riverside boardwalk; middle-left a cozy walled residential courtyard with cream cottage, laundry and flowerpots; middle-right a low market rear awning, pushcart and tidy wooden crates; lower-left an open small bicycle shelter with pale sage roof, wooden posts, two bicycles and one box; lower-right a cream cottage front porch with peach awning, two steps and pots; bottom-center a small cream animal shelter building with sage roof. One winding main lane links each place, open grass around each landmark. Quiet neighborhood bordering a forest, real modest homes, not fantasy mushroom houses. Morning light from upper left, tiny flowers only at edges. All seven landmark groups clearly readable, gentle shadows, consistent scale. This is only ENVIRONMENT ART. No people, animals, cats, dogs, text, numbers, lettering, labels, location pins, badges, signs, UI, panel, buttons, frame or floral border. No buildings cropped by the edges. Full bleed opaque 768x1024.",
+    "negative": "flat vector, thick black outline, low poly, 3d render, photo, photorealistic, hard shadows, dark gloomy forest, mushroom house, animals, characters, cats, dogs, text, labels, UI, frames, floral border, watermark, dense repeated buildings, unreadable clutter"
+  },
+  {
+    "slug": "scene-parking",
+    "assetId": "rescue.forest-edge.scene.parking",
+    "seed": 2026112111,
+    "steps": 24,
+    "references": [
+      "art-source/forest-edge-20261121/overview/master.png",
+      "art-source/map-style-20261121/references/forest-style.jpg"
+    ],
+    "prompt": "A local view inside the SAME bicycle parking shelter as image 1: a pale sage roof and warm wooden posts frame the upper edge, two bicycles stand along the far left back wall, a tiny green shrub at far right. Cream paving fills the entire central/lower playfield, one bright sunlit approach leading in from bottom center. Roof and posts must match the map's bicycle shelter. No foreground bicycle or blocking beam, no crates or obstacles in playfield. The sheltered animal focus zone is an EMPTY shaded patch at back center. Match image 1's architecture and the watercolor art style of image 2 closely: luminous warm cream light, delicate thin warm brown pencil contours, translucent layered watercolor, soft sage/yellow-green foliage, pale wood and peach/cream building materials, rounded cozy hand-painted storybook game art. This is a NEW local environment view, not a map or diagram. Portrait 768x1024, high enough oblique ground view to read a playable clearing, gentle upper-left sunlight. The central 60 percent and lower half must be broad clear uncluttered ground for separately drawn animals, puzzle pieces and combat gameplay. Keep all fixed set dressing in the upper quarter and along side edges; no solid object covering the center. Environment only: no animal, cat, dog, person, text, signs, numbers, arrows, grid, UI, frame, border or watermark. Do not bake movable crates, puzzle props, litter piles, objectives or animals into the empty ground. Full bleed opaque illustration.",
+    "negative": "map, overhead town, vector, thick black contour, photorealistic, 3d, harsh shadow, cluttered floor, blocked center, animals, person, text, UI, grid, border, watermark"
+  },
+  {
+    "slug": "scene-yard",
+    "assetId": "rescue.forest-edge.scene.yard",
+    "seed": 2026112112,
+    "steps": 24,
+    "references": [
+      "art-source/forest-edge-20261121/overview/master.png",
+      "art-source/map-style-20261121/references/forest-style.jpg"
+    ],
+    "prompt": "A local view of the SAME residential courtyard as image 1: a short cream plaster wall, a warm wood gate on rear side, small cottage with pale peach roof in upper corner, a short laundry line and fixed flowerpots along the edge. Spacious cream flagstones with small grass joints form a clear courtyard floor, entry from bottom center. Match map cottage, wall and pots. Flowers stay along edges; no large pot or laundry obscures central ground. Empty animal focus corner by upper wall. Match image 1's architecture and the watercolor art style of image 2 closely: luminous warm cream light, delicate thin warm brown pencil contours, translucent layered watercolor, soft sage/yellow-green foliage, pale wood and peach/cream building materials, rounded cozy hand-painted storybook game art. This is a NEW local environment view, not a map or diagram. Portrait 768x1024, high enough oblique ground view to read a playable clearing, gentle upper-left sunlight. The central 60 percent and lower half must be broad clear uncluttered ground for separately drawn animals, puzzle pieces and combat gameplay. Keep all fixed set dressing in the upper quarter and along side edges; no solid object covering the center. Environment only: no animal, cat, dog, person, text, signs, numbers, arrows, grid, UI, frame, border or watermark. Do not bake movable crates, puzzle props, litter piles, objectives or animals into the empty ground. Full bleed opaque illustration.",
+    "negative": "map, overhead town, vector, thick black contour, photorealistic, 3d, harsh shadow, cluttered floor, blocked center, animals, person, text, UI, grid, border, watermark"
+  },
+  {
+    "slug": "scene-porch",
+    "assetId": "rescue.forest-edge.scene.porch",
+    "seed": 2026112113,
+    "steps": 24,
+    "references": [
+      "art-source/forest-edge-20261121/overview/master.png",
+      "art-source/map-style-20261121/references/forest-style.jpg"
+    ],
+    "prompt": "A local view in front of the SAME cream cottage porch as image 1: pale peach fabric awning above, warm wooden doorway, two broad shallow stone steps against the upper quarter, a small potted plant on either far side, gentle yellow window light. Large open warm cream paved doorstep below, from bottom center up to the steps, available for gameplay. Match porch awning and steps in the map. No welcome text, no doormat with writing, no foreground flower border. Match image 1's architecture and the watercolor art style of image 2 closely: luminous warm cream light, delicate thin warm brown pencil contours, translucent layered watercolor, soft sage/yellow-green foliage, pale wood and peach/cream building materials, rounded cozy hand-painted storybook game art. This is a NEW local environment view, not a map or diagram. Portrait 768x1024, high enough oblique ground view to read a playable clearing, gentle upper-left sunlight. The central 60 percent and lower half must be broad clear uncluttered ground for separately drawn animals, puzzle pieces and combat gameplay. Keep all fixed set dressing in the upper quarter and along side edges; no solid object covering the center. Environment only: no animal, cat, dog, person, text, signs, numbers, arrows, grid, UI, frame, border or watermark. Do not bake movable crates, puzzle props, litter piles, objectives or animals into the empty ground. Full bleed opaque illustration.",
+    "negative": "map, overhead town, vector, thick black contour, photorealistic, 3d, harsh shadow, cluttered floor, blocked center, animals, person, text, UI, grid, border, watermark"
+  },
+  {
+    "slug": "scene-park",
+    "assetId": "rescue.forest-edge.scene.park",
+    "seed": 2026112114,
+    "steps": 24,
+    "references": [
+      "art-source/forest-edge-20261121/overview/master.png",
+      "art-source/map-style-20261121/references/forest-style.jpg"
+    ],
+    "prompt": "A local view of the SAME woodland-edge community park as image 1: a wooden bench at upper left, short low timber fence at rear left, light yellow-green broadleaf trees along the top and side edges, a narrow trail continues into brighter woods in the distant upper center. A large level sandy clearing with sparse pale grass margins occupies central and lower area, fully open for gameplay. Match warm bench wood and the forest palette; inviting shallow forest edge, not dense dark jungle. No fallen logs or litter in central ground. Match image 1's architecture and the watercolor art style of image 2 closely: luminous warm cream light, delicate thin warm brown pencil contours, translucent layered watercolor, soft sage/yellow-green foliage, pale wood and peach/cream building materials, rounded cozy hand-painted storybook game art. This is a NEW local environment view, not a map or diagram. Portrait 768x1024, high enough oblique ground view to read a playable clearing, gentle upper-left sunlight. The central 60 percent and lower half must be broad clear uncluttered ground for separately drawn animals, puzzle pieces and combat gameplay. Keep all fixed set dressing in the upper quarter and along side edges; no solid object covering the center. Environment only: no animal, cat, dog, person, text, signs, numbers, arrows, grid, UI, frame, border or watermark. Do not bake movable crates, puzzle props, litter piles, objectives or animals into the empty ground. Full bleed opaque illustration.",
+    "negative": "map, overhead town, vector, thick black contour, photorealistic, 3d, harsh shadow, cluttered floor, blocked center, animals, person, text, UI, grid, border, watermark"
+  },
+  {
+    "slug": "scene-market",
+    "assetId": "rescue.forest-edge.scene.market",
+    "seed": 2026112115,
+    "steps": 24,
+    "references": [
+      "art-source/forest-edge-20261121/overview/master.png",
+      "art-source/map-style-20261121/references/forest-style.jpg"
+    ],
+    "prompt": "A local view of the SAME quiet market rear yard as image 1: a low cream wall and a small muted sage-and-cream striped awning at rear, a handcart and neatly stacked reusable wooden crates parked tightly at far left and rear right only. Warm cream cobblestone yard occupies a generous open central and bottom playfield; entrance from bottom center. Keep scene airy and welcoming with warm wood, pale cloth and a few edge herbs. No market sign, no lettering, no bins or crates filling the playable center. Match image 1's architecture and the watercolor art style of image 2 closely: luminous warm cream light, delicate thin warm brown pencil contours, translucent layered watercolor, soft sage/yellow-green foliage, pale wood and peach/cream building materials, rounded cozy hand-painted storybook game art. This is a NEW local environment view, not a map or diagram. Portrait 768x1024, high enough oblique ground view to read a playable clearing, gentle upper-left sunlight. The central 60 percent and lower half must be broad clear uncluttered ground for separately drawn animals, puzzle pieces and combat gameplay. Keep all fixed set dressing in the upper quarter and along side edges; no solid object covering the center. Environment only: no animal, cat, dog, person, text, signs, numbers, arrows, grid, UI, frame, border or watermark. Do not bake movable crates, puzzle props, litter piles, objectives or animals into the empty ground. Full bleed opaque illustration.",
+    "negative": "map, overhead town, vector, thick black contour, photorealistic, 3d, harsh shadow, cluttered floor, blocked center, animals, person, text, UI, grid, border, watermark"
+  },
+  {
+    "slug": "scene-riverside",
+    "assetId": "rescue.forest-edge.scene.riverside",
+    "seed": 2026112116,
+    "steps": 24,
+    "references": [
+      "art-source/forest-edge-20261121/overview/master.png",
+      "art-source/map-style-20261121/references/forest-style.jpg"
+    ],
+    "prompt": "A local view on the safe dry bank of the SAME stream as image 1: pale turquoise shallow creek runs along the far right edge only, light wooden railing, reeds at far right, SAME small rustic wooden bridge in the distant upper-right quarter. A very wide level cream riverside path and dry sandy clearing occupy central and lower area; bushes on far left, gentle forest in rear. Animal and player actions remain on safe dry ground. Keep water outside playable central clearing. No holes or deep water in playfield, no foreground plants blocking view. Match image 1's architecture and the watercolor art style of image 2 closely: luminous warm cream light, delicate thin warm brown pencil contours, translucent layered watercolor, soft sage/yellow-green foliage, pale wood and peach/cream building materials, rounded cozy hand-painted storybook game art. This is a NEW local environment view, not a map or diagram. Portrait 768x1024, high enough oblique ground view to read a playable clearing, gentle upper-left sunlight. The central 60 percent and lower half must be broad clear uncluttered ground for separately drawn animals, puzzle pieces and combat gameplay. Keep all fixed set dressing in the upper quarter and along side edges; no solid object covering the center. Environment only: no animal, cat, dog, person, text, signs, numbers, arrows, grid, UI, frame, border or watermark. Do not bake movable crates, puzzle props, litter piles, objectives or animals into the empty ground. Full bleed opaque illustration.",
+    "negative": "map, overhead town, vector, thick black contour, photorealistic, 3d, harsh shadow, cluttered floor, blocked center, animals, person, text, UI, grid, border, watermark"
+  },
+  {
+    "slug": "forest",
+    "assetId": "city-map.forest-continuation",
+    "seed": 2026112120,
+    "steps": 24,
+    "references": [
+      "art-source/forest-edge-20261121/overview/master.png",
+      "art-source/map-style-20261121/references/forest-style.jpg"
+    ],
+    "prompt": "Create the SECOND map, the forest immediately NORTH of the neighborhood in image 1, in the exact gentle watercolor storybook style of image 2. Use image 1 for matching bridge wood, tree shapes, creek color and camera angle, NOT for repeating its houses. High oblique bird-eye illustrated portrait forest map with no horizon. At BOTTOM CENTER a pale cream trail enters from the community, and at BOTTOM RIGHT the pale turquoise creek enters from the community, crossing under the SAME small rustic wooden bridge from map 1, now seen at the southern edge. From this familiar entrance a winding path curves up into a luminous deeper woodland. Creek stays along RIGHT side of the whole image and narrows into trees at the top. Rounded pale yellow-green broadleaf canopies, warm brown slender trunks, cream sunlight filtering into three broad open grassy clearings along the trail, small flowers and low bushes along outer edges. Depth increases gently toward top; no village buildings, no mushroom houses, no new named interactive sites, no obvious quest objects. A warm calm woodland connected to the first map, not a dark survival forest. Fine warm pencil outlines, soft layered watercolor and paper-like pigment, low contrast dreamy light, consistent light from upper left. Keep center spaces readable at mobile scale, no clutter. Environment only. No people, animals, cat, dog, UI, text, labels, pins, lock icons, arrows, numbers, signs, frame, decorative floral border or watermark. Full bleed opaque 768x1024.",
+    "negative": "city, houses, village, mushroom, dark jungle, swamp, winter, vector, thick black line, 3d, photo, animals, text, UI, icon, labels, border, watermark"
+  },
+  {
+    "slug": "terrain",
+    "assetId": "city-map.forest-edge.terrain",
+    "seed": 2026112102,
+    "steps": 24,
+    "references": [
+      "art-source/forest-edge-20261121/overview/master.png"
+    ],
+    "prompt": "Edit this SAME map to make its EMPTY TERRAIN LAYER for a game. Keep every tree, forest canopy, path, creek, bridge, lighting, perspective and watercolor pigment style in its exact current position. Remove completely the following seven landmark GROUPS, including their furniture, posts, plants belonging to buildings, ground patches and cast shadows: the upper-left park bench AND short fence; the curved wooden riverside boardwalk just below the main bridge; the middle-left cottage including its courtyard wall, laundry, entrance paving and pots; the middle-right market shed with cart, crates, awning and its ground shadow; the lower-left bicycle shelter with roof, bicycles, posts and box; the lower-right porch cottage with steps and all pots; the little bottom-center animal shelter building including all doorway and roof. Fill each removed group with uninterrupted soft pale yellow-green watercolor lawn matching neighboring grass. Preserve main cream road and its side branches, surrounding trees, stream, and the TOP straight wooden bridge unchanged. Result: NO house, roof, shed, cottage, bicycle, bench, fence, crate, cart, pot, boardwalk, kennel or building anywhere, just original forest, trees, winding lanes, creek, top bridge, flowers and empty grassy sites. Do not add new trees or shift any feature. No text, UI, animals or characters. Same 768x1024 portrait.",
+    "negative": "building, house, kennel, shed, roof, bicycle, bench, furniture, cart, pot, boardwalk, text, UI, people, animals, collage, changed roads"
+  },
+  {
+    "slug": "shelter-building",
+    "assetId": "city-map.forest-edge.place.shelter",
+    "seed": 2026112103,
+    "steps": 24,
+    "references": [
+      "art-source/forest-edge-20261121/overview/master.png",
+      "art-source/map-style-20261121/references/station-style.jpg"
+    ],
+    "prompt": "Draw ONE isolated small ANIMAL RESCUE COMMUNITY CENTER BUILDING on completely plain WHITE background, in the same soft warm yellow-green watercolor storybook drawing style as image 1, with cream plaster, pale sage roof and pale wooden doors, material warmth from image 2. This is an actual single-story HUMAN-SIZED COMMUNITY BUILDING where volunteers care for animals, NOT a doghouse, kennel or tiny pet home. It must have a large central rectangular wooden door, two rectangular windows on each side, small porch canopy, two shallow steps, one potted plant at either side. No writing or signage. High oblique bird-eye camera same as map 1, one clearly readable whole building viewed from above/front, occupies central two thirds of canvas with generous plain WHITE margin. Light from upper left. Fine warm brown pencil lines and translucent pastel watercolor. No background scenery or trees or grass, no floor, no people, animals, cats, dogs, letters, icon, paw logo, text, UI, border, watermark. Full opaque white canvas 768x1024, building is horizontally wider than tall and completely inside frame.",
+    "negative": "doghouse, kennel, arch entrance, pet house, animals, cat, dog, people, trees, scenery, grass, text, sign, logo, UI, vector, thick outline, 3d, photo"
+  },
+  {
+    "slug": "scene-riverside-clean",
+    "assetId": "rescue.forest-edge.scene.riverside",
+    "seed": 2026112131,
+    "references": [
+      "art-source/forest-edge-20261121/scene-riverside/master.png"
+    ],
+    "prompt": "Use case: precise-object-edit. Edit this existing watercolor riverside game background. Remove ONLY the two small buildings near the top, the cottage at upper left and the tiny hut at upper right. Replace their footprints with naturally matching light sandy path, grass and low bushes. Preserve the right-hand turquoise creek, distant wooden bridge, reed bank, wooden safety railing, all forest trees, the lighting, paper texture, warm pencil linework and the large clear central playable area. Keep composition and camera unchanged. No new buildings, structures, characters, animals, text, UI, border or watermark. Same full opaque 768x1024 canvas.",
+    "negative": "house, building, cottage, hut, doghouse, kennel, people, animals, writing, UI, border, watermark, photo, 3d"
+  },
+  {
+    "slug": "forest-bridge",
+    "assetId": "city-map.forest-continuation",
+    "seed": 2026112132,
+    "references": [
+      "art-source/forest-edge-20261121/forest/master.png",
+      "art-source/forest-edge-20261121/bridge-reference.png",
+      "art-source/map-style-20261121/references/forest-style.jpg"
+    ],
+    "prompt": "Use case: precise-object-edit. Image 1 is the existing deeper forest map to edit. Image 2 is the EXACT small straight plank bridge design on the preceding community map. Image 3 gives the approved watercolor style. Change ONLY the curved bridge near the bottom of image 1 into the same straight pale wooden footbridge design as image 2, with thin warm timber posts and straight rails on both sides and a flat plank deck spanning the turquoise stream. It must be a straight utilitarian community footbridge, not an arched bridge or curved boardwalk. Its entrance is visibly joined to the pale path on the left bank and right bank. Keep all other trees, stream bends, three clearings, flowers, forest depth, upper-left golden light, soft yellow-green palette, paper texture and original layout unchanged. No houses, animals, people, text, UI, border or watermark. Full opaque 768x1024 canvas.",
+    "negative": "arched bridge, curved bridge, crescent boardwalk, buildings, houses, animals, people, text, UI, border, watermark, photo, 3d"
+  }
+]

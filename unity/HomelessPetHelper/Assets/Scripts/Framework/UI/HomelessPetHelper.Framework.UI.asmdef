@@ -1,0 +1,6 @@
+{
+  "name": "HomelessPetHelper.Framework.UI",
+  "rootNamespace": "HomelessPetHelper.Framework.UI",
+  "references": ["UnityEngine.UI"],
+  "autoReferenced": false
+}

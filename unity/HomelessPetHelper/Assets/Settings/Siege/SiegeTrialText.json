@@ -879,6 +879,90 @@
     {
       "key": "event.carryEnd",
       "value": "道具落地，恢复行动，暂时不会再被抓。"
+    },
+    {
+      "key": "field.status",
+      "value": "信任 {0:0}/{1:0}    剩余 {2:0}秒    资源 {3}"
+    },
+    {
+      "key": "field.intent",
+      "value": "{0}"
+    },
+    {
+      "key": "field.plan",
+      "value": "计划费用 {0} · 行动后剩余 {1}"
+    },
+    {
+      "key": "field.deploy",
+      "value": "点道路入口，或拖手牌到入口"
+    },
+    {
+      "key": "field.ready",
+      "value": "点选手牌，或点场上道具操作"
+    },
+    {
+      "key": "field.pauseInfo",
+      "value": "继续救助，或返回救助站。外出途中未保存，退出后从上次站内记录继续。"
+    },
+    {
+      "key": "field.reroute",
+      "value": "改道"
+    },
+    {
+      "key": "field.cancel",
+      "value": "撤销计划"
+    },
+    {
+      "key": "field.discard",
+      "value": "换掉（占回合）"
+    },
+    {
+      "key": "field.materials",
+      "value": "合体材料 {0}/3 · 主体为落点"
+    },
+    {
+      "key": "unity.resume",
+      "value": "继续"
+    },
+    {
+      "key": "field.lane.top",
+      "value": "左侧花径"
+    },
+    {
+      "key": "field.lane.mid",
+      "value": "中央石径"
+    },
+    {
+      "key": "field.lane.bottom",
+      "value": "右侧篱路"
+    },
+    {
+      "key": "field.menu",
+      "value": "玩法 / 暂停"
+    },
+    {
+      "key": "field.compactStatus",
+      "value": "信任 {0:0}/{1:0}\n剩余 {2:0}秒"
+    },
+    {
+      "key": "field.help",
+      "value": "{0}\n动物动向：{1}\n\n点手牌再点路口，或直接拖到路口。点场上道具可合体，有改道能力才可改道。预览不扣费，点执行才行动。\n\n{2}"
+    },
+    {
+      "key": "field.resource",
+      "value": "资源 {0}"
+    },
+    {
+      "key": "field.unaffordable",
+      "value": "资源不足"
+    },
+    {
+      "key": "field.emptyHand",
+      "value": "暂无手牌"
+    },
+    {
+      "key": "field.planned",
+      "value": "已计划"
     }
   ]
 }

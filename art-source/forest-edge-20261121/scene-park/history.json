@@ -1,0 +1,186 @@
+{
+  "prompt": [
+    6,
+    "ef0b4ba0-d61e-4b6a-ac32-a817967c7a39",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "A local view of the SAME woodland-edge community park as image 1: a wooden bench at upper left, short low timber fence at rear left, light yellow-green broadleaf trees along the top and side edges, a narrow trail continues into brighter woods in the distant upper center. A large level sandy clearing with sparse pale grass margins occupies central and lower area, fully open for gameplay. Match warm bench wood and the forest palette; inviting shallow forest edge, not dense dark jungle. No fallen logs or litter in central ground. Match image 1's architecture and the watercolor art style of image 2 closely: luminous warm cream light, delicate thin warm brown pencil contours, translucent layered watercolor, soft sage/yellow-green foliage, pale wood and peach/cream building materials, rounded cozy hand-painted storybook game art. This is a NEW local environment view, not a map or diagram. Portrait 768x1024, high enough oblique ground view to read a playable clearing, gentle upper-left sunlight. The central 60 percent and lower half must be broad clear uncluttered ground for separately drawn animals, puzzle pieces and combat gameplay. Keep all fixed set dressing in the upper quarter and along side edges; no solid object covering the center. Environment only: no animal, cat, dog, person, text, signs, numbers, arrows, grid, UI, frame, border or watermark. Do not bake movable crates, puzzle props, litter piles, objectives or animals into the empty ground. Full bleed opaque illustration.",
+          "negative_prompt": "map, overhead town, vector, thick black contour, photorealistic, 3d, harsh shadow, cluttered floor, blocked center, animals, person, text, UI, grid, border, watermark",
+          "resolution": 0,
+          "images.image_1": [
+            "20",
+            0
+          ],
+          "images.image_2": [
+            "21",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112114,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "forest-edge-20261121/scene-park"
+        }
+      },
+      "20": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "forest-edge-20261121/master.png"
+        }
+      },
+      "21": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "forest-edge-20261121/forest-style.jpg"
+        }
+      }
+    },
+    {
+      "client_id": "forest-edge-20261121",
+      "create_time": 1795264725274
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "scene-park_00001_.png",
+          "subfolder": "forest-edge-20261121",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "ef0b4ba0-d61e-4b6a-ac32-a817967c7a39",
+          "timestamp": 1795264725275
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6",
+            "20",
+            "21"
+          ],
+          "prompt_id": "ef0b4ba0-d61e-4b6a-ac32-a817967c7a39",
+          "timestamp": 1795264725281
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "ef0b4ba0-d61e-4b6a-ac32-a817967c7a39",
+          "timestamp": 1795264746911
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

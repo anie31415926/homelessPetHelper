@@ -37,6 +37,12 @@ namespace HomelessPetHelper.Modules.Siege.UI
                     _cells[i].gameObject.SetActive(false);
         }
 
+        public void CancelContacts()
+        {
+            foreach (var cell in _cells)
+                if (cell != null) cell.CancelDrag();
+        }
+
         public void Dispose()
         {
             foreach (var cell in _cells)

@@ -17,7 +17,9 @@
     "HomelessPetHelper.Tests.Support",
     "HomelessPetHelper.Framework.Persistence",
     "HomelessPetHelper.Modules.Outing",
-    "HomelessPetHelper.Modules.Approach"
+    "HomelessPetHelper.Modules.Approach",
+    "HomelessPetHelper.Framework.UI",
+    "HomelessPetHelper.Framework.Audio"
   ],
   "optionalUnityReferences": [
     "TestAssemblies"

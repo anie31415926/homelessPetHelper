@@ -9,7 +9,10 @@ const issues = [];
 const assemblies = new Map();
 const guids = new Map();
 const manifest = JSON.parse(await readFile(path.join(project, 'Packages/manifest.json'), 'utf8'));
-const packageAssemblyOwners = new Map([['UnityEngine.UI', 'com.unity.ugui']]);
+const packageAssemblyOwners = new Map([
+  ['UnityEngine.UI', { package: 'com.unity.ugui', editorOnly: false }],
+  ['Unity.2D.Sprite.Editor', { package: 'com.unity.2d.sprite', editorOnly: true }]
+]);
 let scriptCount = 0;
 
 async function walk(folder) {
@@ -77,7 +80,13 @@ function visit(name, stack = []) {
   const assembly = assemblies.get(name);
   for (const reference of assembly.references ?? []) {
     const dependency = assemblies.get(reference);
-    if (!dependency && manifest.dependencies?.[packageAssemblyOwners.get(reference)]) continue;
+    const owner = packageAssemblyOwners.get(reference);
+    if (!dependency && owner && manifest.dependencies?.[owner.package]) {
+      if (owner.editorOnly && !assembly.includePlatforms?.includes('Editor')) {
+        issues.push(`${name}: runtime assembly references Editor-only ${reference}`);
+      }
+      continue;
+    }
     if (!dependency) { issues.push(`${name}: unresolved local assembly ${reference}`); continue; }
     if (!assembly.includePlatforms?.includes('Editor') && dependency.includePlatforms?.includes('Editor')) {
       issues.push(`${name}: runtime assembly references Editor-only ${reference}`);

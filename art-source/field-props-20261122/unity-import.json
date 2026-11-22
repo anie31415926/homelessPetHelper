@@ -1,0 +1,215 @@
+{
+  "pages": [
+    {
+      "source": "art-source/field-props-20261122/T_Outing_GardenProps.png",
+      "texture": "Assets/Art/Outing/T_Outing_GardenProps.png",
+      "palette": "Assets/Settings/Game/FieldPropPalette.asset",
+      "width": 264,
+      "height": 436,
+      "bytes": 51709,
+      "sha256": "d08f4bc2863ff8934fa84c3788f757af69c6b5b452bb2d1e0480a08bd10e1a6e",
+      "slices": [
+        {
+          "id": "hedge",
+          "x": 2,
+          "y": 187,
+          "width": 128,
+          "height": 115
+        },
+        {
+          "id": "stones",
+          "x": 2,
+          "y": 8,
+          "width": 128,
+          "height": 85
+        },
+        {
+          "id": "water",
+          "x": 134,
+          "y": 84,
+          "width": 128,
+          "height": 104
+        },
+        {
+          "id": "bridge",
+          "x": 130,
+          "y": 306,
+          "width": 121,
+          "height": 128
+        },
+        {
+          "id": "box",
+          "x": 2,
+          "y": 306,
+          "width": 124,
+          "height": 128
+        },
+        {
+          "id": "debris",
+          "x": 2,
+          "y": 97,
+          "width": 128,
+          "height": 86
+        },
+        {
+          "id": "weeds",
+          "x": 134,
+          "y": 192,
+          "width": 128,
+          "height": 110
+        },
+        {
+          "id": "mud",
+          "x": 134,
+          "y": 6,
+          "width": 128,
+          "height": 74
+        }
+      ]
+    },
+    {
+      "source": "art-source/field-props-20261122/T_Outing_SiegeProps.png",
+      "texture": "Assets/Art/Outing/T_Outing_SiegeProps.png",
+      "palette": "Assets/Settings/Siege/SiegePropPalette.asset",
+      "width": 512,
+      "height": 468,
+      "bytes": 75046,
+      "sha256": "83afd896570503721cf09bcf4c29ad14f8cb3ac46c92df01dbb9b63790a851c6",
+      "slices": [
+        {
+          "id": "fish",
+          "x": 393,
+          "y": 73,
+          "width": 112,
+          "height": 50
+        },
+        {
+          "id": "yarn",
+          "x": 279,
+          "y": 250,
+          "width": 112,
+          "height": 100
+        },
+        {
+          "id": "feather",
+          "x": 84,
+          "y": 354,
+          "width": 102,
+          "height": 112
+        },
+        {
+          "id": "paw",
+          "x": 2,
+          "y": 6,
+          "width": 71,
+          "height": 112
+        },
+        {
+          "id": "bouquet",
+          "x": 2,
+          "y": 354,
+          "width": 78,
+          "height": 112
+        },
+        {
+          "id": "yarnLion",
+          "x": 163,
+          "y": 6,
+          "width": 110,
+          "height": 112
+        },
+        {
+          "id": "pinwheel",
+          "x": 77,
+          "y": 6,
+          "width": 82,
+          "height": 112
+        },
+        {
+          "id": "paper",
+          "x": 97,
+          "y": 238,
+          "width": 87,
+          "height": 112
+        },
+        {
+          "id": "bone",
+          "x": 395,
+          "y": 288,
+          "width": 112,
+          "height": 84
+        },
+        {
+          "id": "disc",
+          "x": 395,
+          "y": 201,
+          "width": 112,
+          "height": 83
+        },
+        {
+          "id": "rope",
+          "x": 277,
+          "y": 54,
+          "width": 112,
+          "height": 69
+        },
+        {
+          "id": "kennel",
+          "x": 2,
+          "y": 122,
+          "width": 98,
+          "height": 112
+        },
+        {
+          "id": "boneWheel",
+          "x": 395,
+          "y": 376,
+          "width": 112,
+          "height": 90
+        },
+        {
+          "id": "triDisc",
+          "x": 190,
+          "y": 354,
+          "width": 103,
+          "height": 112
+        },
+        {
+          "id": "ropeOctopus",
+          "x": 192,
+          "y": 132,
+          "width": 112,
+          "height": 102
+        },
+        {
+          "id": "bubbles",
+          "x": 2,
+          "y": 238,
+          "width": 91,
+          "height": 112
+        },
+        {
+          "id": "thread",
+          "x": 188,
+          "y": 238,
+          "width": 87,
+          "height": 112
+        },
+        {
+          "id": "scratch",
+          "x": 104,
+          "y": 122,
+          "width": 84,
+          "height": 112
+        },
+        {
+          "id": "slippers",
+          "x": 308,
+          "y": 127,
+          "width": 112,
+          "height": 70
+        }
+      ]
+    }
+  ]
+}

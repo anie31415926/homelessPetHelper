@@ -1,0 +1,340 @@
+{
+  "atlas": "unity/HomelessPetHelper/Assets/Art/UI/T_UI_LevelControls.png",
+  "width": 512,
+  "height": 360,
+  "bytes": 48758,
+  "sha256": "97e5fefd165ef0d85513386c8d114c1924ca2f55225c54fb35c64fabb5f77887",
+  "processing": "Background extraction, trim, full-color preservation, Lanczos resize and 256-color shared page; 14 independent slices, 4px minimum gutters; no baked text.",
+  "sprites": [
+    {
+      "name": "Paper",
+      "source": "art-source/ui-soft-20261122/paper/master.png",
+      "sourceSha256": "12f82a3f22a2b72730e8a1e94259fcb3b163d41d50c31709f5a928013006bd22",
+      "cell": null,
+      "exterior": "connected purple-key removal; pale magenta fringe decontamination",
+      "separatedPartsRetained": false,
+      "crop": {
+        "x": 44,
+        "y": 43,
+        "width": 683,
+        "height": 684
+      },
+      "output": {
+        "x": 4,
+        "y": 4,
+        "width": 252,
+        "height": 252
+      }
+    },
+    {
+      "name": "Action",
+      "source": "art-source/ui-soft-20261122/primary/master.png",
+      "sourceSha256": "90904b1ca7ae981cc0875c360685edcfeede1df6653cba647e1a46a2cf769959",
+      "cell": null,
+      "exterior": "connected near-white >=245 removal",
+      "separatedPartsRetained": false,
+      "crop": {
+        "x": 37,
+        "y": 36,
+        "width": 692,
+        "height": 181
+      },
+      "output": {
+        "x": 264,
+        "y": 4,
+        "width": 240,
+        "height": 72
+      }
+    },
+    {
+      "name": "Secondary",
+      "source": "art-source/ui-soft-20261122/secondary/master.png",
+      "sourceSha256": "918f6c54a8e09dd3bce862f3dd452ea00e853d69e009ea1a8d94dbd70a5738a9",
+      "cell": null,
+      "exterior": "connected purple-key removal; pale magenta fringe decontamination",
+      "separatedPartsRetained": false,
+      "crop": {
+        "x": 35,
+        "y": 30,
+        "width": 699,
+        "height": 193
+      },
+      "output": {
+        "x": 264,
+        "y": 84,
+        "width": 240,
+        "height": 72
+      }
+    },
+    {
+      "name": "Pause",
+      "source": "art-source/ui-soft-20261122/symbols/master.png",
+      "sourceSha256": "412306e57d88c1f8c83169ecf0a08507d13cf266e7e277e8328cbf5797bc8772",
+      "cell": {
+        "left": 0,
+        "top": 0,
+        "width": 256,
+        "height": 256
+      },
+      "exterior": "connected near-white >=245 removal",
+      "separatedPartsRetained": true,
+      "crop": {
+        "x": 114,
+        "y": 78,
+        "width": 105,
+        "height": 123
+      },
+      "output": {
+        "x": 264,
+        "y": 168,
+        "width": 56,
+        "height": 56
+      }
+    },
+    {
+      "name": "Objectives",
+      "source": "art-source/ui-soft-20261122/symbols/master.png",
+      "sourceSha256": "412306e57d88c1f8c83169ecf0a08507d13cf266e7e277e8328cbf5797bc8772",
+      "cell": {
+        "left": 256,
+        "top": 0,
+        "width": 256,
+        "height": 256
+      },
+      "exterior": "connected near-white >=245 removal",
+      "separatedPartsRetained": true,
+      "crop": {
+        "x": 61,
+        "y": 65,
+        "width": 144,
+        "height": 152
+      },
+      "output": {
+        "x": 324,
+        "y": 168,
+        "width": 56,
+        "height": 56
+      }
+    },
+    {
+      "name": "Settings",
+      "source": "art-source/ui-soft-20261122/symbols/master.png",
+      "sourceSha256": "412306e57d88c1f8c83169ecf0a08507d13cf266e7e277e8328cbf5797bc8772",
+      "cell": {
+        "left": 512,
+        "top": 0,
+        "width": 256,
+        "height": 256
+      },
+      "exterior": "connected near-white >=245 removal",
+      "separatedPartsRetained": true,
+      "crop": {
+        "x": 34,
+        "y": 66,
+        "width": 151,
+        "height": 146
+      },
+      "output": {
+        "x": 384,
+        "y": 168,
+        "width": 56,
+        "height": 56
+      }
+    },
+    {
+      "name": "Home",
+      "source": "art-source/ui-soft-20261122/symbols/master.png",
+      "sourceSha256": "412306e57d88c1f8c83169ecf0a08507d13cf266e7e277e8328cbf5797bc8772",
+      "cell": {
+        "left": 768,
+        "top": 0,
+        "width": 256,
+        "height": 256
+      },
+      "exterior": "connected near-white >=245 removal",
+      "separatedPartsRetained": true,
+      "crop": {
+        "x": 0,
+        "y": 68,
+        "width": 166,
+        "height": 146
+      },
+      "output": {
+        "x": 444,
+        "y": 168,
+        "width": 56,
+        "height": 56
+      }
+    },
+    {
+      "name": "Paw",
+      "source": "art-source/ui-soft-20261122/symbols/master.png",
+      "sourceSha256": "412306e57d88c1f8c83169ecf0a08507d13cf266e7e277e8328cbf5797bc8772",
+      "cell": {
+        "left": 0,
+        "top": 256,
+        "width": 256,
+        "height": 256
+      },
+      "exterior": "connected near-white >=245 removal",
+      "separatedPartsRetained": true,
+      "crop": {
+        "x": 85,
+        "y": 31,
+        "width": 158,
+        "height": 142
+      },
+      "output": {
+        "x": 264,
+        "y": 232,
+        "width": 56,
+        "height": 56
+      }
+    },
+    {
+      "name": "Play",
+      "source": "art-source/ui-soft-20261122/symbols/master.png",
+      "sourceSha256": "412306e57d88c1f8c83169ecf0a08507d13cf266e7e277e8328cbf5797bc8772",
+      "cell": {
+        "left": 256,
+        "top": 256,
+        "width": 256,
+        "height": 256
+      },
+      "exterior": "connected near-white >=245 removal",
+      "separatedPartsRetained": true,
+      "crop": {
+        "x": 73,
+        "y": 33,
+        "width": 128,
+        "height": 142
+      },
+      "output": {
+        "x": 324,
+        "y": 232,
+        "width": 56,
+        "height": 56
+      }
+    },
+    {
+      "name": "Music",
+      "source": "art-source/ui-soft-20261122/symbols/master.png",
+      "sourceSha256": "412306e57d88c1f8c83169ecf0a08507d13cf266e7e277e8328cbf5797bc8772",
+      "cell": {
+        "left": 512,
+        "top": 256,
+        "width": 256,
+        "height": 256
+      },
+      "exterior": "connected near-white >=245 removal",
+      "separatedPartsRetained": true,
+      "crop": {
+        "x": 42,
+        "y": 29,
+        "width": 123,
+        "height": 147
+      },
+      "output": {
+        "x": 384,
+        "y": 232,
+        "width": 56,
+        "height": 56
+      }
+    },
+    {
+      "name": "Speaker",
+      "source": "art-source/ui-soft-20261122/symbols/master.png",
+      "sourceSha256": "412306e57d88c1f8c83169ecf0a08507d13cf266e7e277e8328cbf5797bc8772",
+      "cell": {
+        "left": 768,
+        "top": 256,
+        "width": 256,
+        "height": 256
+      },
+      "exterior": "connected near-white >=245 removal",
+      "separatedPartsRetained": true,
+      "crop": {
+        "x": 0,
+        "y": 37,
+        "width": 167,
+        "height": 131
+      },
+      "output": {
+        "x": 444,
+        "y": 232,
+        "width": 56,
+        "height": 56
+      }
+    },
+    {
+      "name": "VolumeThumb",
+      "source": "art-source/ui-soft-20261122/knob/master.png",
+      "sourceSha256": "7bed2482856d24987ecaa38d95389e183d8dcf1dea57a77dd0e7dbb428d43b74",
+      "cell": null,
+      "exterior": "connected near-white >=245 removal",
+      "separatedPartsRetained": false,
+      "crop": {
+        "x": 58,
+        "y": 59,
+        "width": 271,
+        "height": 268
+      },
+      "output": {
+        "x": 4,
+        "y": 264,
+        "width": 72,
+        "height": 72
+      }
+    },
+    {
+      "name": "VolumeTrack",
+      "source": "art-source/ui-soft-20261122/primary/master.png",
+      "sourceSha256": "90904b1ca7ae981cc0875c360685edcfeede1df6653cba647e1a46a2cf769959",
+      "cell": null,
+      "exterior": "connected near-white >=245 removal",
+      "separatedPartsRetained": false,
+      "crop": {
+        "x": 37,
+        "y": 36,
+        "width": 692,
+        "height": 181
+      },
+      "derivative": "center texture cropped from generated primary, resized to dedicated capsule rail; SVG alpha silhouette only",
+      "modulate": {
+        "saturation": 0.2,
+        "brightness": 0.92
+      },
+      "output": {
+        "x": 84,
+        "y": 296,
+        "width": 240,
+        "height": 24
+      }
+    },
+    {
+      "name": "VolumeFill",
+      "source": "art-source/ui-soft-20261122/primary/master.png",
+      "sourceSha256": "90904b1ca7ae981cc0875c360685edcfeede1df6653cba647e1a46a2cf769959",
+      "cell": null,
+      "exterior": "connected near-white >=245 removal",
+      "separatedPartsRetained": false,
+      "crop": {
+        "x": 37,
+        "y": 36,
+        "width": 692,
+        "height": 181
+      },
+      "derivative": "center texture cropped from generated primary, resized to dedicated capsule rail; SVG alpha silhouette only",
+      "modulate": {
+        "saturation": 1.1,
+        "brightness": 0.84
+      },
+      "output": {
+        "x": 84,
+        "y": 328,
+        "width": 240,
+        "height": 24
+      }
+    }
+  ]
+}

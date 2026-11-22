@@ -1,0 +1,194 @@
+{
+  "prompt": [
+    11,
+    "f23acd04-b5e4-46f7-a08a-197e9bf2d057",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Use case: precise-object-edit. Image 1 is the existing deeper forest map to edit. Image 2 is the EXACT small straight plank bridge design on the preceding community map. Image 3 gives the approved watercolor style. Change ONLY the curved bridge near the bottom of image 1 into the same straight pale wooden footbridge design as image 2, with thin warm timber posts and straight rails on both sides and a flat plank deck spanning the turquoise stream. It must be a straight utilitarian community footbridge, not an arched bridge or curved boardwalk. Its entrance is visibly joined to the pale path on the left bank and right bank. Keep all other trees, stream bends, three clearings, flowers, forest depth, upper-left golden light, soft yellow-green palette, paper texture and original layout unchanged. No houses, animals, people, text, UI, border or watermark. Full opaque 768x1024 canvas.",
+          "negative_prompt": "arched bridge, curved bridge, crescent boardwalk, buildings, houses, animals, people, text, UI, border, watermark, photo, 3d",
+          "resolution": 0,
+          "images.image_1": [
+            "20",
+            0
+          ],
+          "images.image_2": [
+            "21",
+            0
+          ],
+          "images.image_3": [
+            "22",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112132,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "forest-edge-20261121/forest-bridge"
+        }
+      },
+      "20": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "forest-edge-20261121/master (2).png"
+        }
+      },
+      "21": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "forest-edge-20261121/bridge-reference.png"
+        }
+      },
+      "22": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "forest-edge-20261121/forest-style.jpg"
+        }
+      }
+    },
+    {
+      "client_id": "forest-edge-20261121",
+      "create_time": 1795265090782
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "forest-bridge_00001_.png",
+          "subfolder": "forest-edge-20261121",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "f23acd04-b5e4-46f7-a08a-197e9bf2d057",
+          "timestamp": 1795265090783
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6"
+          ],
+          "prompt_id": "f23acd04-b5e4-46f7-a08a-197e9bf2d057",
+          "timestamp": 1795265090811
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "f23acd04-b5e4-46f7-a08a-197e9bf2d057",
+          "timestamp": 1795265113344
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

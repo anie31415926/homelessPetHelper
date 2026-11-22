@@ -1,0 +1,144 @@
+{
+  "job": {
+    "slug": "overview",
+    "assetId": "city-map.forest-edge.overview",
+    "seed": 2026112101,
+    "steps": 24,
+    "references": [
+      "art-source/forest-edge-20261121/layout-reference.png",
+      "art-source/map-style-20261121/references/forest-style.jpg",
+      "art-source/map-style-20261121/references/station-style.jpg"
+    ],
+    "prompt": "Create a finished watercolor storybook game map from image 1, which gives ONLY the composition. Image 2 is the REQUIRED art style: delicate fine warm pencil outlines, luminous cream sunlight, softly layered translucent watercolor, rounded pale yellow-green woodland trees, warm wood, gentle hand-painted details, pastel cozy storybook atmosphere. Image 3 supplies cream, pale wood and blush materials only, NOT its indoor room composition. Keep the recognizable layout of image 1 while replacing the flat vector style COMPLETELY with the watercolor look of image 2. A high oblique bird-eye neighborhood map fills the whole portrait canvas, with no horizon: actual deep woodland occupies the top quarter, a winding cream path leads north into those trees; a pale turquoise stream runs near the right edge and a small rustic wooden bridge crosses it in the upper quarter. Exactly seven separated landmark groups: upper-left a woodland-edge park with one wooden bench and a short low fence; upper-right a small safe riverside boardwalk; middle-left a cozy walled residential courtyard with cream cottage, laundry and flowerpots; middle-right a low market rear awning, pushcart and tidy wooden crates; lower-left an open small bicycle shelter with pale sage roof, wooden posts, two bicycles and one box; lower-right a cream cottage front porch with peach awning, two steps and pots; bottom-center a small cream animal shelter building with sage roof. One winding main lane links each place, open grass around each landmark. Quiet neighborhood bordering a forest, real modest homes, not fantasy mushroom houses. Morning light from upper left, tiny flowers only at edges. All seven landmark groups clearly readable, gentle shadows, consistent scale. This is only ENVIRONMENT ART. No people, animals, cats, dogs, text, numbers, lettering, labels, location pins, badges, signs, UI, panel, buttons, frame or floral border. No buildings cropped by the edges. Full bleed opaque 768x1024.",
+    "negative": "flat vector, thick black outline, low poly, 3d render, photo, photorealistic, hard shadows, dark gloomy forest, mushroom house, animals, characters, cats, dogs, text, labels, UI, frames, floral border, watermark, dense repeated buildings, unreadable clutter"
+  },
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Create a finished watercolor storybook game map from image 1, which gives ONLY the composition. Image 2 is the REQUIRED art style: delicate fine warm pencil outlines, luminous cream sunlight, softly layered translucent watercolor, rounded pale yellow-green woodland trees, warm wood, gentle hand-painted details, pastel cozy storybook atmosphere. Image 3 supplies cream, pale wood and blush materials only, NOT its indoor room composition. Keep the recognizable layout of image 1 while replacing the flat vector style COMPLETELY with the watercolor look of image 2. A high oblique bird-eye neighborhood map fills the whole portrait canvas, with no horizon: actual deep woodland occupies the top quarter, a winding cream path leads north into those trees; a pale turquoise stream runs near the right edge and a small rustic wooden bridge crosses it in the upper quarter. Exactly seven separated landmark groups: upper-left a woodland-edge park with one wooden bench and a short low fence; upper-right a small safe riverside boardwalk; middle-left a cozy walled residential courtyard with cream cottage, laundry and flowerpots; middle-right a low market rear awning, pushcart and tidy wooden crates; lower-left an open small bicycle shelter with pale sage roof, wooden posts, two bicycles and one box; lower-right a cream cottage front porch with peach awning, two steps and pots; bottom-center a small cream animal shelter building with sage roof. One winding main lane links each place, open grass around each landmark. Quiet neighborhood bordering a forest, real modest homes, not fantasy mushroom houses. Morning light from upper left, tiny flowers only at edges. All seven landmark groups clearly readable, gentle shadows, consistent scale. This is only ENVIRONMENT ART. No people, animals, cats, dogs, text, numbers, lettering, labels, location pins, badges, signs, UI, panel, buttons, frame or floral border. No buildings cropped by the edges. Full bleed opaque 768x1024.",
+        "negative_prompt": "flat vector, thick black outline, low poly, 3d render, photo, photorealistic, hard shadows, dark gloomy forest, mushroom house, animals, characters, cats, dogs, text, labels, UI, frames, floral border, watermark, dense repeated buildings, unreadable clutter",
+        "resolution": 0,
+        "images.image_1": [
+          "20",
+          0
+        ],
+        "images.image_2": [
+          "21",
+          0
+        ],
+        "images.image_3": [
+          "22",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112101,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "forest-edge-20261121/overview"
+      }
+    },
+    "20": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "forest-edge-20261121/layout-reference.png"
+      }
+    },
+    "21": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "forest-edge-20261121/forest-style.jpg"
+      }
+    },
+    "22": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "forest-edge-20261121/station-style.jpg"
+      }
+    }
+  }
+}

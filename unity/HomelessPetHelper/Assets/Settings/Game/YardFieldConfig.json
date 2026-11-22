@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "pointId": "yard",
+  "width": 360,
+  "height": 480,
+  "animalWidth": 43,
+  "grid": {
+    "x": 22,
+    "y": 140,
+    "width": 316,
+    "height": 280
+  },
+  "approach": {
+    "schemaVersion": 1,
+    "undoLimit": 40,
+    "maxStepSeconds": 0.05,
+    "templates": [
+      {
+        "id": "field.yard.puzzle",
+        "mode": 0,
+        "rows": [
+          "#.....#",
+          "#.#.#.#",
+          "#.#.#.#",
+          "#.#.#.#",
+          "#.....#",
+          "#~#####",
+          "#...###",
+          "#.#####"
+        ],
+        "entrance": 50,
+        "animal": 5,
+        "bridgeCells": [
+          36
+        ],
+        "boxes": [
+          43
+        ],
+        "debris": []
+      },
+      {
+        "id": "field.yard.cleanup",
+        "mode": 1,
+        "rows": [
+          "#.....#",
+          "#.#.#.#",
+          "#.#.#.#",
+          "#.#.#.#",
+          "#.....#",
+          "#.#####",
+          "#...###",
+          "#.#####"
+        ],
+        "entrance": 50,
+        "animal": 5,
+        "bridgeCells": [],
+        "boxes": [],
+        "debris": [
+          {
+            "cell": 43,
+            "tool": 2,
+            "workSeconds": 0.8
+          },
+          {
+            "cell": 36,
+            "tool": 3,
+            "workSeconds": 1.1
+          },
+          {
+            "cell": 45,
+            "tool": 3,
+            "workSeconds": 0.8
+          },
+          {
+            "cell": 44,
+            "tool": 4,
+            "workSeconds": 0.65
+          }
+        ]
+      }
+    ]
+  },
+  "routes": [
+    {
+      "laneId": "top",
+      "portalCell": 22,
+      "cells": [
+        50,
+        43,
+        36,
+        29,
+        22,
+        15,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "nameKey": "field.lane.top"
+    },
+    {
+      "laneId": "mid",
+      "portalCell": 24,
+      "cells": [
+        50,
+        43,
+        36,
+        29,
+        30,
+        31,
+        24,
+        17,
+        10,
+        3,
+        4,
+        5
+      ],
+      "nameKey": "field.lane.mid"
+    },
+    {
+      "laneId": "bottom",
+      "portalCell": 26,
+      "cells": [
+        50,
+        43,
+        36,
+        29,
+        30,
+        31,
+        32,
+        33,
+        26,
+        19,
+        12,
+        5
+      ],
+      "nameKey": "field.lane.bottom"
+    }
+  ],
+  "catWidth": 31
+}

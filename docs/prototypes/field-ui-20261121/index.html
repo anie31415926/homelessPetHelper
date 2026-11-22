@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>现场交互布局提案</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="yarn" viewBox="0 0 64 64"><path d="M42 48q22 6 18-9" fill="none" stroke="#ba7868" stroke-width="3"/><circle cx="29" cy="31" r="22" fill="#d89783" stroke="#996b60" stroke-width="2"/><path d="M10 24q23 8 35 22M14 16q25 7 35 23M23 10q-6 24 15 41M34 10q-12 21 10 36M8 34q20-15 36-18M12 44q16-15 39-16" fill="none" stroke="#f7d7bd" stroke-width="2.3"/></symbol>
+    <symbol id="food" viewBox="0 0 64 64"><path d="M12 23h40l6 24q-26 12-52 0z" fill="#9ab9b0" stroke="#668f83" stroke-width="2"/><ellipse cx="32" cy="23" rx="20" ry="8" fill="#f4e4c7" stroke="#668f83" stroke-width="2"/><path d="m19 22 5-5 6 5 7-6 7 7-8 4-11-1z" fill="#a47b59"/><path d="M25 38q7-7 14 0l-3 7h-8z" fill="#e7f0d9"/></symbol>
+    <symbol id="wand" viewBox="0 0 64 64"><path d="m14 58 25-34q12-23 18-12" fill="none" stroke="#927354" stroke-width="4" stroke-linecap="round"/><path d="M55 11v20" fill="none" stroke="#b58c68" stroke-width="2"/><path d="M54 27q-24 1-12 20 5-11 16-13 5-4-4-7" fill="#bdafa1" stroke="#877f74" stroke-width="1.5"/></symbol>
+    <symbol id="pinwheel" viewBox="0 0 64 64"><path d="M32 30v31" stroke="#a38b65" stroke-width="4"/><path d="m32 30-18-2-3-22 21 10zm0 0 2-18 22-3-10 21zm0 0 18 2 3 22-21-10zm0 0-2 18-22 3 10-21z" fill="#abc0a0" stroke="#7a987f" stroke-width="2"/><circle cx="32" cy="30" r="4" fill="#e8c890"/></symbol>
+    <symbol id="trash" viewBox="0 0 64 64"><path d="m7 35 17-14 15 8 4 20-22 6z" fill="#ceb89b" stroke="#9d896c" stroke-width="2"/><path d="m35 16 16-4 9 20-17 7z" fill="#eee4ca" stroke="#a9a08b" stroke-width="2"/><path d="m6 35 17 7 16-13M23 42l-2 13M40 18l11 10" fill="none" stroke="#a38a70" stroke-width="2"/></symbol>
+    <symbol id="grass" viewBox="0 0 64 64"><path d="M29 53Q5 53 8 20q17 8 19 24Q12 10 29 6q9 18 6 35Q41 9 55 17q4 24-16 35z" fill="#8f9e6f" stroke="#6c8156" stroke-width="2"/><path d="m14 29 14 24M30 17l4 36m16-28L37 52" stroke="#c8ce9b" stroke-width="2" fill="none"/></symbol>
+    <symbol id="mud" viewBox="0 0 64 64"><path d="M9 31q-8-12 10-14 9-16 19-2 22-2 15 12 17 10-2 17-4 14-19 5-23 13-25-2-12-6 2-16" fill="#b6a083" opacity=".8"/><path d="m19 31 8 3m13 2 7-3m-16 8 6 2" stroke="#90795f" stroke-width="3" stroke-linecap="round"/></symbol>
+    <symbol id="broom" viewBox="0 0 64 64"><path d="m42 5-17 33" stroke="#a7855c" stroke-width="5" stroke-linecap="round"/><path d="m22 30 14 8-3 20-27-8z" fill="#ddbd77" stroke="#ad8c57" stroke-width="2"/><path d="m22 39-9 12m14-10-6 13m10-10-2 12" stroke="#b29254" stroke-width="2"/></symbol>
+    <symbol id="shears" viewBox="0 0 64 64"><path d="m25 34 27-24-13 29m-6-7L13 6l9 34" fill="#bec6bd" stroke="#7d8e83" stroke-width="2"/><circle cx="21" cy="47" r="10" fill="none" stroke="#929e74" stroke-width="6"/><circle cx="44" cy="47" r="10" fill="none" stroke="#929e74" stroke-width="6"/></symbol>
+    <symbol id="brush" viewBox="0 0 64 64"><rect x="27" y="5" width="10" height="32" rx="5" fill="#b5926b"/><path d="M12 34h40v15H12z" fill="#b4926b" stroke="#8d7355" stroke-width="2"/><path d="M14 49v10m7-10v10m7-10v10m7-10v10m7-10v10m7-10v10" stroke="#e0cea3" stroke-width="4"/></symbol>
+    <symbol id="crate" viewBox="0 0 64 64"><path d="m7 18 32-8 19 13v30l-33 8L7 46z" fill="#bc966e" stroke="#8e704f" stroke-width="2"/><path d="m7 18 18 14 33-9M25 32v29m-8-36v28m18-24v28m13-31v28M7 34l18 13 33-9" fill="none" stroke="#e7c69b" stroke-width="3"/></symbol>
+    <symbol id="bridge" viewBox="0 0 64 64"><path d="m5 42 38-32 17 14-38 32z" fill="#c0a17b" stroke="#8d7656" stroke-width="2"/><path d="m15 34 17 15m-8-23 17 15m-8-23 17 15" stroke="#e7d2aa" stroke-width="2"/></symbol>
+    <symbol id="pause-icon" viewBox="0 0 24 24"><path d="M9 6v12m6-12v12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+  </defs></svg>
+  <main class="review">
+    <aside class="review-panel">
+      <div class="eyebrow" data-copy="eyebrow"></div>
+      <h1 data-copy="title"></h1>
+      <p class="intro" data-copy="intro"></p>
+      <nav id="stages" aria-label="示意画面切换"></nav>
+      <section class="review-note"><span id="note-index"></span><h2 id="note-title"></h2><p id="note-body"></p></section>
+      <div class="principles" id="principles"></div>
+      <button class="reset" id="reset" data-copy="reset"></button>
+      <p class="scope" data-copy="scope"></p>
+    </aside>
+    <article class="phone" id="phone" data-stage="cleanup">
+      <header class="hud">
+        <div class="hud-head"><div><small id="phase-name"></small><h2 data-copy="location"></h2></div><button class="pause" id="pause" data-aria="pause"><svg><use href="#pause-icon"/></svg></button></div>
+        <div class="progress-line"><span id="progress-label"></span><div class="meter"><i id="main-progress"></i></div><b id="progress-value"></b></div>
+        <div class="turn-row" id="turn-row"><span data-copy="playerMeter"></span><i></i><span data-copy="animalMeter"></span><i></i><b data-copy="time"></b></div>
+      </header>
+      <div class="field" id="field">
+        <div class="field-art"></div>
+        <svg class="terrain" viewBox="0 0 360 480" preserveAspectRatio="none" aria-hidden="true">
+          <defs><filter id="shadow"><feDropShadow dx="1" dy="4" stdDeviation="3" flood-color="#766e4e" flood-opacity=".2"/></filter><pattern id="leaves" width="24" height="23" patternUnits="userSpaceOnUse"><circle cx="7" cy="8" r="9" fill="#aab17f"/><circle cx="19" cy="20" r="9" fill="#8f9f72"/><circle cx="17" cy="6" r="5" fill="#c0bd8d"/><circle cx="7" cy="18" r="2.4" fill="#e9b9a2"/></pattern></defs>
+          <g class="ground-stones" fill="#d9cba8" stroke="#c9bb9c" stroke-width=".8" opacity=".55">
+            <path d="m52 329 20 1 1 9-22 1zm-1-50 18-2 2 9-20 2zm9-53 18-1-1 10-18 1zm25-58 16-5 3 8-18 5zM176 314l17 1-1 10-16-1zm-1-60 17 1v10l-17-1zm0-58 17-1 1 10-18 1zM290 328l17-1 1 10-17 1zm1-59 17 1-1 10-17-1zm-1-58 18-1 1 10-18 1zM154 128l15-4 2 8-15 5zm63-11 16-2 1 8-16 2z"/>
+          </g>
+          <g filter="url(#shadow)" class="islands"><path d="M104 177q21-15 38 1l5 124q-8 18-33 17l-15-15z" fill="#c4ad86" stroke="#a48f6e" stroke-width="2"/><path d="M104 169q20-16 37 2l2 126q-8 13-29 12l-14-12z" fill="url(#leaves)" stroke="#d8c5a3" stroke-width="5"/><path d="M228 204q15-14 32 0l5 104q-17 17-35 1z" fill="#bca482" stroke="#a48f6e" stroke-width="2"/><path d="M227 197q15-14 33 0l3 104q-17 17-34 1z" fill="url(#leaves)" stroke="#dccaaa" stroke-width="5"/></g>
+          <ellipse class="danger" cx="265" cy="137" rx="45" ry="30"/>
+          <path class="route-preview" id="route-preview" d=""/>
+          <path class="bridge-deck" id="bridge-deck" d="M43 405h67m-67 9h67m-67 9h67m-67 9h67"/>
+        </svg>
+        <div class="animal"><div class="animal-tag" data-copy="animal"></div><img src="../../../unity/HomelessPetHelper/Assets/Art/CityMap/Animals/T_Animal_CatOrange.png" alt=""><span class="animal-alert" id="animal-alert" data-copy="threat"></span></div>
+        <span class="gather" data-copy="gather"></span>
+        <div id="props"></div><div id="units"></div><div id="portals"></div>
+        <div id="plan" class="planned" hidden></div>
+        <div class="context" id="context" hidden></div>
+        <div class="instruction" id="instruction" aria-live="polite"></div>
+        <div class="scene-toast" id="toast" role="status" hidden></div>
+        <div class="work-ring" id="work-ring" hidden></div>
+        <button id="start-rescue" class="start-rescue" data-copy="startRescue" hidden></button>
+      </div>
+      <footer class="dock">
+        <div class="dock-meta"><span id="dock-label"></span><b id="resource-label"></b><button id="undo" data-copy="undo" hidden></button><button id="cancel-plan" data-copy="cancelPlan" hidden></button></div>
+        <div id="cards" class="cards"></div>
+        <button id="commit" class="commit" hidden></button>
+      </footer>
+      <div class="pause-sheet" id="pause-sheet" hidden><div><h2 data-copy="pauseTitle"></h2><p data-copy="pauseBody"></p><button id="resume" data-copy="resume"></button></div></div>
+    </article>
+  </main>
+  <div class="drag-ghost" id="drag-ghost" hidden></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

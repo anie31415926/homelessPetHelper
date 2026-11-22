@@ -1,0 +1,50 @@
+[
+  {
+    "animal": "dog",
+    "input": "art-source/field-animals-20261122/dog/master.png",
+    "target": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_DogNatural.png",
+    "removedBackgroundPixels": 697642,
+    "output": {
+      "format": "png",
+      "mediaType": "image/png",
+      "width": 256,
+      "height": 237,
+      "space": "srgb",
+      "channels": 4,
+      "depth": "uchar",
+      "isProgressive": false,
+      "isPalette": true,
+      "bitsPerSample": 8,
+      "hasProfile": false,
+      "hasAlpha": true,
+      "autoOrient": {
+        "width": 256,
+        "height": 237
+      }
+    }
+  },
+  {
+    "animal": "cat",
+    "input": "art-source/field-animals-20261122/cat/master.png",
+    "target": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_CatNatural.png",
+    "removedBackgroundPixels": 711315,
+    "output": {
+      "format": "png",
+      "mediaType": "image/png",
+      "width": 256,
+      "height": 204,
+      "space": "srgb",
+      "channels": 4,
+      "depth": "uchar",
+      "isProgressive": false,
+      "isPalette": true,
+      "bitsPerSample": 8,
+      "hasProfile": false,
+      "hasAlpha": true,
+      "autoOrient": {
+        "width": 256,
+        "height": 204
+      }
+    }
+  }
+]

@@ -219,8 +219,16 @@ namespace HomelessPetHelper.Tests.PetMotion
                 {
                     Assert.That(item.targetGraphic.GetComponent<Image>().sprite, Is.Null);
                     var itemRect = (RectTransform)item.transform;
-                    Assert.That(itemRect.rect.height, Is.GreaterThanOrEqualTo(88));
+                    Assert.That(itemRect.rect.height, Is.GreaterThanOrEqualTo(144));
                     var corners = new Vector3[4];
+                    var scroll = item.GetComponentInParent<ScrollRect>();
+                    itemRect.GetWorldCorners(corners);
+                    float bottom = scroll.viewport.InverseTransformPoint(corners[0]).y;
+                    float top = scroll.viewport.InverseTransformPoint(corners[1]).y;
+                    float shift = top > scroll.viewport.rect.yMax ? scroll.viewport.rect.yMax - top :
+                        bottom < scroll.viewport.rect.yMin ? scroll.viewport.rect.yMin - bottom : 0;
+                    scroll.content.anchoredPosition += new Vector2(0, shift);
+                    Canvas.ForceUpdateCanvases();
                     itemRect.GetWorldCorners(corners);
                     foreach (var corner in corners)
                     {
@@ -289,19 +297,22 @@ namespace HomelessPetHelper.Tests.PetMotion
                     Assert.That(pixels.Count(c => c.r > c.g * 1.12f && c.g > c.b * 1.1f),
                         Is.GreaterThan(200), "Missing cat pixels: " + action);
                 }
+                _player.Select(2);
+                _player.Seek(.05f);
+                yield return null;
+                var stage = (RenderTexture)_panel.GetComponentInChildren<RawImage>().texture;
+                var first = Read(stage);
+                _player.Seek(.065f);
+                yield return null;
+                stage = (RenderTexture)_panel.GetComponentInChildren<RawImage>().texture;
+                var second = Read(stage);
+                Assert.That(second.Length, Is.EqualTo(first.Length), "Stable stage size at " + size);
+                Assert.That(first.Where((c, i) => !c.Equals(second[i])).Count(), Is.GreaterThan(50),
+                    "Visible animation at " + size);
                 camera.targetTexture = null;
                 target.Release();
                 UnityEngine.Object.Destroy(target);
             }
-            _player.Select(2);
-            _player.Seek(.05f);
-            yield return null;
-            var stage = (RenderTexture)_panel.GetComponentInChildren<RawImage>().texture;
-            var first = Read(stage);
-            _player.Seek(.065f);
-            yield return null;
-            var second = Read(stage);
-            Assert.That(first.Where((c, i) => !c.Equals(second[i])).Count(), Is.GreaterThan(50));
             yield return Unload();
         }
 

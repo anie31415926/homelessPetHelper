@@ -1,0 +1,185 @@
+{
+  "prompt": [
+    1,
+    "864b49dc-b492-4b3b-8a54-365cb8688582",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "A local view inside the SAME bicycle parking shelter as image 1: a pale sage roof and warm wooden posts frame the upper edge, two bicycles stand along the far left back wall, a tiny green shrub at far right. Cream paving fills the entire central/lower playfield, one bright sunlit approach leading in from bottom center. Roof and posts must match the map's bicycle shelter. No foreground bicycle or blocking beam, no crates or obstacles in playfield. The sheltered animal focus zone is an EMPTY shaded patch at back center. Match image 1's architecture and the watercolor art style of image 2 closely: luminous warm cream light, delicate thin warm brown pencil contours, translucent layered watercolor, soft sage/yellow-green foliage, pale wood and peach/cream building materials, rounded cozy hand-painted storybook game art. This is a NEW local environment view, not a map or diagram. Portrait 768x1024, high enough oblique ground view to read a playable clearing, gentle upper-left sunlight. The central 60 percent and lower half must be broad clear uncluttered ground for separately drawn animals, puzzle pieces and combat gameplay. Keep all fixed set dressing in the upper quarter and along side edges; no solid object covering the center. Environment only: no animal, cat, dog, person, text, signs, numbers, arrows, grid, UI, frame, border or watermark. Do not bake movable crates, puzzle props, litter piles, objectives or animals into the empty ground. Full bleed opaque illustration.",
+          "negative_prompt": "map, overhead town, vector, thick black contour, photorealistic, 3d, harsh shadow, cluttered floor, blocked center, animals, person, text, UI, grid, border, watermark",
+          "resolution": 0,
+          "images.image_1": [
+            "20",
+            0
+          ],
+          "images.image_2": [
+            "21",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112111,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "forest-edge-20261121/scene-parking"
+        }
+      },
+      "20": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "forest-edge-20261121/master.png"
+        }
+      },
+      "21": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "forest-edge-20261121/forest-style.jpg"
+        }
+      }
+    },
+    {
+      "client_id": "forest-edge-20261121",
+      "create_time": 1795264545868
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "scene-parking_00001_.png",
+          "subfolder": "forest-edge-20261121",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "864b49dc-b492-4b3b-8a54-365cb8688582",
+          "timestamp": 1795264545870
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6",
+            "21"
+          ],
+          "prompt_id": "864b49dc-b492-4b3b-8a54-365cb8688582",
+          "timestamp": 1795264545886
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "864b49dc-b492-4b3b-8a54-365cb8688582",
+          "timestamp": 1795264569045
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

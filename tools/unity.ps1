@@ -1,10 +1,10 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [ValidateSet('Initialize', 'PreviewAssets', 'PreviewLayout', 'CaseAssets', 'CaseLayout', 'CaseCompactLayout',
         'CaseCompactPolish',
         'StationAssets', 'StationArt', 'StationCareLayout', 'LoopAssets', 'ResourceAudit',
         'SiegeAssets', 'SiegeLayout', 'SiegeBuild', 'PetMotionAssets', 'PetMotionAudit', 'PetMotionBake',
-        'RuntimeMove', 'MainAssets', 'ApproachAssets', 'MapInfoAssets', 'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
+        'RuntimeMove', 'MainAssets', 'ApproachAssets', 'MapInfoAssets', 'ForestEdgeAssets', 'YardFieldAssets', 'YardFieldRefine', 'LevelUiAssets', 'LevelUiStyle', 'LevelUiRefresh', 'LevelUiFullscreen', 'FieldPropAssets', 'LevelPresentation', 'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
     [string]$Task = 'EditMode',
     [string]$EditorPath = $env:UNITY_EDITOR_PATH,
     [string]$TestFilter,
@@ -102,6 +102,72 @@ if (-not $Graphics)
 
 switch ($Task)
 {
+    'LevelPresentation'
+    {
+        if (-not $Isolated) { throw 'LevelPresentation requires an isolated snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.LevelUi.LevelPresentationAuthor.Apply')
+        break
+    }
+    'FieldPropAssets'
+    {
+        if (-not $Isolated) { throw 'FieldPropAssets requires an isolated snapshot.' }
+        $sourceFolder = Join-Path $projectPath 'FieldPropSource'
+        New-Item -ItemType Directory -Path $sourceFolder | Out-Null
+        $manifest = Join-Path $repoRoot 'art-source\field-props-20261122\unity-import.json'
+        Copy-Item -LiteralPath $manifest -Destination (Join-Path $sourceFolder 'manifest.json')
+        $imports = Get-Content -LiteralPath $manifest -Raw -Encoding UTF8 | ConvertFrom-Json
+        foreach ($page in $imports.pages)
+        {
+            Copy-Item -LiteralPath (Join-Path $repoRoot $page.source) `
+                -Destination (Join-Path $sourceFolder (Split-Path -Leaf $page.texture))
+        }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Field.FieldPropArtImport.Apply')
+    }
+    'LevelUiFullscreen'
+    {
+        if (-not $Isolated) { throw 'LevelUiFullscreen requires an isolated snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.LevelUi.LevelOverlayFullscreen.Apply')
+    }
+    'LevelUiRefresh'
+    {
+        if (-not $Isolated) { throw 'LevelUiRefresh requires an isolated snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.LevelUi.LevelOverlayRefresh.Apply')
+    }
+    'LevelUiStyle'
+    {
+        if (-not $Isolated) { throw 'LevelUiStyle requires an isolated snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.LevelUi.LevelOverlayStyler.Apply')
+    }
+    'LevelUiAssets'
+    {
+        if (-not $Isolated) { throw 'LevelUiAssets requires an isolated snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.LevelUi.LevelOverlayAuthor.Apply')
+    }
+    'YardFieldRefine'
+    {
+        if (-not $Isolated) { throw 'YardFieldRefine requires an isolated snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Field.YardFieldAuthor.Refine')
+    }
+    'YardFieldAssets'
+    {
+        if (-not $Isolated) { throw 'YardFieldAssets requires an isolated snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Field.YardFieldAuthor.Apply')
+    }
+    'ForestEdgeAssets'
+    {
+        if (-not $Isolated) { throw 'ForestEdgeAssets requires an isolated snapshot.' }
+        $sourceFolder = Join-Path $projectPath 'ForestEdgeSource'
+        New-Item -ItemType Directory -Path $sourceFolder | Out-Null
+        $importManifest = Join-Path $repoRoot 'art-source\forest-edge-20261121\unity-import.json'
+        Copy-Item -LiteralPath $importManifest -Destination (Join-Path $sourceFolder 'manifest.json')
+        $imports = Get-Content -LiteralPath $importManifest -Raw -Encoding UTF8 | ConvertFrom-Json
+        foreach ($item in $imports.assets)
+        {
+            Copy-Item -LiteralPath (Join-Path $repoRoot $item.source) `
+                -Destination (Join-Path $sourceFolder (Split-Path -Leaf $item.target))
+        }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.CityMap.ForestEdgeArtImport.Apply')
+    }
     'MapInfoAssets'
     {
         if (-not $Isolated) { throw 'MapInfoAssets requires an isolated snapshot.' }

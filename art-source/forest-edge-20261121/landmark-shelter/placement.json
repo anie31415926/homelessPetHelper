@@ -1,0 +1,16 @@
+{
+  "source": "art-source/forest-edge-20261121/shelter-building/master.png",
+  "sourceBounds": {
+    "left": 139,
+    "top": 334,
+    "width": 528,
+    "height": 353
+  },
+  "left": 280,
+  "top": 857,
+  "width": 204,
+  "height": 136,
+  "quantized": false,
+  "originalBytes": 57590,
+  "candidateBytes": 57590
+}

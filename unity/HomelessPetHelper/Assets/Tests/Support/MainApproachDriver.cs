@@ -24,7 +24,10 @@ namespace HomelessPetHelper.Tests.Support
         {
             Canvas.ForceUpdateCanvases();
             Assert.That(view.Session.IsComplete, Is.False);
-            if (view.Session.Template.Mode == ApproachMode.Puzzle)
+            bool yard = view.Session.Template.Id.StartsWith("field.yard.", StringComparison.Ordinal);
+            if (yard && view.Session.Template.Mode == ApproachMode.Puzzle)
+            { Drag(view, 43, 44); Drag(view, 36, 36); }
+            else if (view.Session.Template.Mode == ApproachMode.Puzzle)
             {
                 Drag(view, 17, 24);
                 Drag(view, 24, 23);
@@ -34,7 +37,7 @@ namespace HomelessPetHelper.Tests.Support
             else
             {
                 // Cut the central passage; optional side debris and mud must remain.
-                foreach (int cell in new[] { 45, 38, 24, 9 }) Clean(view, cell);
+                foreach (int cell in (yard ? new[] { 43, 36 } : new[] { 45, 38, 24, 9 })) Clean(view, cell);
             }
             Assert.That(view.Session.IsComplete, Is.True, view.Session.Template.Id);
         }
@@ -62,6 +65,12 @@ namespace HomelessPetHelper.Tests.Support
             var end = Pointer(view, to);
             view.Board.OnDrag(end);
             view.Board.OnPointerUp(end);
+            if (from != to && view.Session.HasBox(from))
+            {
+                // The first guided selection deliberately revokes the old pointer before the destination step.
+                view.Board.OnPointerDown(end);
+                view.Board.OnPointerUp(end);
+            }
         }
 
         public static PointerEventData Pointer(ApproachPanelView view, int cell, int pointerId = 7)
@@ -75,14 +84,31 @@ namespace HomelessPetHelper.Tests.Support
                 position = RectTransformUtility.WorldToScreenPoint(null, rect.TransformPoint(point)) };
         }
 
-        public static Button Button(Component view, string name) => view.GetComponentsInChildren<Button>(true)
-            .Single(button => button.name == name);
+        public static Button Button(Component view, string name)
+        {
+            string overlay = name == "Resume" ? "OverlayResume" :
+                name == "Retry" || name == "Return" ? "OverlayReturn" : "Overlay" + name;
+            var matches = view.GetComponentsInChildren<Button>(true).Where(button => button.name == name ||
+                button.name == "Field" + name || button.name == overlay).ToArray();
+            return matches.SingleOrDefault(button => button.isActiveAndEnabled) ??
+                matches.SingleOrDefault(button => button.name == "Field" + name) ?? matches.Single();
+        }
 
         public static void Click(Component view, string name)
         {
+            if (name == "Pause" && view.GetComponentsInChildren<Button>().Any(button =>
+                button.name == "OverlayResume")) name = "Resume";
+            // The scene trial exposes Return through its actual pause menu.
+            if (name == "Retry" && !Button(view,name).isActiveAndEnabled) Click(view,"Pause");
             var button = Button(view, name);
             Assert.That(button.isActiveAndEnabled && button.IsInteractable(), Is.True, name);
             button.onClick.Invoke();
+            if (name == "Retry" || name == "Return")
+            {
+                var confirm = view.GetComponentsInChildren<Button>().SingleOrDefault(item =>
+                    item.name == "OverlayConfirm");
+                if (confirm != null && confirm.IsInteractable()) confirm.onClick.Invoke();
+            }
         }
     }
 }

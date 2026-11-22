@@ -1,3 +1,4 @@
+using HomelessPetHelper.Framework.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
     [RequireComponent(typeof(CanvasRenderer))]
     public sealed class SiegeCarryOverlay : MaskableGraphic
     {
+        [SerializeField] private SceneSpritePalette _spritePalette;
+        public override Texture mainTexture => _spritePalette == null ? base.mainTexture : _spritePalette.Texture;
         private SiegeUnitDefinition _definition;
         private SiegeState.Unit _unit;
         private float _radius;
@@ -25,7 +28,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             vh.Clear();
             if (_definition == null) return;
             float pose = (float)(_unit.CarryFromDistance / 8 + _unit.Id * .7);
-            SiegeTokenArt.Draw(vh, _definition.Icon, MouthPoint, _radius, pose, _unit.Brace > 0);
+            SiegeTokenArt.Draw(vh, _definition.Icon, MouthPoint, _radius, pose, _unit.Brace > 0, _spritePalette);
         }
     }
 }

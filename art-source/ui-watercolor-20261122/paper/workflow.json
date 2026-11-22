@@ -1,0 +1,132 @@
+{
+  "job": {
+    "slug": "paper",
+    "assetId": "ui.level.paper",
+    "seed": 2026112201,
+    "references": [
+      "art-source/ui-watercolor-20261122/paper-guide.png",
+      "art-source/map-style-20261121/references/station-style.jpg"
+    ],
+    "prompt": "Use case: stylized-concept. Production asset for a cozy animal-rescue mobile game. Match the warm cream, sage green and soft watercolor paper material of reference image 2, but NEVER draw the scene from that reference. Image 1 specifies the canvas size and placement only. Orthographic front view. Pure white #FFFFFF background around the object, no cast shadow outside the object, no text, no letters, no numbers, no logo, no watermark, no interface screenshot. Render ONE blank softly rounded square parchment card filling the central 88% of the square canvas. Pale warm ivory paper, a delicate thin warm brown watercolor edge, subtle paper grain, barely visible warm rim. Gentle rounded corners, simple flat silhouette. No decorations on the four edges, keep a LARGE clean solid ivory center for readable UI text; no holes or cutouts. Uniform flat fill through the middle. All four corners identical, suitable for nine-slice scaling. Preserve ample pure white space outside the card.",
+    "negative": "words, letters, typography, watermark, scenery, animals, buildings, landscapes, ornate fantasy frame, clutter, harsh bevel, glossy plastic, photographic, gradients to white outside, multiple panels"
+  },
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Use case: stylized-concept. Production asset for a cozy animal-rescue mobile game. Match the warm cream, sage green and soft watercolor paper material of reference image 2, but NEVER draw the scene from that reference. Image 1 specifies the canvas size and placement only. Orthographic front view. Pure white #FFFFFF background around the object, no cast shadow outside the object, no text, no letters, no numbers, no logo, no watermark, no interface screenshot. Render ONE blank softly rounded square parchment card filling the central 88% of the square canvas. Pale warm ivory paper, a delicate thin warm brown watercolor edge, subtle paper grain, barely visible warm rim. Gentle rounded corners, simple flat silhouette. No decorations on the four edges, keep a LARGE clean solid ivory center for readable UI text; no holes or cutouts. Uniform flat fill through the middle. All four corners identical, suitable for nine-slice scaling. Preserve ample pure white space outside the card.",
+        "negative_prompt": "words, letters, typography, watermark, scenery, animals, buildings, landscapes, ornate fantasy frame, clutter, harsh bevel, glossy plastic, photographic, gradients to white outside, multiple panels",
+        "resolution": 0,
+        "images.image_1": [
+          "20",
+          0
+        ],
+        "images.image_2": [
+          "21",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112201,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "ui-watercolor-20261122/paper"
+      }
+    },
+    "20": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "ui-watercolor-20261122/paper-guide.png"
+      }
+    },
+    "21": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "ui-watercolor-20261122/station-style.jpg"
+      }
+    }
+  }
+}

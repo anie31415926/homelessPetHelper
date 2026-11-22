@@ -1,0 +1,223 @@
+{
+  "createdAt": "2026-11-21T12:47:11.402Z",
+  "images": [
+    {
+      "id": "city-map.forest-edge.overview",
+      "slug": "overview",
+      "path": "art-source/forest-edge-20261121/assembled.jpg",
+      "width": 768,
+      "height": 1024,
+      "bytes": 111693,
+      "sha256": "f0a9a00d6b6bb97e3797e7ef2de5f35b85b18f2c435c0642b3bfec036c226840",
+      "alpha": false,
+      "plannedBytes": 204800
+    },
+    {
+      "id": "city-map.forest-edge.terrain",
+      "slug": "terrain",
+      "path": "art-source/forest-edge-20261121/terrain/candidate.jpg",
+      "width": 768,
+      "height": 1024,
+      "bytes": 78990,
+      "sha256": "93531464034aaea180284bd043f383be89439b988c2e79b1ef4fa185a67ca5b3",
+      "alpha": false,
+      "plannedBytes": 204800
+    },
+    {
+      "id": "city-map.forest-edge.place.parking",
+      "slug": "landmark-parking",
+      "path": "art-source/forest-edge-20261121/landmark-parking/candidate.png",
+      "width": 206,
+      "height": 165,
+      "bytes": 20763,
+      "sha256": "f5155891c7ad35b2f75b1b0a634e54c4aeec3f0016a7643e562b9a81320cce90",
+      "alpha": true,
+      "plannedBytes": 61440
+    },
+    {
+      "id": "city-map.forest-edge.place.yard",
+      "slug": "landmark-yard",
+      "path": "art-source/forest-edge-20261121/landmark-yard/candidate.png",
+      "width": 249,
+      "height": 187,
+      "bytes": 22051,
+      "sha256": "41bbcdceaf86a2de50edd0abd76c6a992a6920afc5d78165c7566cccabfef11f",
+      "alpha": true,
+      "plannedBytes": 61440
+    },
+    {
+      "id": "city-map.forest-edge.place.porch",
+      "slug": "landmark-porch",
+      "path": "art-source/forest-edge-20261121/landmark-porch/candidate.png",
+      "width": 235,
+      "height": 220,
+      "bytes": 24631,
+      "sha256": "634815cfdb5d39eaf9224fce91bcdf6f665cfe1b96861bbc0fec3eae47ce873b",
+      "alpha": true,
+      "plannedBytes": 61440
+    },
+    {
+      "id": "city-map.forest-edge.place.park",
+      "slug": "landmark-park",
+      "path": "art-source/forest-edge-20261121/landmark-park/candidate.png",
+      "width": 265,
+      "height": 105,
+      "bytes": 43038,
+      "sha256": "907f97cd31a4f8cf2ba98a1f7dd26b6b40c8f70580e167fb45c2c63de1221073",
+      "alpha": true,
+      "plannedBytes": 61440
+    },
+    {
+      "id": "city-map.forest-edge.place.market",
+      "slug": "landmark-market",
+      "path": "art-source/forest-edge-20261121/landmark-market/candidate.png",
+      "width": 198,
+      "height": 155,
+      "bytes": 17810,
+      "sha256": "5a489ffd0f234772b6dd8a77a62454dc9a2c736ceac54f20d81d5d0496e23a17",
+      "alpha": true,
+      "plannedBytes": 61440
+    },
+    {
+      "id": "city-map.forest-edge.place.riverside",
+      "slug": "landmark-riverside",
+      "path": "art-source/forest-edge-20261121/landmark-riverside/candidate.png",
+      "width": 140,
+      "height": 105,
+      "bytes": 20211,
+      "sha256": "28fd89a04c9742272bf6f399e5842de75a7588348a73a9d4d2c2932b56ad348c",
+      "alpha": true,
+      "plannedBytes": 61440
+    },
+    {
+      "id": "city-map.forest-edge.place.shelter",
+      "slug": "landmark-shelter",
+      "path": "art-source/forest-edge-20261121/landmark-shelter/candidate.png",
+      "width": 204,
+      "height": 136,
+      "bytes": 57590,
+      "sha256": "b268cd45aa6e047b0c47e3ae10f39e2a1356da5964b33646f58f5fb01c91cbd7",
+      "alpha": true,
+      "plannedBytes": 61440
+    },
+    {
+      "id": "rescue.forest-edge.scene.parking",
+      "slug": "scene-parking",
+      "path": "art-source/forest-edge-20261121/scene-parking/candidate.jpg",
+      "width": 768,
+      "height": 1024,
+      "bytes": 85728,
+      "sha256": "4c6d400872ed619a5cb1191873282b82cf58b5ac455e6a908ef6a62878063cac",
+      "alpha": false,
+      "plannedBytes": 204800
+    },
+    {
+      "id": "rescue.forest-edge.scene.yard",
+      "slug": "scene-yard",
+      "path": "art-source/forest-edge-20261121/scene-yard/candidate.jpg",
+      "width": 768,
+      "height": 1024,
+      "bytes": 72949,
+      "sha256": "c4121c8ca2abcaf1fc6dfcdc72de3e82978909fa0012c78d3dabb66b5d6165f6",
+      "alpha": false,
+      "plannedBytes": 204800
+    },
+    {
+      "id": "rescue.forest-edge.scene.porch",
+      "slug": "scene-porch",
+      "path": "art-source/forest-edge-20261121/scene-porch/candidate.jpg",
+      "width": 768,
+      "height": 1024,
+      "bytes": 63075,
+      "sha256": "aff88fc03d6c07f653e0770e36a1e86e451aabd13f1924ae8294c495e6eb905a",
+      "alpha": false,
+      "plannedBytes": 204800
+    },
+    {
+      "id": "rescue.forest-edge.scene.park",
+      "slug": "scene-park",
+      "path": "art-source/forest-edge-20261121/scene-park/candidate.jpg",
+      "width": 768,
+      "height": 1024,
+      "bytes": 53638,
+      "sha256": "2f9f66eee0982cc15bf5a19016ea2ad9cbaede6c01c7777d38ade6425203bd28",
+      "alpha": false,
+      "plannedBytes": 204800
+    },
+    {
+      "id": "rescue.forest-edge.scene.market",
+      "slug": "scene-market",
+      "path": "art-source/forest-edge-20261121/scene-market/candidate.jpg",
+      "width": 768,
+      "height": 1024,
+      "bytes": 110233,
+      "sha256": "16ccddc278b72bb6b2615b720d22ac649f874dad9011f983f963dc7cda172cec",
+      "alpha": false,
+      "plannedBytes": 204800
+    },
+    {
+      "id": "rescue.forest-edge.scene.riverside",
+      "slug": "scene-riverside",
+      "path": "art-source/forest-edge-20261121/scene-riverside-clean/candidate.jpg",
+      "width": 768,
+      "height": 1024,
+      "bytes": 50907,
+      "sha256": "2d210e5cd12dc7f81c6b3d6e9a14728ef34e1a46393df75c3598174b5318415d",
+      "alpha": false,
+      "plannedBytes": 204800
+    },
+    {
+      "id": "city-map.forest-continuation",
+      "slug": "forest",
+      "path": "art-source/forest-edge-20261121/forest-bridge/candidate.jpg",
+      "width": 768,
+      "height": 1024,
+      "bytes": 136291,
+      "sha256": "c894da4ce1e3629e9c9d20bce6c64f8669aa20324ebc3e650c743553059897a4",
+      "alpha": false,
+      "plannedBytes": 204800
+    }
+  ],
+  "totalCandidateBytes": 969598,
+  "allWithinPlan": true,
+  "previousCatalogEntriesUnchanged": true,
+  "budgetsUnchanged": true,
+  "preservedWorkingFiles": [
+    {
+      "path": "docs/conventions/PROJECT_BASELINE.md",
+      "sha256": "de8255667503724cc36db9cf6cab59f5b444497eb76f4c1cceef0c866803168e"
+    },
+    {
+      "path": "docs/交接-城市地图与外出串联-2026-11-18.md",
+      "sha256": "c7f3f8ebe99ebbf6454d578defe3940636298c7a35333e292a8687a5c44d13c2"
+    },
+    {
+      "path": "docs/交接-微信预检与站内照护交互-2026-11-18.md",
+      "sha256": "4c7887a8fda543a8aa8af536bc25183e208c6ca6d91ede13fa0c7e1de4aa6ed6"
+    },
+    {
+      "path": "docs/城市地图与求助事件实现方案.md",
+      "sha256": "1365f1120a255b780af250ad639c1685e7980c92dc09ab340f1243497ec181e3"
+    },
+    {
+      "path": "docs/开发方案与执行步骤.md",
+      "sha256": "ccb658ec36d92b213c19287539a2c77270b5a892f1033ca4598784aa68a11a1c"
+    },
+    {
+      "path": "docs/微信小游戏技术预检.md",
+      "sha256": "00c3ddb2db34b59812ecc6e06f3e0cd8d0c7b85fca345ae0460744589d0724da"
+    },
+    {
+      "path": "docs/游戏设计总纲.md",
+      "sha256": "4da709d87ca24d6f073a146a9093396c5ec3aa3d4c29770a23ac3636f87e3ec1"
+    },
+    {
+      "path": "docs/站内照护措施与交互.md",
+      "sha256": "2f9e0e2637d08776dbe9798ac6d2a85f886e2a97146f1530db6237093d8dd5af"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/CityMap/README-临时图说明.md",
+      "sha256": "b6dcd098178b392bd6f1a1cce3c9890be6520175f1fcaa05540ed90113eafd61"
+    }
+  ]
+}

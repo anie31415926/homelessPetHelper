@@ -187,6 +187,18 @@
     {
       "key": "phase",
       "value": "开路寻踪 → 救助 → 安全回站"
+    },
+    {
+      "key": "field.instruction.Puzzle",
+      "value": "点木箱，再点落点；点沟沿搭桥"
+    },
+    {
+      "key": "field.instruction.Cleanup",
+      "value": "选工具，按住前沿杂物向里清理"
+    },
+    {
+      "key": "field.menu",
+      "value": "玩法 / 暂停"
     }
   ]
 }

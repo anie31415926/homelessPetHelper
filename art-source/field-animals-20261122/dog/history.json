@@ -1,0 +1,169 @@
+{
+  "prompt": [
+    0,
+    "c96cc25f-daf8-4cef-ba9a-af328bba6a25",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Generate a NEW isolated full-body game sprite of one small adult mixed breed dog with tan and white short fur, floppy ears, a long natural muzzle, a normal adult dog head much smaller than the torso, four slim natural legs and paws, and a gently curved tail. The attached courtyard image is a STYLE REFERENCE ONLY: match its gentle hand-painted watercolor, soft warm colors, delicate natural detail and paper-grain paint. Do not include any courtyard or architecture. Animal anatomy MUST have REAL LIFE adult proportions, NOT a chibi or mascot, NO oversized head, NO giant eyes, NO short stubby legs. Three-quarter view from above at about 45 degrees, standing on all four paws facing lower left, whole animal including all paws and tail visible, quiet attentive expression. Center it within a generous flat solid DARK TEAL background color RGB 31 88 104, no ground, NO cast shadow, NO texture on the teal background, no text, no UI. Animal fills central 75 percent of image; naturally painted edges. Keep anatomical body shape clear at small scale.",
+          "negative_prompt": "chibi, mascot, big head, giant eyes, stubby legs, human limbs, extra legs, two heads, building, courtyard, text, logo, white background, checkerboard, shadows",
+          "resolution": 0,
+          "images.image_1": [
+            "20",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112201,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "field-animals-20261122/dog"
+        }
+      },
+      "20": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "field-animals-20261122/T_Outing_Yard.jpg"
+        }
+      }
+    },
+    {
+      "client_id": "field-animals-20261122",
+      "create_time": 1795278026927
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "dog_00001_.png",
+          "subfolder": "field-animals-20261122",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "c96cc25f-daf8-4cef-ba9a-af328bba6a25",
+          "timestamp": 1795278026929
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "c96cc25f-daf8-4cef-ba9a-af328bba6a25",
+          "timestamp": 1795278026945
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "c96cc25f-daf8-4cef-ba9a-af328bba6a25",
+          "timestamp": 1795278051921
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

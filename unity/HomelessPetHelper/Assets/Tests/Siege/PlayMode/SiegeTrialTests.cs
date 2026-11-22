@@ -160,8 +160,21 @@ namespace HomelessPetHelper.Tests.Siege.PlayMode
             foreach (var control in _view.GetComponentsInChildren<Button>())
             {
                 var rect = (RectTransform)control.transform;
-                Assert.That(rect.rect.width, Is.GreaterThanOrEqualTo(88), control.name);
-                Assert.That(rect.rect.height, Is.GreaterThanOrEqualTo(88), control.name);
+                Assert.That(rect.rect.width, Is.GreaterThanOrEqualTo(144), control.name);
+                Assert.That(rect.rect.height, Is.GreaterThanOrEqualTo(144), control.name);
+                var scroll = control.GetComponentInParent<ScrollRect>();
+                if (scroll != null && scroll.content != null)
+                {
+                    Assert.That(scroll.vertical, Is.True);
+                    Assert.That(scroll.content.IsChildOf(scroll.viewport), Is.True);
+                    var controlCorners = new Vector3[4]; rect.GetWorldCorners(controlCorners);
+                    float top = scroll.viewport.InverseTransformPoint(controlCorners[1]).y;
+                    float bottom = scroll.viewport.InverseTransformPoint(controlCorners[0]).y;
+                    float shift = top > scroll.viewport.rect.yMax ? scroll.viewport.rect.yMax - top :
+                        bottom < scroll.viewport.rect.yMin ? scroll.viewport.rect.yMin - bottom : 0;
+                    scroll.content.anchoredPosition += new Vector2(0, shift);
+                    Canvas.ForceUpdateCanvases();
+                }
                 rect.GetWorldCorners(corners);
                 foreach (var corner in corners)
                 {

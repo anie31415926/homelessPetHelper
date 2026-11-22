@@ -1,0 +1,185 @@
+{
+  "prompt": [
+    3,
+    "71c0d67a-e8e9-4168-9ec7-20c92252c70d",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Draw ONE isolated small ANIMAL RESCUE COMMUNITY CENTER BUILDING on completely plain WHITE background, in the same soft warm yellow-green watercolor storybook drawing style as image 1, with cream plaster, pale sage roof and pale wooden doors, material warmth from image 2. This is an actual single-story HUMAN-SIZED COMMUNITY BUILDING where volunteers care for animals, NOT a doghouse, kennel or tiny pet home. It must have a large central rectangular wooden door, two rectangular windows on each side, small porch canopy, two shallow steps, one potted plant at either side. No writing or signage. High oblique bird-eye camera same as map 1, one clearly readable whole building viewed from above/front, occupies central two thirds of canvas with generous plain WHITE margin. Light from upper left. Fine warm brown pencil lines and translucent pastel watercolor. No background scenery or trees or grass, no floor, no people, animals, cats, dogs, letters, icon, paw logo, text, UI, border, watermark. Full opaque white canvas 768x1024, building is horizontally wider than tall and completely inside frame.",
+          "negative_prompt": "doghouse, kennel, arch entrance, pet house, animals, cat, dog, people, trees, scenery, grass, text, sign, logo, UI, vector, thick outline, 3d, photo",
+          "resolution": 0,
+          "images.image_1": [
+            "20",
+            0
+          ],
+          "images.image_2": [
+            "21",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112103,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "forest-edge-20261121/shelter-building"
+        }
+      },
+      "20": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "forest-edge-20261121/master.png"
+        }
+      },
+      "21": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "forest-edge-20261121/station-style.jpg"
+        }
+      }
+    },
+    {
+      "client_id": "forest-edge-20261121",
+      "create_time": 1795264634120
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "shelter-building_00001_.png",
+          "subfolder": "forest-edge-20261121",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "71c0d67a-e8e9-4168-9ec7-20c92252c70d",
+          "timestamp": 1795264634121
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6",
+            "20"
+          ],
+          "prompt_id": "71c0d67a-e8e9-4168-9ec7-20c92252c70d",
+          "timestamp": 1795264634127
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "71c0d67a-e8e9-4168-9ec7-20c92252c70d",
+          "timestamp": 1795264657059
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

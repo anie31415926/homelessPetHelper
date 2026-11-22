@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HomelessPetHelper.Framework.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,6 +12,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
     [RequireComponent(typeof(CanvasRenderer))]
     public sealed class SiegeBattlefield : MaskableGraphic, IPointerClickHandler
     {
+        [SerializeField] private SceneSpritePalette _spritePalette;
+        public override Texture mainTexture => _spritePalette == null ? base.mainTexture : _spritePalette.Texture;
         [SerializeField]
         private Image _cat;
         [SerializeField] private SiegeCarryOverlay _carryOverlay;
@@ -28,9 +31,40 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private int _lastUnit;
         private string _tower;
         private bool _interactive;
+        private bool _sceneMode;
+        private Sprite _sceneAnimal;
+        private float _animalWidth;
+        private string _ghostDefinition, _ghostLane, _previewLane;
+        private bool _ghostSelected;
+        public event Action EmptyClicked;
         private SiegeCatalog _validatedCatalog;
         public event Action<int> UnitClicked;
         public event Action<string> TowerClicked;
+
+        public void ConfigureScene(Sprite animal, float width)
+        {
+            if (animal == null || width <= 0) throw new ArgumentException("Invalid field animal.");
+            _sceneMode = true; _sceneAnimal = animal; _animalWidth = width;
+            _cat.preserveAspect = true;
+            _cat.rectTransform.anchorMin = _cat.rectTransform.anchorMax = new Vector2(.5f, .5f);
+            _cat.rectTransform.pivot = new Vector2(.5f, .15f);
+        }
+
+        public void ShowPlan(string definition, string lane, bool selected, string previewLane)
+        {
+            _ghostDefinition = definition; _ghostLane = lane; _ghostSelected = selected; _previewLane = previewLane;
+            SetVerticesDirty();
+        }
+
+        public Vector2 UnitNormalized(int id)
+        {
+            SiegePoint point;
+            var unit = _state.Units.FirstOrDefault(item => item.Id == id);
+            if (id == SiegeOrder.NewUnit && _ghostLane != null) point = _catalog.Lane(_ghostLane).PointAt(0);
+            else if (unit != null) point = SiegeEntitiesPosition(unit);
+            else return new Vector2(.5f, .5f);
+            return new Vector2((float)(point.X / _catalog.Width), 1 - (float)(point.Y / _catalog.Height));
+        }
         private static readonly Color Ink = new Color32(58, 79, 73, 255);
         private static readonly Color Mint = new Color32(76, 165, 139, 255);
         private static readonly Color Coral = new Color32(224, 112, 104, 255);
@@ -63,11 +97,11 @@ namespace HomelessPetHelper.Modules.Siege.UI
                     throw new InvalidOperationException("Missing siege carry overlay binding.");
                 foreach (var encounter in catalog.Content.Encounters)
                     foreach (string id in encounter.UnitIds)
-                        if (!SiegeTokenArt.Supports(catalog.Unit(id).Icon)
-                            || !SiegeTokenArt.Supports(catalog.Unit(catalog.Unit(id).UpgradeId).Icon))
+                        if (!HasVisual(catalog.Unit(id).Icon, false)
+                            || !HasVisual(catalog.Unit(catalog.Unit(id).UpgradeId).Icon, false))
                             throw new InvalidOperationException("Missing siege unit visual: " + id);
                 foreach (var defense in catalog.Content.Towers)
-                    if (!SiegeTokenArt.SupportsTower(defense.Visual))
+                    if (!HasVisual(defense.Visual, true))
                         throw new InvalidOperationException("Missing siege tower visual: " + defense.Id);
                 foreach (var encounter in catalog.Content.Encounters)
                     if (_animalVisuals.Count(x => x.Id == encounter.AnimalVisual && x.Sprite != null) != 1)
@@ -84,16 +118,23 @@ namespace HomelessPetHelper.Modules.Siege.UI
             SetVerticesDirty();
         }
 
+        private bool HasVisual(string id, bool tower)
+        {
+            if (_spritePalette != null) return _spritePalette.TryGet(id, out _);
+            return tower ? SiegeTokenArt.SupportsTower(id) : SiegeTokenArt.Supports(id);
+        }
+
         private void LateUpdate()
         {
             if (_catalog == null || _cat == null)
                 return;
             var encounter = _state?.EncounterId == null ? null : _catalog.Content.Encounter(_state.EncounterId);
             bool jumping = encounter != null && encounter.SweepDelayMs > 0;
-            var sprite = encounter == null ? _legacySprite
+            var sprite = _sceneMode ? _sceneAnimal : encounter == null ? _legacySprite
                 : _animalVisuals.First(x => x.Id == encounter.AnimalVisual).Sprite;
             if (sprite != null) _cat.sprite = sprite;
-            Vector2 home = Local(new SiegePoint(301, 38));
+            Vector2 home = Local(_sceneMode ? _catalog.Lanes[0].PointAt(_catalog.Lanes[0].Length) : new
+                SiegePoint(301, 38));
             Vector2 position = home;
             float jump = 0;
             if (jumping && _state != null && _state.AnimalState.Cast?.Kind == IntentKind.Sweep)
@@ -114,7 +155,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (_state != null && _state.AnimalState.Cast?.Kind == IntentKind.Carry)
                 position = CarryAnimalPosition(home);
             _cat.rectTransform.anchoredPosition = position + Vector2.up * jump;
-            _cat.rectTransform.sizeDelta = Vector2.one * (78 * Scale);
+            _cat.rectTransform.sizeDelta = _sceneMode ? new Vector2(_animalWidth, _animalWidth * 1.15f) * Scale :
+                Vector2.one * (78 * Scale);
             bool acting = _state != null && _state.AnimalState.Cast?.Kind != IntentKind.Carry
                 && _state.Effects.Any(x => x.Kind == "slap" || x.Kind == "sweep");
             _cat.rectTransform.localRotation = Quaternion.Euler(0, 0, acting ? -9 : 0);
@@ -130,15 +172,20 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (_catalog == null || _state == null)
                 return;
             foreach (var lane in _catalog.Lanes)
+            {
+                if (_sceneMode && lane.Id != _previewLane) continue;
                 for (int i = 1; i < lane.Points.Count; i++)
                     Line(
                         vh,
                         Local(lane.Points[i - 1]),
                         Local(lane.Points[i]),
-                        13 * Scale,
-                        new Color32(222, 233, 226, 255)
+                        (_sceneMode ? 2 : 13) * Scale,
+                        _sceneMode ? new Color32(116, 153, 128, 120) : new Color32(222, 233, 226, 255)
                     );
+            }
             foreach (var pad in _catalog.Pads)
+            {
+                if (_sceneMode) continue;
                 Ring(
                     vh,
                     Local(_catalog.Lane(pad.LaneId).PointAt(_catalog.Lane(pad.LaneId).Length * pad.At)),
@@ -146,11 +193,19 @@ namespace HomelessPetHelper.Modules.Siege.UI
                     1 * Scale,
                     new Color32(169, 189, 178, 255)
                 );
+            }
             DrawIntent(vh);
             DrawZones(vh);
             DrawTowers(vh);
             foreach (var unit in _state.Units)
                 if (!unit.IsCarried) DrawUnit(vh, unit);
+            if (_sceneMode && _ghostDefinition != null && _ghostLane != null)
+            {
+                Vector2 point = Local(_catalog.Lane(_ghostLane).PointAt(0));
+                SiegeTokenArt.Draw(vh, _catalog.Unit(_ghostDefinition).Icon, point,
+                    9 * PropScale, 0, palette: _spritePalette);
+                Ring(vh, point, 15 * PropScale, Scale, _ghostSelected ? Ink : Mint);
+            }
             DrawHold(vh);
             DrawCarry(vh);
             DrawEffects(vh);
@@ -210,7 +265,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             Vector2 shoulder = origin + new Vector2(-9, -22) * Scale;
             Line(vh, shoulder, paw, 7 * PropScale, new Color32(108, 83, 66, 255));
             Line(vh, shoulder, paw, 5 * PropScale, new Color32(245, 190, 126, 255));
-            SiegeTokenArt.Paw(vh, paw + Vector2.up * 6 * PropScale, 12 * PropScale);
+            SiegeTokenArt.Paw(vh, paw + Vector2.up * 6 * PropScale, 12 * PropScale, _spritePalette);
             Ring(vh, held, 17 * PropScale, 2 * PropScale, Coral);
         }
 
@@ -309,7 +364,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                     float unfold = tower.Status == TowerStatus.Building
                         ? Mathf.Lerp(.3f, 1, 1 - (tower.ReadyAtMs - _state.ElapsedMs)
                             / (float)_catalog.Rules.BuildDurationMs) : 1;
-                    SiegeTokenArt.Tower(vh, d.Visual, point, 11 * PropScale * unfold, tower.WindingUp);
+                    SiegeTokenArt.Tower(vh, d.Visual, point, 11 * PropScale * unfold, tower.WindingUp, _spritePalette);
                 }
                 else Quad(vh, point, new Vector2(16, 18) * Scale, tint);
                 if (tower.WindingUp && tower.Status == TowerStatus.Active)
@@ -343,7 +398,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 float phase = (float)(unit.Distance / 8 + unit.Id * .7);
                 Vector2 bob = unit.IsCarried ? Vector2.zero
                     : Vector2.up * Mathf.Abs(Mathf.Sin(phase)) * 1.5f * Scale;
-                SiegeTokenArt.Draw(vh, d.Icon, point + bob, radius, phase, unit.Brace > 0);
+                SiegeTokenArt.Draw(vh, d.Icon, point + bob, radius, phase, unit.Brace > 0, _spritePalette);
                 if (unit.Brace > 0)
                     Line(vh, point + new Vector2(-radius, -radius), point + new Vector2(radius, -radius),
                         2 * Scale, new Color32(224, 173, 80, 255));
@@ -384,7 +439,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 if (effect.Kind == "mergePart")
                 {
                     SiegeTokenArt.Draw(vh, effect.Visual, Vector2.Lerp(Local(effect.From), Local(effect.To), t),
-                        (1 - t * .7f) * 8 * Scale, t * 4);
+                        (1 - t * .7f) * 8 * Scale, t * 4, palette: _spritePalette);
                     continue;
                 }
                 if (effect.Kind == "brace")
@@ -428,6 +483,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 )
             )
                 return;
+            if (_sceneMode && _interactive && _ghostDefinition != null && _ghostLane != null &&
+                Vector2.Distance(Local(_catalog.Lane(_ghostLane).PointAt(0)), local) <= 17 * PropScale)
+            { UnitClicked?.Invoke(SiegeOrder.NewUnit); return; }
             var units = _state
                 .Units.Where(x => !x.IsCarried
                     && Vector2.Distance(Local(SiegeEntitiesPosition(x)), local) <= 15 * PropScale)
@@ -445,6 +503,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             );
             if (tower != null)
                 TowerClicked?.Invoke(tower.Id);
+            else if (_sceneMode) EmptyClicked?.Invoke();
         }
 
         private void Bar(VertexHelper vh, Vector2 p, float fill, Color tint)

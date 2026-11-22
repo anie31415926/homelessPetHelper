@@ -1,0 +1,862 @@
+{
+  "records": [
+    {
+      "id": "hedge",
+      "source": "art-source/field-props-20261122/garden/master.png",
+      "sourceSha256": "0c137674a86cdeb69b7040460e486fdbd91000d7b0b6ef263e8244d755d8d246",
+      "cell": {
+        "left": 0,
+        "top": 0,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -102,
+        "offsetTop": -106,
+        "width": 216,
+        "height": 194
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/hedge.png",
+      "width": 128,
+      "height": 115,
+      "sha256": "8898fea42080611390a9001d3f2a9a311778f3a17ed012d3b566d60df7a68965"
+    },
+    {
+      "id": "stones",
+      "source": "art-source/field-props-20261122/garden/master.png",
+      "sourceSha256": "0c137674a86cdeb69b7040460e486fdbd91000d7b0b6ef263e8244d755d8d246",
+      "cell": {
+        "left": 384,
+        "top": 0,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -75,
+        "offsetTop": -140,
+        "width": 207,
+        "height": 135
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/stones.png",
+      "width": 128,
+      "height": 85,
+      "sha256": "b2db6c7e8b09ce5ac5198315fb602563a0950b1366f97fca3f3e35b5131d9319"
+    },
+    {
+      "id": "water",
+      "source": "art-source/field-props-20261122/garden/master.png",
+      "sourceSha256": "0c137674a86cdeb69b7040460e486fdbd91000d7b0b6ef263e8244d755d8d246",
+      "cell": {
+        "left": 0,
+        "top": 384,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -106,
+        "offsetTop": -79,
+        "width": 195,
+        "height": 158
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/water.png",
+      "width": 128,
+      "height": 104,
+      "sha256": "e5d33a77f5d0aa8b6276150fcdb0b06dccd30482c33ec1e92a9ef194e211d1a2"
+    },
+    {
+      "id": "bridge",
+      "source": "art-source/field-props-20261122/garden/master.png",
+      "sourceSha256": "0c137674a86cdeb69b7040460e486fdbd91000d7b0b6ef263e8244d755d8d246",
+      "cell": {
+        "left": 384,
+        "top": 384,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -74,
+        "offsetTop": -47,
+        "width": 197,
+        "height": 209
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/bridge.png",
+      "width": 121,
+      "height": 128,
+      "sha256": "096cdcda7fa364feef06bc9dbcd6c7b8a8ba543bf7c93f6f8371db47262628b9"
+    },
+    {
+      "id": "box",
+      "source": "art-source/field-props-20261122/cleanup/master.png",
+      "sourceSha256": "3434514d31df26ad007a8eb207ce51c8824e4eb1bf76a58d48313f49794bc344",
+      "cell": {
+        "left": 0,
+        "top": 0,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -110,
+        "offsetTop": -107,
+        "width": 197,
+        "height": 203
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/box.png",
+      "width": 124,
+      "height": 128,
+      "sha256": "9dbda04a7b237ea9d6d6028a3c95be6dd1733a28d1e5badcc158ef90bb737a44"
+    },
+    {
+      "id": "debris",
+      "source": "art-source/field-props-20261122/cleanup/master.png",
+      "sourceSha256": "3434514d31df26ad007a8eb207ce51c8824e4eb1bf76a58d48313f49794bc344",
+      "cell": {
+        "left": 384,
+        "top": 0,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -98,
+        "offsetTop": -160,
+        "width": 188,
+        "height": 125
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/debris.png",
+      "width": 128,
+      "height": 86,
+      "sha256": "dd5fec9b01fe812fcaac6a2729060e110bf5a9adf5b4c1329c540de8b5bcffb2"
+    },
+    {
+      "id": "weeds",
+      "source": "art-source/field-props-20261122/cleanup/master.png",
+      "sourceSha256": "3434514d31df26ad007a8eb207ce51c8824e4eb1bf76a58d48313f49794bc344",
+      "cell": {
+        "left": 0,
+        "top": 384,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -87,
+        "offsetTop": -35,
+        "width": 241,
+        "height": 206
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/weeds.png",
+      "width": 128,
+      "height": 110,
+      "sha256": "a0c25b51bbb291d78f1572c927ff9d0d26443c54f045e600fd97a23782df04a0"
+    },
+    {
+      "id": "mud",
+      "source": "art-source/field-props-20261122/cleanup/master.png",
+      "sourceSha256": "3434514d31df26ad007a8eb207ce51c8824e4eb1bf76a58d48313f49794bc344",
+      "cell": {
+        "left": 384,
+        "top": 384,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -40,
+        "offsetTop": -87,
+        "width": 279,
+        "height": 158
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/mud.png",
+      "width": 128,
+      "height": 74,
+      "sha256": "128fc1538c188361957d7b3f8378b34ae54fafcab9625df4fe322c72370df2e2"
+    },
+    {
+      "id": "fish",
+      "source": "art-source/field-props-20261122/cat-toys/master.png",
+      "sourceSha256": "028ac1794c73522fbe5fad1c84140d3de1e14128d4d5d0193c3bf54a36242d3a",
+      "cell": {
+        "left": 0,
+        "top": 0,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -96,
+        "offsetTop": -164,
+        "width": 207,
+        "height": 89
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/fish.png",
+      "width": 112,
+      "height": 50,
+      "sha256": "40d035ad30ec401abcdd000b516836adfdc5839eee4fab682e97866cb3825668"
+    },
+    {
+      "id": "yarn",
+      "source": "art-source/field-props-20261122/cat-toys/master.png",
+      "sourceSha256": "028ac1794c73522fbe5fad1c84140d3de1e14128d4d5d0193c3bf54a36242d3a",
+      "cell": {
+        "left": 384,
+        "top": 0,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -93,
+        "offsetTop": -115,
+        "width": 215,
+        "height": 192
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/yarn.png",
+      "width": 112,
+      "height": 100,
+      "sha256": "49e32303ae908ae49f7b91d067ae22c5720b3136ae12fb52a4f7eb7fb9099612"
+    },
+    {
+      "id": "feather",
+      "source": "art-source/field-props-20261122/cat-toys/master.png",
+      "sourceSha256": "028ac1794c73522fbe5fad1c84140d3de1e14128d4d5d0193c3bf54a36242d3a",
+      "cell": {
+        "left": 0,
+        "top": 384,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -89,
+        "offsetTop": -37,
+        "width": 218,
+        "height": 240
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/feather.png",
+      "width": 102,
+      "height": 112,
+      "sha256": "f4ce6b249b120133efb4a004f4f83cf4fe88b464480c7233f4fd242367b41410"
+    },
+    {
+      "id": "paw",
+      "source": "art-source/field-props-20261122/cat-toys/master.png",
+      "sourceSha256": "028ac1794c73522fbe5fad1c84140d3de1e14128d4d5d0193c3bf54a36242d3a",
+      "cell": {
+        "left": 384,
+        "top": 384,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -106,
+        "offsetTop": -43,
+        "width": 147,
+        "height": 238
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/paw.png",
+      "width": 71,
+      "height": 112,
+      "sha256": "6b9b67320df77631532e2757183f4885cfcebc424646b62420def2d51cb45ca5"
+    },
+    {
+      "id": "bouquet",
+      "source": "art-source/field-props-20261122/cat-upgrades/master.png",
+      "sourceSha256": "e2154757f1fadb3c16c15ec5fee6a79903427d6ae4fe2566bae6e2652f450429",
+      "cell": {
+        "left": 0,
+        "top": 0,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -134,
+        "offsetTop": -86,
+        "width": 156,
+        "height": 228
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/bouquet.png",
+      "width": 78,
+      "height": 112,
+      "sha256": "51a14f9ed90e5b02d8efc0d3dfb35336cc3525c4385e43b0ee52ee5b8d95238f"
+    },
+    {
+      "id": "yarnLion",
+      "source": "art-source/field-props-20261122/cat-upgrades/master.png",
+      "sourceSha256": "e2154757f1fadb3c16c15ec5fee6a79903427d6ae4fe2566bae6e2652f450429",
+      "cell": {
+        "left": 384,
+        "top": 0,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -79,
+        "offsetTop": -97,
+        "width": 206,
+        "height": 209
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/yarnLion.png",
+      "width": 110,
+      "height": 112,
+      "sha256": "67ff9aea9442b26070dec6592fb158b94fa37db5e3d53295483661df940c07c3"
+    },
+    {
+      "id": "pinwheel",
+      "source": "art-source/field-props-20261122/cat-upgrades/master.png",
+      "sourceSha256": "e2154757f1fadb3c16c15ec5fee6a79903427d6ae4fe2566bae6e2652f450429",
+      "cell": {
+        "left": 0,
+        "top": 384,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -126,
+        "offsetTop": -37,
+        "width": 166,
+        "height": 231
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/pinwheel.png",
+      "width": 82,
+      "height": 112,
+      "sha256": "d1d5e39a7db4cc785ebabe31afb7938a58212f8c84c41b0ec7753a36e6e4d785"
+    },
+    {
+      "id": "paper",
+      "source": "art-source/field-props-20261122/cat-upgrades/master.png",
+      "sourceSha256": "e2154757f1fadb3c16c15ec5fee6a79903427d6ae4fe2566bae6e2652f450429",
+      "cell": {
+        "left": 384,
+        "top": 384,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -74,
+        "offsetTop": -19,
+        "width": 202,
+        "height": 263
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/paper.png",
+      "width": 87,
+      "height": 112,
+      "sha256": "d52cc538f51a3bfecd397decf7d1d1d996d6bb975cf61a8941e28a2955f39e7a"
+    },
+    {
+      "id": "bone",
+      "source": "art-source/field-props-20261122/dog-toys/master.png",
+      "sourceSha256": "db8eb492a5b94e6455d6d534ccae990308db11daa21bb0a54d2ab6f4199df1dd",
+      "cell": {
+        "left": 0,
+        "top": 0,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -83,
+        "offsetTop": -111,
+        "width": 228,
+        "height": 169
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/bone.png",
+      "width": 112,
+      "height": 84,
+      "sha256": "faf064ed64aefc608dccfc0931bc99236b35122726857d030b940aabf22f1120"
+    },
+    {
+      "id": "disc",
+      "source": "art-source/field-props-20261122/dog-toys/master.png",
+      "sourceSha256": "db8eb492a5b94e6455d6d534ccae990308db11daa21bb0a54d2ab6f4199df1dd",
+      "cell": {
+        "left": 384,
+        "top": 0,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -61,
+        "offsetTop": -112,
+        "width": 243,
+        "height": 178
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/disc.png",
+      "width": 112,
+      "height": 83,
+      "sha256": "1e05727324566c360e68738c812c2703be75a553c6d27f76f4c559e90d3e16ac"
+    },
+    {
+      "id": "rope",
+      "source": "art-source/field-props-20261122/dog-toys/master.png",
+      "sourceSha256": "db8eb492a5b94e6455d6d534ccae990308db11daa21bb0a54d2ab6f4199df1dd",
+      "cell": {
+        "left": 0,
+        "top": 384,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -73,
+        "offsetTop": -71,
+        "width": 259,
+        "height": 157
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/rope.png",
+      "width": 112,
+      "height": 69,
+      "sha256": "74699cf88d0bbebc05f69d2ce06c7d746503e8f74595ccf8393b4af0c880f92e"
+    },
+    {
+      "id": "kennel",
+      "source": "art-source/field-props-20261122/dog-toys/master.png",
+      "sourceSha256": "db8eb492a5b94e6455d6d534ccae990308db11daa21bb0a54d2ab6f4199df1dd",
+      "cell": {
+        "left": 384,
+        "top": 384,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -59,
+        "offsetTop": -13,
+        "width": 226,
+        "height": 260
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/kennel.png",
+      "width": 98,
+      "height": 112,
+      "sha256": "cf632914efaff66ec2dceaac9fac6b5cb0efd8f58fe99fdffef20c1d33aae763"
+    },
+    {
+      "id": "boneWheel",
+      "source": "art-source/field-props-20261122/dog-upgrades/master.png",
+      "sourceSha256": "2f8ad2699314337f34231feb8961f181876252aef516e3e38d771e67b8a48498",
+      "cell": {
+        "left": 0,
+        "top": 0,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -68,
+        "offsetTop": -105,
+        "width": 251,
+        "height": 201
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/boneWheel.png",
+      "width": 112,
+      "height": 90,
+      "sha256": "5dbe11fd163a99a9897442183e1cfb649b0576b2794d5696463b0a3a1d3fd1f7"
+    },
+    {
+      "id": "triDisc",
+      "source": "art-source/field-props-20261122/dog-upgrades/master.png",
+      "sourceSha256": "2f8ad2699314337f34231feb8961f181876252aef516e3e38d771e67b8a48498",
+      "cell": {
+        "left": 384,
+        "top": 0,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -54,
+        "offsetTop": -113,
+        "width": 249,
+        "height": 271
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/triDisc.png",
+      "width": 103,
+      "height": 112,
+      "sha256": "fd5dcd08b4c0751c903118b8b8f4ad7512b4d614e93419eec019727eefc5ce2c"
+    },
+    {
+      "id": "ropeOctopus",
+      "source": "art-source/field-props-20261122/dog-upgrades/master.png",
+      "sourceSha256": "2f8ad2699314337f34231feb8961f181876252aef516e3e38d771e67b8a48498",
+      "cell": {
+        "left": 0,
+        "top": 384,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -81,
+        "offsetTop": -48,
+        "width": 247,
+        "height": 224
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/ropeOctopus.png",
+      "width": 112,
+      "height": 102,
+      "sha256": "ca56790df1b814551ebbce93785f4756ae54894d6e1374d152740bf370465519"
+    },
+    {
+      "id": "bubbles",
+      "source": "art-source/field-props-20261122/dog-upgrades/master.png",
+      "sourceSha256": "2f8ad2699314337f34231feb8961f181876252aef516e3e38d771e67b8a48498",
+      "cell": {
+        "left": 384,
+        "top": 384,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -63,
+        "offsetTop": 0,
+        "width": 217,
+        "height": 269
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/bubbles.png",
+      "width": 91,
+      "height": 112,
+      "sha256": "6736df51dfcf284c9d9ce6ea92f5921c5b8678fcf2837042f9400b3a20357edb"
+    },
+    {
+      "id": "thread",
+      "source": "art-source/field-props-20261122/mechanisms/master.png",
+      "sourceSha256": "fe2c97227b5a9bc33718d7ce91793d42a195b951fba271848c33d8bd35b19979",
+      "cell": {
+        "left": 0,
+        "top": 0,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -113,
+        "offsetTop": -89,
+        "width": 180,
+        "height": 233
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/thread.png",
+      "width": 87,
+      "height": 112,
+      "sha256": "cafef0946b8662a1804fdddced303db017b551ee8fd9f865ce6de4d3c552da7f"
+    },
+    {
+      "id": "scratch",
+      "source": "art-source/field-props-20261122/mechanisms/master.png",
+      "sourceSha256": "fe2c97227b5a9bc33718d7ce91793d42a195b951fba271848c33d8bd35b19979",
+      "cell": {
+        "left": 384,
+        "top": 0,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -90,
+        "offsetTop": -107,
+        "width": 170,
+        "height": 230
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/scratch.png",
+      "width": 84,
+      "height": 112,
+      "sha256": "bdc4550075632c28901e3b68c261bb4ecd4db6a801ff21d9a67ba23f11e023c6"
+    },
+    {
+      "id": "slippers",
+      "source": "art-source/field-props-20261122/mechanisms/master.png",
+      "sourceSha256": "fe2c97227b5a9bc33718d7ce91793d42a195b951fba271848c33d8bd35b19979",
+      "cell": {
+        "left": 0,
+        "top": 384,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -73,
+        "offsetTop": -74,
+        "width": 261,
+        "height": 159
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/slippers.png",
+      "width": 112,
+      "height": 70,
+      "sha256": "a8cd0170ccfc2e42fb2c00c07b344230224baa0b979e52beb71798aec0bf33ae"
+    },
+    {
+      "id": "spare-leaves",
+      "source": "art-source/field-props-20261122/mechanisms/master.png",
+      "sourceSha256": "fe2c97227b5a9bc33718d7ce91793d42a195b951fba271848c33d8bd35b19979",
+      "cell": {
+        "left": 384,
+        "top": 384,
+        "width": 384,
+        "height": 384
+      },
+      "removedBackground": "Boundary-connected near-white >=244; white fringe within 2px un-matted using contrast alpha; retained disconnected parts and interior highlights.",
+      "crop": {
+        "offsetLeft": -105,
+        "offsetTop": -115,
+        "width": 151,
+        "height": 102
+      },
+      "resize": "Lanczos3 fit inside; 2px alpha border",
+      "output": "art-source/field-props-20261122/derived/spare-leaves.png",
+      "width": 112,
+      "height": 77,
+      "sha256": "d0cb831f3f97ba8ec6cdd1cbe391a389295706803b5cf3cae95de3dbc9bb50f0"
+    }
+  ],
+  "pages": [
+    {
+      "source": "art-source/field-props-20261122/T_Outing_GardenProps.png",
+      "texture": "Assets/Art/Outing/T_Outing_GardenProps.png",
+      "palette": "Assets/Settings/Game/FieldPropPalette.asset",
+      "width": 264,
+      "height": 436,
+      "bytes": 51709,
+      "sha256": "d08f4bc2863ff8934fa84c3788f757af69c6b5b452bb2d1e0480a08bd10e1a6e",
+      "slices": [
+        {
+          "id": "hedge",
+          "x": 2,
+          "y": 187,
+          "width": 128,
+          "height": 115
+        },
+        {
+          "id": "stones",
+          "x": 2,
+          "y": 8,
+          "width": 128,
+          "height": 85
+        },
+        {
+          "id": "water",
+          "x": 134,
+          "y": 84,
+          "width": 128,
+          "height": 104
+        },
+        {
+          "id": "bridge",
+          "x": 130,
+          "y": 306,
+          "width": 121,
+          "height": 128
+        },
+        {
+          "id": "box",
+          "x": 2,
+          "y": 306,
+          "width": 124,
+          "height": 128
+        },
+        {
+          "id": "debris",
+          "x": 2,
+          "y": 97,
+          "width": 128,
+          "height": 86
+        },
+        {
+          "id": "weeds",
+          "x": 134,
+          "y": 192,
+          "width": 128,
+          "height": 110
+        },
+        {
+          "id": "mud",
+          "x": 134,
+          "y": 6,
+          "width": 128,
+          "height": 74
+        }
+      ]
+    },
+    {
+      "source": "art-source/field-props-20261122/T_Outing_SiegeProps.png",
+      "texture": "Assets/Art/Outing/T_Outing_SiegeProps.png",
+      "palette": "Assets/Settings/Siege/SiegePropPalette.asset",
+      "width": 512,
+      "height": 468,
+      "bytes": 75046,
+      "sha256": "83afd896570503721cf09bcf4c29ad14f8cb3ac46c92df01dbb9b63790a851c6",
+      "slices": [
+        {
+          "id": "fish",
+          "x": 393,
+          "y": 73,
+          "width": 112,
+          "height": 50
+        },
+        {
+          "id": "yarn",
+          "x": 279,
+          "y": 250,
+          "width": 112,
+          "height": 100
+        },
+        {
+          "id": "feather",
+          "x": 84,
+          "y": 354,
+          "width": 102,
+          "height": 112
+        },
+        {
+          "id": "paw",
+          "x": 2,
+          "y": 6,
+          "width": 71,
+          "height": 112
+        },
+        {
+          "id": "bouquet",
+          "x": 2,
+          "y": 354,
+          "width": 78,
+          "height": 112
+        },
+        {
+          "id": "yarnLion",
+          "x": 163,
+          "y": 6,
+          "width": 110,
+          "height": 112
+        },
+        {
+          "id": "pinwheel",
+          "x": 77,
+          "y": 6,
+          "width": 82,
+          "height": 112
+        },
+        {
+          "id": "paper",
+          "x": 97,
+          "y": 238,
+          "width": 87,
+          "height": 112
+        },
+        {
+          "id": "bone",
+          "x": 395,
+          "y": 288,
+          "width": 112,
+          "height": 84
+        },
+        {
+          "id": "disc",
+          "x": 395,
+          "y": 201,
+          "width": 112,
+          "height": 83
+        },
+        {
+          "id": "rope",
+          "x": 277,
+          "y": 54,
+          "width": 112,
+          "height": 69
+        },
+        {
+          "id": "kennel",
+          "x": 2,
+          "y": 122,
+          "width": 98,
+          "height": 112
+        },
+        {
+          "id": "boneWheel",
+          "x": 395,
+          "y": 376,
+          "width": 112,
+          "height": 90
+        },
+        {
+          "id": "triDisc",
+          "x": 190,
+          "y": 354,
+          "width": 103,
+          "height": 112
+        },
+        {
+          "id": "ropeOctopus",
+          "x": 192,
+          "y": 132,
+          "width": 112,
+          "height": 102
+        },
+        {
+          "id": "bubbles",
+          "x": 2,
+          "y": 238,
+          "width": 91,
+          "height": 112
+        },
+        {
+          "id": "thread",
+          "x": 188,
+          "y": 238,
+          "width": 87,
+          "height": 112
+        },
+        {
+          "id": "scratch",
+          "x": 104,
+          "y": 122,
+          "width": 84,
+          "height": 112
+        },
+        {
+          "id": "slippers",
+          "x": 308,
+          "y": 127,
+          "width": 112,
+          "height": 70
+        }
+      ]
+    }
+  ],
+  "whiteCorner": "After quantization, matching PLTE color restored to exact white (CRC recalculated). 4x4 opaque white at UV (0,0), outside all Sprite rects; existing colored procedural effects remain visible."
+}

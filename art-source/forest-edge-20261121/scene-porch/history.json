@@ -1,0 +1,186 @@
+{
+  "prompt": [
+    5,
+    "91350658-0edf-4f0c-ae83-bacc83cde602",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "A local view in front of the SAME cream cottage porch as image 1: pale peach fabric awning above, warm wooden doorway, two broad shallow stone steps against the upper quarter, a small potted plant on either far side, gentle yellow window light. Large open warm cream paved doorstep below, from bottom center up to the steps, available for gameplay. Match porch awning and steps in the map. No welcome text, no doormat with writing, no foreground flower border. Match image 1's architecture and the watercolor art style of image 2 closely: luminous warm cream light, delicate thin warm brown pencil contours, translucent layered watercolor, soft sage/yellow-green foliage, pale wood and peach/cream building materials, rounded cozy hand-painted storybook game art. This is a NEW local environment view, not a map or diagram. Portrait 768x1024, high enough oblique ground view to read a playable clearing, gentle upper-left sunlight. The central 60 percent and lower half must be broad clear uncluttered ground for separately drawn animals, puzzle pieces and combat gameplay. Keep all fixed set dressing in the upper quarter and along side edges; no solid object covering the center. Environment only: no animal, cat, dog, person, text, signs, numbers, arrows, grid, UI, frame, border or watermark. Do not bake movable crates, puzzle props, litter piles, objectives or animals into the empty ground. Full bleed opaque illustration.",
+          "negative_prompt": "map, overhead town, vector, thick black contour, photorealistic, 3d, harsh shadow, cluttered floor, blocked center, animals, person, text, UI, grid, border, watermark",
+          "resolution": 0,
+          "images.image_1": [
+            "20",
+            0
+          ],
+          "images.image_2": [
+            "21",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112113,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "forest-edge-20261121/scene-porch"
+        }
+      },
+      "20": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "forest-edge-20261121/master.png"
+        }
+      },
+      "21": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "forest-edge-20261121/forest-style.jpg"
+        }
+      }
+    },
+    {
+      "client_id": "forest-edge-20261121",
+      "create_time": 1795264694900
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "scene-porch_00001_.png",
+          "subfolder": "forest-edge-20261121",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "91350658-0edf-4f0c-ae83-bacc83cde602",
+          "timestamp": 1795264694902
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6",
+            "20",
+            "21"
+          ],
+          "prompt_id": "91350658-0edf-4f0c-ae83-bacc83cde602",
+          "timestamp": 1795264694907
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "91350658-0edf-4f0c-ae83-bacc83cde602",
+          "timestamp": 1795264716531
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

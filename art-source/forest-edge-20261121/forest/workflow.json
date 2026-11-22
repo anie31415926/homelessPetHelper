@@ -1,0 +1,133 @@
+{
+  "job": {
+    "slug": "forest",
+    "assetId": "city-map.forest-continuation",
+    "seed": 2026112120,
+    "steps": 24,
+    "references": [
+      "art-source/forest-edge-20261121/overview/master.png",
+      "art-source/map-style-20261121/references/forest-style.jpg"
+    ],
+    "prompt": "Create the SECOND map, the forest immediately NORTH of the neighborhood in image 1, in the exact gentle watercolor storybook style of image 2. Use image 1 for matching bridge wood, tree shapes, creek color and camera angle, NOT for repeating its houses. High oblique bird-eye illustrated portrait forest map with no horizon. At BOTTOM CENTER a pale cream trail enters from the community, and at BOTTOM RIGHT the pale turquoise creek enters from the community, crossing under the SAME small rustic wooden bridge from map 1, now seen at the southern edge. From this familiar entrance a winding path curves up into a luminous deeper woodland. Creek stays along RIGHT side of the whole image and narrows into trees at the top. Rounded pale yellow-green broadleaf canopies, warm brown slender trunks, cream sunlight filtering into three broad open grassy clearings along the trail, small flowers and low bushes along outer edges. Depth increases gently toward top; no village buildings, no mushroom houses, no new named interactive sites, no obvious quest objects. A warm calm woodland connected to the first map, not a dark survival forest. Fine warm pencil outlines, soft layered watercolor and paper-like pigment, low contrast dreamy light, consistent light from upper left. Keep center spaces readable at mobile scale, no clutter. Environment only. No people, animals, cat, dog, UI, text, labels, pins, lock icons, arrows, numbers, signs, frame, decorative floral border or watermark. Full bleed opaque 768x1024.",
+    "negative": "city, houses, village, mushroom, dark jungle, swamp, winter, vector, thick black line, 3d, photo, animals, text, UI, icon, labels, border, watermark"
+  },
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Create the SECOND map, the forest immediately NORTH of the neighborhood in image 1, in the exact gentle watercolor storybook style of image 2. Use image 1 for matching bridge wood, tree shapes, creek color and camera angle, NOT for repeating its houses. High oblique bird-eye illustrated portrait forest map with no horizon. At BOTTOM CENTER a pale cream trail enters from the community, and at BOTTOM RIGHT the pale turquoise creek enters from the community, crossing under the SAME small rustic wooden bridge from map 1, now seen at the southern edge. From this familiar entrance a winding path curves up into a luminous deeper woodland. Creek stays along RIGHT side of the whole image and narrows into trees at the top. Rounded pale yellow-green broadleaf canopies, warm brown slender trunks, cream sunlight filtering into three broad open grassy clearings along the trail, small flowers and low bushes along outer edges. Depth increases gently toward top; no village buildings, no mushroom houses, no new named interactive sites, no obvious quest objects. A warm calm woodland connected to the first map, not a dark survival forest. Fine warm pencil outlines, soft layered watercolor and paper-like pigment, low contrast dreamy light, consistent light from upper left. Keep center spaces readable at mobile scale, no clutter. Environment only. No people, animals, cat, dog, UI, text, labels, pins, lock icons, arrows, numbers, signs, frame, decorative floral border or watermark. Full bleed opaque 768x1024.",
+        "negative_prompt": "city, houses, village, mushroom, dark jungle, swamp, winter, vector, thick black line, 3d, photo, animals, text, UI, icon, labels, border, watermark",
+        "resolution": 0,
+        "images.image_1": [
+          "20",
+          0
+        ],
+        "images.image_2": [
+          "21",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112120,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "forest-edge-20261121/forest"
+      }
+    },
+    "20": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "forest-edge-20261121/master.png"
+      }
+    },
+    "21": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "forest-edge-20261121/forest-style.jpg"
+      }
+    }
+  }
+}

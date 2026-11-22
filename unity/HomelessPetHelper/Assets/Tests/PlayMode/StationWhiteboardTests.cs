@@ -355,6 +355,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         private static void ClickAnimal(StationPanelView panel, int index)
         {
             Canvas.ForceUpdateCanvases();
+            LevelUiPlayTests.ScrollIntoView(panel.Animals[index]);
             Image art = panel.Animals[index].GetComponentsInChildren<Image>()
                 .Single(value => value.name == "Animal");
             var rect = (RectTransform)art.transform;
@@ -399,6 +400,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             }
             foreach (Button button in panel.GetComponentsInChildren<Button>().Where(button => button.interactable))
             {
+                LevelUiPlayTests.ScrollIntoView(button);
                 var corners = new Vector3[4];
                 ((RectTransform)button.transform).GetWorldCorners(corners);
                 Vector3 bottom = camera.WorldToViewportPoint(corners[0]);

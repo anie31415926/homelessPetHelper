@@ -548,10 +548,11 @@ namespace HomelessPetHelper.Tests.PlayMode
             var corners = new Vector3[4];
             foreach (Button button in _view.GetComponentsInChildren<Button>())
             {
+                LevelUiPlayTests.ScrollIntoView(button);
                 var rect = (RectTransform)button.transform;
                 rect.GetWorldCorners(corners);
-                Assert.That(rect.rect.height, Is.GreaterThan(40), button.name);
-                Assert.That(rect.rect.height, Is.LessThan(160), button.name);
+                Assert.That(rect.rect.height, Is.GreaterThanOrEqualTo(144), button.name);
+                Assert.That(rect.rect.height, Is.LessThanOrEqualTo(180), button.name);
                 foreach (Vector3 corner in corners)
                 {
                     Vector3 local = container.InverseTransformPoint(corner);

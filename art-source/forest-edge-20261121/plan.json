@@ -1,0 +1,98 @@
+[
+  {
+    "slug": "overview",
+    "id": "city-map.forest-edge.overview",
+    "name": "林缘社区整体构图候选",
+    "plannedBytes": 204800
+  },
+  {
+    "slug": "terrain",
+    "id": "city-map.forest-edge.terrain",
+    "name": "林缘社区分层地面底图候选",
+    "plannedBytes": 204800
+  },
+  {
+    "slug": "landmark-parking",
+    "id": "city-map.forest-edge.place.parking",
+    "name": "林缘地图独立单车棚候选",
+    "plannedBytes": 61440
+  },
+  {
+    "slug": "landmark-yard",
+    "id": "city-map.forest-edge.place.yard",
+    "name": "林缘地图独立居民小院候选",
+    "plannedBytes": 61440
+  },
+  {
+    "slug": "landmark-porch",
+    "id": "city-map.forest-edge.place.porch",
+    "name": "林缘地图独立临街门廊候选",
+    "plannedBytes": 61440
+  },
+  {
+    "slug": "landmark-park",
+    "id": "city-map.forest-edge.place.park",
+    "name": "林缘地图独立林缘公园候选",
+    "plannedBytes": 61440
+  },
+  {
+    "slug": "landmark-market",
+    "id": "city-map.forest-edge.place.market",
+    "name": "林缘地图独立市场后院候选",
+    "plannedBytes": 61440
+  },
+  {
+    "slug": "landmark-riverside",
+    "id": "city-map.forest-edge.place.riverside",
+    "name": "林缘地图独立河岸步道候选",
+    "plannedBytes": 61440
+  },
+  {
+    "slug": "landmark-shelter",
+    "id": "city-map.forest-edge.place.shelter",
+    "name": "林缘地图独立救助站候选",
+    "plannedBytes": 61440
+  },
+  {
+    "slug": "scene-parking",
+    "id": "rescue.forest-edge.scene.parking",
+    "name": "单车棚地点内背景候选",
+    "plannedBytes": 204800
+  },
+  {
+    "slug": "scene-yard",
+    "id": "rescue.forest-edge.scene.yard",
+    "name": "居民小院地点内背景候选",
+    "plannedBytes": 204800
+  },
+  {
+    "slug": "scene-porch",
+    "id": "rescue.forest-edge.scene.porch",
+    "name": "临街门廊地点内背景候选",
+    "plannedBytes": 204800
+  },
+  {
+    "slug": "scene-park",
+    "id": "rescue.forest-edge.scene.park",
+    "name": "林缘公园地点内背景候选",
+    "plannedBytes": 204800
+  },
+  {
+    "slug": "scene-market",
+    "id": "rescue.forest-edge.scene.market",
+    "name": "市场后院地点内背景候选",
+    "plannedBytes": 204800
+  },
+  {
+    "slug": "scene-riverside",
+    "id": "rescue.forest-edge.scene.riverside",
+    "name": "河岸步道地点内背景候选",
+    "plannedBytes": 204800
+  },
+  {
+    "slug": "forest",
+    "id": "city-map.forest-continuation",
+    "name": "后续森林衔接地图候选",
+    "plannedBytes": 204800
+  }
+]

@@ -1,0 +1,98 @@
+# 图片资源台账检查
+
+本报告由 art-source/resource-catalog.json 生成，不手改；不是 Unity 依赖、分包或微信下载实测。
+
+首次可玩范围：draft。2026-11-20用户授权Main串联救助站→地图→逆塔防→回站护理，旧回合救助为备选。当前静态引用的12张图已按first-play记账（含预绑定的狗和地图角标，未做按需卸载）；草稿状态指最终美术、正式首批与微信下载仍未验收，不能因迁出Editor目录视作approved。
+
+首批登记 12 项，源文件/计划参考合计 1067.9 KiB。
+源文件规划线 1536.0 KiB；转换后首次图片下载目标 2048.0 KiB。
+**实际首次下载：未测量，不能判达标；首批为 0 或范围未确认也不代表通过。**
+
+仅试做/历史计划登记 38 项，其中已有运行/候选图 37 张，源文件 2260.0 KiB；不算正式首批。
+
+## 模块参考量
+
+| 模块 | 交付计划项 | 源文件/计划 KiB | 源文件复核线 KiB |
+| --- | --- | --- | --- |
+| CommonUI | 0 | 0.0 | 256.0 |
+| CityMap | 9 | 310.0 | 768.0 |
+| Rescue | 0 | 0.0 | 1024.0 |
+| Station | 3 | 757.9 | 1536.0 |
+| ArchiveHandbook | 0 | 0.0 | 512.0 |
+
+实际运行/候选图用文件字节，未产出的图用 plannedBytes；母图/工作流不计运行量。
+共享文件只登记一个归属，其余记引用；内容哈希相同仅提示复核，不推断实际打包去重。
+
+## 资源清单
+
+| ID / 名称 | 模块 | 状态 / 加载时机 | 实际源 KiB | 计划 KiB |
+| --- | --- | --- | --- | --- |
+| pet-motion.unity-atlas / 动物动作共享裁边图集 | Station | temporary / first-play | 506.7 | 512.0 |
+| pet-motion.sit-rest / 完整坐姿临时试验图 | Station | temporary / preview-only | 158.6 | 150.0 |
+| pet-motion.side-rest / 侧卧整姿态临时试验图 | Station | temporary / preview-only | 119.0 | 150.0 |
+| pet-motion.lie-connected / 趴卧同源身体臀腿连续图 | Station | temporary / preview-only | 109.2 | 150.0 |
+| pet-motion.body / 四腿动作试验同源头身尾 | Station | temporary / preview-only | 110.1 | 150.0 |
+| pet-motion.near-front / 四腿动作试验同源近前腿 | Station | temporary / preview-only | 17.9 | 60.0 |
+| pet-motion.near-hind / 四腿动作试验同源近后腿 | Station | temporary / preview-only | 22.9 | 60.0 |
+| pet-limbs.far-front-copy / 同源近前腿复制的完整远前腿 | Station | temporary / preview-only | 17.6 | 60.0 |
+| pet-limbs.far-hind-copy / 同源近后腿复制的完整远后腿 | Station | temporary / preview-only | 22.9 | 60.0 |
+| pet-limbs.far-front / 完整远侧前腿补全试验 | Station | temporary / preview-only | 16.5 | 60.0 |
+| pet-limbs.far-hind / 完整远侧后腿补全试验 | Station | temporary / preview-only | 21.1 | 60.0 |
+| pet-limbs.foreground / 前后远腿分离后的同源前景 | Station | temporary / preview-only | 107.6 | 150.0 |
+| pet-layers.far-hind-ai / 远后腿遮挡区本地模型补图 | Station | temporary / preview-only | 11.1 | 60.0 |
+| pet-layers.foreground / 同源远后腿分离后的前景 | Station | temporary / preview-only | 107.0 | 150.0 |
+| pet-layers.far-hind / 同源远侧后腿试验层 | Station | temporary / preview-only | 8.2 | 60.0 |
+| pet-mesh.cat-side / 单张侧面猫网格试验 | Station | temporary / preview-only | 74.5 | 150.0 |
+| pet-rig.turnaround / 猫咪正侧面动作试验参考 | Station | temporary / preview-only | 35.9 | 250.0 |
+| pet-rig.front-atlas / 正面猫咪分件试验图集 | Station | temporary / preview-only | 121.6 | 250.0 |
+| pet-rig.side-atlas / 侧面猫咪分件试验图集 | Station | temporary / preview-only | 114.7 | 250.0 |
+| city-map.neighborhood / 街区外出地图地面底图 | CityMap | temporary / first-play | 27.9 | 200.0 |
+| city-map.place.parking / 地图独立单车棚 | CityMap | temporary / first-play | 13.6 | 60.0 |
+| city-map.place.yard / 地图独立居民小院 | CityMap | temporary / first-play | 24.9 | 60.0 |
+| city-map.place.porch / 地图独立临街门廊 | CityMap | temporary / first-play | 17.0 | 60.0 |
+| city-map.place.shelter / 地图独立救助站建筑 | CityMap | temporary / first-play | 16.3 | 60.0 |
+| animal.cat-calico.map / 三花猫地图角标 | CityMap | temporary / first-play | 54.6 | 60.0 |
+| animal.cat-orange.map / 橘猫地图角标 | CityMap | temporary / first-play | 57.8 | 60.0 |
+| animal.dog-white.map / 白狗地图角标 | CityMap | temporary / first-play | 53.0 | 60.0 |
+| animal.rabbit.map / 兔子地图角标 | CityMap | temporary / first-play | 44.9 | 60.0 |
+| animal.cat.station-sample / 旧站内猫样例 | Station | temporary / preview-only | 49.7 | 150.0 |
+| animal.dog.station-sample / 旧站内狗样例 | Station | temporary / preview-only | 45.3 | 150.0 |
+| animal.dog.station-care / 站内护理临时狗图 | Station | temporary / first-play | 140.2 | 150.0 |
+| animal.cat.station-care / 站内护理临时猫图 | Station | temporary / first-play | 111.0 | 150.0 |
+| rescue.bicycle-shelter.layout-b / B版布局停车棚观察区背景 | Rescue | temporary / preview-only | 21.8 | 200.0 |
+| city-map.forest-edge-concept / 林缘社区与后续森林地图画风计划 | CityMap | planned / preview-only | 无当前图 | 200.0 |
+| city-map.forest-edge.overview / 林缘社区整体构图候选 | CityMap | candidate / preview-only | 109.1 | 200.0 |
+| city-map.forest-edge.terrain / 林缘社区分层地面底图候选 | CityMap | candidate / preview-only | 77.1 | 200.0 |
+| city-map.forest-edge.place.parking / 林缘地图独立单车棚候选 | CityMap | candidate / preview-only | 20.3 | 60.0 |
+| city-map.forest-edge.place.yard / 林缘地图独立居民小院候选 | CityMap | candidate / preview-only | 21.5 | 60.0 |
+| city-map.forest-edge.place.porch / 林缘地图独立临街门廊候选 | CityMap | candidate / preview-only | 24.1 | 60.0 |
+| city-map.forest-edge.place.park / 林缘地图独立林缘公园候选 | CityMap | candidate / preview-only | 42.0 | 60.0 |
+| city-map.forest-edge.place.market / 林缘地图独立市场后院候选 | CityMap | candidate / preview-only | 17.4 | 60.0 |
+| city-map.forest-edge.place.riverside / 林缘地图独立河岸步道候选 | CityMap | candidate / preview-only | 19.7 | 60.0 |
+| city-map.forest-edge.place.shelter / 林缘地图独立救助站候选 | CityMap | candidate / preview-only | 56.2 | 60.0 |
+| rescue.forest-edge.scene.parking / 单车棚地点内背景候选 | Rescue | candidate / preview-only | 83.7 | 200.0 |
+| rescue.forest-edge.scene.yard / 居民小院地点内背景候选 | Rescue | candidate / preview-only | 71.2 | 200.0 |
+| rescue.forest-edge.scene.porch / 临街门廊地点内背景候选 | Rescue | candidate / preview-only | 61.6 | 200.0 |
+| rescue.forest-edge.scene.park / 林缘公园地点内背景候选 | Rescue | candidate / preview-only | 52.4 | 200.0 |
+| rescue.forest-edge.scene.market / 市场后院地点内背景候选 | Rescue | candidate / preview-only | 107.6 | 200.0 |
+| rescue.forest-edge.scene.riverside / 河岸步道地点内背景候选 | Rescue | candidate / preview-only | 49.7 | 200.0 |
+| city-map.forest-continuation / 后续森林衔接地图候选 | CityMap | candidate / preview-only | 133.1 | 200.0 |
+
+## 复核项
+
+- review: FirstPlayableScopeIncomplete
+- review: ImageOverPlan pet-motion.sit-rest public/pet-motion/sit-rest.png
+- review: NotApprovedForDelivery animal.cat-calico.map
+- review: NotApprovedForDelivery animal.cat-orange.map
+- review: NotApprovedForDelivery animal.cat.station-care
+- review: NotApprovedForDelivery animal.dog-white.map
+- review: NotApprovedForDelivery animal.dog.station-care
+- review: NotApprovedForDelivery animal.rabbit.map
+- review: NotApprovedForDelivery city-map.neighborhood
+- review: NotApprovedForDelivery city-map.place.parking
+- review: NotApprovedForDelivery city-map.place.porch
+- review: NotApprovedForDelivery city-map.place.shelter
+- review: NotApprovedForDelivery city-map.place.yard
+- review: NotApprovedForDelivery pet-motion.unity-atlas
+
+Reports: C:\Users\Admin\Documents\ChatGPT\猫狗休闲竖屏手机游戏\test-results\resource-catalog

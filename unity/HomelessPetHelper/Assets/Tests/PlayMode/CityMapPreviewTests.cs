@@ -230,11 +230,12 @@ namespace HomelessPetHelper.Tests.PlayMode
             var corners = new Vector3[4];
             foreach (Selectable control in _view.GetComponentsInChildren<Selectable>())
             {
+                LevelUiPlayTests.ScrollIntoView(control);
                 var rect = (RectTransform)control.transform;
                 bool isPlace = control.transform.parent.name == "MapArt";
-                Assert.That(rect.rect.width, Is.GreaterThanOrEqualTo(88), control.name);
-                Assert.That(rect.rect.height, Is.GreaterThanOrEqualTo(87), control.name);
-                if (!isPlace) Assert.That(rect.rect.height, Is.LessThanOrEqualTo(128), control.name);
+                Assert.That(rect.rect.width, Is.GreaterThanOrEqualTo(144), control.name);
+                Assert.That(rect.rect.height, Is.GreaterThanOrEqualTo(144), control.name);
+                if (!isPlace) Assert.That(rect.rect.height, Is.LessThanOrEqualTo(180), control.name);
                 rect.GetWorldCorners(corners);
                 foreach (Vector3 corner in corners)
                 {
@@ -245,7 +246,14 @@ namespace HomelessPetHelper.Tests.PlayMode
             }
             foreach (Text label in _view.GetComponentsInChildren<Text>())
             {
+                LevelUiPlayTests.ScrollIntoView(label);
                 var settings = label.GetGenerationSettings(label.rectTransform.rect.size);
+                if (label.resizeTextForBestFit && !string.IsNullOrWhiteSpace(label.text))
+                {
+                    // Measure the font size actually rendered on the current aspect ratio.
+                    settings.fontSize = label.cachedTextGenerator.fontSizeUsedForBestFit;
+                    settings.resizeTextForBestFit = false;
+                }
                 float height = new TextGenerator().GetPreferredHeight(label.text, settings) / label.pixelsPerUnit;
                 Assert.That(height, Is.LessThanOrEqualTo(label.rectTransform.rect.height + 2), label.name);
                 if (!string.IsNullOrWhiteSpace(label.text))
@@ -275,6 +283,7 @@ namespace HomelessPetHelper.Tests.PlayMode
 
         private void AssertHit(Button expected, RectTransform rect, Camera camera)
         {
+            LevelUiPlayTests.ScrollIntoView(expected);
             var pointer = new PointerEventData(EventSystem.current)
             {
                 position = RectTransformUtility.WorldToScreenPoint(camera, rect.TransformPoint(rect.rect.center))
@@ -318,7 +327,8 @@ namespace HomelessPetHelper.Tests.PlayMode
             image.Apply();
             RenderTexture.active = previous;
             Color32[] pixels = image.GetPixels32();
-            int illustrated = pixels.Count(p => p.g > p.r * 1.15f && p.g > p.b * 1.1f);
+            int illustrated = pixels.Count(p => Math.Max(p.r, Math.Max(p.g, p.b))
+                - Math.Min(p.r, Math.Min(p.g, p.b)) > 25 && p.g > p.b);
             Assert.That(illustrated, Is.GreaterThan(pixels.Length / 5), "Missing map artwork.");
             File.WriteAllBytes(path, image.EncodeToPNG());
             UnityEngine.Object.Destroy(image);

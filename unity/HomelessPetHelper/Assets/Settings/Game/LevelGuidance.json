@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "guides": [
+    {
+      "contextId": "field.yard.cleanup",
+      "mechanicId": "approach.cleanup.v1",
+      "steps": [
+        {
+          "captionKey": "guide.cleanup.tool",
+          "completionAction": "approach.tool.Litter",
+          "allowedActions": [
+            "approach.tool.Litter"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.clean",
+          "completionAction": "approach.clean.43",
+          "allowedActions": [
+            "approach.clean.43"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.weeds",
+          "completionAction": "approach.tool.Weeds",
+          "allowedActions": [
+            "approach.tool.Weeds"
+          ]
+        },
+        {
+          "captionKey": "guide.cleanup.clearWeeds",
+          "completionAction": "approach.clean.36",
+          "allowedActions": [
+            "approach.clean.36"
+          ]
+        }
+      ]
+    },
+    {
+      "contextId": "field.yard.puzzle",
+      "mechanicId": "approach.puzzle.v1",
+      "steps": [
+        {
+          "captionKey": "guide.puzzle.box",
+          "completionAction": "approach.box.43",
+          "allowedActions": [
+            "approach.box.43"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.move",
+          "completionAction": "approach.move.44",
+          "allowedActions": [
+            "approach.move.44"
+          ]
+        },
+        {
+          "captionKey": "guide.puzzle.bridge",
+          "completionAction": "approach.bridge.36",
+          "allowedActions": [
+            "approach.bridge.36"
+          ]
+        }
+      ]
+    },
+    {
+      "contextId": "siege.field",
+      "mechanicId": "siege.deploy.v1",
+      "steps": [
+        {
+          "captionKey": "guide.siege.card",
+          "completionAction": "siege.card",
+          "allowedActions": [
+            "siege.card"
+          ]
+        },
+        {
+          "captionKey": "guide.siege.route",
+          "completionAction": "siege.route",
+          "allowedActions": [
+            "siege.card",
+            "siege.route"
+          ]
+        },
+        {
+          "captionKey": "guide.siege.submit",
+          "completionAction": "siege.submit",
+          "allowedActions": [
+            "siege.submit"
+          ]
+        }
+      ]
+    }
+  ]
+}

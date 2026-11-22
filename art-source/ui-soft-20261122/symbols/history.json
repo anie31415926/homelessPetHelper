@@ -1,0 +1,185 @@
+{
+  "prompt": [
+    3,
+    "982f6ec1-500a-4798-8892-da96f202082e",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Use case: stylized-concept. Production UI sprite for a fresh, cute, cozy animal rescue mobile game. Use image 1 for canvas and shape placement ONLY; image 2 is the actual game watercolor yard for style and palette reference ONLY. Do not draw any scenery. Fresh storybook watercolor illustration, soft rounded friendly forms, pastel mint and cream with peach accents, clean luminous colors, very subtle brush texture. No aging, no sepia, no bronze, no heavy dark outlines, no sharp corners, no plastic shine, no embossed bevels, no 3D rendering, no realistic shadows. PURE WHITE #ffffff background outside the object with a clean silhouette suitable for alpha extraction. No text or letters or numbers or logos or watermark. Render EIGHT friendly little handpainted pastel UI icons in exactly FOUR COLUMNS and TWO ROWS, evenly centered in cells. Top row left to right: two thick mint green pause bars with rounded ends; a cream checklist sheet with mint ticks; a simple rounded flower-shaped peach settings cog; a cream little house with mint roof. Bottom row left to right: one coral-pink animal pawprint with four round toes; a mint green play triangle with rounded corners; a teal musical eighth note; a pale sage speaker with two curved sound waves. Each icon fills only the central 48% of its cell. Soft watercolor wash, gentle warm green or coral fine outlines. No circular or square backgrounds, no shadows, no labels, no extra elements. All space between icons stays pure white.",
+          "negative_prompt": "text, typography, letters, numbers, watermark, photorealistic, 3d render, glossy bevel, aged parchment, yellowed paper, distressed grain, brown outlines, dark olive, mustard, hard corners, metallic, heavy drop shadow, scenery, screenshot, extra objects",
+          "resolution": 0,
+          "images.image_1": [
+            "20",
+            0
+          ],
+          "images.image_2": [
+            "21",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112254,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "ui-soft-20261122/symbols"
+        }
+      },
+      "20": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "ui-soft-20261122/symbols-guide.png"
+        }
+      },
+      "21": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "ui-soft-20261122/T_Outing_Yard.jpg"
+        }
+      }
+    },
+    {
+      "client_id": "ui-soft-20261122",
+      "create_time": 1795319845213
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "symbols_00001_.png",
+          "subfolder": "ui-soft-20261122",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "982f6ec1-500a-4798-8892-da96f202082e",
+          "timestamp": 1795319845214
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6",
+            "21"
+          ],
+          "prompt_id": "982f6ec1-500a-4798-8892-da96f202082e",
+          "timestamp": 1795319845228
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "982f6ec1-500a-4798-8892-da96f202082e",
+          "timestamp": 1795319862966
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}
