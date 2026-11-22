@@ -249,6 +249,40 @@ namespace HomelessPetHelper.Tests.PetMotion
         }
 
         [UnityTest]
+        public IEnumerator PostureTransitionsPreservePartOrderAndRestoreItOnCancellation()
+        {
+            yield return Load();
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Folder + "/Widget_PetMotion.prefab");
+            var authored = prefab.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .ToDictionary(renderer => renderer.name, renderer => renderer.sortingOrder);
+            var renderers = _player.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            foreach (var renderer in renderers)
+                Assert.That(renderer.sortingOrder, Is.EqualTo(authored[renderer.name]));
+
+            _player.Playing = true;
+            _player.Select(4);
+            _player.TransitionTo(0, .5f);
+            var standing = _player.GetComponentsInChildren<SkinnedMeshRenderer>()
+                .Where(renderer => renderer.name != "sit").ToArray();
+            Assert.That(standing.Length, Is.EqualTo(5));
+            int offset = standing[0].sortingOrder - authored[standing[0].name];
+            Assert.That(offset, Is.GreaterThan(authored.Values.Max() - authored.Values.Min()));
+            foreach (var renderer in standing)
+                Assert.That(renderer.sortingOrder - authored[renderer.name], Is.EqualTo(offset));
+
+            _player.SetSource(true);
+            _player.SetSource(false);
+            Assert.That(_player.Transitioning, Is.False);
+            foreach (var renderer in renderers)
+                Assert.That(renderer.sortingOrder, Is.EqualTo(authored[renderer.name]));
+            _player.TransitionTo(4, .5f);
+            _player.Seek(.2f);
+            foreach (var renderer in renderers)
+                Assert.That(renderer.sortingOrder, Is.EqualTo(authored[renderer.name]));
+            yield return Unload();
+        }
+
+        [UnityTest]
         public IEnumerator InsetScreenDropdownRemainsReadableAndSelectable()
         {
             yield return Load();

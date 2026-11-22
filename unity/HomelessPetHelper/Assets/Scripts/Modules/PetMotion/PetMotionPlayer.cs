@@ -41,6 +41,8 @@ namespace HomelessPetHelper.Modules.PetMotion
         private bool _fromSnapshot;
         private Vector3 _rootFrom;
         private Renderer[][] _postureRenderers;
+        private int[][] _restSortingOrders;
+        private int _postureSortingSpan;
         private readonly float[] _opacity = { 1, 0, 0 };
         private MaterialPropertyBlock _block;
 
@@ -67,6 +69,21 @@ namespace HomelessPetHelper.Modules.PetMotion
             _postureRenderers[PostureStand] = Collect(_standing);
             _postureRenderers[PostureSit] = Collect(_sit);
             _postureRenderers[PostureSide] = Collect(_side);
+            _restSortingOrders = new int[PostureCount][];
+            int lowest = 0, highest = 0;
+            for (int posture = 0; posture < PostureCount; posture++)
+            {
+                Renderer[] renderers = _postureRenderers[posture];
+                _restSortingOrders[posture] = new int[renderers.Length];
+                for (int i = 0; i < renderers.Length; i++)
+                {
+                    int order = renderers[i].sortingOrder;
+                    _restSortingOrders[posture][i] = order;
+                    lowest = Mathf.Min(lowest, order);
+                    highest = Mathf.Max(highest, order);
+                }
+            }
+            _postureSortingSpan = highest - lowest + 1;
             // 属性块默认不写就是 1，先把缓存值和渲染器对齐，否则首次淡入会跳过写入而整只弹出。
             for (int posture = 0; posture < PostureCount; posture++)
                 ApplyOpacity(posture, posture == PostureStand ? 1 : 0);
@@ -169,6 +186,7 @@ namespace HomelessPetHelper.Modules.PetMotion
             _blending = false;
             _fromSnapshot = false;
             SetVisible();
+            SetSorting(PostureOf(_action));
             Sample();
         }
 
@@ -341,17 +359,18 @@ namespace HomelessPetHelper.Modules.PetMotion
         }
 
         /// <summary>
-        /// 同队列的透明层按距离排序，两个姿态叠在一起时顺序不稳定；
-        /// 给目标姿态固定更高的 sortingOrder，避免猫身体内部的层次在过渡中跳动。
+        /// 跨姿态时统一提升目标组，同时保留作者设置的身体部件遮挡顺序。
+        /// 结束或取消过渡后恢复原层级，避免透明网格退回不稳定的距离排序。
         /// </summary>
         private void SetSorting(int front)
         {
+            bool bridging = _blending && !_fromSnapshot && !IsSamePosture(_fromAction, _action);
             for (int posture = 0; posture < PostureCount; posture++)
             {
-                int order = posture == front ? 1 : 0;
+                int offset = bridging && posture == front ? _postureSortingSpan : 0;
                 Renderer[] renderers = _postureRenderers[posture];
                 for (int i = 0; i < renderers.Length; i++)
-                    renderers[i].sortingOrder = order;
+                    renderers[i].sortingOrder = _restSortingOrders[posture][i] + offset;
             }
         }
 
