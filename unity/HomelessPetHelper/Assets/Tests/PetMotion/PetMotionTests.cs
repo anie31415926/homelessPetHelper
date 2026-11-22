@@ -187,6 +187,68 @@ namespace HomelessPetHelper.Tests.PetMotion
         }
 
         [UnityTest]
+        public IEnumerator TransitionBlendsTowardsTargetInsteadOfSnapping()
+        {
+            yield return Load();
+            var rig = _player.GetComponentsInChildren<Transform>(true).Single(x => x.name == "Rig");
+            _player.Select(0);
+            Assert.That(Mathf.Abs(rig.localPosition.x), Is.LessThan(.01f),
+                "Idle should rest at the rig origin.");
+            _player.Playing = true;
+            _player.TransitionTo(3, .6f);
+            Assert.That(_player.Transitioning, Is.True);
+            Assert.That(_player.Action, Is.EqualTo(3));
+            yield return new WaitForSecondsRealtime(.15f);
+            Assert.That(_player.Transitioning, Is.True, "Transition should still be running.");
+            float mid = rig.localPosition.x;
+            Assert.That(Mathf.Abs(mid), Is.GreaterThan(1f), "Blend should have left the idle pose.");
+            Assert.That(Mathf.Abs(mid), Is.LessThan(46f),
+                "Blend should not jump straight to the walk origin offset.");
+            yield return new WaitForSecondsRealtime(.7f);
+            Assert.That(_player.Transitioning, Is.False);
+            Assert.That(_player.Action, Is.EqualTo(3));
+            yield return Unload();
+        }
+
+        [UnityTest]
+        public IEnumerator CrossPostureTransitionShowsBothPosturesWhileFading()
+        {
+            yield return Load();
+            _player.Playing = true;
+            _player.Select(0);
+            _player.TransitionTo(4, .3f);
+            Assert.That(_player.Transitioning, Is.True);
+            Assert.That(_player.GetComponentsInChildren<SkinnedMeshRenderer>().Length, Is.EqualTo(6),
+                "Stand and sit should both render during the cross-posture fade.");
+            yield return new WaitForSecondsRealtime(.5f);
+            Assert.That(_player.Transitioning, Is.False);
+            Assert.That(_player.GetComponentsInChildren<SkinnedMeshRenderer>().Length, Is.EqualTo(1),
+                "Only the sit posture should remain after the fade.");
+            yield return Unload();
+        }
+
+        [UnityTest]
+        public IEnumerator InterruptingTransitionKeepsTheCurrentBlend()
+        {
+            yield return Load();
+            var rig = _player.GetComponentsInChildren<Transform>(true).Single(x => x.name == "Rig");
+            _player.Playing = true;
+            _player.Select(0);
+            _player.TransitionTo(3, .5f);
+            yield return new WaitForSecondsRealtime(.2f);
+            Assert.That(_player.Transitioning, Is.True);
+            float before = rig.localPosition.x;
+            _player.TransitionTo(2, .3f);
+            Assert.That(Mathf.Abs(rig.localPosition.x - before), Is.LessThan(.01f),
+                "Interrupting should resume from the current blend, not snap back to the old pose.");
+            Assert.That(_player.Transitioning, Is.True);
+            Assert.That(_player.Action, Is.EqualTo(2));
+            yield return new WaitForSecondsRealtime(.4f);
+            Assert.That(_player.Transitioning, Is.False);
+            yield return Unload();
+        }
+
+        [UnityTest]
         public IEnumerator InsetScreenDropdownRemainsReadableAndSelectable()
         {
             yield return Load();

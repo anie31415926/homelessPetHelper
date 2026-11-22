@@ -1,6 +1,10 @@
 Shader "HomelessPetHelper/Preview/PetMotion"
 {
-    Properties { _MainTex ("Texture", 2D) = "white" {} }
+    Properties
+    {
+        _MainTex ("Texture", 2D) = "white" {}
+        _Opacity ("Opacity", Range(0, 1)) = 1
+    }
     SubShader
     {
         Tags { "Queue"="Transparent" "RenderType"="Transparent" }
@@ -15,6 +19,7 @@ Shader "HomelessPetHelper/Preview/PetMotion"
             struct appdata { float4 vertex : POSITION; float2 uv : TEXCOORD0; float2 crop : TEXCOORD1; };
             struct v2f { float4 vertex : SV_POSITION; float2 uv : TEXCOORD0; float2 crop : TEXCOORD1; };
             sampler2D _MainTex;
+            float _Opacity;
             v2f vert (appdata v)
             {
                 v2f o; o.vertex = UnityObjectToClipPos(v.vertex); o.uv = v.uv; o.crop = v.crop; return o;
@@ -23,7 +28,11 @@ Shader "HomelessPetHelper/Preview/PetMotion"
             {
                 // Border triangles retain the old weights; discard UVs outside their padded region.
                 clip(min(min(i.crop.x, i.crop.y), min(1-i.crop.x, 1-i.crop.y)));
-                fixed4 c = tex2D(_MainTex, i.uv); clip(c.a - 0.01); return c;
+                fixed4 c = tex2D(_MainTex, i.uv);
+                // Trim by the source alpha first, so fading out cannot reveal the padded region.
+                clip(c.a - 0.01);
+                c.a *= saturate(_Opacity);
+                return c;
             }
             ENDCG
         }

@@ -39,7 +39,7 @@ namespace HomelessPetHelper.Modules.PetMotion
             _progress.SetValueWithoutNotify(_player.TimeSeconds / _player.Duration);
         }
 
-        private void Select(int value) { _player.Select(value); Sync(); }
+        private void Select(int value) { _player.TransitionTo(value); Sync(); }
         private void Play(bool value) => _player.Playing = value;
         private void Source(bool value) => _player.SetSource(value);
         private void Speed(float value) => _player.SetSpeed(value);
