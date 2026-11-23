@@ -20,6 +20,7 @@ namespace HomelessPetHelper.Game
         [SerializeField] private CityMapView _map;
         [SerializeField] private SiegeTrialView _siege;
         [SerializeField] private Approach.ApproachPanelView _approach;
+        [SerializeField] private CityMap.Travel.MapTravelView _travel;
         [SerializeField] private AudioScope[] _audioScopes = Array.Empty<AudioScope>();
         public MainLoopPresenter Presenter { get; private set; }
         public MainAudioSession Audio { get; private set; }
@@ -75,7 +76,7 @@ namespace HomelessPetHelper.Game
                 scope.Bind(Audio.Playback);
             }
             Presenter = new MainLoopPresenter(_station, _map, _siege, _approach, _content, Audio.Playback,
-                _progressStorage ?? CreateProgressStorage(), _outingSeedSource, Audio, Guidance, PlaySettings);
+                _progressStorage ?? CreateProgressStorage(), _outingSeedSource, Audio, Guidance, PlaySettings, _travel);
             _bootstrap.BindSession(Presenter.Session);
             Music = new MainMusicSession(Audio.Playback, _content.MusicCatalog);
             RefreshMusic();

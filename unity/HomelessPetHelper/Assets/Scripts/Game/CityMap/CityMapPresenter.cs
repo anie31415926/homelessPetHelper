@@ -32,10 +32,13 @@ namespace HomelessPetHelper.Game.CityMap
         private string _feedbackKey = "ready";
         private string _externalFeedback;
         private bool _disposed;
+        private bool _travelling;
+        private readonly Func<string, Func<bool>, Action<bool>, bool> _beginTravel;
 
         public CityMapPresenter(CityMapView view, TextAsset text, CityMapPreviewConfig config,
             GameLoopSession loop = null, Action departed = null, Action returned = null,
-            Func<MapDeparturePlan, string> departureRestriction = null, bool hasOpeningRoute = false)
+            Func<MapDeparturePlan, string> departureRestriction = null, bool hasOpeningRoute = false,
+            Func<string, Func<bool>, Action<bool>, bool> beginTravel = null)
         {
             if (view == null) throw new ArgumentNullException(nameof(view));
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -45,6 +48,7 @@ namespace HomelessPetHelper.Game.CityMap
             _returned = returned;
             _departureRestriction = departureRestriction;
             _hasOpeningRoute = hasOpeningRoute;
+            _beginTravel = beginTravel;
             _text = new OptionPreviewText(text);
             _config.ValidateText(_text);
             _view.ValidateDefinition(config.Definition.BackgroundId,
@@ -119,7 +123,7 @@ namespace HomelessPetHelper.Game.CityMap
 
         private void Select(string pointId)
         {
-            if (_disposed || _paused || _outing.Session.Stage != OutingStage.MapSelecting) return;
+            if (_disposed || _paused || _travelling || _outing.Session.Stage != OutingStage.MapSelecting) return;
             MapPointView point = _rules.BuildSnapshot().Points.SingleOrDefault(item => item.PointId == pointId);
             if (point == null || point.DisplayState == PointDisplayState.Locked) return;
             _selection = pointId;
@@ -130,7 +134,7 @@ namespace HomelessPetHelper.Game.CityMap
 
         private void Act()
         {
-            if (_disposed || _paused) return;
+            if (_disposed || _paused || _travelling) return;
             _externalFeedback = null;
             var session = _outing.Session;
             if (session.IsSettled)
@@ -146,6 +150,20 @@ namespace HomelessPetHelper.Game.CityMap
                 return;
             }
 
+            if (session.Stage == OutingStage.MapSelecting && _beginTravel != null)
+            {
+                string pointId = _selection;
+                CanDepart(pointId, out var plan, out _);
+                Guid sessionId = session.SessionId, requestId = plan.RequestId;
+                _travelling = true;
+                Refresh();
+                bool accepted = _beginTravel(pointId,
+                    () => CommitDeparture(sessionId, pointId, requestId),
+                    _ => { if (!_disposed) { _travelling = false; Refresh(); } });
+                if (!accepted) { _travelling = false; Refresh(); }
+                return;
+            }
+
             bool success = session.Stage == OutingStage.MapSelecting ?
                 _outing.TrySelectAndDepart(session.SessionId, _selection, out var failure) :
                 _outing.TryEndUnresolved(session.SessionId, out _, out failure);
@@ -157,6 +175,21 @@ namespace HomelessPetHelper.Game.CityMap
                 if (session.IsSettled) _returned?.Invoke();
                 else _departed?.Invoke();
             }
+        }
+
+        private bool CommitDeparture(Guid sessionId, string pointId, Guid requestId)
+        {
+            if (_disposed || _paused || !_view.isActiveAndEnabled ||
+                _outing.Session.SessionId != sessionId ||
+                _outing.Session.Stage != OutingStage.MapSelecting ||
+                !CanDepart(pointId, out var plan, out _) || plan.RequestId != requestId)
+                return false;
+            bool success = _outing.TrySelectAndDepart(sessionId, pointId, out var failure);
+            _feedbackKey = success ? "ready" :
+                failure == OutingAssemblyFailure.StationFull ? "full" : "failure";
+            if (success) _departed?.Invoke();
+            else Refresh();
+            return success;
         }
 
         private void Pause(bool paused)
@@ -174,7 +207,7 @@ namespace HomelessPetHelper.Game.CityMap
 
         private void Cancel()
         {
-            if (_disposed || _paused || _outing.Session.Stage != OutingStage.MapSelecting) return;
+            if (_disposed || _paused || _travelling || _outing.Session.Stage != OutingStage.MapSelecting) return;
             _externalFeedback = null;
             if (!_outing.TryEndUnresolved(_outing.Session.SessionId, out _, out _))
                 _feedbackKey = "failure";
@@ -204,11 +237,11 @@ namespace HomelessPetHelper.Game.CityMap
             _view.Render(_text.Get("status", _station.AvailableTemporaryPlaces, _clock.Current.ElapsedMinutes),
                 heading, details, selecting ? GetDeparturePreview(plan) : string.Empty,
                 _paused ? _text.Get("paused") : feedback, _text.Get(command),
-                selecting, _paused, !selecting || canDepart);
+                selecting, _paused || _travelling, !selecting || canDepart);
             foreach (MapPointView point in snapshot.Points)
                 _view.RenderPoint(point.PointId, _text.Get(point.DisplayNameKey),
                     _text.Get("point." + point.DisplayState), point.DisplayState, point.PointId == _selection,
-                    selecting && !_paused && point.DisplayState != PointDisplayState.Locked);
+                    selecting && !_paused && !_travelling && point.DisplayState != PointDisplayState.Locked);
         }
 
         private string GetDetails(MapPointView point)

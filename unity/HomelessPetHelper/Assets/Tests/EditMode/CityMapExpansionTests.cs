@@ -127,7 +127,8 @@ namespace HomelessPetHelper.Tests.EditMode
                 }
                 finally { UnityEngine.Object.DestroyImmediate(wrong); }
             }
-            foreach (string error in new[] { "duplicate-id", "duplicate-button", "missing-label", "missing-state" })
+            foreach (string error in new[] { "duplicate-id", "duplicate-button", "missing-label", "missing-state",
+                "missing-selection" })
             {
                 string message = error.StartsWith("missing", StringComparison.Ordinal) ?
                     "Incomplete city map point binding" : "Duplicate city map point ID or button";
@@ -370,6 +371,8 @@ namespace HomelessPetHelper.Tests.EditMode
                     binding.FindPropertyRelative("_label").objectReferenceValue = node.GetComponentInChildren<Text>();
                     binding.FindPropertyRelative("_stateLabel").objectReferenceValue = node
                         .GetComponentsInChildren<Text>().Single(label => label.name == "State");
+                    binding.FindPropertyRelative("_selectionOutline").objectReferenceValue =
+                        node.GetComponentInChildren<Outline>(true);
                 }
                 CorruptBinding(bindings, corrupt);
                 serialized.ApplyModifiedPropertiesWithoutUndo();
@@ -407,10 +410,12 @@ namespace HomelessPetHelper.Tests.EditMode
                     second.FindPropertyRelative("_pointId").stringValue =
                         first.FindPropertyRelative("_pointId").stringValue;
                 else if (corrupt == "duplicate-button")
-                    foreach (string field in new[] { "_button", "_highlight", "_label", "_stateLabel" })
+                    foreach (string field in new[] { "_button", "_highlight", "_label", "_stateLabel",
+                        "_selectionOutline" })
                         second.FindPropertyRelative(field).objectReferenceValue =
                             first.FindPropertyRelative(field).objectReferenceValue;
-                else second.FindPropertyRelative(corrupt == "missing-state" ? "_stateLabel" : "_label")
+                else second.FindPropertyRelative(corrupt == "missing-state" ? "_stateLabel" :
+                    corrupt == "missing-selection" ? "_selectionOutline" : "_label")
                     .objectReferenceValue = null;
             }
         }

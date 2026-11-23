@@ -1,5 +1,6 @@
 using HomelessPetHelper.Modules.Animals;
 using System;
+using HomelessPetHelper.Game.CityMap.Travel;
 using System.Linq;
 using HomelessPetHelper.Bootstrap;
 using HomelessPetHelper.Framework.Audio;
@@ -58,8 +59,9 @@ namespace HomelessPetHelper.Game
             ApproachPanelView approach, GameContent content,
             AudioService audio = null, ISaveStorage progressStorage = null, Func<int> outingSeedSource = null,
             MainAudioSession audioSession = null, GuidanceProgressSession guidance = null,
-            Settings.PlaySettingsSession playSettings = null)
+            Settings.PlaySettingsSession playSettings = null, CityMap.Travel.MapTravelView travel = null)
         {
+            _travel = travel;
             _station = station;
             _map = map;
             _siege = siege;
@@ -80,6 +82,7 @@ namespace HomelessPetHelper.Game
             _petMotion = siege.GetComponent<SiegePetMotion>() ??
                 throw new InvalidOperationException("Missing animated animal binding.");
             _config = content.CreateMapConfig();
+            ValidateTravel();
             _text = new OptionPreviewText(content.StationText);
             _mapText = new OptionPreviewText(content.MapText);
             Progress = new MainProgressSession(_config, content.Artwork, progressStorage,
@@ -148,7 +151,8 @@ namespace HomelessPetHelper.Game
 
         private void SetFieldSuspended(bool suspended)
         {
-            Session.SetSuspended(suspended || !Progress.CanContinue);
+            _fieldSuspendedRequested = suspended;
+            Session.SetSuspended(suspended || _returnTravelling || !Progress.CanContinue);
             if (suspended) FlushFieldProgress();
         }
 
@@ -177,7 +181,8 @@ namespace HomelessPetHelper.Game
             _map.gameObject.SetActive(true);
             Session.SetSuspended(false);
             _mapPresenter = new CityMapPresenter(_map, _content.MapText, _config, Session,
-                EnterApproach, () => ShowStation(false), GetDepartureRestriction, hasOpeningRoute: true);
+                EnterApproach, () => ShowStation(false), GetDepartureRestriction,
+                hasOpeningRoute: true, beginTravel: BeginMapDeparture);
             _mapPresenter.ShowFeedback(_text.Get("save.outingBoundary"));
         }
 
@@ -312,6 +317,11 @@ namespace HomelessPetHelper.Game
 
         private void ReturnFromApproach()
         {
+            BeginFieldReturn(ReturnFromApproachImmediately);
+        }
+
+        private void ReturnFromApproachImmediately()
+        {
             Progress.Fields.Capture(Session);
             if (Session.TryReturnUnresolved(out var failure)) ShowStation(false);
             else _approach.ShowExternalFeedback(_text.Get("loop.failure." + failure));
@@ -398,6 +408,11 @@ namespace HomelessPetHelper.Game
 
         private void ReturnFromSiege()
         {
+            BeginFieldReturn(ReturnFromSiegeImmediately);
+        }
+
+        private void ReturnFromSiegeImmediately()
+        {
             if (!Progress.CanContinue) return;
             Progress.Fields.Capture(Session);
             bool rescued = _activity.IsRescueComplete;
@@ -444,6 +459,7 @@ namespace HomelessPetHelper.Game
         {
             if (_disposed) return;
             _disposed = true;
+            _travel?.Cancel();
             _station.SettingsRequested -= OpenStationSettings;
             if (_station != null) _station.SetSettingsAvailable(false);
             _approach.CheckpointRequested -= FlushFieldProgress;
@@ -455,6 +471,54 @@ namespace HomelessPetHelper.Game
             _siege.UnbindEncounter();
             _stationPresenter?.Dispose();
             Progress.Dispose();
+        }
+
+        private readonly MapTravelView _travel;
+        private bool _returnTravelling, _fieldSuspendedRequested;
+
+        private bool BeginMapDeparture(string pointId, Func<bool> commit, Action<bool> finished)
+        {
+            if (_travel == null) { bool success = commit(); finished(success); return true; }
+            return _travel.TryPlay(pointId, MapTravelDirection.Enter,
+                () => !_disposed && Progress.CanContinue && _map.isActiveAndEnabled && !_map.IsSuspended,
+                commit, finished);
+        }
+
+        private void BeginFieldReturn(Action commit)
+        {
+            if (_disposed || _returnTravelling || !Progress.CanContinue) return;
+            if (_travel == null) { commit(); return; }
+            string pointId = Session.Outing.Session.SelectedPointId;
+            Guid outingId = Session.Outing.Session.SessionId;
+            _returnTravelling = true;
+            Session.SetSuspended(true);
+            bool accepted = _travel.TryPlay(pointId, MapTravelDirection.Exit,
+                () => !_disposed && Progress.CanContinue &&
+                    Session.Outing.Session.SessionId == outingId &&
+                    (_approach.isActiveAndEnabled || _siege.isActiveAndEnabled),
+                () =>
+                {
+                    _returnTravelling = false;
+                    Session.SetSuspended(_fieldSuspendedRequested);
+                    commit();
+                    return Session.Outing.Session.IsSettled;
+                }, _ => FinishFieldReturn());
+            if (!accepted) FinishFieldReturn();
+        }
+
+        private void FinishFieldReturn()
+        {
+            _returnTravelling = false;
+            if (!_disposed && Progress.CanContinue)
+            {
+                if (Session.Outing.Session.IsSettled) _fieldSuspendedRequested = false;
+                Session.SetSuspended(_fieldSuspendedRequested);
+            }
+        }
+
+        private void ValidateTravel()
+        {
+            _travel?.Validate(_config.Definition.Points.Select(point => point.PointId));
         }
 
         private void UnsubscribeBattle()

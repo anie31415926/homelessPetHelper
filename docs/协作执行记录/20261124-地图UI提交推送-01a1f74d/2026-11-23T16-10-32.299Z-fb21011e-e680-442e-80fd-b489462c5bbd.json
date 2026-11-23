@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261124-地图UI提交推送-01a1f74d.md",
+  "sessionId": "01a1f74d-412d-7613-a27d-fae91bb606ef",
+  "phase": "start",
+  "readAt": "2026-11-23T16:10:32.299Z",
+  "writePaths": [
+    "docs/协作任务/20261123-地图UI规范整改-01a1f74d.md",
+    "docs/协作任务/20261124-地图UI提交推送-01a1f74d.md",
+    "docs/协作执行记录/20261123-地图UI规范整改-01a1f74d/",
+    "docs/协作执行记录/20261124-地图UI提交推送-01a1f74d/",
+    "docs/地图UI规范检查与整改.md",
+    "docs/当前协作状态.md",
+    "test-results/map-ui-push/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_CityMap.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/CityMap/CityMapUiRefinementAuthor.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/CityMap/CityMapUiRefinementAuthor.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Outing/UI/CityMapPointBinding.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Outing/UI/CityMapView.cs",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/CityMapExpansionTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/CityMapUiRefinementTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/CityMapUiRefinementTests.cs.meta"
+  ],
+  "contextDigest": "dee643e62f8c5e3879273fc2bfa04ad9561d6ed8f7886e64de7de49ce1487e05",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-地图双向过渡-01a1f73e.md",
+      "sha256": "b0fdb1d87eb4485976c55b529b235ecc9875fd9be67c60ea8f1238811d4751a1"
+    },
+    {
+      "path": "docs/协作任务/20261124-地图UI提交推送-01a1f74d.md",
+      "sha256": "2b28c6e1a40d18c013517a23ca3bdde185fb771f4ed36b45be4d8d89bf5d2edf"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "4c64d59b9f55a6c2f95c8d91426a8c38e0b120b648adbd4eaf548489a2d9f439"
+    }
+  ]
+}
