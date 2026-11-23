@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261124-双向过渡提交推送-01a1f73e.md",
+  "sessionId": "01a1f73e-aef3-7dc0-bc1a-9f850afd1d31",
+  "phase": "start",
+  "readAt": "2026-11-23T16:31:46.839Z",
+  "writePaths": [
+    "docs/协作任务/20261123-地图双向过渡-01a1f73e.md",
+    "docs/协作任务/20261124-双向过渡提交推送-01a1f73e.md",
+    "docs/协作执行记录/20261123-地图双向过渡-01a1f73e/2026-11-23T15-53-09.838Z-3e4e9ce9-23cc-46d3-91aa-fd1b2f24b0de.json",
+    "docs/协作执行记录/20261123-地图双向过渡-01a1f73e/2026-11-23T16-01-52.723Z-e83cce87-58aa-4fa3-9928-25acf93218b6.json",
+    "docs/协作执行记录/20261123-地图双向过渡-01a1f73e/2026-11-23T16-12-36.462Z-7efaa5a6-28d0-4781-880e-34845f090b21.json",
+    "docs/协作执行记录/20261123-地图双向过渡-01a1f73e/2026-11-23T16-24-55.020Z-da996080-acc5-45dc-97dd-2a7270952eda.json",
+    "docs/协作执行记录/20261124-双向过渡提交推送-01a1f73e/",
+    "docs/地图交互点与双向过渡.md",
+    "test-results/map-travel-push/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_MapTravel.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_MapTravel.prefab.meta",
+    "unity/HomelessPetHelper/Assets/Scenes/Main.unity",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/CityMap/MapTravelAuthor.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/CityMap/MapTravelAuthor.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/CityMapPresenter.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/Travel.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/Travel/MapPointVisual.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/Travel/MapPointVisual.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/Travel/MapTravelDirection.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/Travel/MapTravelDirection.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/Travel/MapTravelPointBinding.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/Travel/MapTravelPointBinding.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/Travel/MapTravelSequence.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/Travel/MapTravelSequence.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/Travel/MapTravelStep.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/Travel/MapTravelStep.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/Travel/MapTravelView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/Travel/MapTravelView.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainGameRoot.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainLoopPresenter.cs",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/MapTravelTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/MapTravelTests.cs.meta",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/MapTravelPlayTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/MapTravelPlayTests.cs.meta"
+  ],
+  "contextDigest": "f3b604938efb4f698b396803c168f9e5d528d2a6c6eee8b2262d7905719b0343",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261124-双向过渡提交推送-01a1f73e.md",
+      "sha256": "55069d5c0876a9f779f3ed2e9bae0359769e1f7fb54057df18c7ab4a4aa85e57"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "7af59f2bd53382f13dfc008ef9214c0808f7259d95daf9141011f659e98526d3"
+    }
+  ]
+}
