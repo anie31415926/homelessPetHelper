@@ -17,7 +17,7 @@ namespace HomelessPetHelper.Editor
     public static class MainSceneAuthor
     {
         public const string MainPath = "Assets/Scenes/Main.unity";
-        public const string FontPath = "Assets/Art/Fonts/NotoSansSC-Game.ttf";
+        public const string FontPath = "Assets/Art/Fonts/PetRound-Game.ttf";
 
         [MenuItem("Homeless Pet Helper/Open Main Game")]
         public static void Open()

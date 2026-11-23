@@ -4,6 +4,7 @@ using HomelessPetHelper.Modules.Animals.UI;
 using System.Collections.Generic;
 using System.Linq;
 using HomelessPetHelper.Modules.Station.Cleaning;
+using HomelessPetHelper.Framework.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +20,7 @@ namespace HomelessPetHelper.Modules.Station.UI
         [SerializeField] private Text _capacity;
         [SerializeField] private Text _name;
         [SerializeField] private Text _condition;
+        [SerializeField] private Text _careAvailability;
         [SerializeField] private Text _progress;
         [SerializeField] private Text _feedback;
         [SerializeField] private Image _summaryAnimal;
@@ -43,17 +45,21 @@ namespace HomelessPetHelper.Modules.Station.UI
         [SerializeField] private Habitat.StationSceneChrome _chrome;
         private bool _focused = true;
         private bool _applicationPaused;
+        private bool _overlaySuspended;
+        private ILevelOverlay _overlay;
         private readonly List<StationAnimalView> _extraAnimals = new List<StationAnimalView>();
 
         public event Action<StationCommand> CommandRequested;
         public event Action<int> AnimalSelected;
         public event Action<Vector2, int> StrokeRequested;
         public event Action<bool> SuspensionChanged;
+        public event Action SettingsRequested;
 
         public DirtSurfaceView Surface => _surface;
         public Habitat.StationHabitatView Habitat => _habitat;
         public Habitat.StationSceneView Scene => _scene;
         public bool IsSceneLayout => _chrome != null;
+        public RectTransform MenuTarget => _chrome != null ? _chrome.MenuTarget : null;
         public StationAnimalView[] Animals => _animals.Concat(_extraAnimals).ToArray();
 
         public void EnsureRosterSize(int count)
@@ -76,6 +82,21 @@ namespace HomelessPetHelper.Modules.Station.UI
         }
 
         public void SetHistoryAvailable(bool available) => _history.interactable = available;
+        public void SetSettingsAvailable(bool available)
+        { if (_chrome != null) _chrome.SetSettingsAvailable(available); }
+        public void RequestSettings() => SettingsRequested?.Invoke();
+        public void BindOverlay(ILevelOverlay overlay) => _overlay = overlay;
+        public void SetOverlaySuspended(bool suspended)
+        {
+            _overlaySuspended = suspended;
+            _chrome.SetOverlayCovered(suspended);
+            RefreshSuspension();
+        }
+        public void ShowBlockingError(string title, string message)
+        {
+            _feedback.text = message;
+            _chrome?.ShowBlockingError(title, message);
+        }
         public void SetQuietSpaceAvailable(bool available) => _quietSpace.gameObject.SetActive(available);
 
         public void ApplyFont(Font font)
@@ -124,6 +145,11 @@ namespace HomelessPetHelper.Modules.Station.UI
         {
             _name.text = name;
             _condition.text = condition;
+            if (_careAvailability != null)
+            {
+                _careAvailability.text = care.Explanation;
+                _careAvailability.gameObject.SetActive(!cleaning && !string.IsNullOrEmpty(care.Explanation));
+            }
             if (_chrome != null)
             {
                 _condition.gameObject.SetActive(!cleaning);
@@ -160,7 +186,7 @@ namespace HomelessPetHelper.Modules.Station.UI
             if (_scene != null) _scene.SetSuspended(suspended);
             if (_chrome != null) _chrome.SetSuspended(suspended);
             _actions.interactable = !suspended;
-            _actions.alpha = suspended ? 0.45f : 1;
+            _actions.alpha = 1;
             _restart.interactable = !suspended;
         }
 
@@ -236,18 +262,21 @@ namespace HomelessPetHelper.Modules.Station.UI
         private void OnApplicationFocus(bool focused)
         {
             _focused = focused;
+            _overlay?.SetApplicationFocus(focused);
             RefreshSuspension();
         }
 
         private void OnApplicationPause(bool paused)
         {
             _applicationPaused = paused;
+            _overlay?.SetApplicationPaused(paused);
             RefreshSuspension();
         }
 
         private void RefreshSuspension()
         {
-            SuspensionChanged?.Invoke(_pause.isOn || !_focused || _applicationPaused || !isActiveAndEnabled);
+            SuspensionChanged?.Invoke(_pause.isOn || _overlaySuspended || !_focused ||
+                _applicationPaused || !isActiveAndEnabled);
         }
     }
 }

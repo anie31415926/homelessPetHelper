@@ -94,11 +94,13 @@ namespace HomelessPetHelper.Game
                 _station.ShowPage(false, false, false);
                 _station.SetSuspended(true);
                 _station.SetSessionCommand(_text.Get("loop.outing"), false);
-                _station.SetStatus(string.Empty, string.Empty, _text.Get("save.loadFailed"));
+                _station.ShowBlockingError(_text.Get("save.errorTitle"), _text.Get("save.loadFailed"));
                 return;
             }
             _stationPresenter = new StationPreviewSession(station, content.StationText,
                 content.Artwork, content.Font, Session, OpenMap, Progress.Care, Checkpoint);
+            _station.SettingsRequested += OpenStationSettings;
+            _station.SetSettingsAvailable(_audioSession != null);
             _approach.CheckpointRequested += FlushFieldProgress;
             _station.gameObject.SetActive(true);
             Session.SetSuspended(false);
@@ -170,12 +172,33 @@ namespace HomelessPetHelper.Game
                 _stationPresenter.ReportOutingFailure(failure);
                 return;
             }
+            CloseOverlays();
             _station.gameObject.SetActive(false);
             _map.gameObject.SetActive(true);
             Session.SetSuspended(false);
             _mapPresenter = new CityMapPresenter(_map, _content.MapText, _config, Session,
                 EnterApproach, () => ShowStation(false), GetDepartureRestriction, hasOpeningRoute: true);
             _mapPresenter.ShowFeedback(_text.Get("save.outingBoundary"));
+        }
+
+        private void OpenStationSettings()
+        {
+            if (_disposed || !Progress.CanContinue || _audioSession == null || !_station.isActiveAndEnabled) return;
+            if (_overlays == null)
+            {
+                var target = _station.MenuTarget;
+                _overlays = new LevelOverlaySession(_station.GetComponent<LevelOverlayAnchor>().View,
+                    new LevelOverlayBindings(suspended =>
+                        {
+                            if (_station != null && _station.isActiveAndEnabled)
+                                _station.SetOverlaySuspended(suspended);
+                        },
+                        () => { },
+                        () => string.Empty, () => null, (overlay, guide) => _station.BindOverlay(overlay),
+                        (action, targets) => false, target, target),
+                    _audioSession, null, _uiText, _playSettings, settingsOnly: true);
+            }
+            _overlays.OpenStandaloneSettings();
         }
 
         private string GetDepartureRestriction(MapDeparturePlan plan)
@@ -421,6 +444,8 @@ namespace HomelessPetHelper.Game
         {
             if (_disposed) return;
             _disposed = true;
+            _station.SettingsRequested -= OpenStationSettings;
+            if (_station != null) _station.SetSettingsAvailable(false);
             _approach.CheckpointRequested -= FlushFieldProgress;
             UnsubscribeBattle();
             _playSettings.Changed -= ApplyPlaySettings;

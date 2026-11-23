@@ -18,6 +18,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         [SerializeField] private Button _menuButton;
         [SerializeField] private Button _menuClose;
         [SerializeField] private Button _history;
+        [SerializeField] private Button _settings;
         [SerializeField] private GameObject _menu;
         [SerializeField] private GameObject _footer;
         [SerializeField] private ToastView _notice;
@@ -25,10 +26,38 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         [SerializeField] private MotionScope _motion;
         [SerializeField] private Text _careFeedback;
         [SerializeField] private LayoutElement _careStageSize;
+        [SerializeField] private GameObject _blockingError;
+        [SerializeField] private Text _errorTitle, _errorMessage;
+        private bool _overlayCovered, _restoreMenu;
         private bool _summary;
         private string _message;
         private bool _caring;
         public bool MenuIsOpen => _menu.activeSelf;
+        public RectTransform MenuTarget => (RectTransform)_menuButton.transform;
+
+        public void SetSettingsAvailable(bool available)
+        { if (_settings != null) _settings.gameObject.SetActive(available); }
+
+        public void SetOverlayCovered(bool covered)
+        {
+            if (_overlayCovered == covered) return;
+            _overlayCovered = covered;
+            if (covered) { _restoreMenu = _menu.activeSelf; _menu.SetActive(false); _notice.Clear(); }
+            else { _menu.SetActive(_restoreMenu); _restoreMenu = false; }
+            RefreshBackdrop();
+        }
+
+        public void ShowBlockingError(string title, string message)
+        {
+            _menu.SetActive(false);
+            _restoreMenu = false;
+            _notice.Clear();
+            _errorTitle.text = title;
+            _errorMessage.text = message;
+            _blockingError.SetActive(true);
+            _menuButton.interactable = false;
+            RefreshBackdrop();
+        }
 
         public void SetSuspended(bool suspended)
         {
@@ -53,8 +82,10 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
 
         private void RefreshBackdrop()
         {
-            _backdrop.gameObject.SetActive(_summary || _menu.activeSelf || _detail.gameObject.activeSelf);
-            _backdrop.interactable = !_summary && !_caring;
+            bool error = _blockingError != null && _blockingError.activeSelf;
+            _backdrop.gameObject.SetActive(!_overlayCovered &&
+                (_summary || _menu.activeSelf || _detail.gameObject.activeSelf || error));
+            _backdrop.interactable = !_summary && !_caring && !error;
         }
 
         private void LateUpdate()
@@ -103,6 +134,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _menuButton.onClick.AddListener(ToggleMenu);
             _menuClose.onClick.AddListener(CloseMenu);
             _history.onClick.AddListener(CloseMenu);
+            _settings.onClick.AddListener(_owner.RequestSettings);
             _backdrop.onClick.AddListener(DismissTop);
         }
         private void OnDisable()
@@ -111,9 +143,13 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _menuButton.onClick.RemoveListener(ToggleMenu);
             _menuClose.onClick.RemoveListener(CloseMenu);
             _history.onClick.RemoveListener(CloseMenu);
+            _settings.onClick.RemoveListener(_owner.RequestSettings);
             _backdrop.onClick.RemoveListener(DismissTop);
             CloseMenu();
             _notice.Clear();
+            _blockingError.SetActive(false);
+            _menuButton.interactable = true;
+            _overlayCovered = _restoreMenu = false;
         }
         private void ToggleMenu()
         {

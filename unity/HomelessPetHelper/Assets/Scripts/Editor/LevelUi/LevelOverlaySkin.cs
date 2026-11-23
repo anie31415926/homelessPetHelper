@@ -6,6 +6,8 @@ using UnityEditor;
 using UnityEditor.U2D.Sprites;
 using UnityEngine;
 using UnityEngine.UI;
+using HomelessPetHelper.Framework.UI;
+using HomelessPetHelper.Framework.Audio.UI;
 using static HomelessPetHelper.Editor.Field.FieldAuthorUi;
 
 namespace HomelessPetHelper.Editor.LevelUi
@@ -84,15 +86,22 @@ namespace HomelessPetHelper.Editor.LevelUi
         internal void Button(Button button, bool primary, string icon = null, int size = 42)
         {
             Surface(button.GetComponent<Image>(), primary ? "Action" : "Secondary", true);
+            var metrics = AssetDatabase.LoadAssetAtPath<UiLayoutMetrics>("Assets/Settings/UI/LayoutMetrics.asset");
+            var audio = button.GetComponent<ButtonAudio>() ?? button.gameObject.AddComponent<ButtonAudio>();
+            audio.CueId = "ui.tap";
             var colors = button.colors;
             colors.normalColor = Color.white;
-            colors.highlightedColor = new Color32(247, 244, 223, 255);
-            colors.pressedColor = new Color32(207, 213, 180, 255);
-            colors.disabledColor = new Color32(175, 175, 164, 160);
+            colors.highlightedColor = metrics.buttonHover;
+            colors.pressedColor = metrics.buttonPressed;
+            colors.disabledColor = Color.white;
             button.colors = colors;
+            var state = button.GetComponent<PaperButtonState>() ?? button.gameObject.AddComponent<PaperButtonState>();
+            MainSceneAuthor.Bind(state, "_control", button);
+            MainSceneAuthor.Bind(state, "_surface", button.GetComponent<Image>());
+            MainSceneAuthor.Bind(state, "_metrics", metrics);
             var label = button.GetComponentInChildren<Text>(true);
             Text(label, size, TextAnchor.MiddleCenter);
-            label.color = primary ? Cream : Ink;
+            label.color = metrics.ink;
             var layout = Horizontal(button.transform, 16);
             layout.padding = new RectOffset(24, 24, 8, 8);
             layout.childForceExpandWidth = false;
@@ -101,7 +110,7 @@ namespace HomelessPetHelper.Editor.LevelUi
             labelSize.preferredWidth = 0;
             if (icon != null)
             {
-                var image = Icon(button.transform, icon, label.color);
+                var image = Icon(button.transform, icon, Color.white);
                 image.transform.SetAsFirstSibling();
                 var iconSize = Element(image.transform, 0);
                 iconSize.preferredWidth = 44;

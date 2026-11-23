@@ -4,11 +4,13 @@ namespace HomelessPetHelper.Modules.Station.UI
     {
         public bool CanWash { get; }
         public bool CanGroom { get; }
+        public string Explanation { get; }
 
-        public StationCareAvailability(bool canWash, bool canGroom)
+        public StationCareAvailability(bool canWash, bool canGroom, string explanation = null)
         {
             CanWash = canWash;
             CanGroom = canGroom;
+            Explanation = explanation;
         }
     }
 }

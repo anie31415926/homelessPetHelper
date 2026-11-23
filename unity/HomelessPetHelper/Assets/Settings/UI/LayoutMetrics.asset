@@ -32,3 +32,8 @@ MonoBehaviour:
   labelSize: 42
   auxiliarySize: 36
   ink: {r: 0.16470589, g: 0.23921569, b: 0.1882353, a: 1}
+  buttonHover: {r: 0.9764706, g: 0.9764706, b: 0.9490196, a: 1}
+  buttonPressed: {r: 0.827451, g: 0.89411765, b: 0.8392157, a: 1}
+  disabledPaperTint: {r: 0.9607843, g: 0.9490196, b: 0.9137255, a: 1}
+  errorInk: {r: 0.6117647, g: 0.25490198, b: 0.21568628, a: 1}
+  disabledButtonPaper: {fileID: -1900421435, guid: 14be07902d7979b41927467a46b598a3, type: 3}
