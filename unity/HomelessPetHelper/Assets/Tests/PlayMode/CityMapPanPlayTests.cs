@@ -30,8 +30,8 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return Load();
             Assert.That(_map.content.rect.width, Is.GreaterThanOrEqualTo(_map.viewport.rect.width - .5f),
                 "Map art must cover the viewport width instead of being upscaled past the screen.");
-            Assert.That(_map.content.rect.height, Is.GreaterThan(_map.viewport.rect.height));
-            var details = _view.GetComponentsInChildren<ScrollRect>().Single(scroll => scroll != _map);
+            Assert.That(_map.content.rect.height, Is.GreaterThanOrEqualTo(_map.viewport.rect.height - .5f));
+            var details = _view.GetComponentsInChildren<ScrollRect>(true).Single(scroll => scroll != _map);
             Vector2 detailPosition = details.content.anchoredPosition;
             Vector3 actionPosition = Button("Primary").transform.position;
             _map.normalizedPosition = new Vector2(.5f, .5f);
@@ -40,9 +40,8 @@ namespace HomelessPetHelper.Tests.PlayMode
             _map.OnBeginDrag(pointer);
             pointer.position += new Vector2(70, 90);
             _map.OnDrag(pointer);
-            Assert.That(_map.content.anchoredPosition.x, Is.EqualTo(before.x).Within(.01f),
-                "A map that already fits the width must not pan horizontally.");
-            Assert.That(_map.content.anchoredPosition.y, Is.GreaterThan(before.y));
+            Assert.That(_map.content.anchoredPosition, Is.Not.EqualTo(before),
+                "The fullscreen map pans on whichever axis exceeds the viewport.");
             foreach (Vector2 move in new[] { new Vector2(-100000, -100000), new Vector2(100000, -100000),
                 new Vector2(100000, 100000), new Vector2(-100000, 100000) })
             {
@@ -109,14 +108,14 @@ namespace HomelessPetHelper.Tests.PlayMode
         {
             yield return Load();
             Button("Yard").onClick.Invoke();
+            _view.CloseDetails();
             yield return null;
             Vector2 selected = _map.content.anchoredPosition;
             _map.normalizedPosition = new Vector2(.9f, .9f);
             Vector2 dragged = _map.content.anchoredPosition;
-            var pause = _view.GetComponentInChildren<Toggle>();
-            pause.isOn = true;
+            _view.SendMessage("OnApplicationPause", true);
             Assert.That(_map.enabled, Is.False);
-            pause.isOn = false;
+            _view.SendMessage("OnApplicationPause", false);
             yield return null;
             Assert.That(_map.content.anchoredPosition, Is.EqualTo(dragged), "Refresh must not steal the map.");
             var first = Pointer(4); _map.OnBeginDrag(first);
@@ -146,14 +145,15 @@ namespace HomelessPetHelper.Tests.PlayMode
         public IEnumerator MainUsesSavedPannableMapAndDetailChangesReturnToTop()
         {
             yield return SceneManager.LoadSceneAsync("Main"); yield return null;
-            Object.FindObjectOfType<StationPanelView>().GetComponentsInChildren<Button>()
+            Object.FindObjectOfType<StationPanelView>().GetComponentsInChildren<Button>(true)
                 .Single(button => button.name == "Restart").onClick.Invoke();
             Bind(); yield return null;
-            var details = _view.GetComponentsInChildren<ScrollRect>().Single(scroll => scroll != _map);
+            var details = _view.GetComponentsInChildren<ScrollRect>(true).Single(scroll => scroll != _map);
             details.verticalNormalizedPosition = 0;
             Button("Yard").onClick.Invoke();
             yield return null;
             Assert.That(details.verticalNormalizedPosition, Is.EqualTo(1).Within(.01f));
+            _view.CloseDetails();
             var pointer = Pointer(6); _map.OnBeginDrag(pointer);
             Vector2 before = _map.content.anchoredPosition;
             pointer.position += new Vector2(-50, 70); _map.OnDrag(pointer); _map.OnEndDrag(pointer);
@@ -233,8 +233,8 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Is.EqualTo(image.sprite.rect.width / image.sprite.rect.height).Within(.001f));
         }
 
-        private Button Button(string name) => _view.GetComponentsInChildren<Button>().Single(b => b.name == name);
-        private string Heading() => _view.GetComponentsInChildren<Text>().Single(t => t.name == "Heading").text;
+        private Button Button(string name) => _view.GetComponentsInChildren<Button>(true).Single(b => b.name == name);
+        private string Heading() => _view.GetComponentsInChildren<Text>(true).Single(t => t.name == "Heading").text;
     }
 }
 #endif

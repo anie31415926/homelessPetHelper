@@ -53,6 +53,7 @@ namespace HomelessPetHelper.Game.CityMap
             _config.ValidateText(_text);
             _view.ValidateDefinition(config.Definition.BackgroundId,
                 config.Definition.Points.Select(point => point.PointId));
+            _view.CloseDetails();
             if (loop != null)
             {
                 _station = loop.Station;
@@ -97,6 +98,7 @@ namespace HomelessPetHelper.Game.CityMap
             if (_disposed) return;
             _externalFeedback = feedback ?? throw new ArgumentNullException(nameof(feedback));
             Refresh();
+            _view.ShowNotice(feedback);
         }
 
         private void Begin()
@@ -130,6 +132,7 @@ namespace HomelessPetHelper.Game.CityMap
             _feedbackKey = "ready";
             _externalFeedback = null;
             Refresh();
+            _view.OpenDetails();
         }
 
         private void Act()
@@ -233,7 +236,7 @@ namespace HomelessPetHelper.Game.CityMap
             string command = selecting ? "depart" : session.IsSettled ? "reopen" : "return";
             bool canDepart = CanDepart(_selection, out MapDeparturePlan plan, out string restriction);
             string feedback = selecting && !canDepart ? restriction :
-                _externalFeedback ?? (!selecting && _feedbackKey == "ready" ? string.Empty : _text.Get(_feedbackKey));
+                _externalFeedback ?? (_feedbackKey == "ready" ? string.Empty : _text.Get(_feedbackKey));
             _view.Render(_text.Get("status", _station.AvailableTemporaryPlaces, _clock.Current.ElapsedMinutes),
                 heading, details, selecting ? GetDeparturePreview(plan) : string.Empty,
                 _paused ? _text.Get("paused") : feedback, _text.Get(command),

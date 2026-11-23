@@ -95,7 +95,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             var station = UnityEngine.Object.FindObjectOfType<HomelessPetHelper.Modules.Station.UI.StationPanelView>();
             station.GetComponentsInChildren<Button>().Single(button => button.name == "Restart").onClick.Invoke();
             var map = UnityEngine.Object.FindObjectOfType<HomelessPetHelper.Modules.Outing.UI.CityMapView>();
-            map.GetComponentsInChildren<Button>().Single(button => button.name == "Primary").onClick.Invoke();
+            MainApproachDriver.Click(map, "Primary");
             Assert.That(root.Presenter.Session.OpeningRoute, Is.Not.Null);
             Assert.That(map.gameObject.activeSelf, Is.False);
             LogAssert.NoUnexpectedReceived();
@@ -138,7 +138,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             var station = UnityEngine.Object.FindObjectOfType<HomelessPetHelper.Modules.Station.UI.StationPanelView>();
             station.GetComponentsInChildren<Button>().Single(button => button.name == "Restart").onClick.Invoke();
             var map = UnityEngine.Object.FindObjectOfType<HomelessPetHelper.Modules.Outing.UI.CityMapView>();
-            map.GetComponentsInChildren<Button>().Single(button => button.name == "Primary").onClick.Invoke();
+            MainApproachDriver.Click(map, "Primary");
             var view = (MapTravelView)Get(root, "_travel");
             var point = new MapTravelPointBinding();
             Set(point, "_pointId", root.Presenter.Session.Outing.Session.SelectedPointId);

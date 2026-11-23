@@ -282,6 +282,7 @@ namespace HomelessPetHelper.Tests.PlayMode
 
         private static void Click(Component view, string name)
         {
+            if (view is CityMapView) { MainApproachDriver.Click(view, name); return; }
             if (view is SiegeTrialView sceneView && sceneView.Scene != null &&
                 (name == "Retry" || name == "Pause"))
             { MainApproachDriver.Click(view, name); return; }

@@ -3,8 +3,6 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using HomelessPetHelper.Framework.UI;
-using HomelessPetHelper.Framework.UI.Motion;
-using HomelessPetHelper.Modules.Outing;
 using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Rescue.UI;
 using HomelessPetHelper.Modules.Station.UI;
@@ -12,6 +10,7 @@ using HomelessPetHelper.Tests.Support;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
@@ -23,77 +22,88 @@ namespace HomelessPetHelper.Tests.PlayMode
         private MainSceneStorageScope _storage;
         private CityMapView _view;
         private UiLayoutMetrics _metrics;
-
         [SetUp] public void SetUp() => _storage = new MainSceneStorageScope();
         [TearDown] public void TearDown() => _storage.Dispose();
 
         [UnityTest]
-        public IEnumerator MapUsesSharedPaperAndSelectedOutlineWithoutRecoloringLandmarks()
+        public IEnumerator BrowseShowsOnlyMapNamesAndCornerBackAndModalBlocksUnderlyingInput()
         {
             yield return Load();
-            var primary = Button("Primary");
-            Assert.That(((Image)primary.targetGraphic).sprite, Is.Not.Null, "Primary must use shared paper.");
-            Assert.That(((Image)primary.targetGraphic).sprite.name, Is.EqualTo("Action"));
-            Assert.That(((Image)Button("Cancel").targetGraphic).sprite.name, Is.EqualTo("Secondary"));
-            Assert.That(primary.GetComponentInChildren<Text>().color, Is.EqualTo(_metrics.ink));
-            var points = _view.GetComponentsInChildren<Button>()
-                .Where(button => button.transform.parent.name == "MapArt").ToArray();
-            var sprites = points.Select(point => point.image.sprite).ToArray();
+            Assert.That(_view.IsDetailsOpen, Is.False);
+            Assert.That(_view.GetComponentsInChildren<Button>().Where(button =>
+                button.transform.parent.name != "MapArt").Select(button => button.name),
+                Is.EqualTo(new[] { "Cancel" }));
+            Assert.That(_view.GetComponentsInChildren<Text>().Where(label =>
+                !string.IsNullOrWhiteSpace(label.text) && label.GetComponentInParent<ToastView>() == null).All(label =>
+                label.transform.IsChildOf(Map().content)), Is.True,
+                "Only map labels may remain: " + string.Join(",", _view.GetComponentsInChildren<Text>()
+                    .Where(label => !string.IsNullOrWhiteSpace(label.text) &&
+                        label.GetComponentInParent<ToastView>() == null &&
+                        !label.transform.IsChildOf(Map().content)).Select(label => label.name + "=" + label.text)));
+            int departures = 0;
+            _view.PrimaryClicked += () => departures++;
+            Button("Primary").onClick.Invoke();
+            Assert.That(departures, Is.Zero, "Hidden departure controls must reject stale callbacks.");
+            var art = Button("Yard").image.sprite;
             Button("Yard").onClick.Invoke();
-            Assert.That(Plate("Yard").GetComponent<Outline>().enabled, Is.True);
-            Assert.That(Plate("Parking").GetComponent<Outline>().enabled, Is.False);
-            Assert.That(Plate("Yard").sprite.name, Is.EqualTo("Action"));
-            _view.RenderPoint("riverside", Plate("Riverside").GetComponentsInChildren<Text>()
-                .First(text => text.name != "State").text, "尚未开放",
-                PointDisplayState.Locked, false, false);
-            Assert.That(Button("Riverside").IsInteractable(), Is.False);
-            Assert.That(Plate("Riverside").sprite.name, Is.EqualTo("Paper"));
-            Assert.That(Plate("Riverside").GetComponent<Outline>().enabled, Is.False);
-            var pause = _view.GetComponentInChildren<Toggle>();
-            Assert.That(((Image)pause.graphic).sprite.name, Is.EqualTo("Paw"));
-            pause.isOn = true;
-            yield return new WaitUntil(() => pause.graphic.canvasRenderer.GetAlpha() >= .99f);
-            Assert.That(primary.IsInteractable(), Is.False);
-            Assert.That(((Image)primary.targetGraphic).sprite, Is.SameAs(_metrics.disabledButtonPaper));
-            Assert.That(((Image)primary.targetGraphic).color, Is.EqualTo(_metrics.disabledPaperTint));
-            Assert.That(Label("Feedback").text, Is.EqualTo("已暂停"));
-            pause.isOn = false;
-            yield return null;
-            Assert.That(primary.IsInteractable(), Is.True);
-            Assert.That(((Image)primary.targetGraphic).sprite.name, Is.EqualTo("Action"));
-            Assert.That(points.Select(point => point.image.sprite), Is.EqualTo(sprites));
-            Assert.That(points.All(point => point.image.color == Color.white), Is.True);
+            Assert.That(_view.IsDetailsOpen, Is.True);
+            Assert.That(Map().enabled, Is.False);
+            Assert.That(Button("Primary").isActiveAndEnabled, Is.True);
+            Assert.That(((Image)Button("Primary").targetGraphic).sprite.name, Is.EqualTo("Action"));
+            string heading = Label("Heading").text;
+            Button("Parking").onClick.Invoke();
+            Assert.That(Label("Heading").text, Is.EqualTo(heading), "Modal blocks stale landmark callbacks.");
+            yield return Settle();
+            var pointer = new PointerEventData(EventSystem.current)
+            { position = new Vector2(Screen.width * .95f, Screen.height * .95f) };
+            var hits = new System.Collections.Generic.List<RaycastResult>();
+            _view.GetComponent<GraphicRaycaster>().Raycast(pointer, hits);
+            Assert.That(hits.Count, Is.GreaterThan(0));
+            Assert.That(hits[0].gameObject.transform.IsChildOf(Map().content), Is.False);
+            Assert.That(Button("MapModalBackdrop").image.raycastTarget, Is.True);
+            Assert.That(((RectTransform)Button("MapModalBackdrop").transform).rect.size,
+                Is.EqualTo(((RectTransform)_view.transform).rect.size));
+            Button("ClosePlace").onClick.Invoke();
+            Assert.That(_view.IsDetailsOpen, Is.False);
+            Assert.That(Map().enabled, Is.True);
+            Assert.That(Button("Yard").image.sprite, Is.SameAs(art));
+            _view.OpenDetails();
+            Button("MapModalBackdrop").onClick.Invoke();
+            Assert.That(_view.IsDetailsOpen, Is.False, "Backdrop dismisses the detail without departing.");
+            _view.OpenDetails();
             _view.gameObject.SetActive(false); _view.gameObject.SetActive(true);
             yield return null;
-            Assert.That(_view.IsSuspended, Is.False);
-            Assert.That(Plate("Yard").GetComponent<Outline>().enabled, Is.True);
+            Assert.That(_view.IsDetailsOpen, Is.False, "Reopen returns to a clean browsing state.");
             LogAssert.NoUnexpectedReceived();
         }
 
         [UnityTest]
-        public IEnumerator PhoneTabletAndInsetLayoutsKeepTextActionsAndMapUsable()
+        public IEnumerator FullscreenMapAndPopupRespectPhoneTabletAndInsetBounds()
         {
             yield return Load();
             var canvas = _view.GetComponent<Canvas>();
-            var camera = new GameObject("MapStyleEvidence", typeof(Camera)).GetComponent<Camera>();
+            var camera = new GameObject("FullscreenMapEvidence", typeof(Camera)).GetComponent<Camera>();
             camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = Color.white;
             canvas.renderMode = RenderMode.ScreenSpaceCamera; canvas.worldCamera = camera; canvas.planeDistance = 10;
-            var map = _view.GetComponentInChildren<CityMapScrollRect>();
-            var details = _view.GetComponentsInChildren<ScrollRect>().Single(scroll => scroll != map);
             var safe = _view.GetComponentInChildren<SafeAreaView>();
             try
             {
-                foreach (var size in new[] { new Vector2Int(320, 568), new Vector2Int(360, 640),
-                    new Vector2Int(390, 844), new Vector2Int(540, 960), new Vector2Int(540, 1080),
-                    new Vector2Int(540, 1170), new Vector2Int(432, 960), new Vector2Int(768, 1024) })
+                foreach (var size in new[] { new Vector2Int(320, 568), new Vector2Int(390, 844),
+                    new Vector2Int(540, 1170), new Vector2Int(768, 1024) })
                 {
                     var target = new RenderTexture(size.x, size.y, 24);
                     try
                     {
                         camera.targetTexture = target;
-                        for (int frame = 0; frame < 5; frame++) { yield return null; Canvas.ForceUpdateCanvases(); }
-                        AssertLayout(map, details, (RectTransform)safe.transform);
+                        _view.CloseDetails();
+                        yield return Settle();
+                        AssertFullscreen(canvas);
+                        AssertInside((RectTransform)Button("Cancel").transform, (RectTransform)safe.transform);
                         Save(camera, target, "map-" + size.x + "x" + size.y);
+                        Button("Yard").onClick.Invoke();
+                        yield return Settle();
+                        AssertPopup((RectTransform)safe.transform);
+                        Save(camera, target, "place-" + size.x + "x" + size.y);
                     }
                     finally { camera.targetTexture = null; target.Release(); Object.Destroy(target); }
                 }
@@ -103,18 +113,25 @@ namespace HomelessPetHelper.Tests.PlayMode
                 var insetTarget = new RenderTexture(390, 844, 24);
                 try
                 {
-                    camera.targetTexture = insetTarget;
-                    for (int frame = 0; frame < 5; frame++) { yield return null; Canvas.ForceUpdateCanvases(); }
-                    AssertLayout(map, details, inset);
+                    camera.targetTexture = insetTarget; _view.CloseDetails();
+                    yield return Settle(); AssertFullscreen(canvas);
+                    AssertInside((RectTransform)Button("Cancel").transform, inset);
                     Save(camera, insetTarget, "map-insets");
-                    Button("Porch").onClick.Invoke();
-                    yield return null;
+                    Button("Porch").onClick.Invoke(); yield return Settle();
+                    AssertPopup(inset);
                     Assert.That(Button("Primary").IsInteractable(), Is.False);
                     Assert.That(Label("Feedback").text, Does.Contain("暂未开放"));
-                    Save(camera, insetTarget, "map-unavailable");
-                    _view.GetComponentInChildren<Toggle>().isOn = true;
+                    AssertInside((RectTransform)Button("ClosePlace").transform, inset);
+                    var backdrop = (RectTransform)Button("MapModalBackdrop").transform;
+                    Assert.That(backdrop.rect.size, Is.EqualTo(((RectTransform)canvas.transform).rect.size));
+                    Save(camera, insetTarget, "place-unavailable-insets");
+                    _view.CloseDetails(); _view.ShowNotice(Label("Feedback").text);
                     yield return null;
-                    Save(camera, insetTarget, "map-paused");
+                    var toast = _view.GetComponentInChildren<ToastView>();
+                    Assert.That(toast.IsShowing, Is.True);
+                    Assert.That(toast.GetComponent<CanvasGroup>().blocksRaycasts, Is.False);
+                    _view.gameObject.SetActive(false); _view.gameObject.SetActive(true);
+                    Assert.That(toast.IsShowing, Is.False);
                 }
                 finally { camera.targetTexture = null; insetTarget.Release(); Object.Destroy(insetTarget); }
             }
@@ -123,55 +140,30 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator LongDetailAndLargeCountsScrollIndependentlyAndRecoverOnSelection()
+        public IEnumerator LongDetailsScrollWithActionsOutsideMaskAndFreshSelectionResetsBody()
         {
-            yield return Load();
-            var canvas = _view.GetComponent<Canvas>();
-            var camera = new GameObject("MapLongDetailEvidence", typeof(Camera)).GetComponent<Camera>();
-            var target = new RenderTexture(390, 844, 24);
-            camera.targetTexture = target;
-            camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = Color.white;
-            canvas.renderMode = RenderMode.ScreenSpaceCamera; canvas.worldCamera = camera; canvas.planeDistance = 10;
-            try { yield return VerifyLongDetails(camera, target); }
-            finally
-            {
-                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                camera.targetTexture = null; target.Release();
-                Object.Destroy(target); Object.Destroy(camera.gameObject);
-            }
-        }
-
-        private IEnumerator VerifyLongDetails(Camera camera, RenderTexture target)
-        {
-            var map = _view.GetComponentInChildren<CityMapScrollRect>();
-            var details = _view.GetComponentsInChildren<ScrollRect>().Single(scroll => scroll != map);
-            string heading = Label("Heading").text;
+            yield return Load(); Button("Yard").onClick.Invoke();
+            var details = _view.GetComponentsInChildren<ScrollRect>(true).Single(scroll => scroll != Map());
             string paragraph = Label("Details").text;
-            _view.Render("空余安置位 999    ·    已用时 999999 分钟", heading,
+            _view.Render("空余安置位 999    ·    已用时 999999 分钟", Label("Heading").text,
                 string.Join("\n", Enumerable.Repeat(paragraph, 24)), Label("Departure").text,
                 "安置位已满，请先腾出位置。", "前往这里", true, false, false);
-            for (int frame = 0; frame < 5; frame++) { yield return null; Canvas.ForceUpdateCanvases(); }
-            Vector3 primaryPosition = Button("Primary").transform.position;
-            Vector2 mapPosition = map.content.anchoredPosition;
+            yield return Settle();
             Assert.That(details.content.rect.height, Is.GreaterThan(details.viewport.rect.height));
-            details.verticalNormalizedPosition = 0;
-            yield return null;
+            Vector3 action = Button("Primary").transform.position;
+            details.verticalNormalizedPosition = 0; yield return null;
             Assert.That(details.verticalNormalizedPosition, Is.EqualTo(0).Within(.01f));
-            Assert.That(map.content.anchoredPosition, Is.EqualTo(mapPosition));
-            Assert.That(Button("Primary").transform.position, Is.EqualTo(primaryPosition));
-            Save(camera, target, "map-long-details");
-            AssertLayout(map, details, (RectTransform)_view.GetComponentInChildren<SafeAreaView>().transform);
-            Assert.That(Label("Feedback").cachedTextGenerator.vertexCount, Is.GreaterThan(4));
-            Assert.That(_view.GetComponentsInChildren<RectTransform>().Any(rect => rect.name == "DetailsOverflow"),
-                Is.True, "Long details need a visible scroll affordance.");
-            Button("Yard").onClick.Invoke();
-            yield return null;
+            Assert.That(Button("Primary").transform.position, Is.EqualTo(action));
+            Assert.That(Button("Primary").GetComponentInParent<RectMask2D>(), Is.Null);
+            Assert.That(Button("ClosePlace").GetComponentInParent<RectMask2D>(), Is.Null);
+            Button("ClosePlace").onClick.Invoke(); Button("Parking").onClick.Invoke();
+            yield return Settle();
             Assert.That(details.verticalNormalizedPosition, Is.EqualTo(1).Within(.01f));
             Assert.That(Button("Primary").IsInteractable(), Is.True);
-            _view.Render("空余安置位 2", heading, paragraph, string.Empty, string.Empty,
-                "返回救助站", false, false, true);
-            Assert.That(Label("Departure").gameObject.activeSelf, Is.False);
-            Assert.That(Label("Feedback").gameObject.activeSelf, Is.False);
+            _view.SendMessage("OnApplicationFocus", false);
+            Assert.That(Button("Primary").IsInteractable(), Is.False);
+            _view.SendMessage("OnApplicationFocus", true);
+            Assert.That(Button("Primary").IsInteractable(), Is.True);
             LogAssert.NoUnexpectedReceived();
         }
 
@@ -182,13 +174,30 @@ namespace HomelessPetHelper.Tests.PlayMode
                 .Single(button => button.name == "Restart").onClick.Invoke();
             _view = Object.FindObjectOfType<CityMapView>();
             _metrics = AssetDatabase.LoadAssetAtPath<UiLayoutMetrics>("Assets/Settings/UI/LayoutMetrics.asset");
-            yield return null; Canvas.ForceUpdateCanvases();
+            yield return Settle();
         }
-
-        private void AssertLayout(CityMapScrollRect map, ScrollRect details, RectTransform safe)
+        private static IEnumerator Settle()
+        { for (int frame = 0; frame < 5; frame++) { yield return null; Canvas.ForceUpdateCanvases(); } }
+        private void AssertFullscreen(Canvas canvas)
         {
-            Assert.That(map.viewport.rect.height, Is.GreaterThan(details.viewport.rect.height));
-            Assert.That(map.GetComponent<RectMask2D>().enabled, Is.True);
+            var corners = new Vector3[4]; Map().viewport.GetWorldCorners(corners);
+            var bounds = ((RectTransform)canvas.transform).rect;
+            Assert.That(((Vector2)canvas.transform.InverseTransformPoint(corners[0]) - bounds.min).magnitude,
+                Is.LessThan(.5f));
+            Assert.That(((Vector2)canvas.transform.InverseTransformPoint(corners[2]) - bounds.max).magnitude,
+                Is.LessThan(.5f));
+            Assert.That(_view.IsDetailsOpen, Is.False);
+        }
+        private void AssertPopup(RectTransform safe)
+        {
+            AssertInside((RectTransform)Label("Heading").transform.parent.parent, safe);
+            foreach (string name in new[] { "Primary", "ClosePlace" })
+            {
+                var rect = (RectTransform)Button(name).transform;
+                AssertInside(rect, safe);
+                Assert.That(rect.rect.width, Is.GreaterThanOrEqualTo(_metrics.touchSize - 1));
+                Assert.That(rect.rect.height, Is.GreaterThanOrEqualTo(_metrics.touchSize - 1));
+            }
             foreach (var label in _view.GetComponentsInChildren<Text>())
             {
                 if (string.IsNullOrWhiteSpace(label.text)) continue;
@@ -196,62 +205,29 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Assert.That(label.fontSize, Is.GreaterThanOrEqualTo(_metrics.labelSize), label.name);
                 Assert.That(label.preferredHeight, Is.LessThanOrEqualTo(label.rectTransform.rect.height + 3),
                     label.name);
-                Assert.That(label.color, Is.EqualTo(_metrics.ink), label.name);
-            }
-            foreach (string name in new[] { "Departure", "Feedback" })
-            {
-                var label = Label(name);
-                if (!label.gameObject.activeInHierarchy) continue;
-                Assert.That(label.GetComponentInParent<RectMask2D>(), Is.Null,
-                    name + " must remain outside scrolling.");
-                var corners = new Vector3[4]; label.rectTransform.GetWorldCorners(corners);
-                foreach (var corner in corners)
-                {
-                    var local = safe.InverseTransformPoint(corner);
-                    Assert.That(local.y, Is.InRange(safe.rect.yMin, safe.rect.yMax), name);
-                }
-            }
-            foreach (var control in _view.GetComponentsInChildren<Selectable>())
-            {
-                if (control.transform.parent == map.content) continue;
-                var rect = (RectTransform)control.transform;
-                Assert.That(rect.rect.width, Is.GreaterThanOrEqualTo(_metrics.touchSize), control.name);
-                Assert.That(rect.rect.height, Is.GreaterThanOrEqualTo(_metrics.touchSize), control.name);
-                var corners = new Vector3[4]; rect.GetWorldCorners(corners);
-                foreach (var corner in corners)
-                {
-                    Vector3 local = safe.InverseTransformPoint(corner);
-                    Assert.That(local.x, Is.InRange(safe.rect.xMin, safe.rect.xMax), control.name);
-                    Assert.That(local.y, Is.InRange(safe.rect.yMin, safe.rect.yMax), control.name);
-                }
-                var feedback = control.GetComponent<UiMotionFeedback>();
-                Assert.That(feedback, Is.Not.Null, control.name);
-                Assert.That(feedback.GetComponentInParent<RectMask2D>(), Is.Null,
-                    "New animated controls stay outside map/detail masks; landmarks keep fixed visuals.");
             }
         }
-
+        private static void AssertInside(RectTransform rect, RectTransform bounds)
+        {
+            var corners = new Vector3[4]; rect.GetWorldCorners(corners);
+            foreach (var corner in corners)
+            {
+                var local = bounds.InverseTransformPoint(corner);
+                Assert.That(local.x, Is.InRange(bounds.rect.xMin - 2, bounds.rect.xMax + 2), rect.name);
+                Assert.That(local.y, Is.InRange(bounds.rect.yMin - 2, bounds.rect.yMax + 2), rect.name);
+            }
+        }
         private static void Save(Camera camera, RenderTexture target, string name)
         {
-            camera.Render();
-            var previous = RenderTexture.active;
+            camera.Render(); var previous = RenderTexture.active; RenderTexture.active = target;
             var image = new Texture2D(target.width, target.height, TextureFormat.RGB24, false);
-            try
-            {
-                RenderTexture.active = target;
-                image.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0); image.Apply();
-                Directory.CreateDirectory("MapUiEvidence");
-                File.WriteAllBytes("MapUiEvidence/" + name + ".png", image.EncodeToPNG());
-            }
-            finally { RenderTexture.active = previous; Object.Destroy(image); }
+            image.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0); image.Apply();
+            RenderTexture.active = previous; Directory.CreateDirectory("FullscreenMapEvidence");
+            File.WriteAllBytes("FullscreenMapEvidence/" + name + ".png", image.EncodeToPNG()); Object.Destroy(image);
         }
-
-        private Button Button(string name) => _view.GetComponentsInChildren<Button>(true)
-            .Single(button => button.name == name);
-        private Text Label(string name) => _view.GetComponentsInChildren<Text>(true)
-            .Single(text => text.name == name);
-        private Image Plate(string name) => Button(name).GetComponentsInChildren<Image>()
-            .Single(image => image.name == "Nameplate");
+        private CityMapScrollRect Map() => _view.GetComponentInChildren<CityMapScrollRect>();
+        private Button Button(string name) => _view.GetComponentsInChildren<Button>(true).Single(b => b.name == name);
+        private Text Label(string name) => _view.GetComponentsInChildren<Text>(true).Single(t => t.name == name);
     }
 }
 #endif

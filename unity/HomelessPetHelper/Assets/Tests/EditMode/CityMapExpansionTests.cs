@@ -68,9 +68,11 @@ namespace HomelessPetHelper.Tests.EditMode
                     fixture.View.PlaceSelected += id => { events++; lastId = id; };
                     foreach (int index in Enumerable.Range(0, count))
                     {
+                        fixture.View.CloseDetails();
                         Button button = fixture.PointButtons[index];
                         Assert.That(button.GetComponentInChildren<Text>().text, Is.EqualTo("Place " + index));
-                        Assert.That(button.GetComponentsInChildren<Text>().Single(text => text.name == "State").text,
+                        Assert.That(button.GetComponentsInChildren<Text>(true)
+                            .Single(text => text.name == "State").text,
                             Is.EqualTo(new OptionPreviewText(fixture.Text).Get(count > 1 && index == count - 1 ?
                                 "point.Locked" : "point.NoRequest")));
                         if (count > 1 && index == count - 1)
@@ -184,10 +186,13 @@ namespace HomelessPetHelper.Tests.EditMode
                     primary.onClick.Invoke();
                     Assert.That(feedback.text, Is.EqualTo(copy.Get("full")));
                     Assert.That(status.text, Is.EqualTo(copy.Get("status", 0, 0)));
+                    root.GetComponent<CityMapView>().CloseDetails();
                     root.GetComponentsInChildren<Button>(true).Single(item => item.name == "Porch").onClick.Invoke();
                     primary.onClick.Invoke();
+                    root.GetComponent<CityMapView>().OpenDetails();
                     primary.onClick.Invoke();
                     Assert.That(status.text, Is.EqualTo(copy.Get("status", 0, 9)));
+                    root.GetComponent<CityMapView>().OpenDetails();
                     primary.onClick.Invoke();
                     Assert.That(status.text, Is.EqualTo(copy.Get("status", 0, 9)));
                 }
@@ -240,6 +245,7 @@ namespace HomelessPetHelper.Tests.EditMode
                         Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero);
                         Assert.That(session.Station.Animals, Is.Empty);
                         if (scenario.Name == "all-closed") return;
+                        fixture.View.CloseDetails();
                         fixture.PointButtons[1].onClick.Invoke();
                         presenter.ShowFeedback("refresh");
                         Assert.That(fixture.Label("Heading").text, Is.EqualTo("Place 1"),
@@ -370,7 +376,7 @@ namespace HomelessPetHelper.Tests.EditMode
                         .Single(image => image != button.image);
                     binding.FindPropertyRelative("_label").objectReferenceValue = node.GetComponentInChildren<Text>();
                     binding.FindPropertyRelative("_stateLabel").objectReferenceValue = node
-                        .GetComponentsInChildren<Text>().Single(label => label.name == "State");
+                        .GetComponentsInChildren<Text>(true).Single(label => label.name == "State");
                     binding.FindPropertyRelative("_selectionOutline").objectReferenceValue =
                         node.GetComponentInChildren<Outline>(true);
                 }
@@ -390,8 +396,11 @@ namespace HomelessPetHelper.Tests.EditMode
 
             public Text Label(string name) => Root.GetComponentsInChildren<Text>(true)
                 .Single(text => text.name == name);
-            public Button Button(string name) => Root.GetComponentsInChildren<Button>(true)
-                .Single(button => button.name == name);
+            public Button Button(string name)
+            {
+                if (name == "Primary" && !View.IsDetailsOpen) View.OpenDetails();
+                return Root.GetComponentsInChildren<Button>(true).Single(button => button.name == name);
+            }
 
             public void Dispose()
             {

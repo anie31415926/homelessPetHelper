@@ -1,6 +1,6 @@
 {
   "name": "HomelessPetHelper.Modules.Outing.UI",
   "rootNamespace": "HomelessPetHelper.Modules.Outing.UI",
-  "references": ["UnityEngine.UI", "HomelessPetHelper.Modules.Outing"],
+  "references": ["UnityEngine.UI", "HomelessPetHelper.Modules.Outing", "HomelessPetHelper.Framework.UI"],
   "autoReferenced": false
 }
