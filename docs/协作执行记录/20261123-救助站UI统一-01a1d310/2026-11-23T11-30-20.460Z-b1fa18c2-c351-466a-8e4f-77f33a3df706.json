@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261123-救助站UI统一-01a1d310.md",
+  "sessionId": "01a1d310-49aa-7061-97e4-183bf146eb20",
+  "phase": "scope-change",
+  "readAt": "2026-11-23T11:30:20.460Z",
+  "writePaths": [
+    ".ui-craft/brief.md",
+    "docs/协作任务/20261123-救助站UI统一-01a1d310.md",
+    "docs/协作执行记录/20261123-救助站UI统一-01a1d310/",
+    "docs/救助站场景与动物自主行为.md",
+    "docs/通用Toast使用.md",
+    "tools/station-ui.ps1",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_StationLoop.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_StationHabitatResident.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_Toast.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_Toast.prefab.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/StationHabitat/",
+    "unity/HomelessPetHelper/Assets/Scripts/Framework/UI/ToastView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Framework/UI/ToastView.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/"
+  ],
+  "contextDigest": "968870e79a1948ab7628fd0cab39d7bac9b47e260d03d1e3484b47bb5b20517c",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-Loading场景-01a20769.md",
+      "sha256": "8c344a5b10b75d1b52868a0d33c8392ecb5b76feb48c85124228b9dda0f10bbf"
+    },
+    {
+      "path": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+      "sha256": "fc13687adbc2cc9d1c0b2cb8c77ee60ca6e398f6cb065087cde2d34d2741594b"
+    },
+    {
+      "path": "docs/协作任务/20261123-救助站UI统一-01a1d310.md",
+      "sha256": "c7aba3634ec1a844109567d73df4e5501d5d54ee77c0f2817552c25c6849f38e"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "5f7ff85dd8d7b758ccfd3518450314a46b9e1d32acd1831a5e46b8f9e1c9a01d"
+    }
+  ]
+}

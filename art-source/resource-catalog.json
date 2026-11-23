@@ -4199,6 +4199,264 @@
       }
     },
     {
+      "id": "station-room.source",
+      "name": "救助站原图与ComfyUI拆层依据",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "用户授权临时场景图，原件与失败候选留存",
+      "use": "右下水印局部修补图、透明家具母图、实际工作流与重组核对；非无损/高清重制",
+      "plannedBytes": 524288,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/station-room-20261123/cleaned.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/station-room-20261123/clean/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/station-room-20261123/clean/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/clean/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/clean/submission.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/station-room-20261123/background/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/station-room-20261123/background/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/background/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/background/submission.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/station-room-20261123/bed/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/station-room-20261123/bed/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/bed/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/bed/submission.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/station-room-20261123/tree/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/station-room-20261123/tree/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/tree/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/tree/submission.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/station-room-20261123/rear/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/station-room-20261123/rear/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/rear/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/rear/submission.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/station-room-20261123/plant/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/station-room-20261123/plant/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/plant/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/plant/submission.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/station-room-20261123/empty/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/station-room-20261123/empty/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/empty/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/empty/submission.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/station-room-20261123/plant-local/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/station-room-20261123/plant-local/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/plant-local/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/station-room-20261123/plant-local/submission.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/station-room-20261123/reference.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/station-room-20261123/work-reference.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/station-room-20261123/plant-local/reference.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/station-room-20261123/assembled.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/station-room-20261123/edge-review.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/station-room-20261123/derived/background.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/station-room-20261123/derived/tree.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/station-room-20261123/derived/plant.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/station-room-20261123/derived/pillow.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/station-room-20261123/derived/cabinet.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/station-room-20261123/derived/bed.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/station-room-20261123/T_StationRoom_Background.jpg"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/station-room-20261123/T_StationRoom_Furniture.png"
+        }
+      ],
+      "generation": {
+        "tool": "本机ComfyUI / Qwen Image 2.1 + sharp",
+        "record": "art-source/station-room-20261123/README.md",
+        "notes": "八个实际作业；plant错误候选不使用，plant-local补齐盆栽；种子和提示按实际workflow/history核对。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "station-room.background",
+      "name": "救助站空房背景",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "现有救助站场景使用，不新增解锁条件",
+      "use": "336×600原比例空房；窗帘/挂画留背景，大家具独立叠加",
+      "plannedBytes": 204800,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/StationRoom/T_StationRoom_Background.jpg"
+        }
+      ],
+      "generation": {
+        "tool": "本机ComfyUI / Qwen Image 2.1",
+        "record": "art-source/station-room-20261123/README.md",
+        "notes": "background再经empty清除遗漏柜组；低分辨率临时图，Main静态依赖不是按需下载。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "station-room.furniture",
+      "name": "救助站大家具共用透明页",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "现有救助站场景使用，位置/阻挡可编辑",
+      "use": "爬架、盆栽、靠枕、柜组及中央坐垫五切片共用496×248页，原坐标重拼",
+      "plannedBytes": 153600,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/StationRoom/T_StationRoom_Furniture.png"
+        }
+      ],
+      "generation": {
+        "tool": "本机ComfyUI RGBA拆层 / 既有MaxRects工具",
+        "record": "art-source/station-room-20261123/README.md",
+        "notes": "清除漏拆悬空叶片，局部重提完整盆栽；实际线段阻挡不是完整物理或寻路。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
       "id": "loading.user-reference",
       "name": "Loading用户原图",
       "module": "CommonUI",

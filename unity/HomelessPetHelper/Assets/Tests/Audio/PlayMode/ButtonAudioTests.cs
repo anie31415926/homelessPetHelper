@@ -182,7 +182,8 @@ namespace HomelessPetHelper.Tests.Audio.PlayMode
             var host = Object.FindObjectOfType<AudioHost>();
             host.SendMessage("OnApplicationFocus", true);
             var feedback = scopes.SelectMany(scope => scope.GetComponentsInChildren<ButtonAudio>(true))
-                .First(item => item.isActiveAndEnabled && item.GetComponent<Button>().IsInteractable());
+                .First(item => item.CueId == GameAudioCues.Tap && item.isActiveAndEnabled &&
+                    item.GetComponent<Button>().IsInteractable());
             Click(feedback.GetComponent<Button>());
             Assert.That(Object.FindObjectsOfType<AudioSource>().Length, Is.EqualTo(9));
             Assert.That(Object.FindObjectsOfType<AudioSource>().Any(source =>

@@ -1,0 +1,53 @@
+{
+  "width": 336,
+  "height": 600,
+  "atlasWidth": 496,
+  "atlasHeight": 248,
+  "slices": [
+    {
+      "id": "tree",
+      "x": 2,
+      "y": 5,
+      "width": 103,
+      "height": 241,
+      "left": 0,
+      "top": 90
+    },
+    {
+      "id": "plant",
+      "x": 446,
+      "y": 176,
+      "width": 47,
+      "height": 70,
+      "left": 59,
+      "top": 228
+    },
+    {
+      "id": "pillow",
+      "x": 407,
+      "y": 43,
+      "width": 84,
+      "height": 81,
+      "left": 211,
+      "top": 229
+    },
+    {
+      "id": "cabinet",
+      "x": 407,
+      "y": 128,
+      "width": 35,
+      "height": 118,
+      "left": 301,
+      "top": 199
+    },
+    {
+      "id": "bed",
+      "x": 109,
+      "y": 89,
+      "width": 294,
+      "height": 157,
+      "left": 23,
+      "top": 306
+    }
+  ]
+}

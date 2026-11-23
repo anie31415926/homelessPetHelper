@@ -1,0 +1,27 @@
+# 通用Toast
+
+`Framework.UI.ToastView`是局部、显式引用的非模态提醒；保存的控件为`Assets/Prefabs/Widgets/Widget_Toast.prefab`。没有单例、静态消息总线、运行时拼UI或每次新建对象。
+
+## 使用
+
+在Prefab Mode中把Widget_Toast放入所属页面的安全区，Inspector绑定`_bounds`为该安全区。业务展示类持有`[SerializeField] private ToastView _toast`，传入已经过本地化的文案：
+
+```csharp
+_toast.Show(localizedMessage);        // 默认停留2.4秒，长句按阅读量延长
+_toast.Show(localizedMessage, 3f);    // 替换当前提醒，相同文字也重新开始
+_toast.SetBottomInset(216f);          // 安全区下缘起算的Canvas单位，自动限制越界
+_toast.SetSuspended(true);           // 暂停计时，false恢复
+_toast.Clear();                      // 立即清理，不留旧页
+```
+
+静态控件需由拥有页面在生命周期中管理。代码装配已有控件时可调用`BindBounds(safeRect)`；此方法不创建节点。不自动播放音效或暂停业务，按钮继续使用已有音频/动效。页面关闭/禁用、失焦或切后台会清理提醒，重开不重播旧消息。
+
+## 显示约定
+
+- 复用LayoutMetrics正文48与通用Paper，不缩字；内容宽度收口且不超安全区48边距，文字保留足够行高。
+- 淡入0.18秒、停留、淡出0.22秒，按unscaled时间推进；不阻挡射线，没有模态黑遮。所有Graphic关闭raycastTarget。
+- 一次只显示一行；超长句按字形测量分段，按Unicode文本元素拆分，不截断、不用省略号。换行归为空格，全部信息按顺序显示。新消息替换旧消息，无无界队列。
+- 分辨率、Canvas像素比例或安全区变化后重新测量；保持正文角色字号。`Show`的停留时间必须是有限正数；空文案清理当前提醒。
+- 需要操作、确认、长期读取或较多内容的使用真正弹窗，不依赖Toast承载唯一决策信息。护理关键状态仍留在护理面板；救助站普通提醒由StationSceneChrome定位，避让当前弹窗。
+
+这里只接入救助站，没有批量替换地图/关卡已有提示。微信真机与物理触控尺寸另验。

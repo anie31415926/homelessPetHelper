@@ -90,7 +90,8 @@ namespace HomelessPetHelper.Modules.Station.UI
         {
             _surface.SetCleaning(false);
             _summary.SetActive(summary);
-            _overview.SetActive(!summary && (_chrome != null ? !caring : !detail));
+            _overview.SetActive(_chrome != null || (!summary && !detail));
+            if (_scene != null) _scene.SetPresentationVisible(!summary && !caring);
             _detail.SetActive(!summary && detail);
             if (_chrome != null) _chrome.SetPage(summary, detail, caring);
         }
@@ -113,7 +114,7 @@ namespace HomelessPetHelper.Modules.Station.UI
         public void SetFeedback(string feedback)
         {
             _feedback.text = feedback;
-            if (_chrome != null) _chrome.Feedback(feedback);
+            if (_chrome != null) _chrome.Feedback(feedback, true);
         }
 
         public void DismissDetail() => Back();
@@ -123,6 +124,11 @@ namespace HomelessPetHelper.Modules.Station.UI
         {
             _name.text = name;
             _condition.text = condition;
+            if (_chrome != null)
+            {
+                _condition.gameObject.SetActive(!cleaning);
+                _clean.transform.parent.gameObject.SetActive(!cleaning);
+            }
             _progress.text = progress;
             _surface.Refresh(art, dirt, fur);
             _surface.SetCleaning(cleaning && !suspended);

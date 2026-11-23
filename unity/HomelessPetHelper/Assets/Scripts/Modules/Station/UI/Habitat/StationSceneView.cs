@@ -10,14 +10,18 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
     {
         [SerializeField] private StationResidentView[] _cells;
         [SerializeField] private Text _empty;
+        [SerializeField] private StationRoomView _room;
+        private StationHabitatArea _area;
         private readonly Dictionary<Guid, StationHabitatMotion> _motions = new Dictionary<Guid, StationHabitatMotion>();
         private bool _suspended;
         private bool _focused = true;
         private bool _applicationPaused;
         private int _inspecting = -1;
+        private bool _presentationVisible = true;
         public event Action<int> Selected;
         public IReadOnlyList<StationResidentView> Cells => _cells;
         public int Count { get; private set; }
+        public StationRoomView Room => _room;
 
         public void Show(IReadOnlyList<StationSceneResident> residents, int inspecting)
         {
@@ -25,20 +29,21 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
                 throw new ArgumentException("Station scene exceeds its saved display slots.");
             Count = residents.Count;
             _inspecting = inspecting;
-            _empty.gameObject.SetActive(Count == 0);
+            _empty.gameObject.SetActive(_presentationVisible && Count == 0);
             int free = 0, caged = 0;
             for (int i = 0; i < _cells.Length; i++)
             {
-                _cells[i].gameObject.SetActive(i < Count);
+                _cells[i].gameObject.SetActive(_presentationVisible && i < Count);
                 if (i >= Count) continue;
                 var resident = residents[i];
                 if (!_motions.TryGetValue(resident.AnimalId, out var motion))
                 {
-                    motion = new StationHabitatMotion(resident.AnimalId.GetHashCode());
+                    if (_room != null && _area == null) _area = _room.CreateArea();
+                    motion = new StationHabitatMotion(resident.AnimalId.GetHashCode(), _area);
                     for (int step = 0; step < i * 240; step++) motion.Tick(.05);
                     _motions.Add(resident.AnimalId, motion);
                 }
-                _cells[i].Bind(resident, motion, i, resident.Observing ? caged++ : free++);
+                _cells[i].Bind(resident, motion, i, resident.Observing ? caged++ : free++, _room);
                 _cells[i].SetInspecting(resident.Index == inspecting);
             }
             RefreshSuspension();
@@ -56,6 +61,14 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         {
             _suspended = suspended;
             RefreshSuspension();
+        }
+
+        public void SetPresentationVisible(bool visible)
+        {
+            _presentationVisible = visible;
+            for (int i = 0; i < _cells.Length; i++)
+                _cells[i].gameObject.SetActive(visible && i < Count);
+            _empty.gameObject.SetActive(visible && Count == 0);
         }
 
         private void OnEnable()

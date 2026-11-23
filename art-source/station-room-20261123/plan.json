@@ -1,0 +1,14 @@
+{
+  "reference": "reference.png",
+  "source": "User attachment codex-clipboard-cc624563-4575-49cf-9422-b6e860a647e8.png, 2026-11-23",
+  "sourceSize": [351, 619],
+  "crop": [8, 9, 336, 600],
+  "status": "planned-temporary",
+  "loadTiming": "first-play",
+  "rights": "pending; removing a watermark does not establish a usage license",
+  "assets": [
+    {"id":"station-room.background","plannedBytes":204800,"use":"Empty room backing; same composition, original native scale"},
+    {"id":"station-room.furniture","plannedBytes":153600,"use":"One shared transparent page with cat tree, round bed, pillow and cabinet; editable placements"}
+  ],
+  "constraints": ["Use local ComfyUI, preserve reference composition", "Do not change original attachment", "Keep furniture independently replaceable", "Block ground movement through the round bed; no climbing interaction"]
+}

@@ -24,6 +24,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         private int _slot;
         private int _place;
         private float _restSeconds;
+        private StationRoomView _room;
 
         public event Action<int> Selected;
         public StationHabitatMotion Motion { get; private set; }
@@ -31,22 +32,27 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         public bool Observing => _resident != null && _resident.Observing;
         public Button SelectButton => _select;
         public RawImage MotionImage => _motionImage;
+        public float GroundY => _position.anchorMin.y;
 
-        public void Bind(StationSceneResident resident, StationHabitatMotion motion, int slot, int place)
+        public void Bind(StationSceneResident resident, StationHabitatMotion motion, int slot, int place,
+            StationRoomView room = null)
         {
             bool changedKind = _resident != null && _resident.AnimatedCat != resident.AnimatedCat;
             _resident = resident;
             Motion = motion;
             _slot = slot;
             _place = place;
+            _room = room;
             _name.text = resident.Name;
+            _name.gameObject.SetActive(_room == null);
             _stillImage.sprite = resident.Art;
             _stillCoat.Show(resident.Snapshot);
             _motionCoat.Show(resident.Snapshot);
             _stillImage.gameObject.SetActive(!resident.AnimatedCat);
             _motionImage.gameObject.SetActive(resident.AnimatedCat);
             _cage.SetActive(resident.Observing);
-            _position.sizeDelta = resident.Observing ? new Vector2(300, 300) : new Vector2(360, 360);
+            _position.sizeDelta = _room != null ? new Vector2(210, 210) :
+                resident.Observing ? new Vector2(300, 300) : new Vector2(360, 360);
             if (changedKind || !resident.AnimatedCat) Release();
             Place();
         }
@@ -97,7 +103,14 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
 
         private void Place()
         {
-            Vector2 anchor = Observing ? CagePoint(_place) :
+            if (_room != null)
+            {
+                float size = Mathf.Max(144, _room.Content.rect.width * .21f);
+                _position.sizeDelta = new Vector2(size, size);
+            }
+            Vector2 anchor = _room != null ? Observing ?
+                RoomCagePoint(_place) :
+                new Vector2((float)Motion.Position.X, (float)Motion.Position.Y) : Observing ? CagePoint(_place) :
                 new Vector2(.07f + .60f * (float)Motion.Position.X,
                     .12f + .9f * (float)Motion.Position.Y + .075f * _place);
             if (_position.anchorMin != anchor)
@@ -106,6 +119,9 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
                 _position.anchoredPosition = Vector2.zero;
             }
         }
+
+        private static Vector2 RoomCagePoint(int index) => index < 2 ?
+            new Vector2(.43f + index * .24f, .51f) : new Vector2(.25f + (index - 2) * .5f, .095f);
 
         private static Vector2 CagePoint(int index)
         {

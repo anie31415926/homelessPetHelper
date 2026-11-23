@@ -20,6 +20,7 @@ namespace HomelessPetHelper.Modules.Station.Habitat
         public const double MinX = .18, MaxX = .82, MinY = .13, MaxY = .38;
         public static readonly HabitatPoint RestPoint = new HabitatPoint(.24, .34);
         private readonly Random _random;
+        private readonly StationHabitatArea _area;
         private double _remaining = 3;
         private double _cooldown;
         private int _arrivals;
@@ -36,7 +37,13 @@ namespace HomelessPetHelper.Modules.Station.Habitat
         public bool FacingLeft { get; private set; }
         public double ActionSeconds { get; private set; }
 
-        public StationHabitatMotion(int seed) { _random = new Random(seed); Destination = Position; }
+        public StationHabitatMotion(int seed, StationHabitatArea area = null)
+        {
+            _random = new Random(seed);
+            _area = area;
+            if (area != null) Position = area.Start;
+            Destination = Position;
+        }
 
         public void Tick(double seconds, bool suspended = false)
         {
@@ -78,7 +85,14 @@ namespace HomelessPetHelper.Modules.Station.Habitat
         private void BeginWalk()
         {
             _goingToRest = _arrivals % 3 == 2;
-            Destination = _goingToRest ? RestPoint : ChoosePoint();
+            HabitatPoint rest = _area == null ? RestPoint : _area.Rest;
+            _goingToRest &= _area == null || _area.CanTraverse(Position, rest);
+            Destination = _goingToRest ? rest : ChoosePoint();
+            if (Position.DistanceTo(Destination) < .001)
+            {
+                SetAction(HabitatAction.Observe, 2.8);
+                return;
+            }
             if (Math.Abs(Destination.X - Position.X) > .01) FacingLeft = Destination.X < Position.X;
             SetAction(HabitatAction.Walk, 0);
         }
@@ -87,11 +101,15 @@ namespace HomelessPetHelper.Modules.Station.Habitat
         {
             for (int i = 0; i < 12; i++)
             {
-                var point = new HabitatPoint(MinX + _random.NextDouble() * (MaxX - MinX),
-                    MinY + _random.NextDouble() * (MaxY - MinY));
-                if (Position.DistanceTo(point) >= .2) return point;
+                double minX = _area == null ? MinX : _area.Min.X, maxX = _area == null ? MaxX : _area.Max.X;
+                double minY = _area == null ? MinY : _area.Min.Y, maxY = _area == null ? MaxY : _area.Max.Y;
+                var point = new HabitatPoint(minX + _random.NextDouble() * (maxX - minX),
+                    minY + _random.NextDouble() * (maxY - minY));
+                if (Position.DistanceTo(point) >= (_area == null ? .2 : .12) &&
+                    (_area == null || _area.CanTraverse(Position, point)))
+                    return point;
             }
-            return new HabitatPoint(Position.X < .5 ? MaxX : MinX, .2);
+            return _area == null ? new HabitatPoint(Position.X < .5 ? MaxX : MinX, .2) : Position;
         }
 
         private void Walk(double seconds)

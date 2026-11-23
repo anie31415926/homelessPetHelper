@@ -15,7 +15,10 @@
     "HomelessPetHelper.Modules.Animals",
     "HomelessPetHelper.Modules.WorldTime",
     "HomelessPetHelper.Tests.Support",
-    "HomelessPetHelper.Framework.Persistence"
+    "HomelessPetHelper.Framework.Persistence",
+    "HomelessPetHelper.Framework.UI",
+    "HomelessPetHelper.Framework.Audio",
+    "HomelessPetHelper.Framework.Audio.UI"
   ],
   "optionalUnityReferences": [
     "TestAssemblies"

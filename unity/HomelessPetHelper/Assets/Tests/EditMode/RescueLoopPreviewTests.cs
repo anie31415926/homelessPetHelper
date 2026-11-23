@@ -96,8 +96,10 @@ namespace HomelessPetHelper.Tests.EditMode
                 presenter.ShowSharedStation(false);
                 Assert.That(shortDay.Clock.Current.DayIndex, Is.EqualTo(elapsed / minutesPerDay));
                 Assert.That(shortDay.Clock.Current.MinuteOfDay, Is.EqualTo(elapsed % minutesPerDay));
+                Click(_station, "StationMenu");
                 string clock = _station.GetComponentsInChildren<Text>().Single(text => text.name == "Clock").text;
                 Assert.That(clock, Is.EqualTo(expected));
+                Click(_station, "CloseStationMenu");
             }
         }
 

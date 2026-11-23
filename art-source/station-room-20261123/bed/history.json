@@ -1,0 +1,174 @@
+{
+  "prompt": [
+    1,
+    "2de875ed-d86f-4118-a92f-87bd7265f94a",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "station-room.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Extract ONLY the big round cream and pink cushioned pet bed in the center as a transparent RGBA layer. Keep its exact original position, scale, perspective, colors, texture, complete outline and soft contact shadow. Everything else must be fully transparent. No room, no floor, no wall, no text, no other furniture. Do NOT center or resize the object.",
+          "negative_prompt": "new objects, changed perspective, changed composition, redesigned furniture, text, watermark, checkerboard background, extra legs, people, animals",
+          "resolution": 0,
+          "images.image_1": [
+            "4",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112303,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "station-room/bed"
+        }
+      }
+    },
+    {
+      "client_id": "station-room-20261123",
+      "create_time": 1795421910719
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "bed_00001_.png",
+          "subfolder": "station-room",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "2de875ed-d86f-4118-a92f-87bd7265f94a",
+          "timestamp": 1795421910722
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6"
+          ],
+          "prompt_id": "2de875ed-d86f-4118-a92f-87bd7265f94a",
+          "timestamp": 1795421910726
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "2de875ed-d86f-4118-a92f-87bd7265f94a",
+          "timestamp": 1795421929537
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

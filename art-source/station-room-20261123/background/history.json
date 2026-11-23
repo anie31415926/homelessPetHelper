@@ -1,0 +1,175 @@
+{
+  "prompt": [
+    2,
+    "c97bca8e-8486-4a18-922c-9c12dbfc0acd",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "station-room.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Remove the large round pink pet bed in the center, the tall cat climbing tree at left, the small potted plant at the base of the tree, the leaning pink pillow and the small wooden cabinet with its potted plant at right. Seamlessly reconstruct the empty wall, wooden floor and fluffy rug behind them. Keep the window, curtains, wall art, hanging brush, existing bottom flowers and original watercolor style and camera EXACTLY. Remove the tiny watermark at bottom right. No new furniture, no animals.",
+          "negative_prompt": "new objects, changed perspective, changed composition, redesigned furniture, text, watermark, checkerboard background, extra legs, people, animals",
+          "resolution": 0,
+          "images.image_1": [
+            "4",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112302,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "station-room/background"
+        }
+      }
+    },
+    {
+      "client_id": "station-room-20261123",
+      "create_time": 1795421985391
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "background_00001_.png",
+          "subfolder": "station-room",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "c97bca8e-8486-4a18-922c-9c12dbfc0acd",
+          "timestamp": 1795421985393
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "6"
+          ],
+          "prompt_id": "c97bca8e-8486-4a18-922c-9c12dbfc0acd",
+          "timestamp": 1795421985396
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "c97bca8e-8486-4a18-922c-9c12dbfc0acd",
+          "timestamp": 1795422001066
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

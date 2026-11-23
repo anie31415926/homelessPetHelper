@@ -1,0 +1,90 @@
+{
+  "sourceSha256": "9bf52a9c6eb8000e8376a475f0d68f2966fbea23066d629d89819dd8ab099dd8",
+  "crop": [
+    8,
+    9,
+    336,
+    600
+  ],
+  "modelWorkingSize": [
+    352,
+    608
+  ],
+  "watermarkRepair": {
+    "rect": [
+      260,
+      565,
+      76,
+      35
+    ],
+    "outsideUnchanged": true
+  },
+  "records": [
+    {
+      "id": "tree",
+      "source": "art-source/station-room-20261123/tree/master.png",
+      "sourceSha256": "afe38531c91d00085c3bb4dd0a7e670e1bac40d22f1d4e6ab1e7f192e3787106",
+      "left": 0,
+      "top": 90,
+      "width": 103,
+      "height": 241,
+      "opaque": 12158,
+      "notes": "ComfyUI RGBA alpha retained; native aspect restored to336x600, outside declared region cleared; alpha<10 cleared, >247 opaque. Tree floating foliage removed; complete plant separately extracted."
+    },
+    {
+      "id": "plant",
+      "source": "art-source/station-room-20261123/plant-local/master.png",
+      "sourceSha256": "01051476cff72626d37d13156c1fc7488bb80fcd6efa4c3d160eda55f562dbe9",
+      "left": 59,
+      "top": 228,
+      "width": 47,
+      "height": 70,
+      "opaque": 1769,
+      "notes": "ComfyUI RGBA alpha retained; native aspect restored to336x600, outside declared region cleared; alpha<10 cleared, >247 opaque. Tree floating foliage removed; complete plant separately extracted."
+    },
+    {
+      "id": "pillow",
+      "source": "art-source/station-room-20261123/rear/master.png",
+      "sourceSha256": "273910f2f957ab931d0e0e6857519f6dccd152ae0bb0ba49237ff11b469abd26",
+      "left": 211,
+      "top": 229,
+      "width": 84,
+      "height": 81,
+      "opaque": 4009,
+      "notes": "ComfyUI RGBA alpha retained; native aspect restored to336x600, outside declared region cleared; alpha<10 cleared, >247 opaque. Tree floating foliage removed; complete plant separately extracted."
+    },
+    {
+      "id": "cabinet",
+      "source": "art-source/station-room-20261123/rear/master.png",
+      "sourceSha256": "273910f2f957ab931d0e0e6857519f6dccd152ae0bb0ba49237ff11b469abd26",
+      "left": 301,
+      "top": 199,
+      "width": 35,
+      "height": 118,
+      "opaque": 2773,
+      "notes": "ComfyUI RGBA alpha retained; native aspect restored to336x600, outside declared region cleared; alpha<10 cleared, >247 opaque. Tree floating foliage removed; complete plant separately extracted."
+    },
+    {
+      "id": "bed",
+      "source": "art-source/station-room-20261123/bed/master.png",
+      "sourceSha256": "8995cbb521f394304eefbe22dfb9347a0323da806a1cb54076cf10c278ac85b0",
+      "left": 23,
+      "top": 306,
+      "width": 294,
+      "height": 157,
+      "opaque": 37215,
+      "notes": "ComfyUI RGBA alpha retained; native aspect restored to336x600, outside declared region cleared; alpha<10 cleared, >247 opaque. Tree floating foliage removed; complete plant separately extracted."
+    }
+  ],
+  "atlas": {
+    "width": 496,
+    "height": 248,
+    "bytes": 142962,
+    "sha256": "19b8c2751eb5222985512593311073cc74588ba4fd1720958ea503db1398261a"
+  },
+  "background": {
+    "bytes": 35490,
+    "sha256": "b4962352801bc138d5c5e718e96503fe3a9707a1b315e0ee9390a340a1ebe633"
+  },
+  "assembledSha256": "14bc7dc09de5f1556c0a03e4d8c137b1dd72ad3846e578359a36be59493fc307"
+}

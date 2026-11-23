@@ -59,8 +59,12 @@ namespace HomelessPetHelper.Tests.PlayMode
             var content = AssetDatabase.LoadAssetAtPath<HomelessPetHelper.Game.GameContent>(
                 "Assets/Settings/Game/GameContent.asset");
             var copy = new HomelessPetHelper.Game.Text.OptionPreviewText(content.StationText);
+            station.GetComponentsInChildren<Button>()
+                .Single(button => button.name == "StationMenu").onClick.Invoke();
             Assert.That(station.GetComponentsInChildren<Text>().Any(label =>
                 label.text == copy.Get("capacity", 0, 9)), Is.True);
+            station.GetComponentsInChildren<Button>()
+                .Single(button => button.name == "CloseStationMenu").onClick.Invoke();
             Assert.That(storage.Writes, Is.EqualTo(2), "Opening and returning each save one stable checkpoint.");
             var stationId = session.StationSessionId;
             yield return SceneManager.LoadSceneAsync("Assets/Scenes/Main.unity");
