@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using HomelessPetHelper.Framework.Audio;
 using HomelessPetHelper.Framework.Audio.Persistence;
 using HomelessPetHelper.Framework.Persistence;
@@ -18,10 +19,13 @@ namespace HomelessPetHelper.Game
         public SaveError PersistenceError { get; private set; }
         public bool HasUnsavedPreferences => !_service.Preferences.Equals(_persisted);
 
-        public MainAudioSession(Transform parent, AudioCatalog catalog, ISaveStorage storage)
+        public MainAudioSession(Transform parent, AudioCatalog catalog, ISaveStorage storage,
+            AudioCatalog musicCatalog = null)
         {
             if (parent == null) throw new ArgumentNullException(nameof(parent));
-            AudioCue[] cues = catalog != null ? catalog.CreateCues() : Array.Empty<AudioCue>();
+            var cues = new List<AudioCue>();
+            if (catalog != null) cues.AddRange(catalog.CreateCues());
+            if (musicCatalog != null) cues.AddRange(musicCatalog.CreateCues());
             _store = new AudioPreferencesStore(storage);
             if (!_store.TryLoad(out var preferences, out var error))
             {

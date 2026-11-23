@@ -19,6 +19,7 @@ namespace HomelessPetHelper.Game
         [SerializeField] private Font _font;
         [SerializeField] private OutingArtwork[] _outingArtwork = Array.Empty<OutingArtwork>();
         [SerializeField] private AudioCatalog _audioCatalog;
+        [SerializeField] private AudioCatalog _musicCatalog;
         [SerializeField] private TextAsset _approachConfig, _approachText;
         [SerializeField] private TextAsset[] _fieldConfigs = Array.Empty<TextAsset>();
         [SerializeField] private TextAsset _levelUiText, _levelGuidance;
@@ -34,6 +35,7 @@ namespace HomelessPetHelper.Game
             new ApproachCatalog(JsonUtility.FromJson<ApproachCatalogData>(_approachConfig.text)) :
             throw new InvalidOperationException("Missing approach content.");
         public AudioCatalog AudioCatalog => _audioCatalog;
+        public AudioCatalog MusicCatalog => _musicCatalog;
         public TextAsset MapText => _mapText;
         public TextAsset StationText => _stationText;
         public TextAsset SiegeText => _siegeText;

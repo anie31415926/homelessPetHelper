@@ -23,6 +23,7 @@ namespace HomelessPetHelper.Game
         [SerializeField] private AudioScope[] _audioScopes = Array.Empty<AudioScope>();
         public MainLoopPresenter Presenter { get; private set; }
         public MainAudioSession Audio { get; private set; }
+        public MainMusicSession Music { get; private set; }
 
         private ISaveStorage _progressStorage;
         private Func<int> _outingSeedSource;
@@ -63,7 +64,8 @@ namespace HomelessPetHelper.Game
             if (_bootstrap == null || _content == null || _station == null || _map == null ||
                 _siege == null || _approach == null)
                 throw new InvalidOperationException("Incomplete Main scene bindings.");
-            Audio = new MainAudioSession(transform, _content.AudioCatalog, _audioStorage ?? CreateAudioStorage());
+            Audio = new MainAudioSession(transform, _content.AudioCatalog, _audioStorage ?? CreateAudioStorage(),
+                _content.MusicCatalog);
             PlaySettings = new Settings.PlaySettingsSession(_playStorage ??
                 (_injectedPreferences ? null : CreatePlayStorage()));
             Guidance = new Guidance.GuidanceProgressSession(_guidanceStorage ?? CreateGuidanceStorage());
@@ -75,13 +77,27 @@ namespace HomelessPetHelper.Game
             Presenter = new MainLoopPresenter(_station, _map, _siege, _approach, _content, Audio.Playback,
                 _progressStorage ?? CreateProgressStorage(), _outingSeedSource, Audio, Guidance, PlaySettings);
             _bootstrap.BindSession(Presenter.Session);
+            Music = new MainMusicSession(Audio.Playback, _content.MusicCatalog);
+            RefreshMusic();
             if (Audio.PersistenceError != null)
                 Debug.LogWarning("Audio preferences are session-only; original save is preserved. " +
                     Audio.PersistenceError, this);
         }
 
+        private void Update() => RefreshMusic();
+
+        private void RefreshMusic()
+        {
+            if (Presenter == null || Music == null) return;
+            var session = Presenter.Session;
+            Music.Refresh(session?.Flow.Stage ?? Modules.Rescue.RescueStage.Station,
+                !Presenter.Progress.CanContinue || session == null || session.Flow.IsSuspended);
+        }
+
         private void OnDestroy()
         {
+            Music?.Dispose();
+            Music = null;
             if (_bootstrap != null) _bootstrap.BindSession(null);
             Presenter?.Dispose();
             Presenter = null;

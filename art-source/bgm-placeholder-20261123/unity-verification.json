@@ -1,0 +1,156 @@
+{
+  "status": "passed",
+  "stagedTreeAtAudit": "9953dc708fdfaae4db5469b94286f62106e9277e",
+  "testedProject": "test-results/bgm-integration/staged-db3348a82237/unity/HomelessPetHelper",
+  "ownedUnityInputs": [
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/Audio/PlaceholderMusic.meta",
+      "bytes": 172,
+      "sha256": "11fe52e0603e6e471b07ea404c78a5c3d3ebb03c11c965fb3f3af49267d1edc0"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/Audio/PlaceholderMusic/BGM_Explore_Placeholder.wav",
+      "bytes": 5644844,
+      "sha256": "a0250325b46e114fa1d679b903ebb5a2e6dc63911df96523ef67a67b56ef3057"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/Audio/PlaceholderMusic/BGM_Explore_Placeholder.wav.meta",
+      "bytes": 750,
+      "sha256": "d663e9ca556b282f45d7a72ade1b1c36cd04e6d43c60637f5bd9ab29d816c339"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/Audio/PlaceholderMusic/BGM_Rescue_Placeholder.wav",
+      "bytes": 5644844,
+      "sha256": "8da8ab369bb3a7f924f189c8f6a67cfbe33e1974b4b6356a4becb3c1f02af77a"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/Audio/PlaceholderMusic/BGM_Rescue_Placeholder.wav.meta",
+      "bytes": 750,
+      "sha256": "838e95d14f718069733e9a8d62d3892e5ca4fe65f5cbcb64fc1f1ba0908e9f51"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/Audio/PlaceholderMusic/BGM_Station_Placeholder.wav",
+      "bytes": 5644844,
+      "sha256": "84c28fa015bbaf40bf5732ed0cb7d5f26953c1d3dddf744acd7322b15b6a9aea"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Art/Audio/PlaceholderMusic/BGM_Station_Placeholder.wav.meta",
+      "bytes": 750,
+      "sha256": "26e003f9b8c632d33bd20c09dc7b3f8d1d785255a7921e322524fd15e89ca676"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Scripts/Editor/Audio/PlaceholderMusicAssets.cs",
+      "bytes": 5874,
+      "sha256": "598b2dd1b99ae74ac1b21849d719a25c71d71f3228d7dc92acd9176bf36f6543"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Scripts/Editor/Audio/PlaceholderMusicAssets.cs.meta",
+      "bytes": 243,
+      "sha256": "7c4e6943fcdb4409b57ba7616aa873ecf4ec88cde6f7be3b09b3ad69bdcd4493"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Scripts/Game/GameAudioCues.cs",
+      "bytes": 610,
+      "sha256": "a7780edf707c82a624b6e757e218476f9a9bc5cfbb32bc1bbecb5f871734780d"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Scripts/Game/GameContent.cs",
+      "bytes": 5243,
+      "sha256": "cad0f1e847315bd2434a6b9dc0f8218a4706ccef973756fabb577b40547ddcbb"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Scripts/Game/MainAudioSession.cs",
+      "bytes": 3383,
+      "sha256": "c348c9163742d30c81449681a3d83aa8930bdc672238f79bc893ce04b86db32b"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Scripts/Game/MainGameRoot.cs",
+      "bytes": 6366,
+      "sha256": "993c9820e04714323fdc73d5e7ee3452c5e9aa167bdd05defa8afe05411599b0"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Scripts/Game/MainMusicSession.cs",
+      "bytes": 2905,
+      "sha256": "3efe63b1a74f66196acad0106340da76608d6c6cd0a1eaac83b8cfdf6c533384"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Scripts/Game/MainMusicSession.cs.meta",
+      "bytes": 243,
+      "sha256": "5a6674c238b4436425c16539213b6415eb11a44651b56ba9064c71f572217f6a"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Settings/Audio/PlaceholderMusicCatalog.asset",
+      "bytes": 1032,
+      "sha256": "00ab6d1e17c1cc46cfd93999708e39a74d570a2eee51a604d2bd010fe70f1775"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Settings/Audio/PlaceholderMusicCatalog.asset.meta",
+      "bytes": 221,
+      "sha256": "47a88eb9740bc8a33832ad754f997e0008b8239453dbdeedc0aeb13b1a067f70"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Settings/Game/GameContent.asset",
+      "bytes": 2654,
+      "sha256": "b6134f8a11f4697e90d3103302c7175af11403aaf7318662c94f294546dd753b"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Tests/Audio/EditMode/MusicAssetTests.cs",
+      "bytes": 3064,
+      "sha256": "338bf1141207daad92eb7fd0716cc89bf5244c1857d520af8480731ce7493180"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Tests/Audio/EditMode/MusicAssetTests.cs.meta",
+      "bytes": 243,
+      "sha256": "272d12e26ea29e8af637fdaca68945ff1cbbb59b753af27ab0e4937ef44d868e"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Tests/PlayMode/MainMusicTests.cs",
+      "bytes": 11166,
+      "sha256": "3ea7514f6ac966dc01e3e8aef6ab5b4ae6a4ae538ce5ffcadb5e02999583238d"
+    },
+    {
+      "path": "unity/HomelessPetHelper/Assets/Tests/PlayMode/MainMusicTests.cs.meta",
+      "bytes": 243,
+      "sha256": "b764073a51f5ec8559046e376bae6a42db15d50effafaa9edce965480010d5cc"
+    }
+  ],
+  "ownedFingerprint": "589a2b220236de8e38113cc3a1ba3efe76fc3991073670209cb8fb94133adcf6",
+  "editMode": {
+    "path": "test-results/bgm-integration/staged-db3348a82237/test-results/unity/EditMode-BgmParentFinal.xml",
+    "sha256": "34a1f381d287279f2b5d75c418baa8a8b67a446490cbd5fb0068e47a1d7d4a15",
+    "passed": 839,
+    "total": 839,
+    "failed": 0,
+    "skipped": 0
+  },
+  "playMode": {
+    "path": "test-results/bgm-integration/staged-db3348a82237/test-results/unity/PlayMode-BgmStagedFinal.xml",
+    "sha256": "5d6aba1f20a850cc5a4761aa043e699b8948da868384011e4e4bada0f38933c4",
+    "passed": 110,
+    "total": 111,
+    "failed": 0,
+    "skipped": 1
+  },
+  "baselineRetest": {
+    "path": "test-results/bgm-integration/staged-db3348a82237/test-results/unity/PlayMode-BgmBaselineFinal.xml",
+    "sha256": "1db241104f568350fcb740051e6ebf0b98cc5e3bbcf978a0e6b94b28a9b25c48",
+    "passed": 1,
+    "total": 1,
+    "failed": 0,
+    "skipped": 0
+  },
+  "parentIntegration": {
+    "path": "test-results/bgm-integration/staged-db3348a82237/test-results/unity/PlayMode-BgmParentIntegration.xml",
+    "sha256": "3c907f21dd46342e48cfe7c199a80d1668e5572ef126ab13cb43b3d842759a9d",
+    "passed": 19,
+    "total": 19,
+    "failed": 0,
+    "skipped": 0
+  },
+  "sourceManifestSha256": "34bda76e1d2130a9c3c1ac61aba2ae7a39f832d74dfcdd5abc87893197e8143d",
+  "sourceOggBytes": 736532,
+  "standaloneAuditBytes": 988416,
+  "scope": "Exact staged BGM Unity blobs match tested project; other project inputs are not certified here.",
+  "wechatDeviceValidated": false,
+  "finalMusic": false
+}

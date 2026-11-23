@@ -1,0 +1,44 @@
+{
+  "recordedAt": "2026-11-23T11:35:32.851Z",
+  "inheritedSource": "../audio-basic-20261120/provenance/models.json",
+  "models": [
+    {
+      "repo": "Comfy-Org/stable-audio-open-1.0",
+      "file": "stable-audio-open-1.0.safetensors",
+      "folder": "checkpoints",
+      "revision": "3eb100708b423cf59fc5bf2a152f5cc1e7718062",
+      "sourceUrl": "https://huggingface.co/Comfy-Org/stable-audio-open-1.0/resolve/3eb100708b423cf59fc5bf2a152f5cc1e7718062/stable-audio-open-1.0.safetensors?download=true",
+      "bytes": 4853889016,
+      "sha256": "7b20458a071231aaf32613b6fbc7945f28f34dbba4f295bb49bad56f5f66b57e",
+      "localPath": "C:\\Users\\Admin\\ComfyUI-Shared\\models\\checkpoints\\stable-audio-open-1.0.safetensors",
+      "licenseMetadata": {
+        "license": "other",
+        "license_name": "stable-audio-community",
+        "license_link": "https://huggingface.co/Comfy-Org/stable-audio-open-1.0_repackaged/blob/main/LICENSE.md",
+        "tags": [
+          "comfyui",
+          "diffusion-single-file"
+        ],
+        "base_model": [
+          "stabilityai/stable-audio-open-1.0"
+        ]
+      },
+      "reverifiedSha256": "7b20458a071231aaf32613b6fbc7945f28f34dbba4f295bb49bad56f5f66b57e"
+    },
+    {
+      "repo": "ComfyUI-Wiki/t5-base",
+      "file": "t5-base.safetensors",
+      "folder": "text_encoders",
+      "revision": "6cd5e6887a033dee7a1bad4e5ea9ed43d83681f4",
+      "sourceUrl": "https://huggingface.co/ComfyUI-Wiki/t5-base/resolve/6cd5e6887a033dee7a1bad4e5ea9ed43d83681f4/t5-base.safetensors?download=true",
+      "bytes": 891646390,
+      "sha256": "a90903540cc02cbeb7ff9f823f1a80eb778c7e22426a0e620b01c77a5ec8f5b4",
+      "localPath": "C:\\Users\\Admin\\ComfyUI-Shared\\models\\text_encoders\\t5-base.safetensors",
+      "licenseMetadata": {
+        "license": "apache-2.0"
+      },
+      "reverifiedSha256": "a90903540cc02cbeb7ff9f823f1a80eb778c7e22426a0e620b01c77a5ec8f5b4"
+    }
+  ],
+  "rights": "Pending review. Evaluation placeholders only; not approved for commercial release."
+}

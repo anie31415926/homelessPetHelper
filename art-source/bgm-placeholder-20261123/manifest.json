@@ -1,0 +1,325 @@
+{
+  "status": "temporary",
+  "final": false,
+  "unityImported": false,
+  "specification": {
+    "durationSeconds": 32,
+    "crossfadeSeconds": 1.5,
+    "sampleRate": 32000,
+    "channels": 2,
+    "codec": "libvorbis",
+    "targetBitrate": 80000,
+    "targetLufs": -20,
+    "lufsTolerance": 1,
+    "maxTruePeakDbtp": -3,
+    "maxFileBytes": 393216,
+    "maxTotalBytes": 1048576
+  },
+  "candidateTotalBytes": 736532,
+  "inputs": {
+    "plan.json": "a429ca9eaba46c52385ca4778829c98f4a08a59fa61f8fd29cd23559c6410037",
+    "process.py": "c57350ac8e6e9f91685ee24c9dc23c795a50564037842121954ed7a9ef51cccc",
+    "generate.mjs": "2644904419e13ea85af6c6577fccb19216da83bef31a91a2b6d0dcc1d045314a"
+  },
+  "tools": {
+    "python": "3.13.12 (main, Feb 12 2026, 00:38:53) [MSC v.1944 64 bit (AMD64)]",
+    "pyav": "17.0.1",
+    "ffmpegSha256": "e9fd5e711debab9d680955fc1e38a2c1160fd280b144476cc3f62bc43ef49db1"
+  },
+  "cues": [
+    {
+      "id": "station",
+      "assetName": "BGM_Station_Placeholder",
+      "suggestedCueId": "music.station.placeholder",
+      "status": "temporary",
+      "final": false,
+      "loadPhase": "unassigned",
+      "review": {
+        "listening": "pending",
+        "loopMusicalPhrase": "pending",
+        "commercialRights": "pending",
+        "targetDevice": "pending"
+      },
+      "source": {
+        "path": "raw/station.flac",
+        "bytes": 831700,
+        "sha256": "93d618aec9262c337b74794528130c481e1d4e5872af8801c932c881a2cce5dc",
+        "analysis": {
+          "seconds": 47.554467,
+          "frames": 2097152,
+          "peakDbfs": -35.011,
+          "rmsDbfs": -49.499,
+          "clippedSamples": 0,
+          "dcOffset": 1.33e-06,
+          "monoRmsRatio": 1.0,
+          "seamStepDbfs": -84.288,
+          "ordinaryStepP999Dbfs": -65.7
+        }
+      },
+      "edit": {
+        "sourceStartFrame": 110250,
+        "sourceSpanFrames": 1477350,
+        "crossfadeFrames": 66150,
+        "windowScore": 0.936719,
+        "method": "DC removal, cosine equal-gain tail/head crossfade, rotated seam",
+        "linearGainDb": 26.32
+      },
+      "master": {
+        "path": "masters/BGM_Station_Placeholder.wav",
+        "bytes": 5644844,
+        "sha256": "84c28fa015bbaf40bf5732ed0cb7d5f26953c1d3dddf744acd7322b15b6a9aea",
+        "analysis": {
+          "codec": "pcm_s16le",
+          "sampleRate": 44100,
+          "channels": 2,
+          "durationSeconds": 32.0,
+          "seconds": 32.0,
+          "frames": 1411200,
+          "peakDbfs": -8.69,
+          "rmsDbfs": -21.791,
+          "clippedSamples": 0,
+          "dcOffset": 1.12e-06,
+          "monoRmsRatio": 1.0,
+          "seamStepDbfs": -64.288,
+          "ordinaryStepP999Dbfs": -38.421,
+          "loudness": {
+            "input_i": -20.0,
+            "input_tp": -8.69,
+            "input_lra": 4.4
+          }
+        }
+      },
+      "candidate": {
+        "path": "candidates/BGM_Station_Placeholder.ogg",
+        "bytes": 236926,
+        "sha256": "9bdd7829e7cd1b551a8e1c0577090462f12adb0532520272b2f2dbf20def47ac",
+        "analysis": {
+          "codec": "vorbis",
+          "sampleRate": 32000,
+          "channels": 2,
+          "durationSeconds": 32.0,
+          "seconds": 32.0,
+          "frames": 1024000,
+          "peakDbfs": -8.639,
+          "rmsDbfs": -21.783,
+          "clippedSamples": 0,
+          "dcOffset": 1.31e-06,
+          "monoRmsRatio": 0.999992,
+          "seamStepDbfs": -52.346,
+          "ordinaryStepP999Dbfs": -35.87,
+          "loudness": {
+            "input_i": -20.0,
+            "input_tp": -8.64,
+            "input_lra": 4.4
+          }
+        }
+      },
+      "preview": {
+        "path": "audition/BGM_Station_Placeholder.mp3",
+        "bytes": 384703,
+        "sha256": "0c00b3ea8eeca36406cdd027f3295366a85fb9504770685309a40ea7c0e16800"
+      },
+      "loopBoundaryPreview": {
+        "path": "audition/station-loop-boundary.mp3",
+        "bytes": 145172,
+        "sha256": "b4f30b073f5a06ac85455ea502f968dcbd6d757436629baae9919e6d2f2ead27"
+      }
+    },
+    {
+      "id": "explore",
+      "assetName": "BGM_Explore_Placeholder",
+      "suggestedCueId": "music.explore.placeholder",
+      "status": "temporary",
+      "final": false,
+      "loadPhase": "unassigned",
+      "review": {
+        "listening": "pending",
+        "loopMusicalPhrase": "pending",
+        "commercialRights": "pending",
+        "targetDevice": "pending"
+      },
+      "source": {
+        "path": "raw/explore.flac",
+        "bytes": 1111796,
+        "sha256": "27bd6db40367f4412262c209d758712fbce98d796c8497235f88eae0fa11062b",
+        "analysis": {
+          "seconds": 47.554467,
+          "frames": 2097152,
+          "peakDbfs": -22.767,
+          "rmsDbfs": -41.128,
+          "clippedSamples": 0,
+          "dcOffset": 6.93e-06,
+          "monoRmsRatio": 1.0,
+          "seamStepDbfs": -240.0,
+          "ordinaryStepP999Dbfs": -41.428
+        }
+      },
+      "edit": {
+        "sourceStartFrame": 231525,
+        "sourceSpanFrames": 1477350,
+        "crossfadeFrames": 66150,
+        "windowScore": 0.979235,
+        "method": "DC removal, cosine equal-gain tail/head crossfade, rotated seam",
+        "linearGainDb": 18.44
+      },
+      "master": {
+        "path": "masters/BGM_Explore_Placeholder.wav",
+        "bytes": 5644844,
+        "sha256": "a0250325b46e114fa1d679b903ebb5a2e6dc63911df96523ef67a67b56ef3057",
+        "analysis": {
+          "codec": "pcm_s16le",
+          "sampleRate": 44100,
+          "channels": 2,
+          "durationSeconds": 32.0,
+          "seconds": 32.0,
+          "frames": 1411200,
+          "peakDbfs": -5.362,
+          "rmsDbfs": -22.283,
+          "clippedSamples": 0,
+          "dcOffset": 1.04e-06,
+          "monoRmsRatio": 1.0,
+          "seamStepDbfs": -72.247,
+          "ordinaryStepP999Dbfs": -22.07,
+          "loudness": {
+            "input_i": -20.03,
+            "input_tp": -5.33,
+            "input_lra": 7.9
+          }
+        }
+      },
+      "candidate": {
+        "path": "candidates/BGM_Explore_Placeholder.ogg",
+        "bytes": 252704,
+        "sha256": "7958686b8f0f58fbb2f07cdcde1bd7747f1213720b54bb9c5abb81b527989241",
+        "analysis": {
+          "codec": "vorbis",
+          "sampleRate": 32000,
+          "channels": 2,
+          "durationSeconds": 32.0,
+          "seconds": 32.0,
+          "frames": 1024000,
+          "peakDbfs": -5.487,
+          "rmsDbfs": -22.265,
+          "clippedSamples": 0,
+          "dcOffset": 3.73e-06,
+          "monoRmsRatio": 0.999994,
+          "seamStepDbfs": -65.993,
+          "ordinaryStepP999Dbfs": -19.929,
+          "loudness": {
+            "input_i": -20.01,
+            "input_tp": -5.41,
+            "input_lra": 7.9
+          }
+        }
+      },
+      "preview": {
+        "path": "audition/BGM_Explore_Placeholder.mp3",
+        "bytes": 384703,
+        "sha256": "0215e6c949a3850b68ef7ff3e899fccacc07e93aa73375e63ec73537b7619639"
+      },
+      "loopBoundaryPreview": {
+        "path": "audition/explore-loop-boundary.mp3",
+        "bytes": 145172,
+        "sha256": "5f3de12e62c6ba094fc91b6d5f1f49582ad28992a8b7b57c6012515cdf6860d3"
+      }
+    },
+    {
+      "id": "rescue",
+      "assetName": "BGM_Rescue_Placeholder",
+      "suggestedCueId": "music.rescue.placeholder",
+      "status": "temporary",
+      "final": false,
+      "loadPhase": "unassigned",
+      "review": {
+        "listening": "pending",
+        "loopMusicalPhrase": "pending",
+        "commercialRights": "pending",
+        "targetDevice": "pending"
+      },
+      "source": {
+        "path": "raw/rescue.flac",
+        "bytes": 913076,
+        "sha256": "f6cc23de9a9658f4ce9b7660d438ba5366f83a1906fa3f05b238e5b6b48cd38b",
+        "analysis": {
+          "seconds": 47.554467,
+          "frames": 2097152,
+          "peakDbfs": -32.545,
+          "rmsDbfs": -50.188,
+          "clippedSamples": 0,
+          "dcOffset": 4.82e-06,
+          "monoRmsRatio": 1.0,
+          "seamStepDbfs": -76.33,
+          "ordinaryStepP999Dbfs": -60.767
+        }
+      },
+      "edit": {
+        "sourceStartFrame": 275625,
+        "sourceSpanFrames": 1477350,
+        "crossfadeFrames": 66150,
+        "windowScore": 1.484109,
+        "method": "DC removal, cosine equal-gain tail/head crossfade, rotated seam",
+        "linearGainDb": 26.72
+      },
+      "master": {
+        "path": "masters/BGM_Rescue_Placeholder.wav",
+        "bytes": 5644844,
+        "sha256": "8da8ab369bb3a7f924f189c8f6a67cfbe33e1974b4b6356a4becb3c1f02af77a",
+        "analysis": {
+          "codec": "pcm_s16le",
+          "sampleRate": 44100,
+          "channels": 2,
+          "durationSeconds": 32.0,
+          "seconds": 32.0,
+          "frames": 1411200,
+          "peakDbfs": -5.825,
+          "rmsDbfs": -22.053,
+          "clippedSamples": 0,
+          "dcOffset": 3.01e-06,
+          "monoRmsRatio": 1.0,
+          "seamStepDbfs": -51.519,
+          "ordinaryStepP999Dbfs": -33.494,
+          "loudness": {
+            "input_i": -19.99,
+            "input_tp": -5.82,
+            "input_lra": 4.6
+          }
+        }
+      },
+      "candidate": {
+        "path": "candidates/BGM_Rescue_Placeholder.ogg",
+        "bytes": 246902,
+        "sha256": "3c690c1a99363abeaa2d07feadc3212f3e530b720d116475d37c3dbb10bad50e",
+        "analysis": {
+          "codec": "vorbis",
+          "sampleRate": 32000,
+          "channels": 2,
+          "durationSeconds": 32.0,
+          "seconds": 32.0,
+          "frames": 1024000,
+          "peakDbfs": -5.967,
+          "rmsDbfs": -22.052,
+          "clippedSamples": 0,
+          "dcOffset": 3.244e-05,
+          "monoRmsRatio": 0.999981,
+          "seamStepDbfs": -56.988,
+          "ordinaryStepP999Dbfs": -30.819,
+          "loudness": {
+            "input_i": -19.97,
+            "input_tp": -5.96,
+            "input_lra": 4.6
+          }
+        }
+      },
+      "preview": {
+        "path": "audition/BGM_Rescue_Placeholder.mp3",
+        "bytes": 384702,
+        "sha256": "af94210f9b6ab6dd97cbd17b5474585a8841af2431bfc1f498a37186255a4933"
+      },
+      "loopBoundaryPreview": {
+        "path": "audition/rescue-loop-boundary.mp3",
+        "bytes": 145172,
+        "sha256": "ae962244b028f0595791337824a37859428eb051776ed8716fd54f811d8d700b"
+      }
+    }
+  ]
+}

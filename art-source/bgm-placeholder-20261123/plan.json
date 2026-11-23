@@ -1,0 +1,50 @@
+{
+  "status": "temporary",
+  "final": false,
+  "loadPhase": "unassigned",
+  "model": "stable-audio-open-1.0.safetensors",
+  "textEncoder": "t5-base.safetensors",
+  "generationSeconds": 47.6,
+  "steps": 60,
+  "cfg": 5,
+  "sampler": "dpmpp_3m_sde_gpu",
+  "scheduler": "exponential",
+  "exportGainDb": -18,
+  "negative": "vocals, singing, speech, talking, choir, lyrics, barking, meowing, animal sounds, field recording, sound effects, applause, crowd, distortion, clipping, loud drums, heavy bass, dramatic cinematic orchestra, scary, aggressive, sudden changes, intro, ending, fade out",
+  "delivery": {
+    "durationSeconds": 32,
+    "crossfadeSeconds": 1.5,
+    "sampleRate": 32000,
+    "channels": 2,
+    "codec": "libvorbis",
+    "targetBitrate": 80000,
+    "targetLufs": -20,
+    "lufsTolerance": 1,
+    "maxTruePeakDbtp": -3,
+    "maxFileBytes": 393216,
+    "maxTotalBytes": 1048576
+  },
+  "cues": [
+    {
+      "id": "station",
+      "assetName": "BGM_Station_Placeholder",
+      "suggestedCueId": "music.station.placeholder",
+      "seed": 2026112301,
+      "prompt": "Instrumental music, gentle cozy acoustic game background music. A warm nylon string guitar plays a simple repeating major key melody over soft felt piano chords, quiet upright bass and a light brushed shaker. Relaxed 88 bpm, intimate small acoustic ensemble, soft rounded notes, calm reassuring hopeful mood, caring for small pets in a peaceful home. Sparse consistent arrangement, understated melody, even steady groove throughout, no vocals, no intro or ending, clean studio recording."
+    },
+    {
+      "id": "explore",
+      "assetName": "BGM_Explore_Placeholder",
+      "suggestedCueId": "music.explore.placeholder",
+      "seed": 2026112302,
+      "prompt": "Instrumental music, light playful acoustic background music for a cozy exploration game. Delicate pizzicato strings and a mellow wooden marimba play a small repeating melody, warm acoustic guitar accompaniment, gentle upright bass, soft hand percussion. Walking pace 96 bpm, curious friendly optimistic mood, strolling around a quiet leafy neighborhood, unhurried discovery. Small ensemble, restrained dynamics, simple repetitive musical phrase, consistent groove throughout, no vocals, no intro or ending, clean studio recording."
+    },
+    {
+      "id": "rescue",
+      "assetName": "BGM_Rescue_Placeholder",
+      "suggestedCueId": "music.rescue.placeholder",
+      "seed": 2026112303,
+      "prompt": "Instrumental music, gentle purposeful puzzle game background music. Muted acoustic guitar ostinato, soft pizzicato cello bass, mellow marimba notes and very quiet brushed percussion. Steady 104 bpm, focused encouraging cooperative mood, helping a frightened small pet, light activity without danger or urgency. Warm major key harmony, compact repeating motif, restrained acoustic ensemble, even volume and consistent rhythm throughout, no vocals, no dramatic climax, no intro or ending, clean studio recording."
+    }
+  ]
+}

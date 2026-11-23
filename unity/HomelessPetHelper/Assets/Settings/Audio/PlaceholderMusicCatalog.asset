@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46ee86b9f831413d8534ed5d0ae50521, type: 3}
+  m_Name: PlaceholderMusicCatalog
+  m_EditorClassIdentifier: 
+  _entries:
+  - _id: music.station.placeholder
+    _channel: 1
+    _clip: {fileID: 8300000, guid: 6d36a03fdadbfa8489657d22d39bd5cc, type: 3}
+    _gain: 0.65
+    _maxVoices: 1
+    _minIntervalSeconds: 0
+    _loop: 1
+  - _id: music.explore.placeholder
+    _channel: 1
+    _clip: {fileID: 8300000, guid: 825e92db1d227b846895bb49b07fb947, type: 3}
+    _gain: 0.65
+    _maxVoices: 1
+    _minIntervalSeconds: 0
+    _loop: 1
+  - _id: music.rescue.placeholder
+    _channel: 1
+    _clip: {fileID: 8300000, guid: 13075113fd8007f49be705d048c92a6a, type: 3}
+    _gain: 0.65
+    _maxVoices: 1
+    _minIntervalSeconds: 0
+    _loop: 1

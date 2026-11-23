@@ -1,0 +1,119 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "stable-audio-open-1.0.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "t5-base.safetensors",
+      "type": "stable_audio",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "Instrumental music, light playful acoustic background music for a cozy exploration game. Delicate pizzicato strings and a mellow wooden marimba play a small repeating melody, warm acoustic guitar accompaniment, gentle upright bass, soft hand percussion. Walking pace 96 bpm, curious friendly optimistic mood, strolling around a quiet leafy neighborhood, unhurried discovery. Small ensemble, restrained dynamics, simple repetitive musical phrase, consistent groove throughout, no vocals, no intro or ending, clean studio recording."
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "vocals, singing, speech, talking, choir, lyrics, barking, meowing, animal sounds, field recording, sound effects, applause, crowd, distortion, clipping, loud drums, heavy bass, dramatic cinematic orchestra, scary, aggressive, sudden changes, intro, ending, fade out"
+    }
+  },
+  "5": {
+    "class_type": "ConditioningStableAudio",
+    "inputs": {
+      "positive": [
+        "3",
+        0
+      ],
+      "negative": [
+        "4",
+        0
+      ],
+      "seconds_start": 0,
+      "seconds_total": 47.6
+    }
+  },
+  "6": {
+    "class_type": "EmptyLatentAudio",
+    "inputs": {
+      "seconds": 47.6,
+      "batch_size": 1
+    }
+  },
+  "7": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "5",
+        0
+      ],
+      "negative": [
+        "5",
+        1
+      ],
+      "latent_image": [
+        "6",
+        0
+      ],
+      "seed": 2026112302,
+      "steps": 60,
+      "cfg": 5,
+      "sampler_name": "dpmpp_3m_sde_gpu",
+      "scheduler": "exponential",
+      "denoise": 1
+    }
+  },
+  "8": {
+    "class_type": "VAEDecodeAudio",
+    "inputs": {
+      "samples": [
+        "7",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveAudioAdvanced",
+    "inputs": {
+      "audio": [
+        "10",
+        0
+      ],
+      "filename_prefix": "bgm-placeholder-20261123/explore",
+      "format": "flac"
+    }
+  },
+  "10": {
+    "class_type": "AudioAdjustVolume",
+    "inputs": {
+      "audio": [
+        "8",
+        0
+      ],
+      "volume": -18
+    }
+  }
+}

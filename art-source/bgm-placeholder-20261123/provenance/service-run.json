@@ -1,0 +1,20 @@
+{
+  "endpoint": "http://127.0.0.1:8196",
+  "comfyuiVersion": "0.37.1",
+  "comfyuiGitRevision": "3f767e7f67bc587e88d6de6668eb424f725d4649",
+  "startedAt": "2026-11-23T11:33:53.2347036Z",
+  "stoppedAt": "2026-11-23T11:38:16.8205236Z",
+  "ownedProcessIds": [47724, 99296],
+  "customNodesDisabled": true,
+  "apiNodesDisabled": true,
+  "emptyQueueVerifiedBeforeStop": true,
+  "listenerAndProcessCommandLineVerifiedBeforeStop": true,
+  "otherServicesModified": false,
+  "paidCloudCalls": false,
+  "modelsDownloaded": false,
+  "dependenciesInstalled": false,
+  "notes": [
+    "Initial connection attempt preceded server readiness; no prompt was accepted. The readiness wait then submitted exactly three successful jobs.",
+    "Existing torchsde emitted a floating-point Brownian interval boundary warning during sampling. Successful histories and decoded audio checks are retained; this is not a warning-free execution claim."
+  ]
+}

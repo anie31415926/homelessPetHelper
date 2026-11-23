@@ -1,0 +1,119 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "stable-audio-open-1.0.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "t5-base.safetensors",
+      "type": "stable_audio",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "Instrumental music, gentle cozy acoustic game background music. A warm nylon string guitar plays a simple repeating major key melody over soft felt piano chords, quiet upright bass and a light brushed shaker. Relaxed 88 bpm, intimate small acoustic ensemble, soft rounded notes, calm reassuring hopeful mood, caring for small pets in a peaceful home. Sparse consistent arrangement, understated melody, even steady groove throughout, no vocals, no intro or ending, clean studio recording."
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "vocals, singing, speech, talking, choir, lyrics, barking, meowing, animal sounds, field recording, sound effects, applause, crowd, distortion, clipping, loud drums, heavy bass, dramatic cinematic orchestra, scary, aggressive, sudden changes, intro, ending, fade out"
+    }
+  },
+  "5": {
+    "class_type": "ConditioningStableAudio",
+    "inputs": {
+      "positive": [
+        "3",
+        0
+      ],
+      "negative": [
+        "4",
+        0
+      ],
+      "seconds_start": 0,
+      "seconds_total": 47.6
+    }
+  },
+  "6": {
+    "class_type": "EmptyLatentAudio",
+    "inputs": {
+      "seconds": 47.6,
+      "batch_size": 1
+    }
+  },
+  "7": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "5",
+        0
+      ],
+      "negative": [
+        "5",
+        1
+      ],
+      "latent_image": [
+        "6",
+        0
+      ],
+      "seed": 2026112301,
+      "steps": 60,
+      "cfg": 5,
+      "sampler_name": "dpmpp_3m_sde_gpu",
+      "scheduler": "exponential",
+      "denoise": 1
+    }
+  },
+  "8": {
+    "class_type": "VAEDecodeAudio",
+    "inputs": {
+      "samples": [
+        "7",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveAudioAdvanced",
+    "inputs": {
+      "audio": [
+        "10",
+        0
+      ],
+      "filename_prefix": "bgm-placeholder-20261123/station",
+      "format": "flac"
+    }
+  },
+  "10": {
+    "class_type": "AudioAdjustVolume",
+    "inputs": {
+      "audio": [
+        "8",
+        0
+      ],
+      "volume": -18
+    }
+  }
+}

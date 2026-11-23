@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261123-占位BGM-01a2082b.md",
+  "sessionId": "01a2082b-0ed1-75a3-84f9-99a5ca93312d",
+  "phase": "resume",
+  "readAt": "2026-11-23T12:07:51.122Z",
+  "writePaths": [
+    "art-source/bgm-placeholder-20261123/",
+    "docs/协作任务/20261123-占位BGM-01a2082b.md",
+    "docs/协作执行记录/20261123-占位BGM-01a2082b/",
+    "docs/占位BGM制作与规格.md",
+    "test-results/bgm-integration/",
+    "test-results/unity/",
+    "tools/bgm-integration.ps1",
+    "unity/HomelessPetHelper/Assets/Art/Audio/PlaceholderMusic.meta",
+    "unity/HomelessPetHelper/Assets/Art/Audio/PlaceholderMusic/",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/Audio/PlaceholderMusicAssets.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/Audio/PlaceholderMusicAssets.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/GameAudioCues.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/GameContent.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainAudioSession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainGameRoot.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainMusicSession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainMusicSession.cs.meta",
+    "unity/HomelessPetHelper/Assets/Settings/Audio/PlaceholderMusicCatalog.asset",
+    "unity/HomelessPetHelper/Assets/Settings/Audio/PlaceholderMusicCatalog.asset.meta",
+    "unity/HomelessPetHelper/Assets/Settings/Game/GameContent.asset",
+    "unity/HomelessPetHelper/Assets/Tests/Audio/EditMode/MusicAssetTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/Audio/EditMode/MusicAssetTests.cs.meta",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/MainMusicTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/MainMusicTests.cs.meta"
+  ],
+  "contextDigest": "4c7bbbf9468aa1b993f45b8d7e6b5dee9a188d6dc038fa3f1efebdafee12b9c8",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+      "sha256": "1d38e08bb68128e84ced750cb2674ca85083b33777fcb32153ea5ae59dae5151"
+    },
+    {
+      "path": "docs/协作任务/20261123-占位BGM-01a2082b.md",
+      "sha256": "6233b4f094490e6b8ebe33bcbee4ac6025b4abb7c35c586e2d26494cb8be02ba"
+    },
+    {
+      "path": "docs/协作任务/20261123-救助站UI统一-01a1d310.md",
+      "sha256": "c96c529ecf29be67b0c076fec9748cad9f9072fe0b1c16c25ba700a2e2d87953"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "65f4ece3c5d9325e130319ed69c4b9bcaa06bcce2be02be23941a5d7aa7dd9e2"
+    }
+  ]
+}

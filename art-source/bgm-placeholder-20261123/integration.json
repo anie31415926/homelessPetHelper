@@ -1,0 +1,66 @@
+{
+  "sourceManifest": "manifest.json",
+  "sourceManifestSha256": "34bda76e1d2130a9c3c1ac61aba2ae7a39f832d74dfcdd5abc87893197e8143d",
+  "assets": [
+    {
+      "id": "music.station.placeholder",
+      "runtimeFile": "unity/HomelessPetHelper/Assets/Art/Audio/PlaceholderMusic/BGM_Station_Placeholder.wav",
+      "sourceSha256": "84c28fa015bbaf40bf5732ed0cb7d5f26953c1d3dddf744acd7322b15b6a9aea",
+      "status": "temporary",
+      "final": false,
+      "useAuthorization": "user-authorized-placeholder",
+      "listening": "pending",
+      "rights": "pending",
+      "targetDevice": "pending",
+      "loadTiming": "first-play-static-dependency"
+    },
+    {
+      "id": "music.explore.placeholder",
+      "runtimeFile": "unity/HomelessPetHelper/Assets/Art/Audio/PlaceholderMusic/BGM_Explore_Placeholder.wav",
+      "sourceSha256": "a0250325b46e114fa1d679b903ebb5a2e6dc63911df96523ef67a67b56ef3057",
+      "status": "temporary",
+      "final": false,
+      "useAuthorization": "user-authorized-placeholder",
+      "listening": "pending",
+      "rights": "pending",
+      "targetDevice": "pending",
+      "loadTiming": "first-play-static-dependency"
+    },
+    {
+      "id": "music.rescue.placeholder",
+      "runtimeFile": "unity/HomelessPetHelper/Assets/Art/Audio/PlaceholderMusic/BGM_Rescue_Placeholder.wav",
+      "sourceSha256": "8da8ab369bb3a7f924f189c8f6a67cfbe33e1974b4b6356a4becb3c1f02af77a",
+      "status": "temporary",
+      "final": false,
+      "useAuthorization": "user-authorized-placeholder",
+      "listening": "pending",
+      "rights": "pending",
+      "targetDevice": "pending",
+      "loadTiming": "first-play-static-dependency"
+    }
+  ],
+  "nativeImport": "Standalone:Streaming/Vorbis/32000Hz/stereo/quality0.30",
+  "browserDefault": "CompressedInMemory/Vorbis/32000Hz/stereo/quality0.30-unverified-on-WeChat",
+  "catalogGain": 0.65,
+  "audit": {
+    "target": "StandaloneWindows64",
+    "clips": [
+      {
+        "path": "Assets/Art/Audio/PlaceholderMusic/BGM_Station_Placeholder.wav",
+        "bundleBytes": 322368
+      },
+      {
+        "path": "Assets/Art/Audio/PlaceholderMusic/BGM_Explore_Placeholder.wav",
+        "bundleBytes": 328864
+      },
+      {
+        "path": "Assets/Art/Audio/PlaceholderMusic/BGM_Rescue_Placeholder.wav",
+        "bundleBytes": 337184
+      }
+    ],
+    "totalBundleBytes": 988416,
+    "format": "uncompressed AssetBundles containing compressed audio"
+  },
+  "snapshot": "test-results/bgm-integration/author-043112e80e71461d99aff58faf5ca8de",
+  "log": "test-results/bgm-integration/author-043112e80e71461d99aff58faf5ca8de/author.log"
+}
