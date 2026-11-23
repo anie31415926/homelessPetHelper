@@ -26,5 +26,10 @@ namespace HomelessPetHelper.Framework.UI
         public int labelSize = 42;
         public int auxiliarySize = 36;
         public Color ink = new Color32(42, 61, 48, 255);
+        public Color buttonHover = new Color32(249, 249, 242, 255);
+        public Color buttonPressed = new Color32(211, 228, 214, 255);
+        public Color disabledPaperTint = new Color32(245, 242, 233, 255);
+        public Color errorInk = new Color32(156, 65, 55, 255);
+        public Sprite disabledButtonPaper;
     }
 }

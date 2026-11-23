@@ -77,12 +77,16 @@ namespace HomelessPetHelper.Tests.EditMode
             var content = AssetDatabase.LoadAssetAtPath<GameContent>("Assets/Settings/Game/GameContent.asset");
             Assert.DoesNotThrow(content.Validate);
             Assert.That(content.Font.HasCharacter('救'), Is.True);
+            Assert.That(AssetDatabase.GetAssetPath(content.Font), Is.EqualTo("Assets/Art/Fonts/PetRound-Game.ttf"));
+            Assert.That(dependencies, Does.Not.Contain("Assets/Art/Fonts/NotoSansSC-Game.ttf"),
+                "Main uses one shared font; the legacy subset must not become a second runtime font.");
             Assert.That(content.Font.HasCharacter('助'), Is.True);
             Assert.That(dependencies, Does.Contain("Assets/Settings/Game/ApproachConfig.json"));
             Assert.That(dependencies, Does.Contain("Assets/Settings/Game/YardFieldConfig.json"));
             Assert.That(dependencies, Does.Contain("Assets/Art/Outing/T_Outing_DogNatural.png"));
             Assert.That(dependencies, Does.Contain("Assets/Art/Outing/T_Outing_CatNatural.png"));
-            foreach (TextAsset source in new[] { content.ApproachText, content.MapText, content.SiegeText })
+            foreach (TextAsset source in
+                new[] { content.ApproachText, content.MapText, content.SiegeText, content.StationText })
                 foreach (char character in source.text)
                     if (character > 127 && !char.IsWhiteSpace(character))
                         Assert.That(content.Font.HasCharacter(character), Is.True,

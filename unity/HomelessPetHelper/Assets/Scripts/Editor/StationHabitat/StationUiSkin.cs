@@ -53,7 +53,7 @@ namespace HomelessPetHelper.Editor.StationHabitat
             {
                 var graphic = Rect("SharedIcon", visual).gameObject.AddComponent<Image>();
                 graphic.sprite = _sprites[icon]; graphic.preserveAspect = true; graphic.raycastTarget = false;
-                graphic.color = Metrics.ink;
+                graphic.color = Color.white;
                 graphic.rectTransform.anchorMin = graphic.rectTransform.anchorMax = Vector2.one * .5f;
                 graphic.rectTransform.sizeDelta = Vector2.one * 72;
             }
@@ -61,10 +61,12 @@ namespace HomelessPetHelper.Editor.StationHabitat
             button.targetGraphic = image;
             var colors = button.colors;
             colors.normalColor = Color.white;
-            colors.highlightedColor = new Color32(249, 249, 242, 255);
-            colors.pressedColor = new Color32(211, 228, 214, 255);
-            colors.disabledColor = new Color32(188, 196, 190, 255);
+            colors.highlightedColor = Metrics.buttonHover;
+            colors.pressedColor = Metrics.buttonPressed;
+            colors.disabledColor = Color.white;
             button.colors = colors;
+            var state = button.gameObject.AddComponent<PaperButtonState>();
+            Bind(state, "_control", button); Bind(state, "_surface", image); Bind(state, "_metrics", Metrics);
             var audio = button.GetComponent<ButtonAudio>();
             if (audio == null) audio = button.gameObject.AddComponent<ButtonAudio>();
             audio.CueId = cue;

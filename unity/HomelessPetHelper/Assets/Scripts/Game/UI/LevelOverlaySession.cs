@@ -25,6 +25,7 @@ namespace HomelessPetHelper.Game.UI
         private Confirmation _confirmation;
         private bool _focused = true, _backgrounded, _disposed, _completionHandled;
         private bool _saveNeedsReload;
+        private readonly bool _settingsOnly;
         private int _guideRevision = -1;
         public LevelPopupKind? Top => _stack.Top;
         public int Depth => _stack.Depth;
@@ -34,13 +35,15 @@ namespace HomelessPetHelper.Game.UI
         private bool CanInteract => !_disposed && _focused && !_backgrounded;
 
         public LevelOverlaySession(LevelOverlayView view, LevelOverlayBindings bindings, MainAudioSession audio,
-            GuidanceProgressSession progress, OptionPreviewText text, Settings.PlaySettingsSession play = null)
+            GuidanceProgressSession progress, OptionPreviewText text, Settings.PlaySettingsSession play = null,
+            bool settingsOnly = false)
         {
             if (view == null) throw new ArgumentNullException(nameof(view));
             _view = view;
             _bindings = bindings ?? throw new ArgumentNullException(nameof(bindings));
             _audio = audio;
             _play = play;
+            _settingsOnly = settingsOnly;
             _progress = progress;
             _text = text ?? throw new ArgumentNullException(nameof(text));
             _view.Open(this, text);
@@ -53,14 +56,14 @@ namespace HomelessPetHelper.Game.UI
 
         public void OpenPause()
         {
-            if (!CanInteract || _stack.Depth != 0) return;
+            if (_settingsOnly || !CanInteract || _stack.Depth != 0) return;
             _stack.TryOpen(LevelPopupKind.Pause);
             Refresh();
         }
 
         public void OpenObjectives()
         {
-            if (!CanInteract || _stack.Depth != 0) return;
+            if (_settingsOnly || !CanInteract || _stack.Depth != 0) return;
             _view.SetObjectives(_bindings.DescribeObjectives(), _bindings.CreateGuide() != null);
             _stack.TryOpen(LevelPopupKind.Objectives);
             Refresh();
@@ -73,6 +76,19 @@ namespace HomelessPetHelper.Game.UI
         {
             if (!CanInteract || _audio == null || !_stack.TryPush(LevelPopupKind.Pause, LevelPopupKind.Settings))
                 return;
+            BeginSettingsDraft();
+        }
+
+        /// <summary>Opens the shared settings page from an external menu without a level pause page.</summary>
+        public void OpenStandaloneSettings()
+        {
+            if (!_settingsOnly || !CanInteract || _audio == null || _stack.Depth != 0 ||
+                !_stack.TryOpen(LevelPopupKind.Settings)) return;
+            BeginSettingsDraft();
+        }
+
+        private void BeginSettingsDraft()
+        {
             _settingsBefore = _audio.Playback.Preferences;
             _view.SetPlaySettings(_play == null || _play.PauseAtDecision);
             _saveNeedsReload = false;
@@ -133,7 +149,7 @@ namespace HomelessPetHelper.Game.UI
 
         public void RequestReturn()
         {
-            if (!CanInteract) return;
+            if (_settingsOnly || !CanInteract) return;
             if (_stack.Depth == 0) _stack.TryOpen(LevelPopupKind.Pause);
             RequestConfirmation(LevelPopupKind.Pause, Confirmation.Return, "confirm.return");
         }
@@ -204,7 +220,7 @@ namespace HomelessPetHelper.Game.UI
 
         private void Interrupt(bool interrupted)
         {
-            if (interrupted && _stack.Depth == 0) _stack.TryOpen(LevelPopupKind.Pause);
+            if (!_settingsOnly && interrupted && _stack.Depth == 0) _stack.TryOpen(LevelPopupKind.Pause);
             Refresh();
         }
 

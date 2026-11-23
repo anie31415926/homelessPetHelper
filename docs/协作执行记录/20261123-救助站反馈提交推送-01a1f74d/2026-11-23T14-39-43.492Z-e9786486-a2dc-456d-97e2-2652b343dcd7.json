@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261123-救助站反馈提交推送-01a1f74d.md",
+  "sessionId": "01a1f74d-412d-7613-a27d-fae91bb606ef",
+  "phase": "start",
+  "readAt": "2026-11-23T14:39:43.492Z",
+  "writePaths": [
+    "docs/UI视觉样式规范.md",
+    "docs/协作任务/20261123-救助站反馈与字体-01a1f74d.md",
+    "docs/协作任务/20261123-救助站反馈提交推送-01a1f74d.md",
+    "docs/协作任务/20261123-救助站样式检查-01a1f74d.md",
+    "docs/协作执行记录/20261123-救助站反馈与字体-01a1f74d/",
+    "docs/协作执行记录/20261123-救助站反馈提交推送-01a1f74d/",
+    "docs/协作执行记录/20261123-救助站样式检查-01a1f74d/",
+    "docs/当前协作状态.md",
+    "docs/救助站反馈与字体优化.md",
+    "docs/救助站界面样式检查.md",
+    "test-results/station-feedback-push/",
+    "tools/build-game-font.py",
+    "unity/HomelessPetHelper/Assets/Art/Fonts/ChillRound-OFL.txt",
+    "unity/HomelessPetHelper/Assets/Art/Fonts/ChillRound-OFL.txt.meta",
+    "unity/HomelessPetHelper/Assets/Art/Fonts/PetRound-Game.ttf",
+    "unity/HomelessPetHelper/Assets/Art/Fonts/PetRound-Game.ttf.meta",
+    "unity/HomelessPetHelper/Assets/Art/Fonts/README.md",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_Approach.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_CityMap.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_Loading.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_OptionWhiteboard.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_PetMotion.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_RescueCase.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_SiegeTrial.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_StationLoop.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_StationWhiteboard.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_LevelOverlays.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_OptionCard.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_RescueActionBar.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_SiegeChoice.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_StationHabitatResident.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_Toast.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/LevelUi/LevelOverlaySkin.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/MainSceneAuthor.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/StationHabitat/StationUiRefinementAuthor.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/StationHabitat/StationUiRefinementAuthor.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/StationHabitat/StationUiSkin.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Framework/UI/PaperButtonState.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Framework/UI/PaperButtonState.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Framework/UI/UiLayoutMetrics.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainLoopPresenter.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Station/StationPreviewSession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/UI/LevelOverlaySession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationSceneChrome.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/StationCareAvailability.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/StationPanelView.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/GameContent.asset",
+    "unity/HomelessPetHelper/Assets/Settings/Game/StationPreviewText.json",
+    "unity/HomelessPetHelper/Assets/Settings/UI/LayoutMetrics.asset",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/MainAssetTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/EditMode/StationRoomTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PlayMode/StationSceneUiTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PlayMode/StationUiRefinementTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PlayMode/StationUiRefinementTests.cs.meta"
+  ],
+  "contextDigest": "415c307a00c217b1c497e3cb913d02ae76be7966f8c445ae068b77eb21a477c1",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-救助站反馈提交推送-01a1f74d.md",
+      "sha256": "4651efdf8dd3109a742386ae80cb2e04863d77c6327d835d5c769f99ec212f37"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "b25e4bb480fc3c6fd506336efe09e3633eb4770a972d1f3a5599d464bb03b235"
+    }
+  ]
+}

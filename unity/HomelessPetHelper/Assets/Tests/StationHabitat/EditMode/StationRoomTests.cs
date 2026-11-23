@@ -81,11 +81,27 @@ namespace HomelessPetHelper.Tests.StationHabitat.EditMode
                 Assert.That(image.type, Is.EqualTo(Image.Type.Sliced));
                 Assert.That(button.GetComponent<Image>().color.a, Is.Zero);
             }
-            Assert.That(root.GetComponentsInChildren<StationPopupPaper>(true).Length, Is.EqualTo(3));
+            Assert.That(root.GetComponentsInChildren<StationPopupPaper>(true).Length, Is.EqualTo(4));
             var backdrops = root.GetComponentsInChildren<Image>(true).Where(image => image.color ==
                 (Color)new Color32(0, 0, 0, 88)).ToArray();
-            Assert.That(backdrops.Length, Is.EqualTo(1));
-            Assert.That(backdrops[0].transform.parent.parent, Is.SameAs(root.transform));
+            Assert.That(backdrops.Length, Is.EqualTo(2),
+                "Station sheets and shared settings own separate backdrops, shown exclusively at runtime.");
+            foreach (var backdrop in backdrops)
+            {
+                var rect = (RectTransform)backdrop.transform;
+                Assert.That(rect.anchorMin, Is.EqualTo(Vector2.zero));
+                Assert.That(rect.anchorMax, Is.EqualTo(Vector2.one));
+                Assert.That(rect.offsetMin, Is.EqualTo(Vector2.zero));
+                Assert.That(rect.offsetMax, Is.EqualTo(Vector2.zero));
+                var corners = new Vector3[4]; rect.GetWorldCorners(corners);
+                var canvas = (RectTransform)root.transform;
+                var bottom = canvas.InverseTransformPoint(corners[0]);
+                var top = canvas.InverseTransformPoint(corners[2]);
+                Assert.That(bottom.x, Is.EqualTo(canvas.rect.xMin).Within(.1f));
+                Assert.That(bottom.y, Is.EqualTo(canvas.rect.yMin).Within(.1f));
+                Assert.That(top.x, Is.EqualTo(canvas.rect.xMax).Within(.1f));
+                Assert.That(top.y, Is.EqualTo(canvas.rect.yMax).Within(.1f));
+            }
         }
 
         [Test]

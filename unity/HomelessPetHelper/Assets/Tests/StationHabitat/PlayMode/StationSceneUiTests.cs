@@ -247,7 +247,7 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
             yield return Load();
             _view.Scene.Cells[0].SelectButton.onClick.Invoke();
             var condition = (Text)new SerializedObject(_view).FindProperty("_condition").objectReferenceValue;
-            condition.text = string.Join("\n", Enumerable.Repeat(condition.text, 12));
+            condition.text = string.Join("\n", Enumerable.Repeat(condition.text, 24));
             yield return null; Canvas.ForceUpdateCanvases(); yield return null;
             var scroll = Detail.GetComponentInChildren<ScrollRect>();
             Assert.That(scroll.vertical, Is.True);

@@ -129,6 +129,7 @@ namespace HomelessPetHelper.Game.Station
             _persistenceBlocked = true;
             _feedback = _text.Get("save.writeFailed");
             Refresh();
+            _view.ShowBlockingError(_text.Get("save.errorTitle"), _feedback);
         }
 
         public void ReportPersistenceRecovery()
@@ -293,10 +294,30 @@ namespace HomelessPetHelper.Game.Station
             if (_loop != null)
             {
                 StationCoatCare care = Resident(index).SharedCare;
-                return new StationCareAvailability(care.CanBegin(false), care.CanBegin(true));
+                var wash = care.GetBeginFailure(false);
+                var groom = care.GetBeginFailure(true);
+                return new StationCareAvailability(wash == StationCoatCareFailure.None,
+                    groom == StationCoatCareFailure.None, DescribeCareAvailability(
+                        wash == StationCoatCareFailure.None ? null : _text.Get("care.failure." + wash),
+                        groom == StationCoatCareFailure.None ? null : _text.Get("care.failure." + groom)));
             }
             bool available = CanCleanSample(index);
-            return new StationCareAvailability(available, available);
+            string reason = available ? null : _text.Get(
+                Care(index).BasicAssessment == StationHealthAssessment.Unchecked ? "checkFirst" :
+                Care(index).BasicAssessment != StationHealthAssessment.NoUrgentCareRequired ?
+                    "care.failure.HealthCareRequired" :
+                    Resident(index).Contact.CoatRestricted ? "careRestricted" : "careSpace");
+            return new StationCareAvailability(available, available, DescribeCareAvailability(reason, reason));
+        }
+
+        private string DescribeCareAvailability(string wash, string groom)
+        {
+            if (wash == null && groom == null) return string.Empty;
+            if (wash == groom) return _text.Get("care.unavailableBoth", wash);
+            if (wash == null) return _text.Get("care.unavailableAction", _text.Get("groom"), groom);
+            if (groom == null) return _text.Get("care.unavailableAction", _text.Get("clean"), wash);
+            return _text.Get("care.unavailableAction", _text.Get("clean"), wash) + "\n" +
+                _text.Get("care.unavailableAction", _text.Get("groom"), groom);
         }
 
         private AnimalSnapshot Current(int index)

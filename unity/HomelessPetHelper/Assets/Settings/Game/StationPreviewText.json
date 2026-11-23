@@ -1,5 +1,10 @@
 {
   "entries": [
+    { "key": "save.errorTitle", "value": "进度暂时不可用" },
+    { "key": "care.unavailableBoth", "value": "清洁与梳理：{0}" },
+    { "key": "care.unavailableAction", "value": "{0}：{1}" },
+    { "key": "menu.caption", "value": "菜单" },
+    { "key": "menu.settings", "value": "设置" },
     { "key": "save.outingBoundary", "value": "现场操作会自动保存，重进可继续本次救助。" },
     { "key": "save.careBoundary", "value": "{0}结束本次后保存，中途退出恢复上次成果。" },
     { "key": "save.loadFailed", "value": "进度读取失败，原记录已保留。请退出后重试。" },
