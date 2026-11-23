@@ -36,7 +36,7 @@ namespace HomelessPetHelper.Editor
             Directory.CreateDirectory(Path.GetDirectoryName(destination));
             var options = new BuildPlayerOptions
             {
-                scenes = new[] { ProjectSetup.MainScenePath },
+                scenes = new[] { Game.Loading.LoadingSceneRoot.ScenePath, ProjectSetup.MainScenePath },
                 locationPathName = destination,
                 target = BuildTarget.StandaloneWindows64,
                 options = buildOptions

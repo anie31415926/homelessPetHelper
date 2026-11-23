@@ -21,7 +21,12 @@ namespace HomelessPetHelper.Editor
 
             ConfigurePlayer();
             EnsureMainScene();
-            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(MainScenePath, true) };
+            bool hasLoading = AssetDatabase.LoadAssetAtPath<SceneAsset>(
+                Game.Loading.LoadingSceneRoot.ScenePath) != null;
+            EditorBuildSettings.scenes = hasLoading
+                ? new[] { new EditorBuildSettingsScene(Game.Loading.LoadingSceneRoot.ScenePath, true),
+                    new EditorBuildSettingsScene(MainScenePath, true) }
+                : new[] { new EditorBuildSettingsScene(MainScenePath, true) };
             AssetDatabase.SaveAssets();
         }
 

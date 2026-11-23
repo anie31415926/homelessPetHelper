@@ -1,7 +1,7 @@
 ﻿[CmdletBinding()]
 param(
     [ValidateSet('Initialize', 'PreviewAssets', 'PreviewLayout', 'CaseAssets', 'CaseLayout', 'CaseCompactLayout',
-        'CaseCompactPolish',
+        'CaseCompactPolish', 'LoadingAssets', 'LoadingArt', 'LoadingStartup',
         'StationAssets', 'StationArt', 'StationCareLayout', 'LoopAssets', 'ResourceAudit',
         'SiegeAssets', 'SiegeLayout', 'SiegeBuild', 'PetMotionAssets', 'PetMotionAudit', 'PetMotionBake',
         'RuntimeMove', 'MainAssets', 'ApproachAssets', 'MapInfoAssets', 'ForestEdgeAssets', 'YardFieldAssets', 'YardFieldRefine', 'LevelUiAssets', 'LevelUiStyle', 'LevelUiRefresh', 'LevelUiFullscreen', 'FieldPropAssets', 'LevelPresentation', 'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
@@ -102,6 +102,23 @@ if (-not $Graphics)
 
 switch ($Task)
 {
+    'LoadingStartup'
+    {
+        if (-not $Isolated) { throw 'LoadingStartup requires an isolated snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Loading.LoadingStartupAuthor.Apply')
+    }
+    'LoadingArt'
+    {
+        if (-not $Isolated) { throw 'LoadingArt requires an isolated snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Loading.LoadingArtworkUpgrade.Apply')
+        break
+    }
+    'LoadingAssets'
+    {
+        if (-not $Isolated) { throw 'LoadingAssets requires an isolated snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Loading.LoadingSceneAuthor.Create')
+        break
+    }
     'LevelPresentation'
     {
         if (-not $Isolated) { throw 'LevelPresentation requires an isolated snapshot.' }

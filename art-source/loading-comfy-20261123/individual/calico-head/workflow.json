@@ -1,0 +1,130 @@
+{
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "loading-individual-20261123/calico-head-blank.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Replace the blank white image 1 with the subject specified below. Image 2 is ONLY a style reference: match its warm cute 2D storybook watercolor and delicate warm-gray pencil contours. Do NOT copy its scene, composition, house, decorations or text. Draw fresh coherent animal anatomy, NOT the inverted silhouettes in image 2. Uniform PURE WHITE #ffffff background, no ground shadow, no props. Center the complete subject at a comfortable size with at least 12 percent blank margin on every side. Soft matte watercolor pigment, subtle paper texture ONLY inside the colored silhouette, thin continuous pencil outline. Simple charming rounded proportions, but anatomically coherent head, neck, torso and limbs. Flat hand-drawn illustration, not 3D or glossy. No labels, words, icons, ornaments, hearts, stars, collar, clothing, platform, frame, border, watermarks, extra animals or detached fragments. One calico kitten FACE ONLY, round cream head, two triangular ears, gray patch over left ear and orange patch over right ear, two eyes, tiny pink nose, symmetric whiskers, warm small smile. No neck or body, no paws.",
+        "negative_prompt": "deformed anatomy, extra limbs, missing paws, fused animals, disconnected head, twisted spine, ambiguous species, extra tail, upside down, 3d, plastic, gloss, bevel, thick white sticker edge, shadow, text, props, fragments",
+        "resolution": 0,
+        "images.image_1": [
+          "4",
+          0
+        ],
+        "images.image_2": [
+          "10",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112382,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "loading-individual-20261123/calico-head"
+      }
+    },
+    "10": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "loading-individual-20261123/calico-head-style.png"
+      }
+    }
+  },
+  "references": [
+    "loading-individual-20261123/calico-head-blank.png",
+    "loading-individual-20261123/calico-head-style.png"
+  ],
+  "job": {
+    "id": "calico-head",
+    "sprite": "ProgressCat",
+    "subject": "One calico kitten FACE ONLY, round cream head, two triangular ears, gray patch over left ear and orange patch over right ear, two eyes, tiny pink nose, symmetric whiskers, warm small smile. No neck or body, no paws."
+  }
+}

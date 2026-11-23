@@ -1,0 +1,179 @@
+{
+  "prompt": [
+    0,
+    "ee191f91-a909-4d8d-8b48-c5d79c62a3bd",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "loading-individual-20261123/ferret-blank.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Replace the blank white image 1 with the subject specified below. Image 2 is ONLY a style reference: match its warm cute 2D storybook watercolor and delicate warm-gray pencil contours. Do NOT copy its scene, composition, house, decorations or text. Draw fresh coherent animal anatomy, NOT the inverted silhouettes in image 2. Uniform PURE WHITE #ffffff background, no ground shadow, no props. Center the complete subject at a comfortable size with at least 12 percent blank margin on every side. Soft matte watercolor pigment, subtle paper texture ONLY inside the colored silhouette, thin continuous pencil outline. Simple charming rounded proportions, but anatomically coherent head, neck, torso and limbs. Flat hand-drawn illustration, not 3D or glossy. No labels, words, icons, ornaments, hearts, stars, collar, clothing, platform, frame, border, watermarks, extra animals or detached fragments. One cream-colored pet ferret, natural standing three-quarter side view facing left. Long slender horizontal torso, rounded ears, short muzzle, four short legs with four separate paws resting on the same ground line, one long tapered tail curving behind. Head upright, back gently arched, no twisted spine.",
+          "negative_prompt": "deformed anatomy, extra limbs, missing paws, fused animals, disconnected head, twisted spine, ambiguous species, extra tail, upside down, 3d, plastic, gloss, bevel, thick white sticker edge, shadow, text, props, fragments",
+          "resolution": 0,
+          "images.image_1": [
+            "4",
+            0
+          ],
+          "images.image_2": [
+            "10",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112380,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "loading-individual-20261123/ferret"
+        }
+      },
+      "10": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "loading-individual-20261123/ferret-style.png"
+        }
+      }
+    },
+    {
+      "client_id": "loading-individual-01a20769",
+      "create_time": 1795429487450
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "ferret_00001_.png",
+          "subfolder": "loading-individual-20261123",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "ee191f91-a909-4d8d-8b48-c5d79c62a3bd",
+          "timestamp": 1795429487455
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "ee191f91-a909-4d8d-8b48-c5d79c62a3bd",
+          "timestamp": 1795429487485
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "ee191f91-a909-4d8d-8b48-c5d79c62a3bd",
+          "timestamp": 1795429507342
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

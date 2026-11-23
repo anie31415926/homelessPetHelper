@@ -94,7 +94,7 @@ namespace HomelessPetHelper.Tests.EditMode
                     if (!char.IsWhiteSpace(character))
                         Assert.That(content.Font.HasCharacter(character), Is.True, key + ": " + character);
             Assert.That(EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(scene => scene.path),
-                Is.EqualTo(new[] { "Assets/Scenes/Main.unity" }));
+                Is.EqualTo(new[] { "Assets/Scenes/SC_Loading.unity", "Assets/Scenes/Main.unity" }));
         }
     }
 }

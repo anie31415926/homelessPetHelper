@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261123-Loading场景-01a20769.md",
+  "sessionId": "01a20769-47c0-7983-9b5d-4a11916298ff",
+  "phase": "resume",
+  "readAt": "2026-11-23T08:18:28.634Z",
+  "writePaths": [
+    "art-source/loading-20261123/",
+    "art-source/resource-catalog.json",
+    "docs/Loading场景与拆层动效.md",
+    "docs/协作任务/20261123-Loading场景-01a20769.md",
+    "docs/协作执行记录/20261123-Loading场景-01a20769/",
+    "docs/当前协作状态.md",
+    "tools/unity.ps1",
+    "unity/HomelessPetHelper/Assets/Art/Loading.meta",
+    "unity/HomelessPetHelper/Assets/Art/Loading/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_Loading.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_Loading.prefab.meta",
+    "unity/HomelessPetHelper/Assets/Scenes/SC_Loading.unity",
+    "unity/HomelessPetHelper/Assets/Scenes/SC_Loading.unity.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/DesktopBuild.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/Loading.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/Loading/",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/ProjectSetup.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Loading.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Loading/",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/LoadingTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/LoadingTests.cs.meta",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/MainAssetTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/LoadingPlayTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/LoadingPlayTests.cs.meta",
+    "unity/HomelessPetHelper/ProjectSettings/EditorBuildSettings.asset"
+  ],
+  "contextDigest": "c7cd531441bd6c93cdaa4642dd9400054d7c6da7e9de610ee14e10bb2c47cc0d",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-Loading场景-01a20769.md",
+      "sha256": "7e947956d2a9e7e7dc3422aa0c6de912b519cc495b69982f23ca3f253747837d"
+    },
+    {
+      "path": "docs/协作任务/20261123-救助站原图拆层-01a1d310.md",
+      "sha256": "00746d6faa0b494fd367cda39d18927081b81ae01fc87fc50c7cca620fd4da38"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "d5fb7bd5e0031ef97675b7fe98ab28c1962bd5f973105968c1d8818de970a762"
+    }
+  ]
+}

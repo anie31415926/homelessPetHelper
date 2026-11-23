@@ -1,0 +1,185 @@
+{
+  "prompt": [
+    24,
+    "69479de1-7b53-48bd-9bbf-441035fd3641",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "loading-individual-20261123/v4-chinchilla-style.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Change the animal in image 1 into the subject described below. Preserve EXACTLY image 1 cute tiny storybook game-sprite drawing language: oversized ROUND head, very compact little body, stubby paws, tiny simple dark DOT eyes, tiny nose and mouth, simplified flat pastel watercolor shapes, clean continuous warm-gray pencil contour. NOT a realistic animal study, no detailed fur, no realistic eyes, no realistic musculature. Image 2 is only the original warm kawaii art direction, NOT a pose guide or scene to reproduce. No house, scenery or decorations. Head, body and limbs must still connect plausibly, with no extra or fused parts. White #ffffff background perfectly uniform outside subject, no shadows. Whole subject centered, occupying about 70 percent of canvas, 12 percent blank margin all sides. Matte pigment and slight paper grain INSIDE silhouette only. No glossy material, 3D, airbrush, sticker border, words, labels, collar, clothing, ground, props, extra fragments. One soft gray chinchilla sitting upright in three-quarter view facing right. Two large ROUND ears, rounded short muzzle, one head and compact body, two small forepaws held at belly, two larger hind feet supporting it below, one bushy tail curling behind. A recognizable chinchilla, no rabbit ears or dog muzzle. Important final color correction: completely REMOVE all orange and yellow hamster patches. Whole head, ears, back, body and bushy tail are cool GRAY, belly and muzzle pale white. Large round ears, short whiskers. Only a gray chinchilla, no orange coloration anywhere.",
+          "negative_prompt": "deformed anatomy, extra limbs, missing paws, fused animals, disconnected head, twisted spine, ambiguous species, extra tail, upside down, 3d, plastic, gloss, bevel, thick white sticker edge, shadow, text, props, fragments",
+          "resolution": 0,
+          "images.image_1": [
+            "4",
+            0
+          ],
+          "images.image_2": [
+            "10",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112689,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "loading-individual-20261123/v4/chinchilla"
+        }
+      },
+      "10": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "loading-individual-20261123/chinchilla-style.png"
+        }
+      }
+    },
+    {
+      "client_id": "loading-individual-01a20769",
+      "create_time": 1795430163221
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "chinchilla_00001_.png",
+          "subfolder": "loading-individual-20261123\\v4",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "69479de1-7b53-48bd-9bbf-441035fd3641",
+          "timestamp": 1795430163223
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6",
+            "10"
+          ],
+          "prompt_id": "69479de1-7b53-48bd-9bbf-441035fd3641",
+          "timestamp": 1795430163238
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "69479de1-7b53-48bd-9bbf-441035fd3641",
+          "timestamp": 1795430178188
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

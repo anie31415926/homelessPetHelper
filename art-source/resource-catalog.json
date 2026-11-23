@@ -4197,6 +4197,862 @@
         "rights": "pending",
         "target": "pending"
       }
+    },
+    {
+      "id": "loading.user-reference",
+      "name": "Loading用户原图",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "用户提供拆图依据，不直接进Unity",
+      "use": "261×451原图保留，不生成替代动物",
+      "plannedBytes": 262144,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/loading-20261123/reference.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/preserved/T_Loading_Background.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/preserved/T_Loading_Elements.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户附件",
+        "record": "art-source/loading-20261123/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "loading.comfy.individual-animals",
+      "name": "Loading多物种单体重绘与形体复核",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "动物逐个生成并检查，用户观感验收前仍为候选",
+      "use": "16个动物切片，包含兔子/龟/猫狗与小宠；生成后逐项查物种、头身连接、肢体与自然姿态",
+      "plannedBytes": 524288,
+      "files": [
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/blank.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/calico-head-style.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/calico-head/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/calico-head/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/calico-head/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/calico-head/workflow.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/T_Loading_Elements.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/apricot-poodle.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/bichon.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/blue-cat.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/calico-head.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/chinchilla.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/corgi.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/ferret.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/ginger-cat.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/golden-head.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/guinea-pig.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/hamster.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/patch-puppy.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/rabbits.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/silver-kitten.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/spaniel.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/turtle.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/chinchilla-style.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/derivation.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/edge-review.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/ferret/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/ferret/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/ferret/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/ferret/workflow.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/golden-head-style.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/plan.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/prior-runtime/T_Loading_Background.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/prior-runtime/T_Loading_Elements.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/rabbits/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/rabbits/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/rabbits/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/rabbits/workflow.json"
+        },
+        {
+          "role": "candidate",
+          "path": "art-source/loading-comfy-20261123/individual/review-sheet.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/review.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/selection.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/spaniel/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/spaniel/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/spaniel/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/spaniel/workflow.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/style.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/turtle-style.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/apricot-poodle/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/apricot-poodle/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/apricot-poodle/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/apricot-poodle/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/bichon/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/bichon/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/bichon/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/bichon/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/blue-cat/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/blue-cat/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/blue-cat/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/blue-cat/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/calico-head/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/calico-head/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/calico-head/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/calico-head/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/chinchilla/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/chinchilla/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/chinchilla/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/chinchilla/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/corgi/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/corgi/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/corgi/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/corgi/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/ferret/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/ferret/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/ferret/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/ferret/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/ginger-cat/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/ginger-cat/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/ginger-cat/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/ginger-cat/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/golden-head/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/golden-head/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/golden-head/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/golden-head/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/guinea-pig/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/guinea-pig/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/guinea-pig/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/guinea-pig/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/hamster/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/hamster/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/hamster/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/hamster/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/patch-puppy/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/patch-puppy/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/patch-puppy/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/patch-puppy/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/rabbits/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/rabbits/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/rabbits/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/rabbits/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/silver-kitten/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/silver-kitten/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/silver-kitten/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/silver-kitten/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/spaniel/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/spaniel/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/spaniel/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/spaniel/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/turtle/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v2/turtle/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v2/turtle/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v2/turtle/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v3/calico-head/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v3/calico-head/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v3/calico-head/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v3/calico-head/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v3/chinchilla/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v3/chinchilla/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v3/chinchilla/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v3/chinchilla/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v3/golden-head/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v3/golden-head/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v3/golden-head/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v3/golden-head/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v3/turtle/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v3/turtle/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v3/turtle/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v3/turtle/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v4/chinchilla/history.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/loading-comfy-20261123/individual/v4/chinchilla/master.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/v4/chinchilla/submission.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/individual/v4/chinchilla/workflow.json"
+        }
+      ],
+      "generation": {
+        "tool": "ComfyUI本机Qwen Image2.1",
+        "record": "art-source/loading-comfy-20261123/individual/plan.json",
+        "notes": "25个实际单体作业，16切片选择：v2十二项、v3头像两项/龟、v4灰色龙猫；拒绝夹带物/错误物种和头像身体。review.json逐项记录观察和母图哈希，用户观感/许可/目标端仍pending。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "loading.comfy.animals",
+      "name": "Loading重绘动物母图",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "Loading重绘候选，派生后另验",
+      "use": "16个分层动物，4x4白底独立轮廓，无厚白贴纸边",
+      "plannedBytes": 524288,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/loading-comfy-20261123/animals/master.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/animals/guide.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/animals/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/animals/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/animals/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "ComfyUI本机Qwen Image2.1",
+        "record": "art-source/loading-comfy-20261123/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "loading.comfy.house",
+      "name": "Loading重绘小屋母图",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "Loading重绘候选，派生后另验",
+      "use": "完整底部墙面，哑光平涂水彩小屋",
+      "plannedBytes": 262144,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/loading-comfy-20261123/house/master.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/house/guide.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/house/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/house/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/house/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "ComfyUI本机Qwen Image2.1",
+        "record": "art-source/loading-comfy-20261123/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "loading.comfy.controls",
+      "name": "Loading手绘进度组件母图",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "Loading重绘候选，派生后另验",
+      "use": "空白标牌、空槽、单独填充；无高光倒角/塑料立体边",
+      "plannedBytes": 262144,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/loading-comfy-20261123/controls/master.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/controls/guide.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/controls/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/controls/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/controls/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "ComfyUI本机Qwen Image2.1",
+        "record": "art-source/loading-comfy-20261123/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "loading.comfy.decorations",
+      "name": "Loading水彩装饰母图",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "Loading重绘候选，派生后另验",
+      "use": "爱心星星小花独立网格，保留轻动效",
+      "plannedBytes": 196608,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/loading-comfy-20261123/decorations/master.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/decorations/guide.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/decorations/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/decorations/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/decorations/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "ComfyUI本机Qwen Image2.1",
+        "record": "art-source/loading-comfy-20261123/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "loading.comfy.background",
+      "name": "Loading纸纹重绘母图",
+      "module": "CommonUI",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "Loading重绘候选，派生后另验",
+      "use": "独立竖屏水彩纸底，不烘焙动物/文字/进度",
+      "plannedBytes": 524288,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/loading-comfy-20261123/background/master.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/background/guide.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/loading-comfy-20261123/background/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/background/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/background/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "ComfyUI本机Qwen Image2.1",
+        "record": "art-source/loading-comfy-20261123/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "loading.background",
+      "name": "Loading纸纹背景",
+      "module": "CommonUI",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "启动Loading场景使用",
+      "use": "ComfyUI独立重绘水彩纸底，576×1024，背景不烘焙动物/文字",
+      "plannedBytes": 131072,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Loading/T_Loading_Background.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/candidate/T_Loading_Background.png"
+        }
+      ],
+      "generation": {
+        "tool": "ComfyUI本机Qwen Image2.1 + Pillow派生",
+        "record": "art-source/loading-comfy-20261123/README.md",
+        "notes": " 2026-11-23用户明确认可当前Loading画面并授权正式流程接入；仅视觉accepted，来源许可与微信目标仍pending，不提升approved。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "loading.elements",
+      "name": "Loading多物种水彩图页",
+      "module": "CommonUI",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "启动Loading场景使用",
+      "use": "ComfyUI逐体复核16动物，32切片/1024×864透明页，保留纸绘进度条/小屋/装饰原像素与切片身份",
+      "plannedBytes": 131072,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Loading/T_Loading_Elements.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/candidate/T_Loading_Elements.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/derivation.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/loading-comfy-20261123/individual/candidate/T_Loading_Elements.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/loading-comfy-20261123/individual/review.json"
+        }
+      ],
+      "generation": {
+        "tool": "ComfyUI本机Qwen Image2.1 + Pillow透明边派生",
+        "record": "art-source/loading-comfy-20261123/README.md",
+        "notes": "原5项作业的非动物像素保留；本轮25个单体作业选择16切片，逐项视觉形体复核并锁定母图哈希后派生。白底移除不声称原生alpha，正向确认后仅光栅旋转配合圆环，不再让模型猜倒置身体。当前及旧版PNG/meta分别保留，不默增预算；前轮用户观感未验；来源/微信目标仍未验。 2026-11-23用户明确认可当前Loading画面并授权正式流程接入；仅视觉accepted，来源许可与微信目标仍pending，不提升approved。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
     }
   ]
 }

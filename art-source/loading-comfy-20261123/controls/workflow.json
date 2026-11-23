@@ -1,0 +1,125 @@
+{
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "loading-comfy-20261123/controls-guide.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Use image 1 for EXACT sheet layout, object positions and silhouettes ONLY. Image 2 is the original illustration for art direction. Redraw fresh high-resolution clean 2D storybook watercolor and colored-pencil game assets: soft peach, butter yellow, muted sage and warm gray, delicate continuous dark warm-gray pencil outlines, matte pigment and fine paper grain INSIDE the painted objects. Keep the original cute round proportions and faces. The drawing must be genuinely flat and hand painted, with no volumetric rendering, no bevel, no gloss, no lighting highlight, no embossed rim, no hard drop shadow, no plastic or candy material. Outside every object use perfectly uniform pure WHITE #ffffff, no paper noise or shadow outside silhouettes, no white sticker border. All silhouettes closed, clean and anti-aliased; no torn furry alpha edge. No text, labels, digits, logos or watermarks. Do not add a scene or rearrange cells. Redraw exactly THREE separate UI pieces, one per horizontal row, centered where image 1 puts them. Top row: a blank little pale-yellow hand-painted paper label, thin warm-gray pencil outline, softly imperfect corners, clean empty interior. Middle row: a long thin EMPTY progress track with simple warm-gray pencil line and pale watercolor-paper interior, flat corners gently rounded, no raised rim or inset depth. Bottom row: one long thin BUTTER-YELLOW watercolor progress-fill strip with delicate soft orange diagonal pencil hatching, continuous and flat, no capsule, no frame, no gradient. Make these look like marks on paper, NOT plastic widgets. Keep all three fully separate with large pure-white gaps. No text, numbers, cat, icons, shines or cast shadows.",
+        "negative_prompt": "plastic, 3d, glossy, bevel, embossed, shiny, airbrush, fake fur edges, torn edges, thick white sticker border, jagged pixel outline, text, words, watermark, cell borders, extra objects",
+        "resolution": 0,
+        "images.image_1": [
+          "4",
+          0
+        ],
+        "images.image_2": [
+          "10",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112362,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "loading-comfy-20261123/controls"
+      }
+    },
+    "10": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "loading-comfy-20261123/controls-reference.png"
+      }
+    }
+  },
+  "references": [
+    "loading-comfy-20261123/controls-guide.png",
+    "loading-comfy-20261123/controls-reference.png"
+  ]
+}

@@ -1,0 +1,539 @@
+{
+  "sourceSize": [
+    261,
+    451
+  ],
+  "sourceSha256": "0282d5f231336604ae3fe5d1624f737ce5b811e7efaf3af0c76e63d9e1c6765c",
+  "atlasSize": [
+    1024,
+    864
+  ],
+  "sprites": [
+    {
+      "name": "House",
+      "kind": "house",
+      "source": [
+        60,
+        114,
+        201,
+        245
+      ],
+      "rect": [
+        4,
+        4,
+        288,
+        269
+      ]
+    },
+    {
+      "name": "ProgressCat",
+      "kind": "progress",
+      "source": [
+        30,
+        353,
+        89,
+        408
+      ],
+      "rect": [
+        296,
+        4,
+        224,
+        200
+      ]
+    },
+    {
+      "name": "OrbitLongDog",
+      "kind": "orbit",
+      "source": [
+        211,
+        145,
+        261,
+        212
+      ],
+      "rect": [
+        524,
+        4,
+        82,
+        176
+      ]
+    },
+    {
+      "name": "OrbitTurtle",
+      "kind": "orbit",
+      "source": [
+        51,
+        252,
+        91,
+        298
+      ],
+      "rect": [
+        610,
+        4,
+        154,
+        176
+      ]
+    },
+    {
+      "name": "OrbitBlueCat",
+      "kind": "orbit",
+      "source": [
+        201,
+        209,
+        252,
+        263
+      ],
+      "rect": [
+        768,
+        4,
+        160,
+        176
+      ]
+    },
+    {
+      "name": "OrbitWhiteDog",
+      "kind": "orbit",
+      "source": [
+        130,
+        275,
+        165,
+        327
+      ],
+      "rect": [
+        4,
+        277,
+        148,
+        176
+      ]
+    },
+    {
+      "name": "OrbitFluffy",
+      "kind": "orbit",
+      "source": [
+        33,
+        89,
+        88,
+        139
+      ],
+      "rect": [
+        156,
+        277,
+        176,
+        176
+      ]
+    },
+    {
+      "name": "DoorRight",
+      "kind": "door",
+      "source": [
+        145,
+        204,
+        199,
+        258
+      ],
+      "rect": [
+        336,
+        277,
+        175,
+        176
+      ]
+    },
+    {
+      "name": "OrbitGreyCat",
+      "kind": "orbit",
+      "source": [
+        161,
+        252,
+        217,
+        304
+      ],
+      "rect": [
+        515,
+        277,
+        176,
+        176
+      ]
+    },
+    {
+      "name": "OrbitCat",
+      "kind": "orbit",
+      "source": [
+        77,
+        60,
+        143,
+        111
+      ],
+      "rect": [
+        695,
+        277,
+        157,
+        176
+      ]
+    },
+    {
+      "name": "OrbitRabbitPair",
+      "kind": "orbit",
+      "source": [
+        137,
+        63,
+        204,
+        122
+      ],
+      "rect": [
+        4,
+        457,
+        176,
+        175
+      ]
+    },
+    {
+      "name": "DoorLeft",
+      "kind": "door",
+      "source": [
+        63,
+        208,
+        106,
+        253
+      ],
+      "rect": [
+        184,
+        457,
+        176,
+        171
+      ]
+    },
+    {
+      "name": "OrbitGreyDog",
+      "kind": "orbit",
+      "source": [
+        12,
+        214,
+        67,
+        263
+      ],
+      "rect": [
+        364,
+        457,
+        176,
+        167
+      ]
+    },
+    {
+      "name": "OrbitPatchDog",
+      "kind": "orbit",
+      "source": [
+        0,
+        174,
+        51,
+        220
+      ],
+      "rect": [
+        544,
+        457,
+        176,
+        163
+      ]
+    },
+    {
+      "name": "OrbitHappyDog",
+      "kind": "orbit",
+      "source": [
+        0,
+        131,
+        62,
+        178
+      ],
+      "rect": [
+        724,
+        457,
+        176,
+        158
+      ]
+    },
+    {
+      "name": "OrbitGinger",
+      "kind": "orbit",
+      "source": [
+        85,
+        270,
+        133,
+        307
+      ],
+      "rect": [
+        4,
+        636,
+        176,
+        138
+      ]
+    },
+    {
+      "name": "OrbitPuppyHead",
+      "kind": "orbit",
+      "source": [
+        190,
+        114,
+        234,
+        153
+      ],
+      "rect": [
+        184,
+        636,
+        176,
+        131
+      ]
+    },
+    {
+      "name": "LoadingSign",
+      "kind": "progress",
+      "source": [
+        94,
+        341,
+        177,
+        365
+      ],
+      "rect": [
+        364,
+        636,
+        384,
+        65
+      ]
+    },
+    {
+      "name": "FlowerRight",
+      "kind": "heart",
+      "source": [
+        212,
+        86,
+        231,
+        106
+      ],
+      "rect": [
+        752,
+        636,
+        48,
+        47
+      ]
+    },
+    {
+      "name": "StarLeft",
+      "kind": "star",
+      "source": [
+        1,
+        228,
+        17,
+        247
+      ],
+      "rect": [
+        804,
+        636,
+        42,
+        47
+      ]
+    },
+    {
+      "name": "FlowerLeft",
+      "kind": "heart",
+      "source": [
+        29,
+        269,
+        50,
+        293
+      ],
+      "rect": [
+        850,
+        636,
+        45,
+        45
+      ]
+    },
+    {
+      "name": "StarRight",
+      "kind": "star",
+      "source": [
+        227,
+        98,
+        246,
+        121
+      ],
+      "rect": [
+        899,
+        636,
+        40,
+        44
+      ]
+    },
+    {
+      "name": "HeartLeft",
+      "kind": "heart",
+      "source": [
+        20,
+        96,
+        36,
+        113
+      ],
+      "rect": [
+        943,
+        636,
+        44,
+        44
+      ]
+    },
+    {
+      "name": "ProgressFill",
+      "kind": "progress",
+      "source": [
+        86,
+        382,
+        169,
+        392
+      ],
+      "rect": [
+        4,
+        778,
+        512,
+        42
+      ]
+    },
+    {
+      "name": "HeartUpper",
+      "kind": "heart",
+      "source": [
+        37,
+        78,
+        54,
+        96
+      ],
+      "rect": [
+        520,
+        778,
+        41,
+        41
+      ]
+    },
+    {
+      "name": "StarBottom",
+      "kind": "star",
+      "source": [
+        78,
+        319,
+        100,
+        341
+      ],
+      "rect": [
+        565,
+        778,
+        35,
+        40
+      ]
+    },
+    {
+      "name": "HeartRight",
+      "kind": "heart",
+      "source": [
+        235,
+        124,
+        250,
+        140
+      ],
+      "rect": [
+        604,
+        778,
+        36,
+        39
+      ]
+    },
+    {
+      "name": "SparkleLeft",
+      "kind": "star",
+      "source": [
+        13,
+        65,
+        30,
+        86
+      ],
+      "rect": [
+        644,
+        778,
+        34,
+        38
+      ]
+    },
+    {
+      "name": "StarUpper",
+      "kind": "star",
+      "source": [
+        177,
+        29,
+        199,
+        49
+      ],
+      "rect": [
+        682,
+        778,
+        33,
+        37
+      ]
+    },
+    {
+      "name": "SparkleRight",
+      "kind": "star",
+      "source": [
+        245,
+        64,
+        261,
+        86
+      ],
+      "rect": [
+        719,
+        778,
+        33,
+        36
+      ]
+    },
+    {
+      "name": "HeartLower",
+      "kind": "heart",
+      "source": [
+        47,
+        291,
+        66,
+        311
+      ],
+      "rect": [
+        756,
+        778,
+        39,
+        36
+      ]
+    },
+    {
+      "name": "ProgressTrack",
+      "kind": "progress",
+      "source": [
+        85,
+        374,
+        232,
+        401
+      ],
+      "rect": [
+        4,
+        824,
+        637,
+        33
+      ]
+    }
+  ],
+  "artSource": "ComfyUI individual animal redraw; visual anatomy/pose review in individual/review.json",
+  "animalCompositionRotations": {
+    "OrbitLongDog": 90,
+    "OrbitRabbitPair": -12,
+    "OrbitBlueCat": -25,
+    "OrbitGreyCat": -135,
+    "OrbitWhiteDog": 180,
+    "OrbitFluffy": 25,
+    "OrbitGreyDog": 110,
+    "OrbitHappyDog": 65,
+    "OrbitTurtle": -60,
+    "OrbitPatchDog": 90,
+    "OrbitGinger": -15
+  }
+}

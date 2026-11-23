@@ -1,0 +1,553 @@
+{
+  "animals": {
+    "slots": [
+      {
+        "name": "OrbitLongDog",
+        "kind": "orbit",
+        "source": [
+          211,
+          145,
+          261,
+          212
+        ],
+        "cell": [
+          0,
+          0,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "OrbitRabbitPair",
+        "kind": "orbit",
+        "source": [
+          137,
+          63,
+          204,
+          122
+        ],
+        "cell": [
+          256,
+          0,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "ProgressCat",
+        "kind": "progress",
+        "source": [
+          30,
+          353,
+          89,
+          408
+        ],
+        "cell": [
+          512,
+          0,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "DoorRight",
+        "kind": "door",
+        "source": [
+          145,
+          204,
+          199,
+          258
+        ],
+        "cell": [
+          768,
+          0,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "OrbitBlueCat",
+        "kind": "orbit",
+        "source": [
+          201,
+          209,
+          252,
+          263
+        ],
+        "cell": [
+          0,
+          256,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "OrbitGreyCat",
+        "kind": "orbit",
+        "source": [
+          161,
+          252,
+          217,
+          304
+        ],
+        "cell": [
+          256,
+          256,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "OrbitWhiteDog",
+        "kind": "orbit",
+        "source": [
+          130,
+          275,
+          165,
+          327
+        ],
+        "cell": [
+          512,
+          256,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "OrbitCat",
+        "kind": "orbit",
+        "source": [
+          77,
+          60,
+          143,
+          111
+        ],
+        "cell": [
+          768,
+          256,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "OrbitFluffy",
+        "kind": "orbit",
+        "source": [
+          33,
+          89,
+          88,
+          139
+        ],
+        "cell": [
+          0,
+          512,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "OrbitGreyDog",
+        "kind": "orbit",
+        "source": [
+          12,
+          214,
+          67,
+          263
+        ],
+        "cell": [
+          256,
+          512,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "OrbitHappyDog",
+        "kind": "orbit",
+        "source": [
+          0,
+          131,
+          62,
+          178
+        ],
+        "cell": [
+          512,
+          512,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "OrbitTurtle",
+        "kind": "orbit",
+        "source": [
+          51,
+          252,
+          91,
+          298
+        ],
+        "cell": [
+          768,
+          512,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "OrbitPatchDog",
+        "kind": "orbit",
+        "source": [
+          0,
+          174,
+          51,
+          220
+        ],
+        "cell": [
+          0,
+          768,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "DoorLeft",
+        "kind": "door",
+        "source": [
+          63,
+          208,
+          106,
+          253
+        ],
+        "cell": [
+          256,
+          768,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "OrbitPuppyHead",
+        "kind": "orbit",
+        "source": [
+          190,
+          114,
+          234,
+          153
+        ],
+        "cell": [
+          512,
+          768,
+          256,
+          256
+        ]
+      },
+      {
+        "name": "OrbitGinger",
+        "kind": "orbit",
+        "source": [
+          85,
+          270,
+          133,
+          307
+        ],
+        "cell": [
+          768,
+          768,
+          256,
+          256
+        ]
+      }
+    ],
+    "size": [
+      1024,
+      1024
+    ]
+  },
+  "house": {
+    "slots": [
+      {
+        "name": "House",
+        "kind": "house",
+        "source": [
+          60,
+          114,
+          201,
+          245
+        ],
+        "cell": [
+          0,
+          0,
+          512,
+          512
+        ]
+      }
+    ],
+    "size": [
+      512,
+      512
+    ]
+  },
+  "controls": {
+    "slots": [
+      {
+        "name": "ProgressTrack",
+        "kind": "progress",
+        "source": [
+          85,
+          374,
+          232,
+          401
+        ],
+        "cell": [
+          0,
+          0,
+          768,
+          192
+        ]
+      },
+      {
+        "name": "LoadingSign",
+        "kind": "progress",
+        "source": [
+          94,
+          341,
+          177,
+          365
+        ],
+        "cell": [
+          0,
+          192,
+          768,
+          192
+        ]
+      },
+      {
+        "name": "ProgressFill",
+        "kind": "progress",
+        "source": [
+          86,
+          382,
+          169,
+          392
+        ],
+        "cell": [
+          0,
+          384,
+          768,
+          192
+        ]
+      }
+    ],
+    "size": [
+      768,
+      576
+    ]
+  },
+  "decorations": {
+    "slots": [
+      {
+        "name": "FlowerLeft",
+        "kind": "heart",
+        "source": [
+          29,
+          269,
+          50,
+          293
+        ],
+        "cell": [
+          0,
+          0,
+          128,
+          128
+        ]
+      },
+      {
+        "name": "StarRight",
+        "kind": "star",
+        "source": [
+          227,
+          98,
+          246,
+          121
+        ],
+        "cell": [
+          128,
+          0,
+          128,
+          128
+        ]
+      },
+      {
+        "name": "StarBottom",
+        "kind": "star",
+        "source": [
+          78,
+          319,
+          100,
+          341
+        ],
+        "cell": [
+          256,
+          0,
+          128,
+          128
+        ]
+      },
+      {
+        "name": "SparkleRight",
+        "kind": "star",
+        "source": [
+          245,
+          64,
+          261,
+          86
+        ],
+        "cell": [
+          384,
+          0,
+          128,
+          128
+        ]
+      },
+      {
+        "name": "SparkleLeft",
+        "kind": "star",
+        "source": [
+          13,
+          65,
+          30,
+          86
+        ],
+        "cell": [
+          0,
+          128,
+          128,
+          128
+        ]
+      },
+      {
+        "name": "HeartLower",
+        "kind": "heart",
+        "source": [
+          47,
+          291,
+          66,
+          311
+        ],
+        "cell": [
+          128,
+          128,
+          128,
+          128
+        ]
+      },
+      {
+        "name": "StarUpper",
+        "kind": "star",
+        "source": [
+          177,
+          29,
+          199,
+          49
+        ],
+        "cell": [
+          256,
+          128,
+          128,
+          128
+        ]
+      },
+      {
+        "name": "FlowerRight",
+        "kind": "heart",
+        "source": [
+          212,
+          86,
+          231,
+          106
+        ],
+        "cell": [
+          384,
+          128,
+          128,
+          128
+        ]
+      },
+      {
+        "name": "StarLeft",
+        "kind": "star",
+        "source": [
+          1,
+          228,
+          17,
+          247
+        ],
+        "cell": [
+          0,
+          256,
+          128,
+          128
+        ]
+      },
+      {
+        "name": "HeartUpper",
+        "kind": "heart",
+        "source": [
+          37,
+          78,
+          54,
+          96
+        ],
+        "cell": [
+          128,
+          256,
+          128,
+          128
+        ]
+      },
+      {
+        "name": "HeartLeft",
+        "kind": "heart",
+        "source": [
+          20,
+          96,
+          36,
+          113
+        ],
+        "cell": [
+          256,
+          256,
+          128,
+          128
+        ]
+      },
+      {
+        "name": "HeartRight",
+        "kind": "heart",
+        "source": [
+          235,
+          124,
+          250,
+          140
+        ],
+        "cell": [
+          384,
+          256,
+          128,
+          128
+        ]
+      }
+    ],
+    "size": [
+      512,
+      384
+    ]
+  },
+  "background": {
+    "slots": [],
+    "size": [
+      576,
+      1024
+    ]
+  }
+}

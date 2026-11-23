@@ -1,0 +1,184 @@
+{
+  "prompt": [
+    4,
+    "2e2089bc-3875-454d-9b4e-dafba1aa07b2",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "loading-comfy-20261123/background-guide.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Use image 1 as the base and image 2 for its original watercolor-paper mood. Create a clean high-quality PORTRAIT watercolor paper background, pale peach and blush at the top, soft buttery yellow through the middle, warm apricot near the bottom, subtle physical cotton-paper grain, gentle watercolor pigment variations. Background ONLY. Remove all stars, hearts, dots, sparkles, animals, house, lettering, progress bar and objects. No blurry orbs, no glossy gradient, no 3D, no vignette, no hard bands, no stains. Keep the light quiet flat storybook paper atmosphere and bright empty center. No white border, no text or watermark.",
+          "negative_prompt": "plastic, 3d, glossy, bevel, embossed, shiny, airbrush, fake fur edges, torn edges, thick white sticker border, jagged pixel outline, text, words, watermark, cell borders, extra objects",
+          "resolution": 0,
+          "images.image_1": [
+            "4",
+            0
+          ],
+          "images.image_2": [
+            "10",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112364,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "loading-comfy-20261123/background"
+        }
+      },
+      "10": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "loading-comfy-20261123/background-reference.png"
+        }
+      }
+    },
+    {
+      "client_id": "loading-comfy-01a20769",
+      "create_time": 1795424646257
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "background_00001_.png",
+          "subfolder": "loading-comfy-20261123",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "2e2089bc-3875-454d-9b4e-dafba1aa07b2",
+          "timestamp": 1795424646258
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6"
+          ],
+          "prompt_id": "2e2089bc-3875-454d-9b4e-dafba1aa07b2",
+          "timestamp": 1795424646287
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "2e2089bc-3875-454d-9b4e-dafba1aa07b2",
+          "timestamp": 1795424676636
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

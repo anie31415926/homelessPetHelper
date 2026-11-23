@@ -1,0 +1,184 @@
+{
+  "prompt": [
+    9,
+    "0e9376de-8be8-41c4-97bc-bc5cef6c139a",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "loading-individual-20261123/v2-blue-cat-style.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Change the animal in image 1 into the subject described below. Preserve EXACTLY image 1 cute tiny storybook game-sprite drawing language: oversized ROUND head, very compact little body, stubby paws, tiny simple dark DOT eyes, tiny nose and mouth, simplified flat pastel watercolor shapes, clean continuous warm-gray pencil contour. NOT a realistic animal study, no detailed fur, no realistic eyes, no realistic musculature. Image 2 is only the original warm kawaii art direction, NOT a pose guide or scene to reproduce. No house, scenery or decorations. Head, body and limbs must still connect plausibly, with no extra or fused parts. White #ffffff background perfectly uniform outside subject, no shadows. Whole subject centered, occupying about 70 percent of canvas, 12 percent blank margin all sides. Matte pigment and slight paper grain INSIDE silhouette only. No glossy material, 3D, airbrush, sticker border, words, labels, collar, clothing, ground, props, extra fragments. One blue-gray short-haired kitten seated upright in three-quarter view facing left. One head, two triangular ears, pale muzzle and chest. Two front legs straight down ending in paired front paws, two folded hind legs, one tail curling along the ground beside the body. Rounded feline torso with a clear shoulder and hip, no twisted joints.",
+          "negative_prompt": "deformed anatomy, extra limbs, missing paws, fused animals, disconnected head, twisted spine, ambiguous species, extra tail, upside down, 3d, plastic, gloss, bevel, thick white sticker edge, shadow, text, props, fragments",
+          "resolution": 0,
+          "images.image_1": [
+            "4",
+            0
+          ],
+          "images.image_2": [
+            "10",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112484,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "loading-individual-20261123/v2/blue-cat"
+        }
+      },
+      "10": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "loading-individual-20261123/blue-cat-style.png"
+        }
+      }
+    },
+    {
+      "client_id": "loading-individual-01a20769",
+      "create_time": 1795429778122
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "blue-cat_00001_.png",
+          "subfolder": "loading-individual-20261123\\v2",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "0e9376de-8be8-41c4-97bc-bc5cef6c139a",
+          "timestamp": 1795429778124
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6"
+          ],
+          "prompt_id": "0e9376de-8be8-41c4-97bc-bc5cef6c139a",
+          "timestamp": 1795429778152
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "0e9376de-8be8-41c4-97bc-bc5cef6c139a",
+          "timestamp": 1795429792611
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

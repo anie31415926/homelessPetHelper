@@ -1,0 +1,108 @@
+{
+  "reviewer": "Codex visual review",
+  "reviewedAt": "2026-11-23T18:38:46+08:00",
+  "scope": "逐只查看原始母图、深浅底透明派生与缩小图；仅Q版形体/姿态初筛，不是生物解剖准确性认证，用户观感验收仍待确认。",
+  "rejected": [
+    "v1四张：画风偏写实，不纳入运行。",
+    "v2/turtle夹带参考犬，v2/chinchilla物种耳形错误，两个v2头像夹带身体，均排除。",
+    "v3/chinchilla残留橙黄仓鼠毛色，改为v4灰色。"
+  ],
+  "items": [
+    {
+      "id": "ferret",
+      "sha256": "7699770255c2e395c8112a5f9a42cbd835ddab7b563734670bba60336e08dd6f",
+      "status": "accepted",
+      "observation": "长身雪貂，头颈连续、四足与单尾清楚；自然站立，无倒置猜形。"
+    },
+    {
+      "id": "rabbits",
+      "sha256": "4c835dbc484fd4e01bf13a0d8f335cdaba3155f900bf06fc2b319a1b9753faa4",
+      "status": "accepted",
+      "observation": "两只兔子分别两耳一头一身，前掌与后足分工清楚，身体间白缝保留，不粘连。"
+    },
+    {
+      "id": "calico-head",
+      "sha256": "dface075f5d0af3a6f9a7fbbafde821a7d2a98f6fcc11a9f838957fd96de79e7",
+      "status": "accepted",
+      "observation": "仅猫头，两只三角耳、双眼鼻口完整；已排除v2夹带的小身体。"
+    },
+    {
+      "id": "spaniel",
+      "sha256": "063f23375a20722c8a703da9538c633de8d5a9abaded449a8c730c54d7a96bcc",
+      "status": "accepted",
+      "observation": "垂耳犬坐姿，双前腿居中、折叠后足在两侧，单尾在后，头胸连接自然。"
+    },
+    {
+      "id": "blue-cat",
+      "sha256": "f9a7fc939a8e8d14abe5616a3b252e46bb295f83b57b55bd6e3f709a39d7af94",
+      "status": "accepted",
+      "observation": "猫坐姿，双前掌清楚，一侧后足可见、另一侧被身体合理遮挡，单尾沿地。"
+    },
+    {
+      "id": "guinea-pig",
+      "sha256": "c2569dd8d18b62e5552a51c070e125d50afab71e9c319ca39b221cb717fd10a1",
+      "status": "accepted",
+      "observation": "豚鼠短耳无长尾，椭圆身/短足；三足可见，远侧第四足被身躯遮挡，无多足。"
+    },
+    {
+      "id": "hamster",
+      "sha256": "515c77d64673fe022e86e659de29b4fd064813a34afefd64d2a68502a8886599",
+      "status": "accepted",
+      "observation": "圆耳仓鼠，胸前两只短前掌，底部两只承重后足；头身连接完整。"
+    },
+    {
+      "id": "silver-kitten",
+      "sha256": "e0dbcbce5aa480c2e053f26f59d53709f6c7b61a62af09d4e6b30a7f6b57826a",
+      "status": "accepted",
+      "observation": "长毛猫双耳、双前掌和两侧坐姿后肢合理，单蓬尾；无游离毛团。"
+    },
+    {
+      "id": "apricot-poodle",
+      "sha256": "24258120da1f956d15bf783c0a4d351eee34df085f4ad2e4c2417a8cf5937db6",
+      "status": "accepted",
+      "observation": "卷毛犬头身连接、垂耳及短腿站姿合理；四足可区分，近侧较低、远侧较高，单短尾在后。"
+    },
+    {
+      "id": "chinchilla",
+      "sha256": "9b5729f5201f488424ee9d4af52f623d4a8fcb1f302acb67d5ceffbc287dda32",
+      "status": "accepted",
+      "observation": "灰色龙猫，大圆耳、短吻、胸前双前掌/底部双后足、单蓬尾；v2犬耳/v3仓鼠斑已排除。"
+    },
+    {
+      "id": "corgi",
+      "sha256": "49b0ed03001c9b75275c8e8f7a0866a2cb638f8d8f34a6e683e4750ecbc4c3aa",
+      "status": "accepted",
+      "observation": "立耳柯基坐姿，双前掌与侧边折叠后足可区分，单短尾，未混入猫尾。"
+    },
+    {
+      "id": "turtle",
+      "sha256": "882617b373f77eed34716e0398e516bb94fbb6ef11a42b7f7527a1841bef3bf9",
+      "status": "accepted",
+      "observation": "单壳、单头、单短尾，三足可见，远侧第四足被壳遮挡；已排除v2乌龟旁的小狗。"
+    },
+    {
+      "id": "patch-puppy",
+      "sha256": "4077e99299ca794d53d68a65108dc6a3cdd776e2e25950c93ea079489429af7e",
+      "status": "accepted",
+      "observation": "花斑垂耳犬自然坐姿，前腿成对、后腿折叠，单尾，未见多头/多足。"
+    },
+    {
+      "id": "bichon",
+      "sha256": "6d9fc0d6d129324f7413fe4bcf13c6d2f593271c0174f5f31e01c2424d3184f8",
+      "status": "accepted",
+      "observation": "白色垂耳卷毛犬，双前掌和两侧后足稳定，头身清楚，无多肢。"
+    },
+    {
+      "id": "golden-head",
+      "sha256": "2feb8f6e3d8c8de50a2e7502d3356fcffaf6ff8fd97a28b2d1b905eb8f3df545",
+      "status": "accepted",
+      "observation": "仅金毛犬头，两只垂耳和双眼鼻口完整；已排除v2夹带身体。"
+    },
+    {
+      "id": "ginger-cat",
+      "sha256": "47f0bdbecede288ab7ab825a585e7fc4c629b95ef75e0184302d59f13b220fd6",
+      "status": "accepted",
+      "observation": "橘猫蜷卧，双前掌在头下、后腿收于身体，单条纹尾绕身；头身连接清楚，无多尾或额外肢体。"
+    }
+  ]
+}

@@ -1,0 +1,267 @@
+{
+  "method": "Connected exterior white removal, largest closed component (two for rabbit pair), one-pixel opening, white matte decontamination and 1.22x pigment grade. No anatomical edits.",
+  "items": [
+    {
+      "id": "ferret",
+      "sprite": "OrbitLongDog",
+      "master": "v2/ferret/master.png",
+      "sha256": "7699770255c2e395c8112a5f9a42cbd835ddab7b563734670bba60336e08dd6f",
+      "trim": [
+        105,
+        169,
+        448,
+        329
+      ],
+      "componentAreas": [
+        26598
+      ],
+      "cutoutSha256": "e9096422a43959be3cf960740b4037ca4043ac059b72e2161eb932e6dfca520a"
+    },
+    {
+      "id": "rabbits",
+      "sprite": "OrbitRabbitPair",
+      "master": "v2/rabbits/master.png",
+      "sha256": "4c835dbc484fd4e01bf13a0d8f335cdaba3155f900bf06fc2b319a1b9753faa4",
+      "trim": [
+        139,
+        129,
+        376,
+        363
+      ],
+      "componentAreas": [
+        20303,
+        19995
+      ],
+      "cutoutSha256": "bcee3ae7d690cec1c84e98f5e90cd81564f3ad5dacecdf0471c52abd37385a4d"
+    },
+    {
+      "id": "calico-head",
+      "sprite": "ProgressCat",
+      "master": "v3/calico-head/master.png",
+      "sha256": "dface075f5d0af3a6f9a7fbbafde821a7d2a98f6fcc11a9f838957fd96de79e7",
+      "trim": [
+        115,
+        119,
+        394,
+        368
+      ],
+      "componentAreas": [
+        52127
+      ],
+      "cutoutSha256": "72e4d74dff6b7cffb8c446c08dd45de8531a58bc9602412691df129243ec2057"
+    },
+    {
+      "id": "spaniel",
+      "sprite": "DoorRight",
+      "master": "v2/spaniel/master.png",
+      "sha256": "063f23375a20722c8a703da9538c633de8d5a9abaded449a8c730c54d7a96bcc",
+      "trim": [
+        122,
+        109,
+        388,
+        377
+      ],
+      "componentAreas": [
+        50916
+      ],
+      "cutoutSha256": "405632757033aa89571e6003d7949e47aafc149085db63c382c1bd98a2f12872"
+    },
+    {
+      "id": "blue-cat",
+      "sprite": "OrbitBlueCat",
+      "master": "v2/blue-cat/master.png",
+      "sha256": "f9a7fc939a8e8d14abe5616a3b252e46bb295f83b57b55bd6e3f709a39d7af94",
+      "trim": [
+        152,
+        116,
+        364,
+        389
+      ],
+      "componentAreas": [
+        39451
+      ],
+      "cutoutSha256": "839e255ca6b78ce3790f43eac6dcf0945bf5e534e49cca87bb18f4bb0a23bb59"
+    },
+    {
+      "id": "guinea-pig",
+      "sprite": "OrbitGreyCat",
+      "master": "v2/guinea-pig/master.png",
+      "sha256": "c2569dd8d18b62e5552a51c070e125d50afab71e9c319ca39b221cb717fd10a1",
+      "trim": [
+        117,
+        151,
+        396,
+        356
+      ],
+      "componentAreas": [
+        45437
+      ],
+      "cutoutSha256": "44ef0d5b111b5f7316900a0e8e96da457259064883fc55c084c7bd19d54913f4"
+    },
+    {
+      "id": "hamster",
+      "sprite": "OrbitWhiteDog",
+      "master": "v2/hamster/master.png",
+      "sha256": "515c77d64673fe022e86e659de29b4fd064813a34afefd64d2a68502a8886599",
+      "trim": [
+        157,
+        135,
+        359,
+        376
+      ],
+      "componentAreas": [
+        38164
+      ],
+      "cutoutSha256": "a39c2dcdc0f454b4e819df64165b3899aa226190877e2792405bad13dc8ae5ef"
+    },
+    {
+      "id": "silver-kitten",
+      "sprite": "OrbitCat",
+      "master": "v2/silver-kitten/master.png",
+      "sha256": "e0dbcbce5aa480c2e053f26f59d53709f6c7b61a62af09d4e6b30a7f6b57826a",
+      "trim": [
+        141,
+        100,
+        400,
+        391
+      ],
+      "componentAreas": [
+        51231
+      ],
+      "cutoutSha256": "4db5916280bd1c3ba381e6ebdf7ef9d2e2909051b7181dab1c1374794b2b3fab"
+    },
+    {
+      "id": "apricot-poodle",
+      "sprite": "OrbitFluffy",
+      "master": "v2/apricot-poodle/master.png",
+      "sha256": "24258120da1f956d15bf783c0a4d351eee34df085f4ad2e4c2417a8cf5937db6",
+      "trim": [
+        118,
+        112,
+        381,
+        376
+      ],
+      "componentAreas": [
+        49166
+      ],
+      "cutoutSha256": "339ad8ce695d2ee46ebc3bd49db1c88c2af6ce6cf56b524100cf28527a016887"
+    },
+    {
+      "id": "chinchilla",
+      "sprite": "OrbitGreyDog",
+      "master": "v4/chinchilla/master.png",
+      "sha256": "9b5729f5201f488424ee9d4af52f623d4a8fcb1f302acb67d5ceffbc287dda32",
+      "trim": [
+        155,
+        134,
+        363,
+        367
+      ],
+      "componentAreas": [
+        36570,
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "cutoutSha256": "17623629bac8d21b42ef02c98030bb5c34865a123ec3ef55f07fafa35cc042c7"
+    },
+    {
+      "id": "corgi",
+      "sprite": "OrbitHappyDog",
+      "master": "v2/corgi/master.png",
+      "sha256": "49b0ed03001c9b75275c8e8f7a0866a2cb638f8d8f34a6e683e4750ecbc4c3aa",
+      "trim": [
+        165,
+        109,
+        368,
+        382
+      ],
+      "componentAreas": [
+        41714
+      ],
+      "cutoutSha256": "15d120d155ed02e5d73129fb367f27b388fc9d7230e1d555aae8e11fb82e0a78"
+    },
+    {
+      "id": "turtle",
+      "sprite": "OrbitTurtle",
+      "master": "v3/turtle/master.png",
+      "sha256": "882617b373f77eed34716e0398e516bb94fbb6ef11a42b7f7527a1841bef3bf9",
+      "trim": [
+        129,
+        159,
+        392,
+        320
+      ],
+      "componentAreas": [
+        25723
+      ],
+      "cutoutSha256": "742d4d3f90f8cd16efb8671479aaf76685be2213e0b703ef512450489be4badd"
+    },
+    {
+      "id": "patch-puppy",
+      "sprite": "OrbitPatchDog",
+      "master": "v2/patch-puppy/master.png",
+      "sha256": "4077e99299ca794d53d68a65108dc6a3cdd776e2e25950c93ea079489429af7e",
+      "trim": [
+        139,
+        124,
+        374,
+        378
+      ],
+      "componentAreas": [
+        45641
+      ],
+      "cutoutSha256": "7e8ae95b6a149a028ef5839e99209194dfb3b802574d1d5897fce07094faffe8"
+    },
+    {
+      "id": "bichon",
+      "sprite": "DoorLeft",
+      "master": "v2/bichon/master.png",
+      "sha256": "6d9fc0d6d129324f7413fe4bcf13c6d2f593271c0174f5f31e01c2424d3184f8",
+      "trim": [
+        118,
+        109,
+        395,
+        378
+      ],
+      "componentAreas": [
+        50190
+      ],
+      "cutoutSha256": "9cac2d41015985ae9d66291110eb0ef1106692cc23ccaa49e84427be23836ef3"
+    },
+    {
+      "id": "golden-head",
+      "sprite": "OrbitPuppyHead",
+      "master": "v3/golden-head/master.png",
+      "sha256": "2feb8f6e3d8c8de50a2e7502d3356fcffaf6ff8fd97a28b2d1b905eb8f3df545",
+      "trim": [
+        118,
+        123,
+        396,
+        330
+      ],
+      "componentAreas": [
+        42434
+      ],
+      "cutoutSha256": "683cf9ee15b5f55c85a9e3f6dbbfd359e8a618511c25f70df60ed1943a26e8f6"
+    },
+    {
+      "id": "ginger-cat",
+      "sprite": "OrbitGinger",
+      "master": "v2/ginger-cat/master.png",
+      "sha256": "47f0bdbecede288ab7ab825a585e7fc4c629b95ef75e0184302d59f13b220fd6",
+      "trim": [
+        117,
+        163,
+        408,
+        353
+      ],
+      "componentAreas": [
+        43969
+      ],
+      "cutoutSha256": "1cf5df8eb0053e2006c7a8c6fd572398a7946845ab91efe6bf1b79a31984edff"
+    }
+  ]
+}
