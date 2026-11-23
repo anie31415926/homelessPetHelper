@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "width": 336,
+  "height": 688,
+  "originalSize": [
+    452,
+    512
+  ],
+  "source": "public/pet-mesh/cat-side.png",
+  "sourceSha256": "b1889c797e975a625a746ab530a4c7d9231a068ca387871b5306b2fedfd9b727",
+  "completion": {
+    "path": "art-source/pet-transition-20261123/torso-a/master.png",
+    "sha256": "84ed49d9c6e92c18413b3c7022d3e9cb698070d0085fb65d8c96207fb5c874ac",
+    "role": "lower torso colour completion only",
+    "visual": "candidate, not approved",
+    "notes": "Model retained scarf at crop top; no generated scarf/head consumed. Only y330..444 original coordinates inside torso mask."
+  },
+  "layers": [
+    {
+      "id": "tail",
+      "width": 91,
+      "height": 154,
+      "x": 232,
+      "y": 362,
+      "left": 354,
+      "top": 342,
+      "atlasX": 232,
+      "atlasY": 362,
+      "source": "public/pet-mesh/cat-side.png"
+    },
+    {
+      "id": "farHind",
+      "width": 116,
+      "height": 186,
+      "x": 0,
+      "y": 334,
+      "left": 213,
+      "top": 307,
+      "atlasX": 0,
+      "atlasY": 334,
+      "source": "public/pet-limbs/far-hind-copy.png"
+    },
+    {
+      "id": "farFront",
+      "width": 92,
+      "height": 182,
+      "x": 244,
+      "y": 0,
+      "left": 77,
+      "top": 311,
+      "atlasX": 244,
+      "atlasY": 0,
+      "source": "public/pet-limbs/far-front-copy.png"
+    },
+    {
+      "id": "torso",
+      "width": 302,
+      "height": 167,
+      "x": 0,
+      "y": 520,
+      "left": 93,
+      "top": 274,
+      "atlasX": 0,
+      "atlasY": 520,
+      "source": "art-source/pet-transition-20261123/torso-a/master.png"
+    },
+    {
+      "id": "nearHind",
+      "width": 116,
+      "height": 185,
+      "x": 116,
+      "y": 334,
+      "left": 244,
+      "top": 316,
+      "atlasX": 116,
+      "atlasY": 334,
+      "source": "art-source/pet-limbs/donor/hind-source.png"
+    },
+    {
+      "id": "nearFront",
+      "width": 92,
+      "height": 180,
+      "x": 244,
+      "y": 182,
+      "left": 102,
+      "top": 320,
+      "atlasX": 244,
+      "atlasY": 182,
+      "source": "art-source/pet-limbs/donor/front-source.png"
+    },
+    {
+      "id": "head",
+      "width": 244,
+      "height": 334,
+      "x": 0,
+      "y": 0,
+      "left": 8,
+      "top": 10,
+      "atlasX": 0,
+      "atlasY": 0,
+      "source": "public/pet-mesh/cat-side.png"
+    }
+  ],
+  "masks": {
+    "head": "M0 0 H452 V244 H240 L226 269 L224 290 L92 320 L86 342 H0Z",
+    "torso": "M95 291 Q168 286 218 277 Q320 272 364 318 Q394 350 393 390 Q370 424 319 432 Q231 451 166 414 Q105 380 95 291Z",
+    "tail": "M367 344 Q402 366 401 428 Q401 447 429 450 Q452 455 443 481 Q433 508 401 494 Q377 489 364 464 Q352 431 359 398Z"
+  },
+  "method": "Same source head/scarf/limbs, fixed coordinates and explicit local torso patch; no full-pose crossfade."
+}

@@ -1,0 +1,7 @@
+{
+  "path": "art-source/pet-transition-20261123/torso-a/master.png",
+  "sha256": "84ed49d9c6e92c18413b3c7022d3e9cb698070d0085fb65d8c96207fb5c874ac",
+  "role": "lower torso colour completion only",
+  "visual": "candidate, not approved",
+  "notes": "Model retained scarf at crop top; no generated scarf/head consumed. Only y330..444 original coordinates inside torso mask."
+}

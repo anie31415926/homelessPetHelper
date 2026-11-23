@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+  "sessionId": "01a2076c-48cc-7063-a3a1-e609ac9a8e34",
+  "phase": "delivery",
+  "readAt": "2026-11-23T08:59:10.873Z",
+  "writePaths": [
+    "art-source/pet-transition-20261123/",
+    "art-source/resource-catalog.json",
+    "art-source/station-room-20261123/server/input/pet-transition-20261123/",
+    "art-source/station-room-20261123/server/output/pet-transition-20261123/",
+    "docs/动物同骨架过渡制作与调研.md",
+    "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+    "docs/协作执行记录/20261123-动物同骨架过渡-01a2076c/",
+    "pet-transition.html",
+    "public/pet-transition/",
+    "src/pet-transition/",
+    "tests/pet-transition-browser.mjs",
+    "tests/pet-transition.test.mjs",
+    "tools/pet-transition-art.mjs",
+    "tools/pet-transition-audit.mjs",
+    "tools/pet-transition-process.mjs"
+  ],
+  "contextDigest": "2c780b48b51fbd0650d19e1fac7c734232ce763b71daca6460f106529ebe3754",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-Loading场景-01a20769.md",
+      "sha256": "89fff25c3631b32beae1b0ed73a229cce9baf8313020bae8da4a459bd5be0fcb"
+    },
+    {
+      "path": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+      "sha256": "1ace64afb9d35d7d3fd452b0267f9119233816445a8718f34907f3232a9fbee8"
+    },
+    {
+      "path": "docs/协作任务/20261123-救助站原图拆层-01a1d310.md",
+      "sha256": "1fe13aa83f92c7776400d40f4f7a2b3935d8ff19f1b551f06307dd557345eed0"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "8abcfe6a8ca5f8967dd543b0afa4b3c41a9ed970a1099a8a1af7c48842a31c3b"
+    }
+  ]
+}

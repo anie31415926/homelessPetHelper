@@ -5311,6 +5311,282 @@
         "rights": "pending",
         "target": "pending"
       }
+    },
+    {
+      "id": "pet-sit-chibi.atlas",
+      "name": "原图短腿萌系坐下贴图候选",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "原图保真独立比例试做，不接Unity",
+      "use": "以原图1:1坐标标定短腿骨架，保留关节连接/折叠结构；原图对照及连续坐下",
+      "plannedBytes": 393216,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "public/pet-sit-chibi/atlas.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "public/pet-sit-chibi/atlas.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/pet-sit-chibi-20261123/plan.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/pet-sit-chibi-20261123/derivation.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/pet-sit-chibi-20261123/verification.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-sit-chibi-20261123/accepted/contact.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-sit-chibi-20261123/accepted/source-standing.png"
+        }
+      ],
+      "generation": {
+        "tool": "原像素拆件/短骨骼重定向/Three.js官方IK",
+        "record": "docs/猫坐下萌系比例.md",
+        "notes": "不拉长原图，不运行ComfyUI；站姿优先对齐原图，动态接地随骨长重算，旧结构与长腿版保留只读。2026-11-23用户已认可短腿坐下及臀尾触地观感；经验见docs/动物同骨架过渡经验.md。仅接受本猫浏览器动作，不等于来源许可、Unity或目标平台验收。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "pet-sit-skin.atlas",
+      "name": "已认可坐下骨架的同源橘猫贴图候选",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立贴图预览，不进入Unity或Main",
+      "use": "8个同源部件供14个蒙皮附件复用，绑定已认可的30骨运动；原脸像素保留，大腿刚性旋转，非整姿态混合",
+      "plannedBytes": 393216,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "public/pet-sit-skin/atlas.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "public/pet-sit-skin/atlas.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/pet-sit-skin-20261123/plan.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/pet-sit-skin-20261123/derivation.json"
+        }
+      ],
+      "generation": {
+        "tool": "同源像素拆件/封闭遮罩/纹理行重采样/Three.js蒙皮",
+        "record": "docs/猫坐下同骨架贴图.md",
+        "notes": "复用pet-transition图集和pet-limbs原近侧供体，不运行ComfyUI；头脸主体RGBA不改，只移除旧head附件混入的颈下躯干。固定骨架只读，新增3个贴图约束锚点，不改变30骨运动；原Q版比例在绑定姿态中静态适配，不宣称原整图零差异或正式美术。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "pet-transition.torso-study",
+      "name": "同源动物过渡躯干补画试验",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立站坐过渡试验，不进入Main",
+      "use": "局部躯干补画；禁止消费生成头脸，原头脸围巾像素保留",
+      "plannedBytes": 153600,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/pet-transition-20261123/layers/torso.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/torso-a/guide.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/pet-transition-20261123/torso-a/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/pet-transition-20261123/torso-a/workflow.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/pet-transition-20261123/torso-a/submitted-workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/pet-transition-20261123/torso-a/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/pet-transition-20261123/torso-a/history.json"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/torso-repeat/guide.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/pet-transition-20261123/torso-repeat/master.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/pet-transition-20261123/torso-repeat/workflow.json"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/pet-transition-20261123/torso-repeat/submitted-workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/pet-transition-20261123/torso-repeat/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/pet-transition-20261123/torso-repeat/history.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/pet-transition-20261123/reproducibility.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机ComfyUI / Qwen Image 2.1",
+        "record": "docs/动物同骨架过渡制作与调研.md",
+        "notes": "两次独立实际作业，seed2026112301、24步CFG4/euler/simple；896×672母图仅局部取色与补画，头脸围巾从原猫保留。两个PNG元数据不同但解码RGBA完全一致；模型SHA256已存reproducibility.json，不承诺跨seed/设备/品种。 提交仅保留本批母图/guide/工作流/历史；旧共享服务的输入输出副本留本机，不作为提交依赖。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "pet-transition.same-rig-atlas",
+      "name": "同源站坐共享拆件图集候选",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立浏览器验证，不替换Unity现有动物",
+      "use": "原猫头脸围巾/四肢、躯干和尾巴，同一骨架连续采样",
+      "plannedBytes": 393216,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "public/pet-transition/atlas.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/layers/head.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/layers/tail.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/layers/nearFront.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/layers/nearHind.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/layers/farFront.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/layers/farHind.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/layers/nearHindThigh.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/layers/nearHindShin.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/layers/nearHindPaw.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/layers/farHindThigh.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/layers/farHindShin.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/layers/farHindPaw.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/baseline-compressed/atlas.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/baseline-compressed/contact.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/baseline-compressed/stand-sit.gif"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/first-preview.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/first-sit.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/second-sit.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/third-sit.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/pet-transition-20261123/third-middle.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/pet-transition-20261123/derivation.json"
+        }
+      ],
+      "generation": {
+        "tool": "原像素拆件 / Three.js蒙皮与官方CCDIKSolver",
+        "record": "docs/动物同骨架过渡制作与调研.md",
+        "notes": "2026-11-23按用户反馈取消后腿整片压缩；11附件/21骨，定长髋膝跗脚链，大腿与脚掌刚性绑定。关节遮挡末端只复制同列邻近原毛色闭合，mask/处理在process与derivation留档；旧压缩版留baseline-compressed，不作为当前候选。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
     }
   ]
 }

@@ -1,0 +1,15 @@
+{
+  "id": "pet-sit-chibi.atlas",
+  "plannedBytes": 393216,
+  "loadTiming": "preview-only",
+  "source": "public/pet-mesh/cat-side.png",
+  "sourceSha256": "b1889c797e975a625a746ab530a4c7d9231a068ca387871b5306b2fedfd9b727",
+  "donorHashes": {
+    "public/pet-sit-skin/atlas.png": "1539b412d535581dd5969519a2bcae8315536f70aa122d540635eea4b0163d8c",
+    "public/pet-sit-skin/atlas.json": "66575748db08d68a5199a524fecf1f93aec03cd8849f930c7aa68df9c58aed42",
+    "art-source/pet-limbs/donor/hind-source.png": "4f9eea3c806055e53ddcea2768003e674ac89e7b0910928e4f6d49f11704332b"
+  },
+  "intent": "Keep original chibi proportions and native pixel coordinates at bind pose. Retarget bone lengths and contacts, never stretch artwork to anatomical-study proportions.",
+  "sourceCoordinates": {"size": [452, 512], "pixelsPerUnit": 100, "floorY": 496},
+  "generation": "No model call; source cutouts and previously archived hidden coat donors only."
+}

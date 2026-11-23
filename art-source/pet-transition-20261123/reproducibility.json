@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-23T08:44:35.420Z",
+  "runtime": {
+    "comfyui": "0.37.1",
+    "python": "3.13.12 (main, Feb 12 2026, 00:38:53) [MSC v.1944 64 bit (AMD64)]",
+    "pytorch": "2.10.0+cu130",
+    "device": "cuda:0 NVIDIA GeForce RTX 4080 : cudaMallocAsync"
+  },
+  "models": [
+    {
+      "kind": "diffusion_models",
+      "file": "qwen_image_2.1_int8_convrot.safetensors",
+      "bytes": 7256783064,
+      "sha256": "cb74113cb03faecd79611b01fd7fd642f0aa60d6f0b95086abee214d75eaa57d"
+    },
+    {
+      "kind": "text_encoders",
+      "file": "qwen3vl_8b_int8_convrot.safetensors",
+      "bytes": 9350798360,
+      "sha256": "8bfd0f6e12abf2d2d697ecc888e5e90b0d6741d6708f05799f53afa560452e8f"
+    },
+    {
+      "kind": "vae",
+      "file": "qwen_image_2.1_vae_bf16.safetensors",
+      "bytes": 675509688,
+      "sha256": "bb21f7473051e1ac368515dd3f2e15cd44d7a11748ee8823e1ddca3e4876b7c9"
+    }
+  ],
+  "records": [
+    {
+      "name": "torso-a",
+      "promptId": "c7b9728d-211b-4a9d-b6ef-5ea7a9d5775b",
+      "status": "success",
+      "seed": 2026112301,
+      "dimensions": [
+        896,
+        672
+      ],
+      "rgbaSha256": "5f990d10243de958298e8684b7867267abac6a2da830dd1f8ec76814043e1c98",
+      "fileSha256": "84ed49d9c6e92c18413b3c7022d3e9cb698070d0085fb65d8c96207fb5c874ac",
+      "executionMs": 45776
+    },
+    {
+      "name": "torso-repeat",
+      "promptId": "4e361559-8b24-4c73-80c7-ae647658fccf",
+      "status": "success",
+      "seed": 2026112301,
+      "dimensions": [
+        896,
+        672
+      ],
+      "rgbaSha256": "5f990d10243de958298e8684b7867267abac6a2da830dd1f8ec76814043e1c98",
+      "fileSha256": "a5fa6261c8ea76492da0ba323f6de5b377983202a667d4b47ac785f5d4977b94",
+      "executionMs": 27017
+    }
+  ],
+  "identicalDecodedPixels": true,
+  "scope": "Same machine/model files/seed/prompt, two actual submissions. No cross-seed, machine, device, restart or other-animal stability claim."
+}

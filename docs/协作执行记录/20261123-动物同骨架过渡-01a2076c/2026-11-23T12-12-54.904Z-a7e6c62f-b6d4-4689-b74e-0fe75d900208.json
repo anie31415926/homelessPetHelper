@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+  "sessionId": "01a2076c-48cc-7063-a3a1-e609ac9a8e34",
+  "phase": "resume",
+  "readAt": "2026-11-23T12:12:54.904Z",
+  "writePaths": [
+    "art-source/pet-sit-chibi-20261123/",
+    "art-source/resource-catalog.json",
+    "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+    "docs/协作执行记录/20261123-动物同骨架过渡-01a2076c/",
+    "docs/猫坐下萌系比例.md",
+    "pet-sit-chibi.html",
+    "public/pet-sit-chibi/",
+    "src/pet-sit-chibi/",
+    "test-results/pet-sit-chibi/",
+    "test-results/resource-catalog/",
+    "tests/pet-sit-chibi-browser.mjs",
+    "tests/pet-sit-chibi.test.mjs",
+    "tools/pet-sit-chibi-audit.mjs",
+    "tools/pet-sit-chibi-process.mjs"
+  ],
+  "contextDigest": "0cf5f1c4eb3b5bb9ce1f6013393d9862cc0b9d60ccc3c36fed561f7c2d33de83",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-Loading场景-01a20769.md",
+      "sha256": "c92306dec0662a5df9dee909418c6a4e35dff8b74684233e048ced89bc345149"
+    },
+    {
+      "path": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+      "sha256": "1d38e08bb68128e84ced750cb2674ca85083b33777fcb32153ea5ae59dae5151"
+    },
+    {
+      "path": "docs/协作任务/20261123-占位BGM-01a2082b.md",
+      "sha256": "6233b4f094490e6b8ebe33bcbee4ac6025b4abb7c35c586e2d26494cb8be02ba"
+    },
+    {
+      "path": "docs/协作任务/20261123-救助站UI统一-01a1d310.md",
+      "sha256": "fd34d4bf200ccb1d04534b85d8e7ab56b7ef27f4f1f64bbb800a995ee00babf6"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "65f4ece3c5d9325e130319ed69c4b9bcaa06bcce2be02be23941a5d7aa7dd9e2"
+    }
+  ]
+}

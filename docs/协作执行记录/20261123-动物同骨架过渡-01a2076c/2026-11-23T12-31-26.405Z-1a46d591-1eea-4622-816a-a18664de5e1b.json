@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+  "sessionId": "01a2076c-48cc-7063-a3a1-e609ac9a8e34",
+  "phase": "resume",
+  "readAt": "2026-11-23T12:31:26.405Z",
+  "writePaths": [
+    "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+    "docs/协作执行记录/20261123-动物同骨架过渡-01a2076c/",
+    "docs/猫坐下萌系比例.md",
+    "src/pet-sit-chibi/skin.js",
+    "test-results/pet-sit-chibi/",
+    "tests/pet-sit-chibi-browser.mjs",
+    "tests/pet-sit-chibi.test.mjs"
+  ],
+  "contextDigest": "a472c3a4c3abebfa22cfa4d943d7c003a55e5805fb86dfabc0919065db5adfb2",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+      "sha256": "960b002e79de8e23e3517f7ae478c65aeee96a6aedf2616d9e038679623aa4d9"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "78c9fef9fd514489861197ec1f1a3c8de264bbb2495157861940341283147511"
+    }
+  ]
+}

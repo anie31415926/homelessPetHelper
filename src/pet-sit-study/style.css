@@ -1,0 +1,58 @@
+:root {font-family: "Segoe UI", "Microsoft YaHei", sans-serif; color: #263c33; background: #f5f7f6; font-synthesis: none; letter-spacing: 0; color-scheme: light; --accent: #167a66; --muted: #607069; --border: #c7d0cb;}
+* {box-sizing: border-box;}
+body {margin: 0;}
+button, input, select {font: inherit; letter-spacing: 0;}
+button, select {border: 1px solid var(--border); border-radius: 6px; color: inherit; background: #fff;}
+button {cursor: pointer; touch-action: manipulation;}
+button:hover {background: #e8eeeb;}
+button:disabled {cursor: not-allowed; opacity: .6;}
+button:focus-visible, input:focus-visible, select:focus-visible {outline: 3px solid #167a66; outline-offset: 3px;}
+main {min-height: 100svh; display: grid; grid-template-rows: auto minmax(310px, 1fr) auto;}
+header {padding: max(20px, env(safe-area-inset-top)) 32px 0; display: flex; justify-content: space-between; gap: 16px; align-items: baseline;}
+h1 {font-size: 22px; font-weight: 600; margin: 0; line-height: 1.4;}
+h1 span {font-size: 14px; font-weight: 400; color: var(--muted); margin-left: 12px; white-space: nowrap;}
+.phase {font-size: 14px; color: var(--muted); white-space: nowrap;}
+.stage {position: relative; min-width: 0; min-height: 310px;}
+.canvas-host {position: absolute; inset: 0;}
+canvas {display: block; width: 100%; height: 100%;}
+.joint-labels {position: absolute; inset: 0; pointer-events: none; overflow: hidden;}
+.joint-labels span {position: absolute; top: 0; left: 0; font-size: 14px; line-height: 20px; padding: 0 3px; background: #f5f7f6e8; color: #315347;}
+.joint-labels [data-joint="nearKnee"] {color: #8d5114;}
+.joint-labels [data-joint="nearHock"] {color: #8c3f60;}
+[role="alert"] {position: relative; padding: 24px; color: #9d3543;}
+.transport {border-top: 1px solid var(--border); padding: 20px 32px max(24px, env(safe-area-inset-bottom)); background: #fff;}
+.key-poses {display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; max-width: 920px; margin: auto;}
+.key-poses button {min-height: 48px; background: transparent; font-size: 16px; display: flex; justify-content: center; align-items: center; gap: 10px;}
+.key-poses button small {font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums;}
+.key-poses button[aria-pressed="true"] {border-color: var(--accent); box-shadow: inset 0 -3px var(--accent); color: #125f50; background: #edf5f1;}
+.timeline {display: flex; align-items: center; gap: 24px; max-width: 920px; margin: 12px auto 4px;}
+.timeline input {width: 100%; min-width: 0; height: 48px; margin: 0; accent-color: var(--accent); cursor: pointer;}
+.timeline output {font-size: 14px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; width: 116px; flex-shrink: 0; text-align: right;}
+.controls {max-width: 920px; margin: auto; display: flex; justify-content: space-between; gap: 16px; align-items: center; flex-wrap: wrap;}
+.playback, .options {display: flex; gap: 8px; align-items: center;}
+.icon {width: 48px; height: 48px; display: grid; place-items: center; flex-shrink: 0;}
+.icon.primary {color: #fff; background: var(--accent); border-color: var(--accent);}
+.icon.primary:hover {background: #11604f;}
+.options {gap: 20px; flex-wrap: wrap;}
+.options label {min-height: 48px; display: flex; gap: 8px; align-items: center; font-size: 14px; cursor: pointer;}
+.options input {width: 18px; height: 18px; margin: 0; accent-color: var(--accent);}
+.options select {height: 48px; padding: 0 8px; min-width: 80px;}
+@media (max-width: 600px) {
+    header {padding: 16px 16px 0;}
+    h1 span {display: block; margin: 2px 0 0;}
+    .transport {padding: 16px 16px max(16px, env(safe-area-inset-bottom));}
+    .key-poses button {gap: 0; flex-direction: column; font-size: 14px; min-height: 56px;}
+    .key-poses button small {font-size: 12px;}
+    .timeline {gap: 12px; margin-top: 4px;}
+    .controls {gap: 8px;}
+    .playback {width: 100%; justify-content: center;}
+    .options {width: 100%; justify-content: space-between; gap: 8px;}
+    .speed {gap: 6px !important;}
+    .options select {min-width: 70px;}
+}
+@media (max-height: 540px) and (min-width: 601px) {
+    main {grid-template-rows: auto minmax(270px, 1fr) auto;}
+    .stage {min-height: 270px;}
+    .transport {padding-top: 12px;}
+}
+@media (prefers-reduced-motion: reduce) {*, *::before, *::after {scroll-behavior: auto !important;}}

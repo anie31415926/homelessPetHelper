@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+  "sessionId": "01a2076c-48cc-7063-a3a1-e609ac9a8e34",
+  "phase": "resume",
+  "readAt": "2026-11-23T12:44:07.713Z",
+  "writePaths": [
+    "art-source/pet-sit-chibi-20261123/",
+    "art-source/pet-sit-skin-20261123/",
+    "art-source/pet-transition-20261123/",
+    "art-source/resource-catalog.json",
+    "docs/动物同骨架过渡制作与调研.md",
+    "docs/动物同骨架过渡经验.md",
+    "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+    "docs/协作执行记录/20261123-动物同骨架过渡-01a2076c/",
+    "docs/猫坐下同骨架贴图.md",
+    "docs/猫坐下萌系比例.md",
+    "docs/猫坐下骨骼小样.md",
+    "docs/猫坐下骨骼结构调研.md",
+    "pet-sit-chibi.html",
+    "pet-sit-skin.html",
+    "pet-sit-study.html",
+    "pet-transition.html",
+    "public/pet-sit-chibi/",
+    "public/pet-sit-skin/",
+    "public/pet-transition/",
+    "src/pet-sit-chibi/",
+    "src/pet-sit-skin/",
+    "src/pet-sit-study/",
+    "src/pet-transition/",
+    "test-results/pet-sit-chibi/",
+    "test-results/pet-transition-commit/",
+    "test-results/resource-catalog/",
+    "tests/pet-sit-chibi-browser.mjs",
+    "tests/pet-sit-chibi.test.mjs",
+    "tests/pet-sit-skin-browser.mjs",
+    "tests/pet-sit-skin.test.mjs",
+    "tests/pet-sit-study-browser.mjs",
+    "tests/pet-sit-study.test.mjs",
+    "tests/pet-transition-browser.mjs",
+    "tests/pet-transition.test.mjs",
+    "tools/pet-sit-chibi-audit.mjs",
+    "tools/pet-sit-chibi-process.mjs",
+    "tools/pet-sit-skin-audit.mjs",
+    "tools/pet-sit-skin-process.mjs",
+    "tools/pet-sit-study-audit.mjs",
+    "tools/pet-transition-art.mjs",
+    "tools/pet-transition-audit.mjs",
+    "tools/pet-transition-process.mjs"
+  ],
+  "contextDigest": "f95151926f56e07b4b0d5e46467ffd2235bfb14d8910d7e58a17f942eae0ab99",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+      "sha256": "f63588caac93e374dee3e127c29cfe61c50b97454af2039928ef240e08ab10b9"
+    },
+    {
+      "path": "docs/协作任务/20261123-救助站UI复核-01a1f74d.md",
+      "sha256": "cc14b54850edd145dfc35fa71b489cf7f68e469de25b6692471441f61c1f0778"
+    },
+    {
+      "path": "docs/协作任务/20261123-救助站提交-01a1d310.md",
+      "sha256": "793667f710a83d452a6c2724b6fbeed21b498e4c1772570c780471d28daee6c0"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "78c9fef9fd514489861197ec1f1a3c8de264bbb2495157861940341283147511"
+    }
+  ]
+}

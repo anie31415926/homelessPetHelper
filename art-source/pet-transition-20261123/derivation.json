@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "width": 340,
+  "height": 740,
+  "originalSize": [
+    452,
+    512
+  ],
+  "source": "public/pet-mesh/cat-side.png",
+  "sourceSha256": "b1889c797e975a625a746ab530a4c7d9231a068ca387871b5306b2fedfd9b727",
+  "completion": {
+    "path": "art-source/pet-transition-20261123/torso-a/master.png",
+    "sha256": "84ed49d9c6e92c18413b3c7022d3e9cb698070d0085fb65d8c96207fb5c874ac",
+    "role": "lower torso colour completion only",
+    "visual": "candidate, not approved",
+    "notes": "Model retained scarf at crop top; no generated scarf/head consumed. Only y330..444 original coordinates inside torso mask."
+  },
+  "layers": [
+    {
+      "id": "tail",
+      "crop": {
+        "left": 354,
+        "top": 342,
+        "width": 91,
+        "height": 154
+      },
+      "source": "public/pet-mesh/cat-side.png",
+      "sha256": "40458d39286d949ade845ef5d27c5e353e282adea0d9a0781c25317fd93ccf58"
+    },
+    {
+      "id": "farHindShin",
+      "crop": {
+        "left": 248,
+        "top": 423,
+        "width": 69,
+        "height": 57
+      },
+      "source": "public/pet-limbs/far-hind-copy.png",
+      "sha256": "365cde931cda5b3ec96b77870961b94f33889bddeec6e3822a14ab790c67882d"
+    },
+    {
+      "id": "farHindPaw",
+      "crop": {
+        "left": 229,
+        "top": 445,
+        "width": 88,
+        "height": 48
+      },
+      "source": "public/pet-limbs/far-hind-copy.png",
+      "sha256": "573527ce4ec72a560297ae2560b0eafb9c6c62494e8060e1b6920aa3d6936a87"
+    },
+    {
+      "id": "farHindThigh",
+      "crop": {
+        "left": 214,
+        "top": 310,
+        "width": 115,
+        "height": 135
+      },
+      "source": "public/pet-limbs/far-hind-copy.png",
+      "sha256": "e03cc929295076e57f46fd7a5f5d3f2435e33c3dbcd1c8054e977b7231ee6719"
+    },
+    {
+      "id": "farFront",
+      "crop": {
+        "left": 77,
+        "top": 311,
+        "width": 92,
+        "height": 182
+      },
+      "source": "public/pet-limbs/far-front-copy.png",
+      "sha256": "423df54eb596064ffdd8559101bf44e75b94a8ee52d6293d6d2bd714667ae9a0"
+    },
+    {
+      "id": "torso",
+      "crop": {
+        "left": 93,
+        "top": 274,
+        "width": 302,
+        "height": 167
+      },
+      "source": "art-source/pet-transition-20261123/torso-a/master.png",
+      "sha256": "1803ae49b9c2b5d79087caa675891aa4041096f87ca323a932f18f3fa24b25cf"
+    },
+    {
+      "id": "nearHindShin",
+      "crop": {
+        "left": 278,
+        "top": 429,
+        "width": 69,
+        "height": 57
+      },
+      "source": "art-source/pet-limbs/donor/hind-source.png",
+      "sha256": "e45fc9598733fde7abcd955921f0a811f6a029f99f9375b473abad75e0d4555c"
+    },
+    {
+      "id": "nearHindPaw",
+      "crop": {
+        "left": 260,
+        "top": 451,
+        "width": 89,
+        "height": 50
+      },
+      "source": "art-source/pet-limbs/donor/hind-source.png",
+      "sha256": "5f5b9041af87d6a5dfa7b44b817c925401bb67ca8418226bdc7846ca6a12dc02"
+    },
+    {
+      "id": "nearHindThigh",
+      "crop": {
+        "left": 244,
+        "top": 316,
+        "width": 116,
+        "height": 135
+      },
+      "source": "art-source/pet-limbs/donor/hind-source.png",
+      "sha256": "4654b1d7b92863bc44325ba3b443b248a6482ba67a4b75913f7feb0174e81cfd"
+    },
+    {
+      "id": "nearFront",
+      "crop": {
+        "left": 102,
+        "top": 320,
+        "width": 92,
+        "height": 180
+      },
+      "source": "art-source/pet-limbs/donor/front-source.png",
+      "sha256": "c7c02e6e4915a2a1cffb746d2185bf6c0e571dff9a7d04ee9dcb890abea00592"
+    },
+    {
+      "id": "head",
+      "crop": {
+        "left": 8,
+        "top": 10,
+        "width": 244,
+        "height": 334
+      },
+      "source": "public/pet-mesh/cat-side.png",
+      "sha256": "e2297eb46e3dcf725762ae6569f3c32797a0c8567e07713458805069b57162b3"
+    }
+  ],
+  "masks": {
+    "head": "M0 0 H452 V244 H240 L226 269 L224 290 L92 320 L86 342 H0Z",
+    "torso": "M95 291 Q168 286 218 277 Q320 272 364 318 Q394 350 393 390 Q370 424 319 432 Q231 451 166 414 Q105 380 95 291Z",
+    "tail": "M367 344 Q402 366 401 428 Q401 447 429 450 Q452 455 443 481 Q433 508 401 494 Q377 489 364 464 Q352 431 359 398Z"
+  },
+  "hindAttachments": {
+    "masks": {
+      "thigh": "M289 318 Q330 320 353 362 Q365 405 342 433 Q329 448 309 449 Q270 448 253 425 Q239 389 256 350 Q269 326 289 318Z",
+      "shin": "M316 432 Q337 431 344 441 Q346 451 334 465 L311 481 Q294 488 281 479 Q277 468 291 456Z"
+    },
+    "farOffset": [
+      -30,
+      -6
+    ],
+    "hiddenEndFill": "Only inside thigh mask below source y410: copy nearest opaque coat above in the same source column. Paw fades in over y452..465; shin is an overlapping hock attachment."
+  },
+  "method": "Same source head/scarf/limbs, rigid thigh/paw attachments, fixed-length hind chains and explicit local torso patch; no full-pose crossfade.",
+  "atlasSha256": "77f1e62ed9aee24fdf5678dfedc3ea9be8b57f3f8f78c356ee9fdea5976d6c2b"
+}

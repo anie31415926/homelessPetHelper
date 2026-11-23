@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+  "sessionId": "01a2076c-48cc-7063-a3a1-e609ac9a8e34",
+  "phase": "scope-change",
+  "readAt": "2026-11-23T09:29:31.573Z",
+  "writePaths": [
+    "art-source/pet-transition-20261123/",
+    "art-source/resource-catalog.json",
+    "art-source/station-room-20261123/server/input/pet-transition-20261123/",
+    "art-source/station-room-20261123/server/output/pet-transition-20261123/",
+    "docs/动物同骨架过渡制作与调研.md",
+    "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+    "docs/协作执行记录/20261123-动物同骨架过渡-01a2076c/",
+    "pet-transition.html",
+    "public/pet-transition/",
+    "src/pet-transition/",
+    "test-results/pet-transition/",
+    "tests/pet-transition-browser.mjs",
+    "tests/pet-transition.test.mjs",
+    "tools/pet-transition-art.mjs",
+    "tools/pet-transition-audit.mjs",
+    "tools/pet-transition-process.mjs"
+  ],
+  "contextDigest": "338725eeebc50d9c84b864897fd3ce60a2f7fea7eb3e8413f9a5b5cb84d22007",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-Loading场景-01a20769.md",
+      "sha256": "5179030d8bca17d438e9a0145aebd1f55c0cadeba84011ad7556f0ac86bb6351"
+    },
+    {
+      "path": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+      "sha256": "d063547e3716f510accccbc64af657ac70ec275b71d81a05bbef2028b85fe89c"
+    },
+    {
+      "path": "docs/协作任务/20261123-救助站UI统一-01a1d310.md",
+      "sha256": "ed70f7476d2a5e9f7f9213568f3507aabaeec0d199b4af8b8ae8a397398a6a60"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "8abcfe6a8ca5f8967dd543b0afa4b3c41a9ed970a1099a8a1af7c48842a31c3b"
+    }
+  ]
+}

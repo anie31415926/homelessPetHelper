@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "reference": "public/pet-mesh/cat-side.png",
+  "referenceSha256": "b1889c797e975a625a746ab530a4c7d9231a068ca387871b5306b2fedfd9b727",
+  "referenceSize": [452, 512],
+  "scope": "One same-source orange kitten: stand-sit-stand. Independent preview only.",
+  "runtimePlanBytes": 393216,
+  "outputSize": [452, 512],
+  "status": "candidate",
+  "identityLock": ["head", "eyes", "ears", "scarf", "visible original coat"],
+  "generationRole": "Hidden torso completion only; generated face is never consumed.",
+  "review": {"visual": "pending", "rights": "pending", "target": "pending"}
+}

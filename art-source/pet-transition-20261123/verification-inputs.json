@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-23T12:47:11.992Z",
+  "scope": "Standalone preview, generation provenance and tests only; no Unity snapshot claim.",
+  "inputs": [
+    {
+      "path": "art-source/pet-transition-20261123/README.md",
+      "sha256": "ce24e28e137405a8fa34a2e56577a7f4626a0786fa1d79a53a9f3a4bb5597085"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/baseline-compressed/atlas.json",
+      "sha256": "962e5c3121265f0763f5726f957faac55884e78f30a77767ec0b335a63aeba1a"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/baseline-compressed/atlas.png",
+      "sha256": "4e9f2167dfc51be3dbee04bf5cca31ba4ab680e930bdd78ce30b78a4b485af3d"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/baseline-compressed/contact.png",
+      "sha256": "f2581aaf4aacca7cd3c7be8e4c0f1cc82293d737f9d4f124244226591a82b145"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/baseline-compressed/rig.js",
+      "sha256": "c3233ec34cc4b0f4c3f9295bd28e3982c2a3ee18bece8f90f4e5e7062c94af64"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/baseline-compressed/stand-sit.gif",
+      "sha256": "5f06120344d92397ed9c6261d68a85bebb675175a7f31c5160655ccfe81df30f"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/baseline-compressed/verification-inputs.json",
+      "sha256": "e14474990f344144b801be738e6509bb54f16c6755f2c39a5681b53b74731e6a"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/derivation.json",
+      "sha256": "fb9eeaa3a9bb7c43af290dca55b1d815acfbe4ce2d35efbe2ff03e994776f567"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/first-preview.png",
+      "sha256": "f95dd69b08bc337a6993093da3d135ae63dc69d6ee4f34731f8f6c37b526cd3f"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/first-sit.png",
+      "sha256": "7b3ec6d7e6d8c4ee0817f7625b3af436c630f980d0941d6c23d8563e9867afb8"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/layers/farFront.png",
+      "sha256": "041ffef7c7803172ad36ce8102318ce222409488e1866329c1cd65b30c61ae82"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/layers/farHind.png",
+      "sha256": "9b2771f88ac83c918d652afa948d094d142d78a39e72d52b8a9e8d6d2f63b86d"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/layers/farHindPaw.png",
+      "sha256": "08b700770ea8ff99da2d693996e0af34a2a9d73c3c92d781b836f7d01b511214"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/layers/farHindShin.png",
+      "sha256": "c95fd1fbea2079a6239f7fd124cd596ffee2d7e4660af6e24f6d1c6492b49b9c"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/layers/farHindThigh.png",
+      "sha256": "ed2ac1304ac91e4834f6f7e54c92e8d9bdfdac70382ab7eb709c673278f08c05"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/layers/head.png",
+      "sha256": "39297735a8c52e7edd9276854bd932561d41cfbdb32233842b9288f07f95fa73"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/layers/nearFront.png",
+      "sha256": "85173a9d984ab103af9e35ac0602ec6d401934c643b86abd00d48e368f59392e"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/layers/nearHind.png",
+      "sha256": "92b5eaaf220a8b7669de36c3afaffbf007060ddf6b79ac3012de88de35e74785"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/layers/nearHindPaw.png",
+      "sha256": "86ebb5773fbe2519fe3c1b17cfe4efb89278f42b16f334c07ba587a03b7f2803"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/layers/nearHindShin.png",
+      "sha256": "28e6ad03273feca45d8a286d7d1860d4a89eed386eec456e5bc5ba697a6b51a9"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/layers/nearHindThigh.png",
+      "sha256": "a28e83c3ef7e003e576dba88923062363a7c1dd1f23225585c2f8e984d0aaad9"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/layers/tail.png",
+      "sha256": "0413ad7e050b0d6d9e7f73e8f29766b20c0971211223e02ec631f9ba8d97e71a"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/layers/torso.png",
+      "sha256": "e48becaf7f723bdc66582273ed888810f5dd3530e2aabed5c96138de12e28114"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/plan.json",
+      "sha256": "77ecdd62cdd91ea4089a2e867c77648109dceaf1fa0de6f5dc98838709e57afe"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/reproducibility.json",
+      "sha256": "5f60095611e9bc63cb669133a57c8634528b8d94fd6af5b43eb349f53ad8004e"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/second-sit.png",
+      "sha256": "3e504295e960ddae48c5dd938b01908e3d13f9c0b352771577da726d8dc99d73"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/selection.json",
+      "sha256": "671e70fcd06327b4d9b182cb34f5189c514e7667a9bfa9c86a0cecd62ba6d1b6"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/start-comfy.ps1",
+      "sha256": "1319a8d80a6d4419e706b9c1d1812881bb8b53983ab8806bb760b0481fc97c0a"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/third-middle.png",
+      "sha256": "538e93a955af1c3787e08178e43cb10e523907a408dc2497bd321f3823b505d1"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/third-sit.png",
+      "sha256": "f76a29bc36524f001aa56ab896bd9581064df40dfeeb824a7e834631ab83b8e6"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/torso-a/guide.png",
+      "sha256": "186fee5c766f38024500e372ab2c4a6ead4b182a8b1e08c8ea4b62ccb552c29b"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/torso-a/history.json",
+      "sha256": "15819ff35e52abd49e995676053cd438de3befc3e8f9ea80e81e3de14f1f901e"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/torso-a/master.png",
+      "sha256": "84ed49d9c6e92c18413b3c7022d3e9cb698070d0085fb65d8c96207fb5c874ac"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/torso-a/submission.json",
+      "sha256": "31e65476a1d2f52e2d01f75771305ca1e22f4fc01a8f46f54ab452ba0c2c92dd"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/torso-a/submitted-workflow.json",
+      "sha256": "e35590cc7cf808ec93eefc10c42121baf937a5a3f7027208bffd467398ed41a4"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/torso-a/workflow.json",
+      "sha256": "185d4488c5315fa914fed3eedaeaa7649bef22f69ef7d575dc10d0b891ace1bc"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/torso-repeat/guide.png",
+      "sha256": "186fee5c766f38024500e372ab2c4a6ead4b182a8b1e08c8ea4b62ccb552c29b"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/torso-repeat/history.json",
+      "sha256": "f8ee14f280265f13734f3a02e942042cd440112ae2a76fb8cb6711f0ffe17dd1"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/torso-repeat/master.png",
+      "sha256": "a5fa6261c8ea76492da0ba323f6de5b377983202a667d4b47ac785f5d4977b94"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/torso-repeat/submission.json",
+      "sha256": "d5807ab9a8b14527db0e84c9ffa302b14894690674a27650d5afea7a16c16f06"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/torso-repeat/submitted-workflow.json",
+      "sha256": "02ab9d3f7fbe9430cc9ff4323e23cdbcd68edc3f58aad9877fc5a877252885bc"
+    },
+    {
+      "path": "art-source/pet-transition-20261123/torso-repeat/workflow.json",
+      "sha256": "7ab8bf5e612ed51eeef9d34e9e47c8032fd88c11ba16902067767744bffb9602"
+    },
+    {
+      "path": "docs/动物同骨架过渡制作与调研.md",
+      "sha256": "b1fd6263bad062751094f6aaaba41505fc1d82602bc782de7d8263d05fc0d745"
+    },
+    {
+      "path": "pet-transition.html",
+      "sha256": "04114d96a7ae54c519e35c1df6bf5f05d74dbdce986df70ac97d27eb59c25c13"
+    },
+    {
+      "path": "public/pet-transition/atlas.json",
+      "sha256": "e309168a5eecf9ae35d3f5ee3e4f522ccc8bea4ef2aeb875e67070b27534a175"
+    },
+    {
+      "path": "public/pet-transition/atlas.png",
+      "sha256": "77f1e62ed9aee24fdf5678dfedc3ea9be8b57f3f8f78c356ee9fdea5976d6c2b"
+    },
+    {
+      "path": "src/pet-transition/main.jsx",
+      "sha256": "b39b1c49c2f08e2636a922ce58b294970575b787ae71daf3c0808e1d1bfc9df1"
+    },
+    {
+      "path": "src/pet-transition/preview.js",
+      "sha256": "7d7df0a67c952f0c6b1a4a49e99eb8445228a4035dd691d1f8b11f1c35c1e41d"
+    },
+    {
+      "path": "src/pet-transition/rig.js",
+      "sha256": "8d3f23bf2d1cccf1815210de7711a090d06caf83a238c964de8c1b1973407600"
+    },
+    {
+      "path": "src/pet-transition/style.css",
+      "sha256": "ce8436b879980680525d67b83d9e39ee373b5629129b9ec53abac5eacd429f34"
+    },
+    {
+      "path": "tests/pet-transition-browser.mjs",
+      "sha256": "652093871f939cb22bd40c723f34146608457fc3820532900861a041efc8b8f9"
+    },
+    {
+      "path": "tests/pet-transition.test.mjs",
+      "sha256": "a95381ce40b90e439839a2be12dc7d78c7d1f6e08d13dfdeeec6d6180cebd22a"
+    },
+    {
+      "path": "tools/pet-transition-art.mjs",
+      "sha256": "fa520b51696c82d4f04b8646c1c7d8f5a695f8be5fa5940e9911818b507b885a"
+    },
+    {
+      "path": "tools/pet-transition-audit.mjs",
+      "sha256": "780dfc3cb9696faefd23b7113bc2ab2ba501badcb7c042a3054748f8e7d53728"
+    },
+    {
+      "path": "tools/pet-transition-process.mjs",
+      "sha256": "3b54e30dabb14f7cd8c1d7c59f70775130b0532fef30fa52a5a453e1fa8d5918"
+    }
+  ]
+}

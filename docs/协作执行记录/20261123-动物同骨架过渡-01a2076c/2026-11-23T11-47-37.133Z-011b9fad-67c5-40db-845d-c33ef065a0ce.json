@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+  "sessionId": "01a2076c-48cc-7063-a3a1-e609ac9a8e34",
+  "phase": "delivery",
+  "readAt": "2026-11-23T11:47:37.133Z",
+  "writePaths": [
+    "art-source/pet-sit-skin-20261123/",
+    "art-source/resource-catalog.json",
+    "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+    "docs/协作执行记录/20261123-动物同骨架过渡-01a2076c/",
+    "docs/猫坐下同骨架贴图.md",
+    "pet-sit-skin.html",
+    "public/pet-sit-skin/",
+    "src/pet-sit-skin/",
+    "test-results/pet-sit-skin/",
+    "test-results/resource-catalog/",
+    "tests/pet-sit-skin-browser.mjs",
+    "tests/pet-sit-skin.test.mjs",
+    "tools/pet-sit-skin-audit.mjs",
+    "tools/pet-sit-skin-process.mjs"
+  ],
+  "contextDigest": "9bd685e24fc5cffe0dae227c0a5d973874b399f7ba3e3ad155d80f471a5fafed",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-Loading场景-01a20769.md",
+      "sha256": "72c61b218376f1d404168a02924afa50ad65922aa8818d820b2c98d6f8b40d51"
+    },
+    {
+      "path": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+      "sha256": "98403121514304d119336b181157c139a480cfa91e76ee7a2c6c916ef87e41d6"
+    },
+    {
+      "path": "docs/协作任务/20261123-占位BGM-01a2082b.md",
+      "sha256": "77d13ca05e81013a5e2b22c6b187297dd5fa691dd191c6f44eaa1c42c51579e3"
+    },
+    {
+      "path": "docs/协作任务/20261123-救助站UI统一-01a1d310.md",
+      "sha256": "c7aba3634ec1a844109567d73df4e5501d5d54ee77c0f2817552c25c6849f38e"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "cdf2d0c7ca94e1747b34d2611013200ddc24a55ded37f0c5a3ee85e21eb29e7e"
+    }
+  ]
+}

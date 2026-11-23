@@ -1,0 +1,184 @@
+{
+  "prompt": [
+    8,
+    "c7b9728d-211b-4a9d-b6ef-5ea7a9d5775b",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "pet-transition-20261123/torso-a-guide.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "prompt": "Image 1 is a crop of the torso of the kitten in image 2. Edit image 1 ONLY: remove all four legs below the belly, and remove the tail at the right. Reconstruct a single soft rounded legless torso with a smooth closed ivory belly contour. Keep the exact existing shoulder, back, rump width, placement, pale apricot coat, sparse orange stripes and delicate peach watercolor outline. Retain the original torso scale and horizontal standing orientation. No head, no ears, no eyes, no face, no scarf, no legs, no paws, no tail. This is one isolated body sprite to overlap behind the ORIGINAL unchanged head and original limbs in a 2D skeletal animation. Fill missing hidden shoulder and hip surfaces with matching fur, smooth rounded roots, no internal leg-root lines. Do not redesign or change the style. Flat solid pale cyan RGB180 225 235 background, no floor, no shadow, no text, no checkerboard.",
+          "negative_prompt": "head, face, eyes, ears, scarf, paw, legs, feet, tail, whole cat, multiple objects, photorealistic, realistic fur, black outline, text, watermark, checkerboard, shadow, changed torso size",
+          "resolution": 768,
+          "images.image_1": [
+            "4",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "images.image_2": [
+            "10",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112301,
+          "steps": 24,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "pet-transition-20261123/torso-a"
+        }
+      },
+      "10": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "pet-transition-20261123/torso-a-reference.png"
+        }
+      }
+    },
+    {
+      "client_id": "pet-transition-01a2076c",
+      "create_time": 1795422782753
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "torso-a_00001_.png",
+          "subfolder": "pet-transition-20261123",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "c7b9728d-211b-4a9d-b6ef-5ea7a9d5775b",
+          "timestamp": 1795422789453
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6"
+          ],
+          "prompt_id": "c7b9728d-211b-4a9d-b6ef-5ea7a9d5775b",
+          "timestamp": 1795422789482
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "c7b9728d-211b-4a9d-b6ef-5ea7a9d5775b",
+          "timestamp": 1795422835229
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}
