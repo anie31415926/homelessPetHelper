@@ -249,7 +249,6 @@ namespace HomelessPetHelper.Tests.PlayMode
             if (_siege.Scene != null)
             {
                 var animal = _siege.GetComponent<Game.Field.OutingFieldView>().Animal;
-                Assert.That(animal.isActiveAndEnabled, Is.True);
                 Assert.That(animal.sprite, Is.Not.Null);
                 Assert.That(animal.sprite.texture, Is.Not.Null);
                 Assert.That(animal.canvasRenderer.GetAlpha(), Is.GreaterThan(.9f));
@@ -257,9 +256,21 @@ namespace HomelessPetHelper.Tests.PlayMode
                     Is.SameAs(_root.Presenter.OutingAnimal));
                 Assert.That(animal.rectTransform.rect.width, Is.GreaterThan(0));
                 Assert.That(animal.rectTransform.rect.height, Is.GreaterThan(0));
+                var motion = animal.GetComponent<Game.Field.FieldPetMotion>();
+                if (motion.Surface.isActiveAndEnabled)
+                {
+                    Assert.That(animal.enabled, Is.False, "The still cat must not cover the animation.");
+                    AssertRenderedAnimal(motion.Surface);
+                }
+                else Assert.That(animal.isActiveAndEnabled, Is.True);
                 return;
             }
             var raw = _siege.GetComponentsInChildren<RawImage>().Single(image => image.name == "AnimatedAnimal");
+            AssertRenderedAnimal(raw);
+        }
+
+        private static void AssertRenderedAnimal(RawImage raw)
+        {
             var target = (RenderTexture)raw.texture;
             Assert.That(target, Is.Not.Null);
             var previous = RenderTexture.active;

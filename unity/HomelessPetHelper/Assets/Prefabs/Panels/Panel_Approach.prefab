@@ -273,6 +273,93 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &75547478335143246
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2740540241084273680}
+  - component: {fileID: 2928403471203967718}
+  - component: {fileID: 8113239456743523099}
+  - component: {fileID: 7119996094116750612}
+  m_Layer: 0
+  m_Name: AnimatedFieldAnimal
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &2740540241084273680
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 75547478335143246}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3903434239186899632}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &2928403471203967718
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 75547478335143246}
+  m_CullTransparentMesh: 1
+--- !u!114 &8113239456743523099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 75547478335143246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Texture: {fileID: 0}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+--- !u!114 &7119996094116750612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 75547478335143246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3b636e7c995400cb4b1f9fb5deacecb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 8113239456743523099}
+  _shader: {fileID: 4800000, guid: 4f6dd0319523405c98d3a5aecef55dfb, type: 3}
 --- !u!1 &115266119947869849
 GameObject:
   m_ObjectHideFlags: 0
@@ -14955,6 +15042,7 @@ GameObject:
   - component: {fileID: 1813058759125625407}
   - component: {fileID: 3896252458508521495}
   - component: {fileID: 2144985845397061584}
+  - component: {fileID: 632166131398157206}
   m_Layer: 0
   m_Name: Animal
   m_TagString: Untagged
@@ -14973,7 +15061,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2740540241084273680}
   m_Father: {fileID: 6092003204331669582}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -15033,6 +15122,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _target: {fileID: 3896252458508521495}
   _shader: {fileID: 4800000, guid: 4f6dd0319523405c98d3a5aecef55dfb, type: 3}
+--- !u!114 &632166131398157206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5373275229919446792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bafcf455ca4f4f4cad24b8c582e3eefe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _prefab: {fileID: 5659517039767918949, guid: aee96d4358b4269488bf5a54fac02d7b, type: 3}
+  _still: {fileID: 3896252458508521495}
+  _surface: {fileID: 8113239456743523099}
+  _stillCoat: {fileID: 2144985845397061584}
+  _motionCoat: {fileID: 7119996094116750612}
+  _clock: {fileID: 5438142511951479460}
+  _renderPosition: {x: -10000, y: 0, z: 0}
+  _action: 1
+  _resolution: 256
+  _halfHeight: 320
+  _halfWidth: 285
 --- !u!1 &5389488561367408670
 GameObject:
   m_ObjectHideFlags: 0
@@ -19621,6 +19733,7 @@ MonoBehaviour:
   _background: {fileID: 5242406301518895077}
   _animal: {fileID: 3896252458508521495}
   _coat: {fileID: 2144985845397061584}
+  _petMotion: {fileID: 632166131398157206}
   _cat: {fileID: 21300000, guid: aa1a17f0ba7e79841846790b69853992, type: 3}
   _dog: {fileID: 21300000, guid: cd137a207a0a70f47bed528797be805e, type: 3}
   _fitPlayableArea: 1

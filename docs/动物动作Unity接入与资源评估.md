@@ -2,6 +2,21 @@
 
 2026-11-19。用户授权“先把这些已有的加进 Unity 工程，然后分析资源大小”。本页为该批次接续入口，替代此前 HTML 记录中的“未接 Unity”；不是正式美术或跨姿态过渡验收。
 
+## 2026-11-24 新版现场小猫动画补接
+
+已修复新版清障/解谜与逆塔防现场只显示静态猫图、旧动画RawImage随旧布局隐藏的问题。两阶段静态Prefab在原Animal位置增加明确绑定的RawImage与`FieldPetMotion`，复用现有`Widget_PetMotion`的张望/摆尾动作；不重建面板、不导入新图片或未认可的同骨架坐姿试验。救助站原有自主动作继续保留，护理操作仍沿用护理Sprite/Mask。
+
+- 动画面跟随原Animal的RectTransform，保留地图配置中的位置、自然比例宽度、战斗跳跃/旋转/搬运。静态Image只禁用图形组件，保留Transform；狗仍显示现有狗图，不冒用猫动作。
+- `OutingFieldView.ShowAnimal`把同一AnimalSnapshot同时交给静态和动画脏污视图；隐藏静态coat组件释放其派生资源，动画表面的脏污仍来自同一个体数据，救助成功不自动洗净。
+- 动作使用面板`MotionScope.SceneSeconds`手动采样；暂停、指引挂起、后台/失焦时钟停止便不再采样/渲染。首次和尺寸变化会重建画面；片段Start复位后也会恢复指定动作。新版场景启用时关闭旧版离屏rig，避免隐藏动画继续运行。
+- 每个可见猫现场拥有一个临时rig与小RenderTexture，长边256、无深度/Mipmap/MSAA，最多256KiB颜色像素；Atlas、mesh、material、clip继续共享，不复制图片资产。离场、禁用、切狗及销毁均清理RT/Camera/RawImage关联并销毁临时rig。主流程两阶段交替显示，不新增常驻全局对象或加载框架。
+
+本轮相关PlayMode **9/9通过**（`field-motion-final.xml`），随后收紧动画动物区域脏污像素断言并增加猫→狗→猫复用及实际Main取景测量，动画专项 **2/2通过**（`field-motion-pixel-final.xml`）；两份均退出0，无跳过。涵盖动画像素变化、透明背景、暂停/前后台冻结、关闭释放/重开、猫狗复用、脏污可见差异，以及Main停车棚猫从开路到救助胜利再到站内动画的同一身份与coat。基础483脚本/37程序集0问题，台账检查退出0、原有预算/许可及本机Comfy临时图片review提示保留。没有跑全量EditMode+PlayMode。
+
+证据集中于`test-results/field-cat-motion/`；运行截图与成本在`evidence/`。已查看清障脏/净对照及Main逆塔防截图，猫位于现场原配置位置。Windows Unity2022.3.62f3 Editor中，预热30次后120次同步采样+渲染：托管分配0B、CPU合计32.9957ms，实际RT223×256（基础颜色约223KiB）；是Editor局部循环观测，不是全帧Profiler、GPU或微信真机结论。新增Profiler标记`Field.AnimalMotion`供后续目标设备定位。
+
+后续从Main→地图→停车棚进入即可试玩；`FieldPetMotionAuthor.Apply`只用于已执行的一次性增量迁移，已迁移会拒绝重跑，继续修改应在Prefab Mode局部编辑。该轮保留工作区，未提交推送；微信/AOT/真机表现仍未验。历史2026-11-20的“Main动画已接”仅覆盖当时旧版布局，不能证明后来新版现场已接。
+
 ## 2026-11-20 运行时迁移
 
 优化后的图集/材质/mesh/clip/Shader/Widget已保留GUID迁到`Assets/Art/PetMotion/`；场景、文本和测试夹具仍留EditorScenes。Main的逆塔防动物位引用该rig，经透明RenderTexture显示；rig位于场景根节点，只在该面板启用且战斗运行时播放。护理仍用原Sprite/Mask配对，不假装已解决动画表面清洁。
