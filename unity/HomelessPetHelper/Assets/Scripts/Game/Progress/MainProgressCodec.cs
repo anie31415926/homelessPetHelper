@@ -16,20 +16,21 @@ namespace HomelessPetHelper.Game.Progress
         {
             Capacity = config.InitialCapacity, ElapsedMinutes = 0,
             Requests = config.CreateRequestPool().Requests.Select(CaptureRequest).ToArray(),
-            Residents = Array.Empty<ResidentData>()
+            Residents = Array.Empty<ResidentData>(), Fields = FieldProgressSession.Empty()
         };
 
         internal static MainProgressData Capture(GameLoopSession session, StationCareRoster care,
-            IReadOnlyDictionary<Guid, Guid> requestsByOuting)
+            IReadOnlyDictionary<Guid, Guid> requestsByOuting, WorldFieldData fields)
         {
-            if (session.IsClosed || session.Activity != null ||
+            if (session.IsClosed || fields == null || fields.Active == null && (session.Activity != null ||
                 (session.Outing.Session != null && !session.Outing.Session.IsSettled) ||
-                (session.Flow.Stage != RescueStage.Station && session.Flow.Stage != RescueStage.Care))
-                throw new InvalidOperationException("Only stable station checkpoints may be saved.");
+                (session.Flow.Stage != RescueStage.Station && session.Flow.Stage != RescueStage.Care)))
+                throw new InvalidOperationException("Checkpoint requires a station or owned field instance.");
             return new MainProgressData
             {
                 Capacity = session.Station.TemporaryCapacity, ElapsedMinutes = session.Clock.Current.ElapsedMinutes,
                 Requests = session.Requests.Requests.Select(CaptureRequest).ToArray(),
+                Fields = fields,
                 Residents = session.Station.Animals.Select(arrival =>
                 {
                     if (!requestsByOuting.TryGetValue(arrival.OutingId, out var requestId))
@@ -48,7 +49,7 @@ namespace HomelessPetHelper.Game.Progress
             if (data == null || data.Requests == null || data.Residents == null || data.ElapsedMinutes < 0 ||
                 data.Capacity < 0 || data.Residents.Length > data.Capacity)
                 throw new ArgumentException("Invalid station checkpoint header.");
-            var pool = RestoreRequests(data.Requests, config);
+            var pool = RestoreRequests(data.Requests, config, data.Fields?.Active);
             var session = new GameLoopSession(data.Capacity, config.MinutesPerDay,
                 config.CreateRules(new PointUnlockState(), pool), pool, config.TimePolicy, data.ElapsedMinutes);
             care = new StationCareRoster(session, artwork, config);
@@ -92,27 +93,34 @@ namespace HomelessPetHelper.Game.Progress
             catch { session.Dispose(); throw; }
         }
 
-        private static RequestPoolState RestoreRequests(RequestData[] data, CityMapPreviewConfig config)
+        private static RequestPoolState RestoreRequests(RequestData[] data, CityMapPreviewConfig config,
+            ActiveOutingData active)
         {
-            var expected = config.CreateRequestPool().Requests;
-            if (data.Length != expected.Count) throw new ArgumentException("Checkpoint request set differs.");
+            var authored = config.CreateRequestPool().Requests;
+            if (active != null && (data.Count(item => item?.State == (int)RequestState.Accepted) != 1 ||
+                !data.Any(item => item != null && item.Id == active.RequestId &&
+                    item.State == (int)RequestState.Accepted)))
+                throw new ArgumentException("Active outing and protected request disagree.");
             var requests = new List<HelpRequest>();
             var states = new List<RequestState>();
-            var keys = new HashSet<string>();
             foreach (var item in data)
             {
                 if (item == null || !Guid.TryParseExact(item.Id, "N", out var id))
                     throw new ArgumentException("Invalid request identity.");
-                var match = expected.SingleOrDefault(request => request.TemplateId == item.TemplateId &&
+                var template = config.GetRequestTemplate(item.TemplateId);
+                var definition = authored.FirstOrDefault(request => request.TemplateId == item.TemplateId &&
                     request.PointId == item.PointId);
-                if (match == null || item.Version != match.TemplateVersion ||
-                    item.OwnerId != match.ReunionPlan?.OwnerId
-                        || item.ReceivingId != match.ReunionPlan?.ReceivingArrangementId ||
-                    !keys.Add(item.TemplateId + ":" + item.PointId))
+                if (template == null || definition == null || item.Version != definition.TemplateVersion ||
+                    !template.AllowsPoint(item.PointId) || item.OwnerId != definition.ReunionPlan?.OwnerId ||
+                    item.ReceivingId != definition.ReunionPlan?.ReceivingArrangementId ||
+                    !config.Definition.TryGetPoint(item.PointId, out _) ||
+                    (item.OwnerId == null) != (item.ReceivingId == null) ||
+                    item.State == (int)RequestState.Accepted && active?.RequestId != item.Id)
                     throw new ArgumentException("Incompatible request definition.");
                 var reunion = item.OwnerId == null ? null : new OwnerReunionPlan(id, item.OwnerId, item.ReceivingId);
                 requests.Add(new HelpRequest(id, item.TemplateId, item.PointId, item.Version, reunion));
-                states.Add((RequestState)item.State);
+                states.Add(item.State == (int)RequestState.Accepted
+                    ? RequestState.Available : (RequestState)item.State);
             }
             return RequestPoolState.Restore(requests, states);
         }

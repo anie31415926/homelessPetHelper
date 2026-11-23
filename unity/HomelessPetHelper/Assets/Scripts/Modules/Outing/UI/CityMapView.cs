@@ -24,6 +24,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
         [SerializeField] private Text _primaryLabel;
         [SerializeField] private Button _cancel;
         [SerializeField] private Toggle _pause;
+        [SerializeField] private CityMapScrollRect _mapScroll;
+        [SerializeField] private ScrollRect _detailsScroll;
 
         private readonly Dictionary<string, CityMapPointBinding> _points =
             new Dictionary<string, CityMapPointBinding>(StringComparer.Ordinal);
@@ -33,6 +35,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
         private bool _focused = true;
         private bool _applicationPaused;
         private bool _manualPause;
+        private string _focusedPointId;
+        private bool _resetDetails;
 
         public bool IsSuspended => _manualPause || !_focused || _applicationPaused;
 
@@ -46,7 +50,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
             if (_status == null || _heading == null || _details == null || _departure == null || _feedback == null ||
                 string.IsNullOrWhiteSpace(_backgroundId) ||
                 _pointBindings == null || _pointBindings.Length == 0 ||
-                _primary == null || _primaryLabel == null || _cancel == null || _pause == null)
+                _primary == null || _primaryLabel == null || _cancel == null || _pause == null ||
+                _mapScroll == null || _detailsScroll == null)
                 throw new InvalidOperationException("City map has incomplete saved bindings.");
             var buttons = new HashSet<Button>();
             _pointClicks = new UnityAction[_pointBindings.Length];
@@ -70,6 +75,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
         {
             if (!_initialized) return;
             _manualPause = false;
+            _focusedPointId = null;
+            _resetDetails = true;
             for (int i = 0; i < _pointBindings.Length; i++)
                 _pointBindings[i].Button.onClick.AddListener(_pointClicks[i]);
             _primary.onClick.AddListener(OnPrimary);
@@ -108,11 +115,17 @@ namespace HomelessPetHelper.Modules.Outing.UI
             Color color = state == PointDisplayState.Locked ? _lockedColor : selected ? _selectedColor :
                 state == PointDisplayState.HasHelpRequest ? _helpColor : _normalColor;
             point.Render(label, stateLabel, interactable, color);
+            if (selected && _focusedPointId != pointId)
+            {
+                _focusedPointId = pointId;
+                _mapScroll.FocusOn((RectTransform)point.Button.transform);
+            }
         }
 
         public void Render(string status, string heading, string details, string departure, string feedback,
             string command, bool selecting, bool paused, bool canAct)
         {
+            if (_heading.text != heading || _details.text != details) _resetDetails = true;
             _status.text = status;
             _heading.text = heading;
             _details.text = details;
@@ -123,6 +136,16 @@ namespace HomelessPetHelper.Modules.Outing.UI
             _cancel.gameObject.SetActive(selecting);
             _cancel.interactable = !paused;
             _pause.SetIsOnWithoutNotify(paused);
+            _mapScroll.enabled = !paused;
+            _detailsScroll.enabled = !paused;
+        }
+
+        private void LateUpdate()
+        {
+            if (!_resetDetails || !_detailsScroll.isActiveAndEnabled) return;
+            _detailsScroll.StopMovement();
+            _detailsScroll.verticalNormalizedPosition = 1;
+            _resetDetails = false;
         }
 
         private void OnPrimary()

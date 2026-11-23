@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using static HomelessPetHelper.Modules.Siege.SiegeState;
 
 namespace HomelessPetHelper.Modules.Siege
@@ -7,6 +8,11 @@ namespace HomelessPetHelper.Modules.Siege
     public sealed class SiegeSession
     {
         private SiegeState _state;
+        private readonly List<SiegeReplay.Step> _history = new List<SiegeReplay.Step>();
+        private bool _restoring;
+        public int Revision { get; private set; }
+        public event Action DecisionCommitted;
+        public event Action PhaseChanged;
         public SiegeCatalog Catalog { get; }
         public SiegeState Snapshot => _state.Clone();
         public SiegeState.BattlePhase Phase => _state.Phase;
@@ -20,6 +26,54 @@ namespace HomelessPetHelper.Modules.Siege
 
         public void SetPauseAtDecision(bool pause) => PauseAtDecision = pause;
         public void SetDecisionHold(bool held) => _decisionHold = held;
+
+        public SiegeReplay CaptureReplay() => new SiegeReplay(_history.Select(step => step.Copy()),
+            _state.AccumulatorMs);
+
+        /// <summary>Replays into a detached session, then commits once. Invalid input changes nothing.</summary>
+        public void RestoreReplay(SiegeReplay replay)
+        {
+            if (_history.Count != 0 || Revision != 0) throw new InvalidOperationException("Battle is already live.");
+            int maxTicks = Catalog.Rules.DurationMs / Catalog.Rules.StepMs + 1;
+            if (replay == null || replay.Steps.Count > 3 * maxTicks + 2 ||
+                !SiegeCatalog.Finite(replay.AccumulatorMs) || replay.AccumulatorMs < 0 ||
+                replay.AccumulatorMs >= Catalog.Rules.StepMs)
+                throw new ArgumentException("Invalid battle replay header.");
+            var staged = new SiegeSession(Catalog, _state.Seed, _state.Profile, _state.SessionId,
+                _state.EncounterId) { _restoring = true };
+            int ticks = 0;
+            foreach (var step in replay.Steps)
+            {
+                if (step == null || step.Ticks < 0 || step.Ticks > maxTicks - ticks ||
+                    (step.Order == null ? step.Ticks == 0 : step.Ticks != 0))
+                    throw new ArgumentException("Invalid battle replay step.");
+                staged.SetPauseAtDecision(step.PauseAtDecision);
+                staged.SetDecisionHold(step.DecisionHeld);
+                var order = step.Order;
+                if (order != null && !staged.TryOrder(order, true, out _, out _))
+                    throw new ArgumentException("Rejected battle replay order.");
+                for (int i = 0; i < step.Ticks; i++)
+                {
+                    if (!staged.IsAdvancing) throw new ArgumentException("Replay advances a stopped battle.");
+                    staged.Tick();
+                }
+                ticks += step.Ticks;
+            }
+            staged._state.AccumulatorMs = replay.AccumulatorMs;
+            _state = staged._state;
+            _history.AddRange(replay.Steps.Select(step => step.Copy()));
+            Revision++;
+        }
+
+        private void RecordTick()
+        {
+            Revision++;
+            if (_restoring) return;
+            var last = _history.LastOrDefault();
+            if (last != null && last.Ticks > 0 && last.PauseAtDecision == PauseAtDecision &&
+                last.DecisionHeld == _decisionHold) last.Ticks++;
+            else _history.Add(new SiegeReplay.Step(1, PauseAtDecision, _decisionHold));
+        }
 
         public SiegeSession(SiegeCatalog catalog, uint seed, string profile, string sessionId,
             string encounterId = null)
@@ -85,6 +139,7 @@ namespace HomelessPetHelper.Modules.Siege
             if (!SiegeCatalog.Finite(elapsedMs) || elapsedMs < 0 || elapsedMs > 1000)
                 throw new ArgumentOutOfRangeException(nameof(elapsedMs));
             if (!IsAdvancing) return;
+            var previousPhase = _state.Phase;
             _state.AccumulatorMs += elapsedMs;
             while (_state.AccumulatorMs >= Catalog.Rules.StepMs && IsAdvancing)
             {
@@ -92,10 +147,12 @@ namespace HomelessPetHelper.Modules.Siege
                 Tick();
             }
             if (!IsAdvancing) _state.AccumulatorMs = 0;
+            if (previousPhase != _state.Phase) PhaseChanged?.Invoke();
         }
 
         private void Tick()
         {
+            RecordTick();
             var s = _state;
             var r = Catalog.Rules;
             var a = s.AnimalState;
@@ -155,6 +212,9 @@ namespace HomelessPetHelper.Modules.Siege
                 next.AccumulatorMs = 0;
                 next.Energy -= cost;
                 _state = next;
+                Revision++;
+                if (!_restoring) _history.Add(new SiegeReplay.Step(0, PauseAtDecision, _decisionHold, order));
+                DecisionCommitted?.Invoke();
             }
             return true;
         }

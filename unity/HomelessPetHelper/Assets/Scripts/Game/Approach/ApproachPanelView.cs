@@ -55,6 +55,7 @@ namespace HomelessPetHelper.Game.Approach
         private string _feedbackKey;
         private float _noticeUntil;
         public ApproachSession Session => _session;
+        public event Action CheckpointRequested;
         public ApproachBoardView Board => SceneMode ? _sceneBoard : _board;
 
         public void BindOverlay(ILevelOverlay overlay, GuideSession guide)
@@ -64,7 +65,7 @@ namespace HomelessPetHelper.Game.Approach
             _selectedBox = -1;
             _overlay = overlay;
             _guide = guide;
-            if (_session != null && isActiveAndEnabled) Render();
+            if (_session != null && !_session.IsClosed && isActiveAndEnabled) Render();
         }
 
         public bool ResolveGuideTarget(string action, List<RectTransform> targets)
@@ -230,7 +231,8 @@ namespace HomelessPetHelper.Game.Approach
             if (_session.TryClean(cell, _tool, seconds, out var failure))
             {
                 SetFeedback("cleaning");
-                if (before >= 0 && _session.DebrisAt(cell) < 0) Succeeded("approach.clean." + cell);
+                if (before >= 0 && _session.DebrisAt(cell) < 0)
+                { Succeeded("approach.clean." + cell); CheckpointRequested?.Invoke(); }
             }
             else SetFeedback("failure." + failure);
         }
@@ -269,6 +271,7 @@ namespace HomelessPetHelper.Game.Approach
                 SetFeedback(success ? "changed" : "failure." + failure);
             }
             Render();
+            CheckpointRequested?.Invoke();
         }
 
         private void MoveTool() => Tool(ApproachTool.Move);
@@ -297,6 +300,7 @@ namespace HomelessPetHelper.Game.Approach
             _selectedBox = -1;
             SetFeedback(_session.TryUndo(out var failure) ? "undone" : "failure." + failure);
             Render();
+            CheckpointRequested?.Invoke();
         }
 
         private void Continue()

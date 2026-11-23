@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261123-地点回访与进度保存-01a1f74d.md",
+  "sessionId": "01a1f74d-412d-7613-a27d-fae91bb606ef",
+  "phase": "delivery",
+  "readAt": "2026-11-22T21:16:28.289Z",
+  "writePaths": [
+    "docs/协作任务/20261123-地点回访与进度保存-01a1f74d.md",
+    "docs/协作执行记录/20261123-地点回访与进度保存-01a1f74d/",
+    "docs/地点回访与进度保存.md",
+    "docs/当前协作状态.md",
+    "test-results/location-progress/",
+    "unity/HomelessPetHelper/Assets/Scripts/Bootstrap/GameLoopSession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Approach/ApproachPanelView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Field/OutingFieldCatalog.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Field/OutingFieldLayout.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/GameContent.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainGameRoot.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainLoopPresenter.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/MainResidentCodec.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Approach/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/SiegeReplay.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/SiegeReplay.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/SiegeSession.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/StationPreviewText.json",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/LocationProgressTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/LocationProgressTests.cs.meta",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/MainContinuityTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/ApproachPlayTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/LocationProgressPlayTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/LocationProgressPlayTests.cs.meta",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/MainGameTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/Siege/EditMode/SiegeReplayTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/Siege/EditMode/SiegeReplayTests.cs.meta"
+  ],
+  "contextDigest": "d14a6c7eda0429f163cb178423a9f43be0a1d4400d4d2ba0243125db0fea022f",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-地点回访与进度保存-01a1f74d.md",
+      "sha256": "deb3053deea96845016ffca405cbd5cfcb41e766e9054912fc041de1cc9ae751"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "dc6f95f05070b209ec75027e86a074651e567cb9c188696b3578a7faa7ae8643"
+    }
+  ]
+}

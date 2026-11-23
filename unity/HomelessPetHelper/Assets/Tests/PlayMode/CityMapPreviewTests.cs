@@ -187,12 +187,14 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Canvas.ForceUpdateCanvases();
                 AssertLayout(canvas);
                 AssertLayeredMarkers(camera);
+                PrepareCapture("Parking");
                 Capture(camera, target, Path.Combine(folder, $"map-{size.x}x{size.y}.png"));
                 if (size == sizes[0]) CaptureTerrainOnly(camera, target, folder);
                 Click("Porch");
                 Click("Primary");
                 Canvas.ForceUpdateCanvases();
                 AssertLayout(canvas);
+                PrepareCapture("Porch");
                 Capture(camera, target, Path.Combine(folder, $"arrived-{size.x}x{size.y}.png"));
                 Click("Primary");
                 Click("Primary");
@@ -210,6 +212,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return null;
             Canvas.ForceUpdateCanvases();
             AssertLayout(canvas);
+            PrepareCapture("Parking");
             Capture(camera, insetTarget, Path.Combine(folder, "map-simulated-insets.png"));
             camera.targetTexture = null;
             insetTarget.Release();
@@ -226,6 +229,14 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return null;
             _view = UnityEngine.Object.FindObjectOfType<CityMapView>();
             Assert.That(_view, Is.Not.Null);
+        }
+
+        private void PrepareCapture(string point)
+        {
+            _view.GetComponentInChildren<CityMapScrollRect>().FocusOn((RectTransform)Button(point).transform);
+            foreach (var scroll in _view.GetComponentsInChildren<ScrollRect>())
+                if (!(scroll is CityMapScrollRect)) scroll.verticalNormalizedPosition = 1;
+            Canvas.ForceUpdateCanvases();
         }
 
         private void AssertLayout(Canvas canvas)

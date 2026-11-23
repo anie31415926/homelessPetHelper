@@ -203,6 +203,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             var pointer = MainApproachDriver.Pointer(_view, 45);
             _view.Board.OnPointerDown(pointer);
             _view.AdvanceContact(.05);
+            double savedRemaining = old.RemainingWork(old.DebrisAt(45));
             var staleReturn = MainApproachDriver.Button(_view, "Return");
             MainApproachDriver.Click(_view, "Return");
             staleReturn.onClick.Invoke();
@@ -214,28 +215,36 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(next, Is.Not.SameAs(old));
             _view.Board.OnPointerUp(pointer);
             _view.AdvanceContact(.05);
-            Assert.That(next.RemainingWork(next.DebrisAt(45)), Is.EqualTo(.24));
+            Assert.That(next.RemainingWork(next.DebrisAt(45)), Is.EqualTo(savedRemaining),
+                "The new outing retains prior work, but cannot reuse the old pointer contact.");
             Assert.That(_root.Presenter.Session.Requests.Requests
                 .Single(request => request.TemplateId == "ordinary").State, Is.EqualTo(RequestState.Accepted));
         }
 
         [UnityTest]
-        public IEnumerator ExitingDuringOpeningRestoresStationCheckpointWithoutOfflineTimeOrIntake()
+        public IEnumerator ExitingDuringOpeningRestoresOwnedFieldWithoutOfflineTimeOrIntake()
         {
             yield return Load(0);
             Depart();
             var old = _view.Session;
+            var outingId = _root.Presenter.Session.Outing.Session.SessionId;
+            var requestId = _root.Presenter.Session.Outing.Session.AcceptedRequestId;
+            var animalId = _root.Presenter.OutingAnimal.AnimalId;
             MainApproachDriver.Clean(_view, 45);
             yield return Load(1);
             Assert.That(old.IsClosed, Is.True);
-            Assert.That(_view.gameObject.activeInHierarchy, Is.False);
+            Assert.That(_view.gameObject.activeInHierarchy, Is.True);
             Assert.That(_root.Presenter.Session.Clock.Current.ElapsedMinutes, Is.Zero);
             Assert.That(_root.Presenter.Session.Station.Animals, Is.Empty);
+            Assert.That(_root.Presenter.Session.Outing.Session.SessionId, Is.EqualTo(outingId));
+            Assert.That(_root.Presenter.Session.Outing.Session.AcceptedRequestId, Is.EqualTo(requestId));
+            Assert.That(_root.Presenter.OutingAnimal.AnimalId, Is.EqualTo(animalId));
             Assert.That(_root.Presenter.Session.Requests.Requests
-                .All(request => request.State == RequestState.Available),
+                .All(request => request.State == (request.RequestId == requestId
+                    ? RequestState.Accepted : RequestState.Available)),
                 Is.True);
-            Depart();
-            Assert.That(_view.Session.Template.Mode, Is.EqualTo(ApproachMode.Puzzle));
+            Assert.That(_view.Session.Template.Mode, Is.EqualTo(ApproachMode.Cleanup));
+            Assert.That(_view.Session.DebrisAt(45), Is.EqualTo(-1));
         }
 
         private IEnumerator Capture(string name)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using HomelessPetHelper.Modules.Rescue;
 
 namespace HomelessPetHelper.Modules.Approach
@@ -24,6 +25,48 @@ namespace HomelessPetHelper.Modules.Approach
         public bool CanUndo => _history.Count > 0 && !IsClosed && !IsSuspended;
         public int Version { get; private set; }
         public int BridgeCell => _bridge;
+
+        public ApproachCheckpoint CaptureCheckpoint() => new ApproachCheckpoint(_boxes, _bridge, _remaining,
+            _history.ConvertAll(step => new ApproachCheckpoint(step.Boxes, step.Bridge, _remaining)));
+
+        /// <summary>Restores only on a fresh session. Validation is complete before any state is written.</summary>
+        public void RestoreCheckpoint(ApproachCheckpoint checkpoint)
+        {
+            if (Version != 0 || IsClosed) throw new InvalidOperationException("Opening session is already live.");
+            ValidateCheckpoint(checkpoint);
+            if (checkpoint.Undo.Count > _undoLimit ||
+                Template.Mode == ApproachMode.Cleanup && checkpoint.Undo.Count != 0)
+                throw new ArgumentException("Invalid opening undo history.");
+            foreach (var previous in checkpoint.Undo)
+            {
+                ValidateCheckpoint(previous);
+                if (previous.Undo.Count != 0 || !previous.RemainingWork.SequenceEqual(checkpoint.RemainingWork))
+                    throw new ArgumentException("Invalid nested opening history.");
+            }
+            for (int i = 0; i < _boxes.Length; i++) _boxes[i] = checkpoint.Boxes[i];
+            for (int i = 0; i < _remaining.Length; i++) _remaining[i] = checkpoint.RemainingWork[i];
+            _bridge = checkpoint.BridgeCell;
+            foreach (var previous in checkpoint.Undo)
+                _history.Add(new PuzzleStep(previous.Boxes.ToArray(), previous.BridgeCell));
+            Changed();
+        }
+
+        private void ValidateCheckpoint(ApproachCheckpoint state)
+        {
+            if (state == null || state.Boxes.Count != _boxes.Length || state.RemainingWork.Count != _remaining.Length ||
+                state.BridgeCell != -1 && !Template.BridgeCells.Contains(state.BridgeCell))
+                throw new ArgumentException("Opening checkpoint differs from its template.");
+            var cells = new HashSet<int>();
+            foreach (int cell in state.Boxes)
+                if (!Template.Contains(cell) || !cells.Add(cell) || cell == Template.Entrance ||
+                    cell == Template.Animal || Template.Terrain(cell) == '#' ||
+                    Template.Terrain(cell) == '~' && state.BridgeCell != cell)
+                    throw new ArgumentException("Invalid saved crate position.");
+            for (int i = 0; i < _remaining.Length; i++)
+                if (double.IsNaN(state.RemainingWork[i]) || state.RemainingWork[i] < 0 ||
+                    state.RemainingWork[i] > Template.Debris[i].WorkSeconds)
+                    throw new ArgumentException("Invalid saved cleanup work.");
+        }
 
         public ApproachSession(Guid outingId, int seed, ApproachTemplate template, ApproachCatalog catalog)
         {

@@ -3,7 +3,7 @@ using UnityEngine.Scripting;
 
 namespace HomelessPetHelper.Game.Progress
 {
-    // Version 1 is a stable station checkpoint of the two authored healthy encounters.
+    // Version 2 adds retained field results and one resumable outing to the station aggregate.
     // Explicit fields and constructors preserve the contract on stripped/AOT builds.
     [Preserve, JsonObject(MemberSerialization.OptIn)]
     internal sealed class MainProgressData
@@ -12,6 +12,7 @@ namespace HomelessPetHelper.Game.Progress
         [Preserve, JsonProperty(Required = Required.Always)] public int Capacity;
         [Preserve, JsonProperty(Required = Required.Always)] public RequestData[] Requests;
         [Preserve, JsonProperty(Required = Required.Always)] public ResidentData[] Residents;
+        [Preserve, JsonProperty(Required = Required.Always)] public WorldFieldData Fields;
         [Preserve] public MainProgressData() { }
     }
 

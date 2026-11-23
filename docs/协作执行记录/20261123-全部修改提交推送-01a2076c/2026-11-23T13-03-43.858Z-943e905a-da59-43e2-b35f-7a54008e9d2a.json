@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261123-全部修改提交推送-01a2076c.md",
+  "sessionId": "01a2076c-48cc-7063-a3a1-e609ac9a8e34",
+  "phase": "start",
+  "readAt": "2026-11-23T13:03:43.858Z",
+  "writePaths": [
+    "AGENTS.md",
+    "CODE_CONVENTIONS.md",
+    "art-source/resource-catalog.json",
+    "docs/UI排版与可读性规范.md",
+    "docs/UI视觉样式规范.md",
+    "docs/conventions/topics/ui.md",
+    "docs/协作任务/20261123-UI视觉样式规范-01a1f74d.md",
+    "docs/协作任务/20261123-全部修改提交推送-01a2076c.md",
+    "docs/协作任务/20261123-地点回访与进度保存-01a1f74d.md",
+    "docs/协作任务/20261123-大地图拖动-01a1f74d.md",
+    "docs/协作任务/20261123-救助站UI复核-01a1f74d.md",
+    "docs/协作执行记录/20261123-UI视觉样式规范-01a1f74d/",
+    "docs/协作执行记录/20261123-全部修改提交推送-01a2076c/",
+    "docs/协作执行记录/20261123-地点回访与进度保存-01a1f74d/",
+    "docs/协作执行记录/20261123-大地图拖动-01a1f74d/",
+    "docs/协作执行记录/20261123-救助站UI复核-01a1f74d/",
+    "docs/地点回访与进度保存.md",
+    "docs/大地图拖动与布局.md",
+    "docs/当前协作状态.md",
+    "docs/救助站UI规范复核.md",
+    "test-results/all-changes-push/",
+    "test-results/resource-catalog/",
+    "test-results/unity/",
+    "unity/HomelessPetHelper/Assets/EditorScenes/SC_CityMap.unity",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_CityMap.prefab",
+    "unity/HomelessPetHelper/Assets/Scenes/Main.unity",
+    "unity/HomelessPetHelper/Assets/Scripts/Bootstrap/GameLoopSession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/CityMap/",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Approach/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Outing/UI/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/",
+    "unity/HomelessPetHelper/Assets/Settings/Game/StationPreviewText.json",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/",
+    "unity/HomelessPetHelper/Assets/Tests/Siege/EditMode/"
+  ],
+  "contextDigest": "47cfe4545af7c4c436805c6661f882c59b9e164b7004e8db4dbe95f414d75c63",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-全部修改提交推送-01a2076c.md",
+      "sha256": "c24ca28a0a23e2ea5d9189ae61a4a5e0ca7b7cf9d1f5ff0313b0e2b0b8817724"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "e7b6c0c9d24875155d2b4420f371937e5d423dffceab6050624d369fc1809133"
+    }
+  ]
+}

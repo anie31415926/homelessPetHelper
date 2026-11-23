@@ -12,6 +12,10 @@ namespace HomelessPetHelper.Game.Field
             new Dictionary<string, List<OutingFieldLayout>>(StringComparer.Ordinal);
         public IEnumerable<OutingFieldLayout> Layouts => _layouts.Values.SelectMany(items => items);
 
+        public OutingFieldLayout Find(string pointId, string layoutId) =>
+            _layouts.TryGetValue(pointId, out var variants)
+                ? variants.SingleOrDefault(item => item.LayoutId == layoutId) : null;
+
         public OutingFieldCatalog(IEnumerable<TextAsset> sources, IEnumerable<string> pointIds)
         {
             if (sources == null || pointIds == null) throw new ArgumentNullException();

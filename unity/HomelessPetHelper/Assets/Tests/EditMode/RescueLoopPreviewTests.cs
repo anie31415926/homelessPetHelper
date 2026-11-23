@@ -476,6 +476,12 @@ namespace HomelessPetHelper.Tests.EditMode
             {
                 foreach (var scroll in control.GetComponentsInParent<ScrollRect>())
                 {
+                    if (scroll is CityMapScrollRect map)
+                    {
+                        map.FocusOn((RectTransform)control.transform);
+                        Canvas.ForceUpdateCanvases();
+                        continue;
+                    }
                     ((RectTransform)control.transform).GetWorldCorners(corners);
                     float bottom = scroll.viewport.InverseTransformPoint(corners[0]).y;
                     float top = scroll.viewport.InverseTransformPoint(corners[1]).y;

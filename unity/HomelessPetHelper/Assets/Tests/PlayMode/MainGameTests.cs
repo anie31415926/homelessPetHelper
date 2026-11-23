@@ -154,10 +154,21 @@ namespace HomelessPetHelper.Tests.PlayMode
             }
             yield return null;
             Assert.That(activity.Battle.Phase, Is.EqualTo(SiegeState.BattlePhase.Timeout));
+            var animalId = activity.Individual.Current.AnimalId;
+            var outingId = activity.SessionId;
             Click(_siege, "Retry");
             Assert.That(_root.Presenter.Session.Station.Animals, Is.Empty);
             Assert.That(activity.IsClosed, Is.True);
-            activity = Depart();
+            Click(_station, "Restart");
+            Click(_map, "Primary");
+            Assert.That(_root.Presenter.Session.OpeningRoute, Is.Null,
+                "A retained safe route does not require opening the same location again.");
+            Assert.That(_siege.gameObject.activeInHierarchy, Is.True);
+            activity = _root.Presenter.Session.Activity as SiegeRescueActivity;
+            Assert.That(activity, Is.Not.Null);
+            Assert.That(activity.Individual.Current.AnimalId, Is.EqualTo(animalId));
+            Assert.That(activity.SessionId, Is.Not.EqualTo(outingId));
+            Assert.That(activity.Battle.ElapsedMs, Is.Zero, "Explicitly departing again starts a new battle.");
             Click(_siege, "Retry");
             Assert.That(_root.Presenter.Session.Station.Animals, Is.Empty);
             Assert.That(activity.IsClosed, Is.True);

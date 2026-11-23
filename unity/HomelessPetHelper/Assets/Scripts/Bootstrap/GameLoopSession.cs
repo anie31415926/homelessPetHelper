@@ -68,7 +68,7 @@ namespace HomelessPetHelper.Bootstrap
             return true;
         }
 
-        /// <summary>Transfers ownership only after this outing accepts an uncompleted route objective.</summary>
+        /// <summary>Transfers ownership of the actual route objective, including a retained safe route.</summary>
         public bool TryStartOpeningRoute(IRouteOpeningActivity opening, out OutingAssemblyFailure failure)
         {
             if (!RequireOpen(out failure)) return false;
@@ -80,7 +80,7 @@ namespace HomelessPetHelper.Bootstrap
                 return false;
             }
             if (opening == null || opening.SessionId != outing.SessionId || opening.IsClosed ||
-                opening.IsSuspended || opening.IsComplete)
+                opening.IsSuspended)
             {
                 failure = OutingAssemblyFailure.IdentityMismatch;
                 return false;

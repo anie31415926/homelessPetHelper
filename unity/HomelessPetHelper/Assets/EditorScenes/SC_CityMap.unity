@@ -202,18 +202,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Panel_CityMap
       objectReference: {fileID: 0}
-    - target: {fileID: 4803925750004940751, guid: f9b2c5ad05ee3a84c8814435b615dbf6, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803925750004940751, guid: f9b2c5ad05ee3a84c8814435b615dbf6, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803925750004940751, guid: f9b2c5ad05ee3a84c8814435b615dbf6, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6078718243796335349, guid: f9b2c5ad05ee3a84c8814435b615dbf6, type: 3}
       propertyPath: m_Pivot.x
       value: 0

@@ -323,7 +323,7 @@ namespace HomelessPetHelper.Tests.EditMode
                 Assert.That(progress.TryCheckpoint(), Is.True);
             }
             var raw = new SaveService(storage);
-            var section = new SaveSection<JObject>("main.station", 1, () => new JObject(), _ => null);
+            var section = new SaveSection<JObject>("main.station", 2, () => new JObject(), _ => null);
             raw.Register(section);
             Assert.That(raw.TryOpen(out _, out _), Is.True);
             Assert.That(raw.TryRead(section, out var data, out _), Is.True);

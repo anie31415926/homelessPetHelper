@@ -30,6 +30,8 @@ namespace HomelessPetHelper.Game
             CreateMapConfig().Definition.Points.Select(point => point.PointId));
         public SiegeCatalog CreateFieldSiegeCatalog(Field.OutingFieldLayout field) =>
             field.CreateBattleCatalog(_siegeData);
+        public Progress.FieldProgressContent CreateFieldProgressContent(Field.OutingFieldCatalog fields) =>
+            new Progress.FieldProgressContent(this, fields, _siegeData.text, _approachConfig.text);
         public TextAsset ApproachText => _approachText;
         public ApproachCatalog CreateApproachCatalog() => _approachConfig != null ?
             new ApproachCatalog(JsonUtility.FromJson<ApproachCatalogData>(_approachConfig.text)) :

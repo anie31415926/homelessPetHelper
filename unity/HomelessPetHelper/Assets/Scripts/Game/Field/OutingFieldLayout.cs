@@ -41,6 +41,7 @@ namespace HomelessPetHelper.Game.Field
         public string PointId => _data.pointId;
         public bool Introductory => _data.introductory;
         public string LayoutId { get; }
+        public string ContentVersion { get; }
         public int Columns => Opening.Get(ApproachMode.Cleanup).Columns;
         public int Rows => Opening.Get(ApproachMode.Cleanup).Rows;
         public int CellCount => Columns * Rows;
@@ -55,6 +56,7 @@ namespace HomelessPetHelper.Game.Field
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             _data = JsonUtility.FromJson<Data>(source.text);
+            ContentVersion = Progress.FieldProgressContent.Hash(source.text);
             if (_data == null || _data.schemaVersion != 1 || string.IsNullOrWhiteSpace(_data.pointId) ||
                 !Positive(_data.width) || !Positive(_data.height) || !Positive(_data.animalWidth) ||
                 !Positive(_data.catWidth) || _data.catWidth > _data.animalWidth ||

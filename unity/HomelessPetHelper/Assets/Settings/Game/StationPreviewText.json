@@ -1,6 +1,6 @@
 {
   "entries": [
-    { "key": "save.outingBoundary", "value": "外出中退出，会回到出发前的站内记录。" },
+    { "key": "save.outingBoundary", "value": "现场操作会自动保存，重进可继续本次救助。" },
     { "key": "save.careBoundary", "value": "{0}结束本次后保存，中途退出恢复上次成果。" },
     { "key": "save.loadFailed", "value": "进度读取失败，原记录已保留。请退出后重试。" },
     { "key": "save.writeFailed", "value": "进度保存失败，已停止操作。请退出后重新读取记录。" },

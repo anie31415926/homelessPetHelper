@@ -79,6 +79,7 @@ namespace HomelessPetHelper.Game
             _bootstrap.BindSession(Presenter.Session);
             Music = new MainMusicSession(Audio.Playback, _content.MusicCatalog);
             RefreshMusic();
+            InvokeRepeating(nameof(SaveFieldProgress), 5f, 5f);
             if (Audio.PersistenceError != null)
                 Debug.LogWarning("Audio preferences are session-only; original save is preserved. " +
                     Audio.PersistenceError, this);
@@ -98,6 +99,8 @@ namespace HomelessPetHelper.Game
         {
             Music?.Dispose();
             Music = null;
+            CancelInvoke(nameof(SaveFieldProgress));
+            Presenter?.FlushFieldProgress();
             if (_bootstrap != null) _bootstrap.BindSession(null);
             Presenter?.Dispose();
             Presenter = null;
@@ -105,6 +108,18 @@ namespace HomelessPetHelper.Game
                 if (scope != null) scope.Unbind();
             Audio?.Dispose();
             Audio = null;
+        }
+
+        private void SaveFieldProgress() => Presenter?.FlushFieldProgress();
+
+        private void OnApplicationPause(bool paused)
+        {
+            if (paused) SaveFieldProgress();
+        }
+
+        private void OnApplicationFocus(bool focused)
+        {
+            if (!focused) SaveFieldProgress();
         }
 
         private static ISaveStorage CreateProgressStorage()

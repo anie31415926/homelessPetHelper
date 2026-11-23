@@ -71,7 +71,7 @@ namespace HomelessPetHelper.Game.Progress
                     throw new ArgumentException("Coat mask is incompatible with current content.");
         }
 
-        private static AnimalData CaptureAnimal(AnimalSnapshot animal)
+        internal static AnimalData CaptureAnimal(AnimalSnapshot animal)
         {
             if (animal == null || animal.Coat == null || animal.Health.Problems.Count != 0)
                 throw new ArgumentException("Only explicit healthy Main animals are supported by version 1.");
@@ -86,7 +86,7 @@ namespace HomelessPetHelper.Game.Progress
             };
         }
 
-        private static AnimalIndividual RestoreAnimal(AnimalData data)
+        internal static AnimalIndividual RestoreAnimal(AnimalData data)
         {
             if (data == null || !Guid.TryParseExact(data.Id, "N", out var id) || data.HealthProblemIds == null ||
                 data.HealthProblemIds.Length != 0)

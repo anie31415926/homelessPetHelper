@@ -316,6 +316,13 @@ namespace HomelessPetHelper.Tests.PlayMode
 
         private static void ScrollIntoView(Component control, ScrollRect scroll)
         {
+            if (scroll is HomelessPetHelper.Modules.Outing.UI.CityMapScrollRect map)
+            {
+                Canvas.ForceUpdateCanvases();
+                map.FocusOn((RectTransform)control.transform);
+                Canvas.ForceUpdateCanvases();
+                return;
+            }
             if (!scroll.vertical) return;
             Canvas.ForceUpdateCanvases();
             var corners = new Vector3[4];
