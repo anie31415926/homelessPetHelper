@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261123-地图UI规范整改-01a1f74d.md",
+  "sessionId": "01a1f74d-412d-7613-a27d-fae91bb606ef",
+  "phase": "start",
+  "readAt": "2026-11-23T15:31:49.979Z",
+  "writePaths": [
+    "docs/协作任务/20261123-地图UI规范整改-01a1f74d.md",
+    "docs/协作执行记录/20261123-地图UI规范整改-01a1f74d/",
+    "docs/地图UI规范检查与整改.md",
+    "docs/当前协作状态.md",
+    "test-results/map-ui-refinement/",
+    "test-results/unity/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_CityMap.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/CityMap/CityMapUiRefinementAuthor.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/CityMap/CityMapUiRefinementAuthor.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Outing/UI/CityMapPointBinding.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Outing/UI/CityMapView.cs",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/CityMapExpansionTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/CityMapUiRefinementTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/CityMapUiRefinementTests.cs.meta"
+  ],
+  "contextDigest": "0908ffb3715442940715d0b37fb66ac41941685479a14fb954e71dca5c58caab",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-地图UI规范整改-01a1f74d.md",
+      "sha256": "f93a2b3c80236587f9d6f229f5dce41bb48753e426971fd950a75e57f3840c3c"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "1251162f8d2fcae1f076b5726135eba85941a75286cb2abd9c74a805ad818a64"
+    }
+  ]
+}

@@ -16,16 +16,15 @@ namespace HomelessPetHelper.Modules.Outing.UI
         [SerializeField] private Text _feedback;
         [SerializeField] private string _backgroundId;
         [SerializeField] private CityMapPointBinding[] _pointBindings;
-        [SerializeField] private Color _selectedColor = new Color32(255, 214, 122, 255);
-        [SerializeField] private Color _normalColor = new Color32(255, 255, 255, 245);
-        [SerializeField] private Color _helpColor = new Color32(255, 230, 184, 255);
-        [SerializeField] private Color _lockedColor = new Color32(210, 214, 210, 255);
+        [SerializeField] private Sprite _pointPaper;
+        [SerializeField] private Sprite _selectedPointPaper;
         [SerializeField] private Button _primary;
         [SerializeField] private Text _primaryLabel;
         [SerializeField] private Button _cancel;
         [SerializeField] private Toggle _pause;
         [SerializeField] private CityMapScrollRect _mapScroll;
         [SerializeField] private ScrollRect _detailsScroll;
+        [SerializeField] private GameObject _detailsOverflow;
 
         private readonly Dictionary<string, CityMapPointBinding> _points =
             new Dictionary<string, CityMapPointBinding>(StringComparer.Ordinal);
@@ -51,7 +50,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
                 string.IsNullOrWhiteSpace(_backgroundId) ||
                 _pointBindings == null || _pointBindings.Length == 0 ||
                 _primary == null || _primaryLabel == null || _cancel == null || _pause == null ||
-                _mapScroll == null || _detailsScroll == null)
+                _mapScroll == null || _detailsScroll == null || _detailsOverflow == null ||
+                _pointPaper == null || _selectedPointPaper == null)
                 throw new InvalidOperationException("City map has incomplete saved bindings.");
             var buttons = new HashSet<Button>();
             _pointClicks = new UnityAction[_pointBindings.Length];
@@ -112,9 +112,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
         {
             if (!_points.TryGetValue(pointId, out CityMapPointBinding point))
                 throw new ArgumentException("Unbound city map point: " + pointId, nameof(pointId));
-            Color color = state == PointDisplayState.Locked ? _lockedColor : selected ? _selectedColor :
-                state == PointDisplayState.HasHelpRequest ? _helpColor : _normalColor;
-            point.Render(label, stateLabel, interactable, color);
+            bool marked = selected && state != PointDisplayState.Locked;
+            point.Render(label, stateLabel, interactable, marked ? _selectedPointPaper : _pointPaper, marked);
             if (selected && _focusedPointId != pointId)
             {
                 _focusedPointId = pointId;
@@ -131,6 +130,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
             _details.text = details;
             _departure.text = departure;
             _feedback.text = feedback;
+            _departure.gameObject.SetActive(!string.IsNullOrWhiteSpace(departure));
+            _feedback.gameObject.SetActive(!string.IsNullOrWhiteSpace(feedback));
             _primaryLabel.text = command;
             _primary.interactable = !paused && canAct;
             _cancel.gameObject.SetActive(selecting);
@@ -142,10 +143,14 @@ namespace HomelessPetHelper.Modules.Outing.UI
 
         private void LateUpdate()
         {
-            if (!_resetDetails || !_detailsScroll.isActiveAndEnabled) return;
-            _detailsScroll.StopMovement();
-            _detailsScroll.verticalNormalizedPosition = 1;
-            _resetDetails = false;
+            bool overflow = _detailsScroll.content.rect.height > _detailsScroll.viewport.rect.height + 1;
+            if (_detailsOverflow.activeSelf != overflow) _detailsOverflow.SetActive(overflow);
+            if (_resetDetails && _detailsScroll.isActiveAndEnabled)
+            {
+                _detailsScroll.StopMovement();
+                _detailsScroll.verticalNormalizedPosition = 1;
+                _resetDetails = false;
+            }
         }
 
         private void OnPrimary()
