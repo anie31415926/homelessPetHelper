@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261123-救助站提交-01a1d310.md",
+  "sessionId": "01a1d310-49aa-7061-97e4-183bf146eb20",
+  "phase": "delivery",
+  "readAt": "2026-11-23T12:54:27.491Z",
+  "writePaths": [
+    ".ui-craft/brief.md",
+    "art-source/resource-catalog.json",
+    "art-source/station-room-20261123/",
+    "docs/协作任务/20261123-救助站UI统一-01a1d310.md",
+    "docs/协作任务/20261123-救助站原图拆层-01a1d310.md",
+    "docs/协作任务/20261123-救助站提交-01a1d310.md",
+    "docs/协作执行记录/20261123-救助站UI统一-01a1d310/",
+    "docs/协作执行记录/20261123-救助站原图拆层-01a1d310/",
+    "docs/协作执行记录/20261123-救助站提交-01a1d310/",
+    "docs/救助站场景与动物自主行为.md",
+    "docs/通用Toast使用.md",
+    "test-results/station-commit/",
+    "tests/station-room-art.test.mjs",
+    "tools/station-room.ps1",
+    "tools/station-ui.ps1",
+    "unity/HomelessPetHelper/Assets/Art/StationRoom.meta",
+    "unity/HomelessPetHelper/Assets/Art/StationRoom/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_StationLoop.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_Toast.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_Toast.prefab.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/StationHabitat/",
+    "unity/HomelessPetHelper/Assets/Scripts/Framework/UI/ToastView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Framework/UI/ToastView.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/Habitat/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/",
+    "unity/HomelessPetHelper/Assets/Tests/Audio/PlayMode/ButtonAudioTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/RescueLoopPreviewTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/CityMapPreviewTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/"
+  ],
+  "contextDigest": "5b7b761e27ef616e255d21ed4aa953167618934fd74f0b623a164a1df9e3eb5b",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "9f0c3d59a2a9c64b694f21b20a0aabd4300d28806eb696deb5ed1f5c38262de1"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261123-UI视觉样式规范-01a1f74d.md",
+      "sha256": "03d3cefc30f5c2bfe6ab64975d610668ead962b30c0f1a41182e286560188960"
+    },
+    {
+      "path": "docs/协作任务/20261123-动物同骨架过渡-01a2076c.md",
+      "sha256": "d3f7f758edc47b94344fb555c7c2965fb1b312d8c3a6566420809fe5649e048f"
+    },
+    {
+      "path": "docs/协作任务/20261123-救助站提交-01a1d310.md",
+      "sha256": "cdb1738840c884884a69e92480a42214f60f227173ad2a138b4ea41313e2bc07"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "78c9fef9fd514489861197ec1f1a3c8de264bbb2495157861940341283147511"
+    }
+  ]
+}
