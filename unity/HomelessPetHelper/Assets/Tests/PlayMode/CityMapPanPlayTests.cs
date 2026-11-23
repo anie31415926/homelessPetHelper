@@ -25,10 +25,11 @@ namespace HomelessPetHelper.Tests.PlayMode
         [TearDown] public void TearDown() => _storage.Dispose();
 
         [UnityTest]
-        public IEnumerator MapDragsBothAxesClampsEveryEdgeAndLeavesDetailsAndActionsFixed()
+        public IEnumerator MapCoversViewportPansVerticallyAndClampsEveryEdgeLeavingDetailsAndActionsFixed()
         {
             yield return Load();
-            Assert.That(_map.content.rect.width, Is.GreaterThan(_map.viewport.rect.width));
+            Assert.That(_map.content.rect.width, Is.GreaterThanOrEqualTo(_map.viewport.rect.width - .5f),
+                "Map art must cover the viewport width instead of being upscaled past the screen.");
             Assert.That(_map.content.rect.height, Is.GreaterThan(_map.viewport.rect.height));
             var details = _view.GetComponentsInChildren<ScrollRect>().Single(scroll => scroll != _map);
             Vector2 detailPosition = details.content.anchoredPosition;
@@ -39,7 +40,8 @@ namespace HomelessPetHelper.Tests.PlayMode
             _map.OnBeginDrag(pointer);
             pointer.position += new Vector2(70, 90);
             _map.OnDrag(pointer);
-            Assert.That(_map.content.anchoredPosition.x, Is.GreaterThan(before.x));
+            Assert.That(_map.content.anchoredPosition.x, Is.EqualTo(before.x).Within(.01f),
+                "A map that already fits the width must not pan horizontally.");
             Assert.That(_map.content.anchoredPosition.y, Is.GreaterThan(before.y));
             foreach (Vector2 move in new[] { new Vector2(-100000, -100000), new Vector2(100000, -100000),
                 new Vector2(100000, 100000), new Vector2(-100000, 100000) })

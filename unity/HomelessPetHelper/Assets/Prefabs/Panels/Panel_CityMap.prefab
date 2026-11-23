@@ -3919,7 +3919,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   _mapImage: {fileID: 8107095797827283166}
-  _minimumMapWidth: 1680
+  _minimumMapWidth: 1080
 --- !u!1 &7397836424722695852
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,7 +9,9 @@ namespace HomelessPetHelper.Modules.Outing.UI
     public sealed class CityMapScrollRect : ScrollRect
     {
         [SerializeField] private Image _mapImage;
-        [SerializeField, Min(1)] private float _minimumMapWidth = 1680;
+        // Design-basis width (1080 canvas). Must stay at or below the viewport width so the art
+        // is never upscaled beyond the screen; anything larger crops most of the map on a phone.
+        [SerializeField, Min(1)] private float _minimumMapWidth = 1080;
 
         private RectTransform _pendingFocus;
         private int? _dragPointer;
