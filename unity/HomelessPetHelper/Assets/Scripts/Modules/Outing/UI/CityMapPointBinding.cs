@@ -36,8 +36,9 @@ namespace HomelessPetHelper.Modules.Outing.UI
             _stateLabel.text = stateLabel;
             _button.interactable = enabled;
             _highlight.sprite = paper;
-            _highlight.color = Color.white;
-            _selectionOutline.enabled = selected;
+            _highlight.color = Color.clear;
+            _stateLabel.gameObject.SetActive(false);
+            _selectionOutline.enabled = false;
         }
     }
 }

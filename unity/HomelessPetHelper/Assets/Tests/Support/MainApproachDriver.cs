@@ -121,6 +121,12 @@ namespace HomelessPetHelper.Tests.Support
 
         public static void Click(Component view, string name)
         {
+            if (view is HomelessPetHelper.Modules.Outing.UI.CityMapView map)
+            {
+                // Gameplay helpers open the saved detail page before its action; hidden controls cannot act.
+                if (name == "Primary" && !map.IsDetailsOpen) map.OpenDetails();
+                else if (name != "Primary" && map.IsDetailsOpen) map.CloseDetails();
+            }
             if (name == "Pause" && view.GetComponentsInChildren<Button>().Any(button =>
                 button.name == "OverlayResume")) name = "Resume";
             // The scene trial exposes Return through its actual pause menu.

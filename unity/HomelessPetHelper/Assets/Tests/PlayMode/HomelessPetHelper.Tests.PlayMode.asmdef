@@ -20,7 +20,8 @@
     "HomelessPetHelper.Modules.Approach",
     "HomelessPetHelper.Framework.UI",
     "HomelessPetHelper.Framework.Audio",
-    "HomelessPetHelper.Modules.Animals.UI"
+    "HomelessPetHelper.Modules.Animals.UI",
+    "HomelessPetHelper.Modules.PetMotion"
   ],
   "optionalUnityReferences": [
     "TestAssemblies"

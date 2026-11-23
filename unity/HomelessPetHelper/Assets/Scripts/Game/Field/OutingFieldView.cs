@@ -14,7 +14,12 @@ namespace HomelessPetHelper.Game.Field
         [SerializeField] private RectTransform _frame, _grid;
         [SerializeField] private Image _background, _animal;
         [SerializeField] private AnimalCoatView _coat;
-        public void ShowAnimal(AnimalSnapshot snapshot) => _coat.Show(snapshot);
+        [SerializeField] private FieldPetMotion _petMotion;
+        public void ShowAnimal(AnimalSnapshot snapshot)
+        {
+            if (_petMotion != null) _petMotion.ShowAnimal(snapshot);
+            else _coat.Show(snapshot);
+        }
         [SerializeField] private Sprite _cat, _dog;
         [SerializeField] private bool _fitPlayableArea;
         [SerializeField] private OutingFieldGraphic _terrain;
@@ -32,6 +37,7 @@ namespace HomelessPetHelper.Game.Field
         {
             Layout = layout;
             SetPresentationPaused(false);
+            if (_petMotion != null) _petMotion.Configure(layout != null && !dog);
             _sceneRoot.SetActive(layout != null);
             _background.gameObject.SetActive(layout != null);
             if (layout == null) { Snapshot = null; return; }

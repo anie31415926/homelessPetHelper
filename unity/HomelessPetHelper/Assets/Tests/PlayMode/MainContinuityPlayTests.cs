@@ -102,7 +102,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             string detail = _map.GetComponentsInChildren<Text>(true).Single(text => text.name == "Details").text;
             Assert.That(detail, Is.EqualTo(mapCopy.Get("detail.noRequest", mapCopy.Get("parking.detail"))));
             Assert.That(detail, Does.Not.Contain(mapCopy.Get("parking.rescue")));
-            Assert.That(Button(_map, "Parking").GetComponentsInChildren<Text>()
+            Assert.That(Button(_map, "Parking").GetComponentsInChildren<Text>(true)
                 .Single(text => text.name == "State").text, Is.EqualTo(mapCopy.Get("point.NoRequest")));
             Assert.That(Button(_map, "Primary").IsInteractable(), Is.False);
             Assert.That(_map.GetComponentsInChildren<Text>(true).Single(text => text.name == "Feedback").text,
@@ -250,6 +250,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
         private static void Click(Component view, string name)
         {
+            if (view is CityMapView) { MainApproachDriver.Click(view, name); return; }
             if (view is SiegeTrialView sceneView && sceneView.Scene != null &&
                 (name == "Retry" || name == "Pause"))
             { MainApproachDriver.Click(view, name); return; }

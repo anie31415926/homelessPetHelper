@@ -14,7 +14,7 @@ namespace HomelessPetHelper.Game
         [SerializeField] private AnimalCoatView _coat;
         public void ShowAnimal(AnimalSnapshot snapshot) => _coat.Show(snapshot);
 
-        private void OnEnable() => _player.gameObject.SetActive(true);
+        private void OnEnable() => _player.gameObject.SetActive(_view.Scene == null);
         private void OnDisable()
         {
             if (_player != null) _player.gameObject.SetActive(false);
@@ -22,7 +22,7 @@ namespace HomelessPetHelper.Game
 
         private void LateUpdate()
         {
-            _player.Playing = _view.IsBattleRunning;
+            _player.Playing = _view.Scene == null && _view.IsBattleRunning;
         }
     }
 }

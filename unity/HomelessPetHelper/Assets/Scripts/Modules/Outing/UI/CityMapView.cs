@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using HomelessPetHelper.Framework.UI;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -21,7 +22,10 @@ namespace HomelessPetHelper.Modules.Outing.UI
         [SerializeField] private Button _primary;
         [SerializeField] private Text _primaryLabel;
         [SerializeField] private Button _cancel;
-        [SerializeField] private Toggle _pause;
+        [SerializeField] private Button _closeDetails;
+        [SerializeField] private Button _backdrop;
+        [SerializeField] private GameObject _detailsRoot;
+        [SerializeField] private ToastView _toast;
         [SerializeField] private CityMapScrollRect _mapScroll;
         [SerializeField] private ScrollRect _detailsScroll;
         [SerializeField] private GameObject _detailsOverflow;
@@ -33,11 +37,15 @@ namespace HomelessPetHelper.Modules.Outing.UI
         private bool _listening;
         private bool _focused = true;
         private bool _applicationPaused;
-        private bool _manualPause;
+        private enum PopupKind { Place }
+        private readonly PopupStack<PopupKind> _popups = new PopupStack<PopupKind>();
+        private bool _selecting = true;
+        private bool _inputPaused;
         private string _focusedPointId;
         private bool _resetDetails;
 
-        public bool IsSuspended => _manualPause || !_focused || _applicationPaused;
+        public bool IsSuspended => !_focused || _applicationPaused;
+        public bool IsDetailsOpen => _popups.Top.HasValue;
 
         public event Action<string> PlaceSelected;
         public event Action PrimaryClicked;
@@ -49,7 +57,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
             if (_status == null || _heading == null || _details == null || _departure == null || _feedback == null ||
                 string.IsNullOrWhiteSpace(_backgroundId) ||
                 _pointBindings == null || _pointBindings.Length == 0 ||
-                _primary == null || _primaryLabel == null || _cancel == null || _pause == null ||
+                _primary == null || _primaryLabel == null || _cancel == null || _closeDetails == null ||
+                _backdrop == null || _detailsRoot == null || _toast == null ||
                 _mapScroll == null || _detailsScroll == null || _detailsOverflow == null ||
                 _pointPaper == null || _selectedPointPaper == null)
                 throw new InvalidOperationException("City map has incomplete saved bindings.");
@@ -65,7 +74,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
                 _points.Add(point.PointId, point);
                 _pointClicks[i] = () =>
                 {
-                    if (isActiveAndEnabled && point.Button.IsInteractable()) PlaceSelected?.Invoke(point.PointId);
+                    if (isActiveAndEnabled && !_inputPaused && !IsDetailsOpen &&
+                        point.Button.IsInteractable()) PlaceSelected?.Invoke(point.PointId);
                 };
             }
             _initialized = true;
@@ -74,14 +84,16 @@ namespace HomelessPetHelper.Modules.Outing.UI
         private void OnEnable()
         {
             if (!_initialized) return;
-            _manualPause = false;
+            _popups.Clear();
+            RefreshPopup();
             _focusedPointId = null;
             _resetDetails = true;
             for (int i = 0; i < _pointBindings.Length; i++)
                 _pointBindings[i].Button.onClick.AddListener(_pointClicks[i]);
             _primary.onClick.AddListener(OnPrimary);
             _cancel.onClick.AddListener(OnCancel);
-            _pause.onValueChanged.AddListener(OnPause);
+            _closeDetails.onClick.AddListener(CloseDetails);
+            _backdrop.onClick.AddListener(CloseDetails);
             _listening = true;
             PauseChanged?.Invoke(IsSuspended);
         }
@@ -94,7 +106,11 @@ namespace HomelessPetHelper.Modules.Outing.UI
                     _pointBindings[i].Button.onClick.RemoveListener(_pointClicks[i]);
             _primary.onClick.RemoveListener(OnPrimary);
             _cancel.onClick.RemoveListener(OnCancel);
-            _pause.onValueChanged.RemoveListener(OnPause);
+            _closeDetails.onClick.RemoveListener(CloseDetails);
+            _backdrop.onClick.RemoveListener(CloseDetails);
+            _popups.Clear();
+            RefreshPopup();
+            _toast.Clear();
             _listening = false;
         }
 
@@ -134,15 +150,47 @@ namespace HomelessPetHelper.Modules.Outing.UI
             _feedback.gameObject.SetActive(!string.IsNullOrWhiteSpace(feedback));
             _primaryLabel.text = command;
             _primary.interactable = !paused && canAct;
-            _cancel.gameObject.SetActive(selecting);
+            if (selecting && !_selecting) CloseDetails();
+            _selecting = selecting;
+            _inputPaused = paused;
             _cancel.interactable = !paused;
-            _pause.SetIsOnWithoutNotify(paused);
-            _mapScroll.enabled = !paused;
+            _closeDetails.interactable = !paused;
+            _backdrop.interactable = !paused;
             _detailsScroll.enabled = !paused;
+            _toast.SetSuspended(paused);
+            if (!selecting && !IsDetailsOpen) OpenDetails();
+            RefreshPopup();
+        }
+
+        public void OpenDetails()
+        {
+            if (!isActiveAndEnabled || _inputPaused) return;
+            _popups.TryOpen(PopupKind.Place);
+            _resetDetails = true;
+            _toast.Clear();
+            RefreshPopup();
+        }
+
+        public void CloseDetails()
+        {
+            _popups.TryClose(PopupKind.Place);
+            RefreshPopup();
+        }
+
+        public void ShowNotice(string message) => _toast.Show(message);
+
+        private void RefreshPopup()
+        {
+            _detailsRoot.SetActive(IsDetailsOpen);
+            _backdrop.gameObject.SetActive(IsDetailsOpen);
+            _cancel.gameObject.SetActive(!IsDetailsOpen);
+            _mapScroll.enabled = !_inputPaused && !IsDetailsOpen;
         }
 
         private void LateUpdate()
         {
+            if (Input.GetKeyDown(KeyCode.Escape)) OnCancel();
+            if (!IsDetailsOpen) return;
             bool overflow = _detailsScroll.content.rect.height > _detailsScroll.viewport.rect.height + 1;
             if (_detailsOverflow.activeSelf != overflow) _detailsOverflow.SetActive(overflow);
             if (_resetDetails && _detailsScroll.isActiveAndEnabled)
@@ -155,17 +203,16 @@ namespace HomelessPetHelper.Modules.Outing.UI
 
         private void OnPrimary()
         {
-            if (isActiveAndEnabled && _primary.IsInteractable()) PrimaryClicked?.Invoke();
+            if (isActiveAndEnabled && _primary.isActiveAndEnabled && _primary.IsInteractable())
+                PrimaryClicked?.Invoke();
         }
 
         private void OnCancel()
         {
-            if (isActiveAndEnabled && _cancel.isActiveAndEnabled && _cancel.IsInteractable()) CancelClicked?.Invoke();
-        }
-        private void OnPause(bool value)
-        {
-            _manualPause = value;
-            PauseChanged?.Invoke(IsSuspended);
+            if (!isActiveAndEnabled || !_cancel.IsInteractable()) return;
+            if (IsDetailsOpen && _selecting) CloseDetails();
+            else if (_selecting) CancelClicked?.Invoke();
+            else if (_primary.IsInteractable()) PrimaryClicked?.Invoke();
         }
 
         private void OnApplicationFocus(bool focused)

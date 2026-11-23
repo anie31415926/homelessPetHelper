@@ -96,13 +96,12 @@ namespace HomelessPetHelper.Tests.PlayMode
             artwork[0].sprite = originalSprites[0];
             Assert.That(Label("Status").text, Is.EqualTo(initialStatus));
             Assert.That(Label("Heading").text, Is.EqualTo(Copy("porch")));
-            Toggle pause = _view.GetComponentInChildren<Toggle>();
-            pause.isOn = true;
+            _view.SendMessage("OnApplicationPause", true);
             Assert.That(Button("Primary").interactable, Is.False);
             Click("Primary");
             Click("Yard");
             Assert.That(Label("Heading").text, Is.EqualTo(Copy("porch")));
-            pause.isOn = false;
+            _view.SendMessage("OnApplicationPause", false);
             Click("Cancel");
             Assert.That(Label("Details").text, Is.EqualTo(Copy("cancelled")));
             Assert.That(Label("Status").text, Is.EqualTo(initialStatus));
@@ -131,27 +130,26 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator FocusApplicationAndManualPauseComposeAndReopenedMapIgnoresHiddenInput()
+        public IEnumerator FocusAndApplicationPauseComposeAndReopenedMapIgnoresHiddenInput()
         {
             yield return Load();
             string status = Label("Status").text;
-            Toggle pause = _view.GetComponentInChildren<Toggle>();
-            pause.isOn = true;
+            _view.SendMessage("OnApplicationPause", true);
             _view.SendMessage("OnApplicationFocus", false);
             _view.SendMessage("OnApplicationPause", true);
             _view.SendMessage("OnApplicationFocus", true);
-            pause.isOn = false;
             Assert.That(Button("Primary").IsInteractable(), Is.False);
             Click("Primary");
             Assert.That(Label("Status").text, Is.EqualTo(status));
             _view.SendMessage("OnApplicationPause", false);
             Assert.That(Button("Primary").IsInteractable(), Is.True);
-            pause.isOn = true;
+            _view.SendMessage("OnApplicationFocus", false);
             _view.gameObject.SetActive(false);
             Click("Primary");
             Click("Cancel");
             _view.gameObject.SetActive(true);
-            Assert.That(_view.IsSuspended, Is.False, "A new visible map resets the manual pause input.");
+            _view.SendMessage("OnApplicationFocus", true);
+            Assert.That(_view.IsSuspended, Is.False, "Only actual focus/application state suspends this map.");
             Assert.That(Label("Heading").text, Is.EqualTo(Copy("parking")));
             Assert.That(Button("Primary").IsInteractable(), Is.True);
             Assert.That(Label("Departure").text,
@@ -250,7 +248,9 @@ namespace HomelessPetHelper.Tests.PlayMode
                 bool isPlace = control.transform.parent.name == "MapArt";
                 Assert.That(rect.rect.width, Is.GreaterThanOrEqualTo(144), control.name);
                 Assert.That(rect.rect.height, Is.GreaterThanOrEqualTo(144), control.name);
-                if (!isPlace) Assert.That(rect.rect.height, Is.LessThanOrEqualTo(180), control.name);
+                if (isPlace) continue; // Fullscreen map landmarks may intentionally lie beyond the clipped viewport.
+                if (control.name != "MapModalBackdrop")
+                    Assert.That(rect.rect.height, Is.LessThanOrEqualTo(180), control.name);
                 rect.GetWorldCorners(corners);
                 foreach (Vector3 corner in corners)
                 {
@@ -271,7 +271,8 @@ namespace HomelessPetHelper.Tests.PlayMode
                 }
                 float height = new TextGenerator().GetPreferredHeight(label.text, settings) / label.pixelsPerUnit;
                 Assert.That(height, Is.LessThanOrEqualTo(label.rectTransform.rect.height + 2), label.name);
-                if (!string.IsNullOrWhiteSpace(label.text))
+                if (!string.IsNullOrWhiteSpace(label.text) &&
+                    label.GetComponentInParent<CityMapScrollRect>() == null)
                     Assert.That(label.cachedTextGenerator.vertexCount, Is.GreaterThan(4), label.name);
             }
         }
@@ -353,9 +354,14 @@ namespace HomelessPetHelper.Tests.PlayMode
             string.Format(_copy.entries.Single(entry => entry.key == key).value, args);
         private Button Button(string name) => _view.GetComponentsInChildren<Button>(true)
             .Single(button => button.name == name);
-        private Text Label(string name) => _view.GetComponentsInChildren<Text>()
+        private Text Label(string name) => _view.GetComponentsInChildren<Text>(true)
             .Single(label => label.name == name);
-        private void Click(string name) => Button(name).onClick.Invoke();
+        private void Click(string name)
+        {
+            if (name == "Primary" && !_view.IsDetailsOpen) _view.OpenDetails();
+            else if (name != "Primary" && _view.IsDetailsOpen) _view.CloseDetails();
+            Button(name).onClick.Invoke();
+        }
     }
 }
 #endif
