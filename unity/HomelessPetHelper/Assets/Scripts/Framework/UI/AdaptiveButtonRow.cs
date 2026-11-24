@@ -28,9 +28,6 @@ namespace HomelessPetHelper.Framework.UI
 
         public override void CalculateLayoutInputVertical()
         {
-            float available = Mathf.Max(0, rectTransform.rect.width - padding.horizontal);
-            _columns = Mathf.Max(1, Mathf.Min(rectChildren.Count,
-                Mathf.FloorToInt((available + _metrics.gap) / (_width + _metrics.gap))));
             int rows = Mathf.CeilToInt(rectChildren.Count / (float)_columns);
             float height = padding.vertical + rows * _height + Mathf.Max(0, rows - 1) * _metrics.gap;
             SetLayoutInputForAxis(height, height, -1, 1);
@@ -39,6 +36,9 @@ namespace HomelessPetHelper.Framework.UI
         public override void SetLayoutHorizontal()
         {
             float available = Mathf.Max(0, rectTransform.rect.width - padding.horizontal);
+            // uGUI positions columns before measuring rows. Both axes must use this pass's column count.
+            _columns = Mathf.Max(1, Mathf.Min(rectChildren.Count,
+                Mathf.FloorToInt((available + _metrics.gap) / (_width + _metrics.gap))));
             float width = (available - (_columns - 1) * _metrics.gap) / _columns;
             for (int index = 0; index < rectChildren.Count; index++)
                 SetChildAlongAxis(rectChildren[index], 0, padding.left + index % _columns *

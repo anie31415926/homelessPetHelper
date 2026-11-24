@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HomelessPetHelper.Framework.UI;
@@ -14,6 +15,7 @@ using HomelessPetHelper.Modules.Station.UI;
 using HomelessPetHelper.Tests.Support;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
@@ -152,6 +154,69 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(Object.FindObjectOfType<MainGameRoot>().Audio.Playback.Preferences.Music.Volume,
                 Is.EqualTo(.35f));
             LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator CleanupGuideCanBeCompletedThroughTheTopRaycastHits()
+        {
+            yield return SceneManager.LoadSceneAsync("Main");
+            yield return null;
+            Depart();
+            yield return null;
+            yield return null;
+            var root = Object.FindObjectOfType<MainGameRoot>();
+            var view = Object.FindObjectOfType<ApproachPanelView>();
+            Assert.That(view.Session.Template.Mode, Is.EqualTo(ApproachMode.Cleanup));
+            var guide = root.Presenter.Overlays.Guide;
+            Assert.That(guide, Is.Not.Null);
+            Assert.That(guide.StepIndex, Is.Zero);
+            var blocked = MainApproachDriver.Pointer(view, 43);
+            Assert.That(TopHit(blocked).GetComponent<GuideMaskGraphic>(), Is.Not.Null,
+                "Debris stays blocked until the player selects the tool.");
+
+            var tools = new[] { ApproachTool.Litter, ApproachTool.Weeds };
+            var cells = new[] { 43, 36 };
+            for (int index = 0; index < tools.Length; index++)
+            {
+                var tool = MainApproachDriver.Button(view, tools[index].ToString());
+                var rect = (RectTransform)tool.transform;
+                var click = new PointerEventData(EventSystem.current)
+                {
+                    position = RectTransformUtility.WorldToScreenPoint(null, rect.TransformPoint(rect.rect.center))
+                };
+                var hit = TopHit(click);
+                Assert.That(ExecuteEvents.GetEventHandler<IPointerClickHandler>(hit), Is.SameAs(tool.gameObject),
+                    $"{tool.name} at {click.position} must receive input; top hit: {hit.name}");
+                Assert.That(tool.IsInteractable(), Is.True, $"{tool.name} is the current guide target.");
+                ExecuteEvents.ExecuteHierarchy(hit, click, ExecuteEvents.pointerClickHandler);
+                Assert.That(guide.StepIndex, Is.EqualTo(index * 2 + 1));
+                yield return null;
+                yield return null;
+
+                var contact = MainApproachDriver.Pointer(view, cells[index]);
+                hit = TopHit(contact);
+                Assert.That(ExecuteEvents.ExecuteHierarchy(hit, contact, ExecuteEvents.pointerDownHandler),
+                    Is.SameAs(view.Board.gameObject), $"Debris {cells[index]} hit {hit.name}");
+                float deadline = Time.realtimeSinceStartup + 8;
+                while (view.Session.DebrisAt(cells[index]) >= 0 && Time.realtimeSinceStartup < deadline)
+                    yield return null;
+                ExecuteEvents.Execute(view.Board.gameObject, contact, ExecuteEvents.pointerUpHandler);
+                Assert.That(view.Session.DebrisAt(cells[index]), Is.EqualTo(-1));
+                yield return null;
+                yield return null;
+            }
+            Assert.That(guide.IsComplete, Is.True);
+            Assert.That(root.Guidance.HasCompleted(guide.MechanicId), Is.True);
+        }
+
+        private static GameObject TopHit(PointerEventData pointer)
+        {
+            Canvas.ForceUpdateCanvases();
+            var hits = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointer, hits);
+            Assert.That(hits, Is.Not.Empty, $"No uGUI target at {pointer.position}");
+            pointer.pointerPressRaycast = pointer.pointerCurrentRaycast = hits[0];
+            return hits[0].gameObject;
         }
 
         [UnityTest]
