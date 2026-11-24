@@ -55,6 +55,28 @@ uvx --from mcpforunityserver==10.0.0 unity-mcp --instance 'HomelessPetHelper@<�
 - 初次 `node tools/check-unity.mjs` 通过，PowerShell 脚本语法解析通过；连接完成后再次检查时，其他并行工作刚新增 UI 目录/脚本，报告 5 项缺少 meta，本轮没有替其生成或覆盖，不能称最终全仓源码检查通过。详见 `test-results/unity/source-check.json`。
 - 本轮不重复执行其他聊天正在进行的业务规则测试，也未验证 Player、微信或真机；安装插件不构成这些检查通过。
 
+## stdio 端口冲突修复（2026-11-24）
+
+现象：Console 反复输出 `MCP-FOR-UNITY: Failed to start TCP listener: 以一种访问权限不允许的方式做了一个访问套接字的尝试`，来源为 `StdioBridgeHost.Start()`。
+
+根因（两条叠加）：
+
+1. 本机 TCP 动态端口范围 `netsh int ipv4 show dynamicport tcp` 实测为 **1024–15000**（Windows 默认应为 49152–65535）。6400/6401 因此落在临时端口池内，任何进程发起出站连接都可能被分配这两个端口当源端口。实测 `WeChatAppEx.exe` 曾用 6400 作为源端口连接本机 12001 代理并停在 CLOSE_WAIT，此时 Unity 再 bind 6400 得到的是 **WSAEACCES 10013**（不是 10048）。
+2. 包内 `StdioBridgeHost.Start()` 的降级逻辑只捕获 `SocketError.AddressAlreadyInUse`，10013 直接落到外层 catch，只打 LogError、不重试不换端口，因此一直报错不自愈。
+
+修复：把 stdio bridge 端口固定到安全池外的 **25000**，写入两处注册文件（`GetStoredPortConfig` 会校验 `project_path` 必须等于 `Application.dataPath`）：
+
+- `~/.unity-mcp/unity-mcp-port-<hash>.json`
+- `~/.unity-mcp/unity-mcp-port.json`（legacy 兜底）
+
+下次 domain reload 生效，status beacon 会写 `unity_port: 25000`。stdio 客户端（`~/.unity-mcp/stdio.js`）通过 beacon 读端口，不需要改客户端配置。
+
+注意事项：
+
+- **不要点 MCP 窗口的 Auto-Connect**：其 `DiscoverNewPort()` 会优先复用 6400，等于把端口改回冲突区。
+- 8080 的 HTTP 模式同样在 1024–15000 池内，存在同类风险。要根治可还原系统范围（需管理员）：`netsh int ipv4 set dynamicport tcp start=49152 num=16384`。
+- 排查时不要按端口杀进程，先确认占用者（`Get-NetTCPConnection -LocalPort 6400`）。
+
 ## 当前限制
 
 - 上游 10.0.0 的 editor/state 在 Play 中把 `isPlayingOrWillChangePlaymode` 当作切换状态，可能长期返回 `is_changing: true`；稳定状态缓存也可能被标记 stale。不能无期限等待这个字段变 false；结合 `is_playing`、编译状态、实际工具结果与 Console 判断。Domain Reload 返回 retry 时应有界重试，不把瞬时断连当作业务失败。
