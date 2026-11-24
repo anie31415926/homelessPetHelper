@@ -16,7 +16,7 @@ namespace HomelessPetHelper.Modules.Siege
                 NextAttackMs = s.ElapsedMs,
                 NextAuraMs = s.ElapsedMs,
                 Brace = definition.Ability == "brace" || definition.Ability == "braceAura" ? 1 : 0,
-                AbilityCharges = definition.Ability == "braceAura" ? 1 : 0,
+                AbilityCharges = definition.Ability == "braceAura" ? 1 : definition.AbilityCharges,
                 Reroutes = definition.Ability == "reroute" ? 1 : 0,
             };
             s.Troops.Add(unit);
@@ -28,7 +28,7 @@ namespace HomelessPetHelper.Modules.Siege
             var anchor = s.Troops.First(x => x.Id == anchorId);
             var definition = c.Unit(anchor.DefinitionId);
             var materials = s.Troops.Where(x => ids.Contains(x.Id)).ToArray();
-            double fraction = materials.Sum(x => x.Hp) / (definition.Hp * 3);
+            double fraction = materials.Sum(x => x.Hp) / (definition.Hp * materials.Length);
             if (s.EncounterId != null)
                 foreach (var material in s.Troops.Where(x => ids.Contains(x.Id)))
                     s.EmitEffect(kind: "mergePart",
@@ -53,17 +53,27 @@ namespace HomelessPetHelper.Modules.Siege
             Record(s, c, "event.merge");
         }
 
+        internal static int MergeCount(SiegeUnitDefinition definition) =>
+            string.IsNullOrEmpty(definition?.UpgradeId) ? 0 : definition.MergeCount == 0 ? 3 : definition.MergeCount;
+
         internal static bool NaturalMerge(SiegeState s, SiegeCatalog c)
         {
+            if (s.ManualMergeOnly) return false;
             for (int anchorIndex = 0; anchorIndex < s.Troops.Count; anchorIndex++)
             {
                 var anchor = s.Troops[anchorIndex];
                 if (!CanNaturallyMerge(anchor, c)) continue;
                 var origin = Position(c, anchor);
+                int count = MergeCount(c.Unit(anchor.DefinitionId));
                 for (int firstIndex = anchorIndex + 1; firstIndex < s.Troops.Count; firstIndex++)
                 {
                     var first = s.Troops[firstIndex];
                     if (!MergeNeighbour(anchor, first, origin, c)) continue;
+                    if (count == 2)
+                    {
+                        Merge(s, c, new[] { anchor.Id, first.Id }, anchor.Id);
+                        return true;
+                    }
                     var firstPoint = Position(c, first);
                     for (int secondIndex = firstIndex + 1; secondIndex < s.Troops.Count; secondIndex++)
                     {
@@ -133,10 +143,20 @@ namespace HomelessPetHelper.Modules.Siege
                 s.Events.RemoveAt(0);
         }
 
+        internal static void PlayCard(SiegeState state, SiegeState.Card card)
+        {
+            state.Cards.Remove(card);
+            if (state.RotatingSupply) state.Bag.Add(card.DefinitionId);
+        }
+
         internal static void Draw(SiegeState s, SiegeCatalog c, int limit)
         {
             for (int added = 0; added < limit && s.Cards.Count < c.Rules.HandSize; added++)
             {
+                if (s.Bag.Count == 0 && s.RotatingSupply)
+                {
+                    foreach (string unitId in c.Content.Encounter(s.EncounterId).UnitIds) s.Bag.Add(unitId);
+                }
                 if (s.Bag.Count == 0)
                 {
                     var encounter = s.EncounterId == null ? null : c.Content.Encounter(s.EncounterId);
@@ -157,6 +177,7 @@ namespace HomelessPetHelper.Modules.Siege
                 s.Bag.RemoveAt(0);
                 s.Cards.Add(new SiegeState.Card { Id = ++s.Serial, DefinitionId = id });
             }
+            s.NextCardDefinitionId = s.RotatingSupply && s.Bag.Count > 0 ? s.Bag[0] : null;
         }
 
         private static double Roll(SiegeState s)

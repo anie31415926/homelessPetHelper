@@ -92,6 +92,10 @@ namespace HomelessPetHelper.Modules.Siege
             public int burstIntervalMs;
             public int auraTargets;
             public int auraRearmMs;
+            public int mergeCount;
+            public double abilityPower;
+            public int abilityCharges;
+            public int abilityCooldownMs;
         }
 
         [Serializable]
@@ -171,6 +175,8 @@ namespace HomelessPetHelper.Modules.Siege
             public double carryRange;
             public double carryDistance;
             public double carryMinDistance;
+            public bool rotateSupply;
+            public bool manualMergeOnly;
         }
 
         [Serializable]
@@ -315,6 +321,10 @@ namespace HomelessPetHelper.Modules.Siege
         public int BurstIntervalMs { get; }
         public int AuraTargets { get; }
         public int AuraRearmMs { get; }
+        public int MergeCount { get; }
+        public double AbilityPower { get; }
+        public int AbilityCharges { get; }
+        public int AbilityCooldownMs { get; }
 
         internal SiegeUnitDefinition(SiegeCatalogData.UnitDto data)
         {
@@ -338,6 +348,10 @@ namespace HomelessPetHelper.Modules.Siege
             BurstIntervalMs = data.burstIntervalMs;
             AuraTargets = data.auraTargets;
             AuraRearmMs = data.auraRearmMs;
+            MergeCount = data.mergeCount;
+            AbilityPower = data.abilityPower;
+            AbilityCharges = data.abilityCharges;
+            AbilityCooldownMs = data.abilityCooldownMs;
         }
     }
 
@@ -455,6 +469,8 @@ namespace HomelessPetHelper.Modules.Siege
         public double CarryRange { get; }
         public double CarryDistance { get; }
         public double CarryMinDistance { get; }
+        public bool RotateSupply { get; }
+        public bool ManualMergeOnly { get; }
 
         internal SiegeEncounterDefinition(SiegeCatalogData.EncounterDto data)
         {
@@ -486,6 +502,8 @@ namespace HomelessPetHelper.Modules.Siege
             CarryRange = data.carryRange;
             CarryDistance = data.carryDistance;
             CarryMinDistance = data.carryMinDistance;
+            RotateSupply = data.rotateSupply;
+            ManualMergeOnly = data.manualMergeOnly;
         }
     }
 }

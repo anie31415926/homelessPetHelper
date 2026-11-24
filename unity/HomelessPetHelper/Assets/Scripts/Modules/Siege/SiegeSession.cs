@@ -108,6 +108,8 @@ namespace HomelessPetHelper.Modules.Siege
                 Rng = seed,
                 Profile = profile,
                 EncounterId = encounterId,
+                RotatingSupply = encounter?.RotateSupply == true,
+                ManualMergeOnly = encounter?.ManualMergeOnly == true,
                 Phase = BattlePhase.Decision,
                 Turn = 1,
                 Energy = catalog.Rules.OpeningEnergy,
@@ -262,7 +264,7 @@ namespace HomelessPetHelper.Modules.Siege
             unit.FreePosition = point;
             _state.EmitEffect(EffectKind.Deploy, point, _state.ElapsedMs + 320,
                 startMs: _state.ElapsedMs, visual: definition.Icon, unitId: unit.Id);
-            _state.Cards.Remove(card);
+            SiegeEntities.PlayCard(_state, card);
             _state.Energy -= cost;
             _state.Stats.Deployed++;
             SiegeEntities.Draw(_state, Catalog, 1);
@@ -280,8 +282,9 @@ namespace HomelessPetHelper.Modules.Siege
                 return "reason.phase";
             if (o == null || o.SessionId != _state.SessionId || o.Turn != _state.Turn)
                 return "reason.stale";
-            if (Realtime && (o.DiscardCardId.HasValue || !o.DeployCardId.HasValue &&
-                o.MergeIds == null && !o.RerouteUnitId.HasValue)) return "reason.order";
+            if (((Realtime || _state.RotatingSupply) && o.DiscardCardId.HasValue) ||
+                (Realtime && !o.DeployCardId.HasValue && o.MergeIds == null && !o.RerouteUnitId.HasValue))
+                return "reason.order";
             if (o.MergeIds != null && o.RerouteUnitId.HasValue)
                 return "reason.order";
             if (o.DiscardCardId.HasValue && (o.DeployCardId.HasValue || o.MergeIds != null || o.RerouteUnitId.HasValue))
@@ -314,7 +317,7 @@ namespace HomelessPetHelper.Modules.Siege
                     return "reason.lane";
                 var definition = Catalog.Unit(card.DefinitionId);
                 cost += definition.Cost;
-                s.Cards.Remove(card);
+                SiegeEntities.PlayCard(s, card);
                 spawned = SiegeEntities.Spawn(s, definition, o.DeployLaneId).Id;
                 s.Stats.Deployed++;
                 SiegeEntities.Record(s, Catalog, "event.deploy");
@@ -323,7 +326,7 @@ namespace HomelessPetHelper.Modules.Siege
             {
                 int[] ids = o.MergeIds.Select(x => x == SiegeOrder.NewUnit ? spawned : x).ToArray();
                 int anchor = o.AnchorId == SiegeOrder.NewUnit ? spawned : o.AnchorId;
-                if (ids.Length != 3 || ids.Distinct().Count() != 3 || !ids.Contains(anchor))
+                if (ids.Length < 2 || ids.Length > 3 || ids.Distinct().Count() != ids.Length || !ids.Contains(anchor))
                     return "reason.merge";
                 var units = ids.Select(x => s.Troops.FirstOrDefault(u => u.Id == x)).ToArray();
                 if (units.Any(x => x == null || x.Hp <= 0 || x.TransitRemainingMs > 0))
@@ -332,7 +335,7 @@ namespace HomelessPetHelper.Modules.Siege
                     return "reason.carried";
                 if (
                     units.Any(x => x.DefinitionId != units[0].DefinitionId)
-                    || string.IsNullOrEmpty(Catalog.Unit(units[0].DefinitionId).UpgradeId)
+                    || SiegeEntities.MergeCount(Catalog.Unit(units[0].DefinitionId)) != ids.Length
                 )
                     return "reason.merge";
                 cost += Catalog.Rules.MergeCost;

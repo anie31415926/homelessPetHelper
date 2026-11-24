@@ -14,6 +14,7 @@ namespace HomelessPetHelper.Modules.Siege
             SiegeRepair.AdvanceWork(s, c);
             Cover(s, c);
             BraceAllies(s, c);
+            SiegeUnitAbilities.MendAllies(s, c);
             Move(s, c);
             SiegeDefenses.Advance(s, c);
             SiegeGuard.AdvanceEffect(s, c);
@@ -204,7 +205,7 @@ namespace HomelessPetHelper.Modules.Siege
                 unit.BurstHitsLeft = d.BurstHits;
                 unit.BurstCooldownMs = s.ElapsedMs + d.AttackMs;
             }
-            tower.Hp -= d.Damage;
+            tower.Hp -= d.Damage + SiegeUnitAbilities.OnTowerHit(s, c, unit, tower, d);
             if (unit.BurstHitsLeft > 0)
                 unit.BurstHitsLeft--;
             unit.NextAttackMs = s.ElapsedMs + (unit.BurstHitsLeft > 0 ? d.BurstIntervalMs : d.AttackMs);

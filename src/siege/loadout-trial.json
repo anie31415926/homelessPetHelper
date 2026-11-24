@@ -1,0 +1,107 @@
+{
+  "manualMergeOnly": true,
+  "units": [
+    {
+      "baseId": "fish",
+      "id": "trialFish",
+      "mergeCount": 2,
+      "detailKey": "detail.trialFish"
+    },
+    {
+      "baseId": "yarn",
+      "id": "trialYarn",
+      "upgradeId": null,
+      "detailKey": "detail.trialYarn"
+    },
+    {
+      "baseId": "feather",
+      "id": "trialFeather",
+      "upgradeId": null,
+      "cost": 1,
+      "gain": 3,
+      "detailKey": "detail.trialFeather"
+    },
+    {
+      "baseId": "fish",
+      "id": "clip",
+      "nameKey": "unit.clip",
+      "detailKey": "detail.clip",
+      "icon": "rope",
+      "upgradeId": null,
+      "hp": 5,
+      "damage": 0.75,
+      "gain": 5,
+      "ability": "interfere",
+      "abilityCharges": 1,
+      "abilityPeriodMs": 1300,
+      "abilityCooldownMs": 6500
+    },
+    {
+      "baseId": "yarn",
+      "id": "scarf",
+      "nameKey": "unit.scarf",
+      "detailKey": "detail.scarf",
+      "upgradeId": null,
+      "cost": 3,
+      "ability": "mend",
+      "abilityPower": 3,
+      "abilityCharges": 2,
+      "abilityPeriodMs": 2300,
+      "gain": 7,
+      "icon": "yarnLion"
+    },
+    {
+      "baseId": "fish",
+      "id": "heavyCart",
+      "nameKey": "unit.heavyCart",
+      "detailKey": "detail.heavyCart",
+      "icon": "boneWheel",
+      "upgradeId": null,
+      "cost": 4,
+      "hp": 12,
+      "speed": 14,
+      "damage": 2,
+      "gain": 10,
+      "ability": "impact",
+      "abilityPower": 6,
+      "abilityCharges": 1
+    }
+  ],
+  "loadouts": [
+    {
+      "id": "sustain",
+      "encounterId": "cat",
+      "unitIds": [
+        "trialFish",
+        "trialFeather",
+        "scarf",
+        "trialYarn",
+        "clip"
+      ]
+    },
+    {
+      "id": "breakthrough",
+      "encounterId": "cat",
+      "unitIds": [
+        "trialFish",
+        "trialFeather",
+        "heavyCart",
+        "trialYarn",
+        "clip"
+      ]
+    }
+  ],
+  "text": {
+    "unit.clip": "木夹子",
+    "detail.clip": "首次贴塔攻击后，短暂延后下一次射击。不能打断已经蓄力的攻击。",
+    "unit.scarf": "旧围巾",
+    "detail.scarf": "最多两次修整附近受损队友，不能修自己。",
+    "unit.heavyCart": "重装补给车",
+    "detail.heavyCart": "走得慢，第一次打到机关时重击。",
+    "field.nextCard": "下一张：{0} · {1}费",
+    "detail.trialFish": "慢速耐打。两只可合成鱼干花束，顶住一次推退。",
+    "detail.trialYarn": "给附近同伴织一层护套，挡损耗、不挡推退。",
+    "detail.trialFeather": "轻费用，走空路快，抵达收益低。",
+    "field.materials": "合体材料 {0}/{1} · 主体为落点"
+  }
+}

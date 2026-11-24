@@ -86,6 +86,9 @@ namespace HomelessPetHelper.Modules.Siege
         public string SessionId { get; internal set; }
         public uint Seed { get; internal set; }
         public string Profile { get; internal set; }
+        internal bool ManualMergeOnly { get; set; }
+        public bool RotatingSupply { get; internal set; }
+        public string NextCardDefinitionId { get; internal set; }
         public string EncounterId { get; internal set; }
         public BattlePhase Phase { get; internal set; }
         public bool Paused { get; internal set; }
@@ -172,7 +175,8 @@ namespace HomelessPetHelper.Modules.Siege
             target.Realtime = Realtime; target.ResourceChargeMs = ResourceChargeMs;
             target.DefenderEnergy = DefenderEnergy; target.DefenderChargeMs = DefenderChargeMs;
             target.SessionId = SessionId; target.Seed = Seed; target.Profile = Profile;
-            target.EncounterId = EncounterId;
+            target.EncounterId = EncounterId; target.RotatingSupply = RotatingSupply;
+            target.NextCardDefinitionId = NextCardDefinitionId;
             target.Phase = Phase; target.Paused = Paused; target.ElapsedMs = ElapsedMs;
             target.PlayerChargeMs = PlayerChargeMs; target.Turn = Turn; target.ResolvedTurn = ResolvedTurn;
             target.Energy = Energy; target.Progress = Progress;
@@ -278,7 +282,7 @@ namespace HomelessPetHelper.Modules.Siege
             public int WarningReadyMs { get; internal set; }
             public int SeenTurn { get; internal set; }
             public SiegePoint LockedPoint { get; internal set; }
-            internal int NextShotMs;
+            internal int NextShotMs, InterferenceReadyMs;
             public int NextAttackAtMs => NextShotMs;
 
             internal void CopyTo(Tower target)
@@ -296,6 +300,7 @@ namespace HomelessPetHelper.Modules.Siege
                 target.SeenTurn = SeenTurn;
                 target.LockedPoint = LockedPoint;
                 target.NextShotMs = NextShotMs;
+                target.InterferenceReadyMs = InterferenceReadyMs;
             }
 
             internal Tower Clone() => (Tower)MemberwiseClone();

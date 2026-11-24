@@ -134,9 +134,12 @@ namespace HomelessPetHelper.Modules.Siege.UI
                     throw new InvalidOperationException("Missing siege carry overlay binding.");
                 foreach (var encounter in catalog.Content.Encounters)
                     foreach (string id in encounter.UnitIds)
-                        if (!HasVisual(catalog.Unit(id).Icon, false)
-                            || !HasVisual(catalog.Unit(catalog.Unit(id).UpgradeId).Icon, false))
+                    {
+                        var unit = catalog.Unit(id);
+                        var upgrade = catalog.Unit(unit.UpgradeId);
+                        if (!HasVisual(unit.Icon, false) || upgrade != null && !HasVisual(upgrade.Icon, false))
                             throw new InvalidOperationException("Missing siege unit visual: " + id);
+                    }
                 foreach (var defense in catalog.Content.Towers)
                     if (!HasVisual(defense.Visual, true))
                         throw new InvalidOperationException("Missing siege tower visual: " + defense.Id);
@@ -530,6 +533,14 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 {
                     SiegeTokenArt.Draw(vh, effect.Visual, Vector2.Lerp(Local(effect.From), Local(effect.To), t),
                         (1 - t * .7f) * 8 * Scale, t * 4, palette: _spritePalette);
+                    continue;
+                }
+                if (effect.Kind == "mend" || effect.Kind == "interfere" || effect.Kind == "impact")
+                {
+                    Color color = effect.Kind == "interfere" ? (Color)new Color32(224, 173, 80, 230) : Mint;
+                    Vector2 destination = Local(effect.To);
+                    Line(vh, Local(effect.From), destination, 2 * Scale, color);
+                    Ring(vh, destination, (5 + t * 8) * Scale, 2 * Scale, color);
                     continue;
                 }
                 if (effect.Kind == "brace")

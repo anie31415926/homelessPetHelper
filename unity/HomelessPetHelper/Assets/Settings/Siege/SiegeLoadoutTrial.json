@@ -1,0 +1,1939 @@
+{
+  "catalog": {
+    "schemaVersion": 1,
+    "rules": {
+      "stepMs": 50,
+      "durationMs": 120000,
+      "playerPeriodMs": 4000,
+      "handSize": 3,
+      "bagCopies": 3,
+      "openingEnergy": 4,
+      "energyCap": 6,
+      "turnEnergy": 2,
+      "turnDraw": 1,
+      "mergeCost": 1,
+      "mergeRadius": 26,
+      "naturalMergeMinDistance": 65,
+      "target": 70,
+      "maxLog": 40,
+      "guardStart": 0.84,
+      "sweepCenterAt": 0.84,
+      "guardDurationMs": 8000,
+      "slapDamage": 2,
+      "slapPush": 16,
+      "slapPeriodMs": 1100,
+      "slapReach": 10,
+      "sweepDamage": 4,
+      "sweepPush": 42,
+      "sweepRadius": 82,
+      "sweepRecoveryMs": 1800,
+      "animalRepairs": 2,
+      "repairAmount": 8,
+      "repairThreshold": 0.6,
+      "repairDurationMs": 1800,
+      "repairCooldownMs": 10000,
+      "threatBase": 0.1,
+      "threatNearWeight": 4,
+      "threatExponent": 3,
+      "buildDurationMs": 1600,
+      "buildOnAnimalTurn": 3,
+      "animalBuilds": 1,
+      "relaxAtProgress": 0.5,
+      "rerouteDurationMs": 700,
+      "resourcePeriodMs": 1000,
+      "defenderResourcePeriodMs": 2000,
+      "defenderEnergyCap": 6,
+      "defenderOpeningEnergy": 0,
+      "defenderBuildCost": 3,
+      "fastBuildDurationMs": 600,
+      "maxTroops": 96,
+      "deploymentFraction": 0.3,
+      "defenseGridSize": 7
+    },
+    "units": [
+      {
+        "id": "cart",
+        "nameKey": "unit.cart",
+        "detailKey": "detail.cart",
+        "icon": "truck",
+        "cost": 2,
+        "speed": 20,
+        "hp": 7,
+        "damage": 2,
+        "attackMs": 1000,
+        "reach": 30,
+        "gain": 10,
+        "ability": "none",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": "ram",
+        "bag": true
+      },
+      {
+        "id": "ball",
+        "nameKey": "unit.ball",
+        "detailKey": "detail.ball",
+        "icon": "circle-dot",
+        "cost": 2,
+        "speed": 32,
+        "hp": 4,
+        "damage": 1,
+        "attackMs": 800,
+        "reach": 26,
+        "gain": 8,
+        "ability": "none",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": "runner",
+        "bag": true
+      },
+      {
+        "id": "cover",
+        "nameKey": "unit.cover",
+        "detailKey": "detail.cover",
+        "icon": "umbrella",
+        "cost": 2,
+        "speed": 23,
+        "hp": 5,
+        "damage": 1,
+        "attackMs": 1000,
+        "reach": 28,
+        "gain": 8,
+        "ability": "aura",
+        "abilityRadius": 34,
+        "abilityPeriodMs": 5000,
+        "upgradeId": "canopy",
+        "bag": true
+      },
+      {
+        "id": "ram",
+        "nameKey": "unit.ram",
+        "detailKey": "detail.ram",
+        "icon": "shield",
+        "cost": 0,
+        "speed": 22,
+        "hp": 17,
+        "damage": 5,
+        "attackMs": 1000,
+        "reach": 32,
+        "gain": 30,
+        "ability": "brace",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": null,
+        "bag": false
+      },
+      {
+        "id": "runner",
+        "nameKey": "unit.runner",
+        "detailKey": "detail.runner",
+        "icon": "route",
+        "cost": 0,
+        "speed": 39,
+        "hp": 10,
+        "damage": 3,
+        "attackMs": 800,
+        "reach": 28,
+        "gain": 24,
+        "ability": "reroute",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": null,
+        "bag": false
+      },
+      {
+        "id": "canopy",
+        "nameKey": "unit.canopy",
+        "detailKey": "detail.canopy",
+        "icon": "umbrella",
+        "cost": 0,
+        "speed": 24,
+        "hp": 13,
+        "damage": 3,
+        "attackMs": 1000,
+        "reach": 32,
+        "gain": 24,
+        "ability": "aura",
+        "abilityRadius": 62,
+        "abilityPeriodMs": 2500,
+        "upgradeId": null,
+        "bag": false
+      }
+    ],
+    "tower": {
+      "hp": 14,
+      "damage": 1,
+      "range": 85,
+      "periodMs": 1400
+    },
+    "animalStates": [
+      {
+        "id": "calm",
+        "nameKey": "animal.calm",
+        "vigilance": "watchful",
+        "stamina": "normal",
+        "periodMs": 6000
+      },
+      {
+        "id": "alert",
+        "nameKey": "animal.alert",
+        "vigilance": "high",
+        "stamina": "normal",
+        "periodMs": 3000
+      },
+      {
+        "id": "tired",
+        "nameKey": "animal.tired",
+        "vigilance": "watchful",
+        "stamina": "tired",
+        "periodMs": 8000
+      }
+    ],
+    "map": {
+      "width": 360,
+      "height": 360,
+      "lanes": [
+        {
+          "id": "top",
+          "nameKey": "lane.top",
+          "open": true,
+          "points": [
+            {
+              "x": 40,
+              "y": 310
+            },
+            {
+              "x": 43,
+              "y": 220
+            },
+            {
+              "x": 47,
+              "y": 131
+            },
+            {
+              "x": 83,
+              "y": 69
+            },
+            {
+              "x": 177,
+              "y": 48
+            },
+            {
+              "x": 249,
+              "y": 51
+            },
+            {
+              "x": 280,
+              "y": 68
+            }
+          ]
+        },
+        {
+          "id": "mid",
+          "nameKey": "lane.mid",
+          "open": true,
+          "points": [
+            {
+              "x": 40,
+              "y": 310
+            },
+            {
+              "x": 113,
+              "y": 244
+            },
+            {
+              "x": 193,
+              "y": 176
+            },
+            {
+              "x": 249,
+              "y": 121
+            },
+            {
+              "x": 286,
+              "y": 81
+            }
+          ]
+        },
+        {
+          "id": "bottom",
+          "nameKey": "lane.bottom",
+          "open": true,
+          "points": [
+            {
+              "x": 40,
+              "y": 310
+            },
+            {
+              "x": 126,
+              "y": 312
+            },
+            {
+              "x": 217,
+              "y": 307
+            },
+            {
+              "x": 294,
+              "y": 271
+            },
+            {
+              "x": 317,
+              "y": 183
+            },
+            {
+              "x": 316,
+              "y": 128
+            },
+            {
+              "x": 304,
+              "y": 94
+            }
+          ]
+        }
+      ],
+      "pads": [
+        {
+          "id": "top.outer",
+          "laneId": "top",
+          "at": 0.32,
+          "initial": false
+        },
+        {
+          "id": "top.inner",
+          "laneId": "top",
+          "at": 0.73,
+          "initial": true
+        },
+        {
+          "id": "mid.outer",
+          "laneId": "mid",
+          "at": 0.39,
+          "initial": true
+        },
+        {
+          "id": "mid.inner",
+          "laneId": "mid",
+          "at": 0.73,
+          "initial": false
+        },
+        {
+          "id": "bottom.outer",
+          "laneId": "bottom",
+          "at": 0.32,
+          "initial": false
+        },
+        {
+          "id": "bottom.inner",
+          "laneId": "bottom",
+          "at": 0.73,
+          "initial": false
+        }
+      ]
+    },
+    "contentUnits": [
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "fish",
+        "nameKey": "unit.fish",
+        "detailKey": "detail.fish",
+        "icon": "fish",
+        "cost": 2,
+        "speed": 20,
+        "hp": 7,
+        "damage": 2,
+        "attackMs": 1000,
+        "reach": 30,
+        "gain": 10,
+        "ability": "none",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": "bouquet",
+        "bag": false
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "yarn",
+        "nameKey": "unit.yarn",
+        "detailKey": "detail.yarn",
+        "icon": "yarn",
+        "cost": 2,
+        "speed": 23,
+        "hp": 5,
+        "damage": 1,
+        "attackMs": 1000,
+        "reach": 28,
+        "gain": 8,
+        "ability": "aura",
+        "abilityRadius": 34,
+        "abilityPeriodMs": 5000,
+        "upgradeId": "yarnLion",
+        "bag": false
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "feather",
+        "nameKey": "unit.feather",
+        "detailKey": "detail.feather",
+        "icon": "feather",
+        "cost": 2,
+        "speed": 32,
+        "hp": 4,
+        "damage": 1,
+        "attackMs": 800,
+        "reach": 26,
+        "gain": 8,
+        "ability": "none",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": "pinwheel",
+        "bag": false
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "bouquet",
+        "nameKey": "unit.bouquet",
+        "detailKey": "detail.bouquet",
+        "icon": "bouquet",
+        "cost": 0,
+        "speed": 22,
+        "hp": 17,
+        "damage": 5,
+        "attackMs": 1000,
+        "reach": 32,
+        "gain": 30,
+        "ability": "brace",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": null,
+        "bag": false
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "yarnLion",
+        "nameKey": "unit.yarnLion",
+        "detailKey": "detail.yarnLion",
+        "icon": "yarnLion",
+        "cost": 0,
+        "speed": 24,
+        "hp": 13,
+        "damage": 3,
+        "attackMs": 1000,
+        "reach": 32,
+        "gain": 24,
+        "ability": "aura",
+        "abilityRadius": 62,
+        "abilityPeriodMs": 2500,
+        "upgradeId": null,
+        "bag": false
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "pinwheel",
+        "nameKey": "unit.pinwheel",
+        "detailKey": "detail.pinwheel",
+        "icon": "pinwheel",
+        "cost": 0,
+        "speed": 39,
+        "hp": 10,
+        "damage": 3,
+        "attackMs": 800,
+        "reach": 28,
+        "gain": 24,
+        "ability": "reroute",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": null,
+        "bag": false
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "bone",
+        "nameKey": "unit.bone",
+        "detailKey": "detail.bone",
+        "icon": "bone",
+        "cost": 2,
+        "speed": 21,
+        "hp": 8,
+        "damage": 2,
+        "attackMs": 1200,
+        "reach": 30,
+        "gain": 10,
+        "ability": "none",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": "boneWheel",
+        "bag": false
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "disc",
+        "nameKey": "unit.disc",
+        "detailKey": "detail.disc",
+        "icon": "disc",
+        "cost": 2,
+        "speed": 26,
+        "hp": 4,
+        "damage": 1,
+        "attackMs": 900,
+        "reach": 48,
+        "gain": 8,
+        "ability": "none",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": "triDisc",
+        "bag": false
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "rope",
+        "nameKey": "unit.rope",
+        "detailKey": "detail.rope",
+        "icon": "rope",
+        "cost": 2,
+        "speed": 23,
+        "hp": 6,
+        "damage": 1,
+        "attackMs": 1000,
+        "reach": 28,
+        "gain": 8,
+        "ability": "brace",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": "ropeOctopus",
+        "bag": false
+      },
+      {
+        "burstHits": 3,
+        "burstIntervalMs": 220,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "boneWheel",
+        "nameKey": "unit.boneWheel",
+        "detailKey": "detail.boneWheel",
+        "icon": "boneWheel",
+        "cost": 0,
+        "speed": 22,
+        "hp": 18,
+        "damage": 4,
+        "attackMs": 1200,
+        "reach": 32,
+        "gain": 30,
+        "ability": "burst",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": null,
+        "bag": false
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "triDisc",
+        "nameKey": "unit.triDisc",
+        "detailKey": "detail.triDisc",
+        "icon": "triDisc",
+        "cost": 0,
+        "speed": 32,
+        "hp": 11,
+        "damage": 3,
+        "attackMs": 900,
+        "reach": 52,
+        "gain": 24,
+        "ability": "reroute",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": null,
+        "bag": false
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 2,
+        "auraRearmMs": 8000,
+        "id": "ropeOctopus",
+        "nameKey": "unit.ropeOctopus",
+        "detailKey": "detail.ropeOctopus",
+        "icon": "ropeOctopus",
+        "cost": 0,
+        "speed": 24,
+        "hp": 14,
+        "damage": 3,
+        "attackMs": 1000,
+        "reach": 32,
+        "gain": 24,
+        "ability": "braceAura",
+        "abilityRadius": 48,
+        "abilityPeriodMs": 0,
+        "upgradeId": null,
+        "bag": false
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "trialFish",
+        "nameKey": "unit.fish",
+        "detailKey": "detail.trialFish",
+        "icon": "fish",
+        "cost": 2,
+        "speed": 20,
+        "hp": 7,
+        "damage": 2,
+        "attackMs": 1000,
+        "reach": 30,
+        "gain": 10,
+        "ability": "none",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": "bouquet",
+        "bag": false,
+        "mergeCount": 2
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "trialYarn",
+        "nameKey": "unit.yarn",
+        "detailKey": "detail.trialYarn",
+        "icon": "yarn",
+        "cost": 2,
+        "speed": 23,
+        "hp": 5,
+        "damage": 1,
+        "attackMs": 1000,
+        "reach": 28,
+        "gain": 8,
+        "ability": "aura",
+        "abilityRadius": 34,
+        "abilityPeriodMs": 5000,
+        "upgradeId": null,
+        "bag": false
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "trialFeather",
+        "nameKey": "unit.feather",
+        "detailKey": "detail.trialFeather",
+        "icon": "feather",
+        "cost": 1,
+        "speed": 32,
+        "hp": 4,
+        "damage": 1,
+        "attackMs": 800,
+        "reach": 26,
+        "gain": 3,
+        "ability": "none",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": null,
+        "bag": false
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "clip",
+        "nameKey": "unit.clip",
+        "detailKey": "detail.clip",
+        "icon": "rope",
+        "cost": 2,
+        "speed": 20,
+        "hp": 5,
+        "damage": 0.75,
+        "attackMs": 1000,
+        "reach": 30,
+        "gain": 5,
+        "ability": "interfere",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 1300,
+        "upgradeId": null,
+        "bag": false,
+        "abilityCharges": 1,
+        "abilityCooldownMs": 6500
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "scarf",
+        "nameKey": "unit.scarf",
+        "detailKey": "detail.scarf",
+        "icon": "yarnLion",
+        "cost": 3,
+        "speed": 23,
+        "hp": 5,
+        "damage": 1,
+        "attackMs": 1000,
+        "reach": 28,
+        "gain": 7,
+        "ability": "mend",
+        "abilityRadius": 34,
+        "abilityPeriodMs": 2300,
+        "upgradeId": null,
+        "bag": false,
+        "abilityPower": 3,
+        "abilityCharges": 2
+      },
+      {
+        "burstHits": 0,
+        "burstIntervalMs": 0,
+        "auraTargets": 0,
+        "auraRearmMs": 0,
+        "id": "heavyCart",
+        "nameKey": "unit.heavyCart",
+        "detailKey": "detail.heavyCart",
+        "icon": "boneWheel",
+        "cost": 4,
+        "speed": 14,
+        "hp": 12,
+        "damage": 2,
+        "attackMs": 1000,
+        "reach": 30,
+        "gain": 10,
+        "ability": "impact",
+        "abilityRadius": 0,
+        "abilityPeriodMs": 0,
+        "upgradeId": null,
+        "bag": false,
+        "abilityPower": 6,
+        "abilityCharges": 1
+      }
+    ],
+    "towerTypes": [
+      {
+        "id": "paper",
+        "nameKey": "tower.paper",
+        "visual": "paper",
+        "attack": "single",
+        "hp": 14,
+        "damage": 1,
+        "range": 85,
+        "periodMs": 1400,
+        "warningMs": 0,
+        "radius": 0,
+        "push": 0,
+        "slowFactor": 1,
+        "zoneDurationMs": 0
+      },
+      {
+        "id": "thread",
+        "nameKey": "tower.thread",
+        "visual": "thread",
+        "attack": "slow",
+        "hp": 12,
+        "damage": 0,
+        "range": 82,
+        "periodMs": 5000,
+        "warningMs": 0,
+        "radius": 24,
+        "push": 0,
+        "slowFactor": 0.55,
+        "zoneDurationMs": 2200
+      },
+      {
+        "id": "scratch",
+        "nameKey": "tower.scratch",
+        "visual": "scratch",
+        "attack": "push",
+        "hp": 14,
+        "damage": 1,
+        "range": 64,
+        "periodMs": 5600,
+        "warningMs": 1800,
+        "radius": 23,
+        "push": 24,
+        "slowFactor": 1,
+        "zoneDurationMs": 0
+      },
+      {
+        "id": "kennel",
+        "nameKey": "tower.kennel",
+        "visual": "kennel",
+        "attack": "single",
+        "hp": 14,
+        "damage": 1,
+        "range": 85,
+        "periodMs": 1400,
+        "warningMs": 0,
+        "radius": 0,
+        "push": 0,
+        "slowFactor": 1,
+        "zoneDurationMs": 0
+      },
+      {
+        "id": "bubbles",
+        "nameKey": "tower.bubbles",
+        "visual": "bubbles",
+        "attack": "slow",
+        "hp": 12,
+        "damage": 0,
+        "range": 82,
+        "periodMs": 5000,
+        "warningMs": 0,
+        "radius": 24,
+        "push": 0,
+        "slowFactor": 0.55,
+        "zoneDurationMs": 2200
+      },
+      {
+        "id": "slippers",
+        "nameKey": "tower.slippers",
+        "visual": "slippers",
+        "attack": "push",
+        "hp": 14,
+        "damage": 1,
+        "range": 64,
+        "periodMs": 5600,
+        "warningMs": 1800,
+        "radius": 23,
+        "push": 24,
+        "slowFactor": 1,
+        "zoneDurationMs": 0
+      }
+    ],
+    "encounters": [
+      {
+        "id": "sustain",
+        "nameKey": "encounter.cat",
+        "animalVisual": "cat",
+        "guardNameKey": "unity.guard",
+        "sweepNameKey": "unity.sweep",
+        "unitIds": [
+          "trialFish",
+          "trialFeather",
+          "scarf",
+          "trialYarn",
+          "clip"
+        ],
+        "initialTowerIds": [
+          "thread",
+          "paper"
+        ],
+        "buildTowerIds": [
+          "scratch"
+        ],
+        "sweepDelayMs": 0,
+        "holdNameKey": "unity.hold",
+        "holdDurationMs": 2600,
+        "holdRecoveryMs": 700,
+        "holdCooldownMs": 14000,
+        "holdProtectionMs": 10000,
+        "holdOriginX": 301,
+        "holdOriginY": 38,
+        "holdRange": 110,
+        "carryNameKey": "unity.carry",
+        "carryDelayMs": 0,
+        "carryDurationMs": 0,
+        "carryRecoveryMs": 0,
+        "carryCooldownMs": 0,
+        "carryProtectionMs": 0,
+        "carryOriginX": 301,
+        "carryOriginY": 38,
+        "carryRange": 0,
+        "carryDistance": 0,
+        "carryMinDistance": 20,
+        "rotateSupply": true,
+        "manualMergeOnly": true
+      },
+      {
+        "id": "breakthrough",
+        "nameKey": "encounter.cat",
+        "animalVisual": "cat",
+        "guardNameKey": "unity.guard",
+        "sweepNameKey": "unity.sweep",
+        "unitIds": [
+          "trialFish",
+          "trialFeather",
+          "heavyCart",
+          "trialYarn",
+          "clip"
+        ],
+        "initialTowerIds": [
+          "thread",
+          "paper"
+        ],
+        "buildTowerIds": [
+          "scratch"
+        ],
+        "sweepDelayMs": 0,
+        "holdNameKey": "unity.hold",
+        "holdDurationMs": 2600,
+        "holdRecoveryMs": 700,
+        "holdCooldownMs": 14000,
+        "holdProtectionMs": 10000,
+        "holdOriginX": 301,
+        "holdOriginY": 38,
+        "holdRange": 110,
+        "carryNameKey": "unity.carry",
+        "carryDelayMs": 0,
+        "carryDurationMs": 0,
+        "carryRecoveryMs": 0,
+        "carryCooldownMs": 0,
+        "carryProtectionMs": 0,
+        "carryOriginX": 301,
+        "carryOriginY": 38,
+        "carryRange": 0,
+        "carryDistance": 0,
+        "carryMinDistance": 20,
+        "rotateSupply": true,
+        "manualMergeOnly": true
+      }
+    ]
+  },
+  "text": {
+    "entries": [
+      {
+        "key": "title",
+        "value": "三路救助"
+      },
+      {
+        "key": "trial",
+        "value": "独立玩法试验"
+      },
+      {
+        "key": "pickMaterial",
+        "value": "选择材料"
+      },
+      {
+        "key": "anchor",
+        "value": "合体主体"
+      },
+      {
+        "key": "rerouteTarget",
+        "value": "改道目的地"
+      },
+      {
+        "key": "unit.cart",
+        "value": "补给小车"
+      },
+      {
+        "key": "unit.ball",
+        "value": "引导球"
+      },
+      {
+        "key": "unit.cover",
+        "value": "遮蔽小队"
+      },
+      {
+        "key": "unit.ram",
+        "value": "重装小车"
+      },
+      {
+        "key": "unit.runner",
+        "value": "跳跳球"
+      },
+      {
+        "key": "unit.canopy",
+        "value": "护送伞阵"
+      },
+      {
+        "key": "detail.cart",
+        "value": "稳步推进，三合一后抵挡一次击退。"
+      },
+      {
+        "key": "detail.ball",
+        "value": "移动快，三合一后可主动改道一次。"
+      },
+      {
+        "key": "detail.cover",
+        "value": "为附近同伴补充一层防护。"
+      },
+      {
+        "key": "detail.ram",
+        "value": "更强的推进能力，抵挡一次击退；不是无敌。"
+      },
+      {
+        "key": "detail.runner",
+        "value": "更快抵达；可消耗一次改道机会转往另一条路线。"
+      },
+      {
+        "key": "detail.canopy",
+        "value": "更大范围、更频繁地保护同行单位。"
+      },
+      {
+        "key": "animal.calm",
+        "value": "正在观察"
+      },
+      {
+        "key": "animal.alert",
+        "value": "高度警戒"
+      },
+      {
+        "key": "animal.tired",
+        "value": "有些疲倦"
+      },
+      {
+        "key": "range",
+        "value": "射程"
+      },
+      {
+        "key": "guardPlan",
+        "value": "守门预告"
+      },
+      {
+        "key": "repairPlan",
+        "value": "修补预告"
+      },
+      {
+        "key": "repairBudget",
+        "value": "可用修补"
+      },
+      {
+        "key": "buildBudget",
+        "value": "可用补塔"
+      },
+      {
+        "key": "event.repairPlan",
+        "value": "猫咪准备修补受损炮台。"
+      },
+      {
+        "key": "event.repairStart",
+        "value": "炮台修补中。"
+      },
+      {
+        "key": "event.repaired",
+        "value": "一座炮台完成了修补。"
+      },
+      {
+        "key": "event.repairStopped",
+        "value": "炮台被拆除，修补中断。"
+      },
+      {
+        "key": "lane.top",
+        "value": "上路"
+      },
+      {
+        "key": "lane.mid",
+        "value": "中路"
+      },
+      {
+        "key": "lane.bottom",
+        "value": "下路"
+      },
+      {
+        "key": "player",
+        "value": "我方"
+      },
+      {
+        "key": "animal",
+        "value": "猫咪"
+      },
+      {
+        "key": "goal",
+        "value": "化解防御"
+      },
+      {
+        "key": "energy",
+        "value": "补给"
+      },
+      {
+        "key": "seconds",
+        "value": "秒"
+      },
+      {
+        "key": "turn",
+        "value": "回合"
+      },
+      {
+        "key": "ready",
+        "value": "你的回合"
+      },
+      {
+        "key": "running",
+        "value": "正在推进"
+      },
+      {
+        "key": "thinking",
+        "value": "策略暂停"
+      },
+      {
+        "key": "paused",
+        "value": "已暂停"
+      },
+      {
+        "key": "resume",
+        "value": "继续"
+      },
+      {
+        "key": "execute",
+        "value": "执行"
+      },
+      {
+        "key": "wait",
+        "value": "蓄势"
+      },
+      {
+        "key": "deploy",
+        "value": "出兵"
+      },
+      {
+        "key": "merge",
+        "value": "合体"
+      },
+      {
+        "key": "reroute",
+        "value": "改道"
+      },
+      {
+        "key": "discard",
+        "value": "换牌"
+      },
+      {
+        "key": "cancel",
+        "value": "取消"
+      },
+      {
+        "key": "close",
+        "value": "关闭"
+      },
+      {
+        "key": "menu",
+        "value": "暂停与设置"
+      },
+      {
+        "key": "restart",
+        "value": "重试本局"
+      },
+      {
+        "key": "new",
+        "value": "新的相遇"
+      },
+      {
+        "key": "state",
+        "value": "动物状态"
+      },
+      {
+        "key": "seed",
+        "value": "相遇编号"
+      },
+      {
+        "key": "apply",
+        "value": "重新开始"
+      },
+      {
+        "key": "cost",
+        "value": "消耗"
+      },
+      {
+        "key": "level",
+        "value": "合体"
+      },
+      {
+        "key": "tower",
+        "value": "弹射器"
+      },
+      {
+        "key": "building",
+        "value": "搭建中"
+      },
+      {
+        "key": "emptyPad",
+        "value": "空塔位"
+      },
+      {
+        "key": "destroyed",
+        "value": "已拆除"
+      },
+      {
+        "key": "guard",
+        "value": "守门"
+      },
+      {
+        "key": "sweep",
+        "value": "横扫预告"
+      },
+      {
+        "key": "recovery",
+        "value": "收招空档"
+      },
+      {
+        "key": "brace",
+        "value": "抗击退"
+      },
+      {
+        "key": "shield",
+        "value": "防护"
+      },
+      {
+        "key": "charge",
+        "value": "可改道"
+      },
+      {
+        "key": "units",
+        "value": "场上单位"
+      },
+      {
+        "key": "noUnits",
+        "value": "暂无场上单位"
+      },
+      {
+        "key": "plan",
+        "value": "待执行"
+      },
+      {
+        "key": "materials",
+        "value": "材料"
+      },
+      {
+        "key": "allLanes",
+        "value": "固定三路已开样例"
+      },
+      {
+        "key": "win",
+        "value": "防线已化解"
+      },
+      {
+        "key": "timeout",
+        "value": "这次没来得及"
+      },
+      {
+        "key": "resultNote",
+        "value": "本次玩法挑战结束"
+      },
+      {
+        "key": "return",
+        "value": "回到战场"
+      },
+      {
+        "key": "actions",
+        "value": "出兵"
+      },
+      {
+        "key": "merges",
+        "value": "合体"
+      },
+      {
+        "key": "towers",
+        "value": "拆塔"
+      },
+      {
+        "key": "delivered",
+        "value": "抵达"
+      },
+      {
+        "key": "swapUsed",
+        "value": "本回合已换牌"
+      },
+      {
+        "key": "invalidSeed",
+        "value": "请输入 0～4294967295 的整数编号。"
+      },
+      {
+        "key": "reason.phase",
+        "value": "当前不是可操作的玩家回合。"
+      },
+      {
+        "key": "reason.stale",
+        "value": "这项操作已过期。"
+      },
+      {
+        "key": "reason.energy",
+        "value": "补给不足。"
+      },
+      {
+        "key": "reason.card",
+        "value": "这张牌已不在手中。"
+      },
+      {
+        "key": "reason.lane",
+        "value": "这条路线尚不可用。"
+      },
+      {
+        "key": "reason.merge",
+        "value": "需要三个存活的同类基础单位。"
+      },
+      {
+        "key": "reason.anchor",
+        "value": "请选定合体主体。"
+      },
+      {
+        "key": "reason.reroute",
+        "value": "该单位没有可用的改道机会。"
+      },
+      {
+        "key": "reason.order",
+        "value": "本回合最多出一张牌，可附带一次主动合体。"
+      },
+      {
+        "key": "reason.discard",
+        "value": "换牌不能同时出兵或合体。"
+      },
+      {
+        "key": "event.start",
+        "value": "通道已就绪，先组织第一波。"
+      },
+      {
+        "key": "event.turn",
+        "value": "你的回合，战场已暂停。"
+      },
+      {
+        "key": "event.deploy",
+        "value": "部队出发。"
+      },
+      {
+        "key": "event.merge",
+        "value": "三个单位在主体位置合体。"
+      },
+      {
+        "key": "event.natural",
+        "value": "前线汇合，自然合体。"
+      },
+      {
+        "key": "event.destroyed",
+        "value": "一座炮台已拆除。"
+      },
+      {
+        "key": "event.lost",
+        "value": "有单位被拦下了。"
+      },
+      {
+        "key": "event.deliver",
+        "value": "救助手段成功抵达。"
+      },
+      {
+        "key": "event.guard",
+        "value": "猫咪驻守一路，持续拍击前排。"
+      },
+      {
+        "key": "event.warning",
+        "value": "尾巴蓄势，大范围横扫已锁定。"
+      },
+      {
+        "key": "event.sweep",
+        "value": "横扫击中范围内的部队，收招中。"
+      },
+      {
+        "key": "event.build",
+        "value": "猫咪正在准备新的炮台。"
+      },
+      {
+        "key": "event.reroute",
+        "value": "跳跳球正在转线。"
+      },
+      {
+        "key": "event.relax",
+        "value": "它的警戒正在缓和。"
+      },
+      {
+        "key": "event.discard",
+        "value": "已留出一个补牌位置。"
+      },
+      {
+        "key": "event.win",
+        "value": "这次防线已经化解。"
+      },
+      {
+        "key": "event.timeout",
+        "value": "时间到了，本次未完成。"
+      },
+      {
+        "key": "game.transport",
+        "value": "安全转运回站"
+      },
+      {
+        "key": "game.return",
+        "value": "结束救助回站"
+      },
+      {
+        "key": "game.won",
+        "value": "它愿意让你靠近了，可以安全转运回站。"
+      },
+      {
+        "key": "game.timeout",
+        "value": "这次还没能靠近它，先回站休整。"
+      },
+      {
+        "key": "unity.title",
+        "value": "街角救助"
+      },
+      {
+        "key": "unity.status",
+        "value": "第 {0} 回合 · {1} / {2} · 剩余 {3}秒 · 资源 {4}"
+      },
+      {
+        "key": "unity.decision",
+        "value": "你的回合"
+      },
+      {
+        "key": "unity.running",
+        "value": "行动中"
+      },
+      {
+        "key": "unity.paused",
+        "value": "已暂停"
+      },
+      {
+        "key": "unity.won",
+        "value": "救助挑战完成"
+      },
+      {
+        "key": "unity.timeout",
+        "value": "本次未完成"
+      },
+      {
+        "key": "unity.intent",
+        "value": "{0} · 下次：{1} / {2} · 建塔 {3} · 修补 {4}"
+      },
+      {
+        "key": "unity.guard",
+        "value": "守门"
+      },
+      {
+        "key": "unity.sweep",
+        "value": "范围横扫"
+      },
+      {
+        "key": "unity.build",
+        "value": "建塔"
+      },
+      {
+        "key": "unity.repair",
+        "value": "修补炮台"
+      },
+      {
+        "key": "unity.submit",
+        "value": "执行"
+      },
+      {
+        "key": "unity.skip",
+        "value": "等待"
+      },
+      {
+        "key": "unity.discard",
+        "value": "换掉选牌"
+      },
+      {
+        "key": "unity.merge",
+        "value": "付费合体"
+      },
+      {
+        "key": "unity.mergeCost",
+        "value": "合体 · {0}点"
+      },
+      {
+        "key": "unity.destination",
+        "value": "改道至{0}"
+      },
+      {
+        "key": "unity.anchor",
+        "value": "落点 #{0}"
+      },
+      {
+        "key": "unity.reroute",
+        "value": "改道"
+      },
+      {
+        "key": "unity.clear",
+        "value": "清空计划"
+      },
+      {
+        "key": "unity.retry",
+        "value": "同局重试"
+      },
+      {
+        "key": "unity.new",
+        "value": "新种子"
+      },
+      {
+        "key": "unity.profile",
+        "value": "状态：{0}"
+      },
+      {
+        "key": "unity.pause",
+        "value": "暂停 / 继续"
+      },
+      {
+        "key": "unity.card",
+        "value": "{0}\n费用 {1}"
+      },
+      {
+        "key": "unity.unit",
+        "value": "#{0} {1} · {2} · {3:0.#}/{4:0.#}"
+      },
+      {
+        "key": "unity.plan",
+        "value": "出兵：{0} / {1}\n材料：{2} · 落点 {3} · 费用 {4}"
+      },
+      {
+        "key": "unity.none",
+        "value": "无"
+      },
+      {
+        "key": "unity.newUnit",
+        "value": "新出兵"
+      },
+      {
+        "key": "unity.materials",
+        "value": "场上单位"
+      },
+      {
+        "key": "unity.failed",
+        "value": "配置或绑定错误，请查看 Console"
+      },
+      {
+        "key": "unity.seed",
+        "value": "种子 {0}"
+      },
+      {
+        "key": "unity.effects",
+        "value": "{0}\n{1} · 威力 {2} · 抵达 +{3}"
+      },
+      {
+        "key": "unity.brace",
+        "value": "抵挡一次击退"
+      },
+      {
+        "key": "unity.aura",
+        "value": "为附近同伴提供护盾"
+      },
+      {
+        "key": "unity.rerouteAbility",
+        "value": "可改道一次"
+      },
+      {
+        "key": "unity.noneAbility",
+        "value": "基础救助手段"
+      },
+      {
+        "key": "unity.tower",
+        "value": "炮台 {0:0}/{1:0} · 射程 {2}"
+      },
+      {
+        "key": "unity.recovering",
+        "value": "收招中"
+      },
+      {
+        "key": "unity.repairing",
+        "value": "正在修补"
+      },
+      {
+        "key": "unity.ready",
+        "value": "选择手牌和路线，或选择场上材料"
+      },
+      {
+        "key": "unity.materialCount",
+        "value": "材料 {0}/3"
+      },
+      {
+        "key": "unity.playerBar",
+        "value": "我方行动"
+      },
+      {
+        "key": "unity.animalBar",
+        "value": "动物行动"
+      },
+      {
+        "key": "encounter.cat",
+        "value": "猫咪阵地"
+      },
+      {
+        "key": "encounter.dog",
+        "value": "狗狗阵地"
+      },
+      {
+        "key": "unit.fish",
+        "value": "小鱼干"
+      },
+      {
+        "key": "detail.fish",
+        "value": "慢速耐打，稳定拆塔。三合一后扇开，顶住一次推退。"
+      },
+      {
+        "key": "unit.bouquet",
+        "value": "鱼干花束"
+      },
+      {
+        "key": "detail.bouquet",
+        "value": "一次抗推保住位置，仍承受损耗。"
+      },
+      {
+        "key": "unit.yarn",
+        "value": "毛线球"
+      },
+      {
+        "key": "detail.yarn",
+        "value": "给附近同伴织一层护套，挡损耗、不挡推退。"
+      },
+      {
+        "key": "unit.yarnLion",
+        "value": "毛线狮子"
+      },
+      {
+        "key": "detail.yarnLion",
+        "value": "抖开鬃毛，扩大护送范围并更快补护套，不叠层。"
+      },
+      {
+        "key": "unit.feather",
+        "value": "小羽毛"
+      },
+      {
+        "key": "detail.feather",
+        "value": "高速脆弱，适合提前走长边路。"
+      },
+      {
+        "key": "unit.pinwheel",
+        "value": "羽毛风车"
+      },
+      {
+        "key": "detail.pinwheel",
+        "value": "一次主动改道，经过真实空间轨迹，不免伤。"
+      },
+      {
+        "key": "unit.bone",
+        "value": "小骨头"
+      },
+      {
+        "key": "detail.bone",
+        "value": "慢速耐打，单次拆解扎实。"
+      },
+      {
+        "key": "unit.boneWheel",
+        "value": "骨头风车"
+      },
+      {
+        "key": "detail.boneWheel",
+        "value": "初次接塔三连敲，被推离、转线或目标被拆后，余下敲击作废。"
+      },
+      {
+        "key": "unit.disc",
+        "value": "飞盘"
+      },
+      {
+        "key": "detail.disc",
+        "value": "拆塔距离较长，但仍在机关射程内，耐久低。"
+      },
+      {
+        "key": "unit.triDisc",
+        "value": "三叶飞盘"
+      },
+      {
+        "key": "detail.triDisc",
+        "value": "可以拆塔后主动改道一次，不会越塔或无敌。"
+      },
+      {
+        "key": "unit.rope",
+        "value": "绳结玩具"
+      },
+      {
+        "key": "detail.rope",
+        "value": "抓地抵消一次推退，仍承受损耗。"
+      },
+      {
+        "key": "unit.ropeOctopus",
+        "value": "绳结章鱼"
+      },
+      {
+        "key": "detail.ropeOctopus",
+        "value": "自身抗推一次；展开绳臂，给附近最多两位同伴各挂一次性稳绳，仅展开一次。"
+      },
+      {
+        "key": "tower.paper",
+        "value": "纸箱纸团台"
+      },
+      {
+        "key": "tower.thread",
+        "value": "毛线绊绊架"
+      },
+      {
+        "key": "tower.scratch",
+        "value": "抓板拍爪台"
+      },
+      {
+        "key": "tower.kennel",
+        "value": "狗窝发球台"
+      },
+      {
+        "key": "tower.bubbles",
+        "value": "水碗泡泡台"
+      },
+      {
+        "key": "tower.slippers",
+        "value": "拖鞋跷跷板"
+      },
+      {
+        "key": "unity.encounter",
+        "value": "{0}"
+      },
+      {
+        "key": "unity.legacy",
+        "value": "原型对照"
+      },
+      {
+        "key": "unity.burst",
+        "value": "初次接塔三连敲"
+      },
+      {
+        "key": "unity.braceAura",
+        "value": "一次展开稳绳"
+      },
+      {
+        "key": "unity.dogGuard",
+        "value": "鼻顶守门"
+      },
+      {
+        "key": "unity.dogSweep",
+        "value": "蓄力飞扑"
+      },
+      {
+        "key": "unity.towerType",
+        "value": "{0} · 耐久 {1:0.#}/{2:0.#} · 射程 {3:0}"
+      },
+      {
+        "key": "event.slow",
+        "value": "机关铺下一片临时减速区。"
+      },
+      {
+        "key": "event.braced",
+        "value": "稳绳展开，同伴获得一次抗推。"
+      },
+      {
+        "key": "unity.hold",
+        "value": "好奇按住"
+      },
+      {
+        "key": "unity.holdTarget",
+        "value": " · 盯住 #{0}"
+      },
+      {
+        "key": "unity.holding",
+        "value": "按住 #{0} · {1:0.0}秒"
+      },
+      {
+        "key": "unity.held",
+        "value": " · 被按住 {0:0.0}秒"
+      },
+      {
+        "key": "unity.holdProtected",
+        "value": " · 暂不再抓"
+      },
+      {
+        "key": "unity.holdCarry",
+        "value": "合体仍按住 {0:0.0}秒"
+      },
+      {
+        "key": "reason.held",
+        "value": "被按住时无法改道；合体仍会承接剩余按住时间。"
+      },
+      {
+        "key": "event.holdPlan",
+        "value": "猫盯住了一个道具，准备伸爪按住。"
+      },
+      {
+        "key": "event.held",
+        "value": "猫伸爪按住道具，其他单位仍可推进。"
+      },
+      {
+        "key": "event.holdMiss",
+        "value": "爪子落空，没有换抓其他单位。"
+      },
+      {
+        "key": "event.holdEnd",
+        "value": "爪子松开，这个道具暂时不会再被抓。"
+      },
+      {
+        "key": "unity.carry",
+        "value": "叼回去"
+      },
+      {
+        "key": "unity.carrying",
+        "value": "叼回 #{0} · {1:0.0}秒"
+      },
+      {
+        "key": "unity.carried",
+        "value": " · 搬运中 {0:0.0}秒"
+      },
+      {
+        "key": "reason.carried",
+        "value": "搬运中无法合体或改道。"
+      },
+      {
+        "key": "event.carryPlan",
+        "value": "狗盯住了一个道具，准备叼回去。"
+      },
+      {
+        "key": "event.carried",
+        "value": "狗轻叼道具，沿原路向后搬运。"
+      },
+      {
+        "key": "event.carryMiss",
+        "value": "没有叼中，也没有换抓其他单位。"
+      },
+      {
+        "key": "event.carryEnd",
+        "value": "道具落地，恢复行动，暂时不会再被抓。"
+      },
+      {
+        "key": "field.status",
+        "value": "信任 {0:0}/{1:0}    剩余 {2:0}秒    资源 {3}"
+      },
+      {
+        "key": "field.intent",
+        "value": "{0}"
+      },
+      {
+        "key": "field.plan",
+        "value": "费用 {0} · 余 {1}"
+      },
+      {
+        "key": "field.deploy",
+        "value": "松手立即部署"
+      },
+      {
+        "key": "field.ready",
+        "value": "拖动手牌到己方范围内"
+      },
+      {
+        "key": "field.pauseInfo",
+        "value": "资源随时间恢复。拖牌到己方范围内，松手立即部署。对手消耗资源部署防守单位，位置不能重叠。菜单可暂停。"
+      },
+      {
+        "key": "field.reroute",
+        "value": "改道"
+      },
+      {
+        "key": "field.cancel",
+        "value": "撤销"
+      },
+      {
+        "key": "field.discard",
+        "value": "换掉（占回合）"
+      },
+      {
+        "key": "field.materials",
+        "value": "合体材料 {0}/{1} · 主体为落点"
+      },
+      {
+        "key": "unity.resume",
+        "value": "继续"
+      },
+      {
+        "key": "field.lane.top",
+        "value": "左侧花径"
+      },
+      {
+        "key": "field.lane.mid",
+        "value": "中央石径"
+      },
+      {
+        "key": "field.lane.bottom",
+        "value": "右侧篱路"
+      },
+      {
+        "key": "field.menu",
+        "value": "玩法 / 暂停"
+      },
+      {
+        "key": "field.compactStatus",
+        "value": "信任 {0:0}/{1:0} · {2:0}秒"
+      },
+      {
+        "key": "field.help",
+        "value": "{0}\n动物动向：{1}\n\n点手牌再点路口，或直接拖到路口。点场上道具可合体，有改道能力才可改道。预览不扣费，点执行才行动。\n\n{2}"
+      },
+      {
+        "key": "field.resource",
+        "value": "资源 {0}"
+      },
+      {
+        "key": "field.unaffordable",
+        "value": "资源不足"
+      },
+      {
+        "key": "field.emptyHand",
+        "value": "暂无手牌"
+      },
+      {
+        "key": "field.planned",
+        "value": "已计划"
+      },
+      {
+        "key": "field.dropOutside",
+        "value": "请放在己方部署范围内"
+      },
+      {
+        "key": "field.realtimeResource",
+        "value": "{0}/{1} · {2}/{3}"
+      },
+      {
+        "key": "field.unitLimit",
+        "value": "场上单位已满，稍后再部署"
+      },
+      {
+        "key": "unit.clip",
+        "value": "木夹子"
+      },
+      {
+        "key": "detail.clip",
+        "value": "首次贴塔攻击后，短暂延后下一次射击。不能打断已经蓄力的攻击。"
+      },
+      {
+        "key": "unit.scarf",
+        "value": "旧围巾"
+      },
+      {
+        "key": "detail.scarf",
+        "value": "最多两次修整附近受损队友，不能修自己。"
+      },
+      {
+        "key": "unit.heavyCart",
+        "value": "重装补给车"
+      },
+      {
+        "key": "detail.heavyCart",
+        "value": "走得慢，第一次打到机关时重击。"
+      },
+      {
+        "key": "field.nextCard",
+        "value": "下一张：{0} · {1}费"
+      },
+      {
+        "key": "detail.trialFish",
+        "value": "慢速耐打。两只可合成鱼干花束，顶住一次推退。"
+      },
+      {
+        "key": "detail.trialYarn",
+        "value": "给附近同伴织一层护套，挡损耗、不挡推退。"
+      },
+      {
+        "key": "detail.trialFeather",
+        "value": "轻费用，走空路快，抵达收益低。"
+      }
+    ]
+  }
+}

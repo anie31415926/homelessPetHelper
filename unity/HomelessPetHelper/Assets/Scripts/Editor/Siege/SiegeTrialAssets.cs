@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using HomelessPetHelper.Modules.Rescue.UI;
 using HomelessPetHelper.Modules.Siege;
 using HomelessPetHelper.Modules.Siege.UI;
@@ -28,6 +29,77 @@ namespace HomelessPetHelper.Editor.Siege
         {
             if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 EditorSceneManager.OpenScene(ScenePath);
+        }
+
+        private const string LoadoutPath = "Assets/Settings/Siege/SiegeLoadoutTrial.json";
+        private static TextAsset _loadoutText;
+        private const string PendingLoadout = "HomelessPetHelper.Siege.LoadoutTrial";
+
+        [Serializable]
+        private sealed class LoadoutData
+        {
+            public SiegeCatalogData catalog = null;
+            public TrialText text = null;
+        }
+
+        [Serializable]
+        private sealed class TrialText { public TrialTextEntry[] entries = null; }
+
+        [Serializable]
+        private sealed class TrialTextEntry { public string key = null, value = null; }
+
+        [MenuItem("Homeless Pet Helper/Preview/Five Card Siege/Sustain")]
+        private static void OpenSustain() => OpenLoadout("sustain");
+
+        [MenuItem("Homeless Pet Helper/Preview/Five Card Siege/Breakthrough")]
+        private static void OpenBreakthrough() => OpenLoadout("breakthrough");
+
+        private static void OpenLoadout(string id)
+        {
+            if (EditorApplication.isPlaying)
+            {
+                if (SceneManagerIsTrial()) StartLoadout(id);
+                return;
+            }
+            if (EditorApplication.isPlayingOrWillChangePlaymode ||
+                !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+            EditorSceneManager.OpenScene(ScenePath);
+            SessionState.SetString(PendingLoadout, id);
+            EditorApplication.isPlaying = true;
+        }
+
+        [InitializeOnLoadMethod]
+        private static void RegisterLoadoutLaunch() => EditorApplication.playModeStateChanged += LaunchLoadout;
+
+        private static void LaunchLoadout(PlayModeStateChange state)
+        {
+            if (state != PlayModeStateChange.EnteredPlayMode) return;
+            string id = SessionState.GetString(PendingLoadout, string.Empty);
+            SessionState.EraseString(PendingLoadout);
+            if (id.Length != 0 && SceneManagerIsTrial()) StartLoadout(id);
+        }
+
+        private static bool SceneManagerIsTrial() =>
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene().path == ScenePath;
+
+        private static void StartLoadout(string id)
+        {
+            var panel = UnityEngine.Object.FindObjectOfType<SiegeTrialView>(true);
+            var data = JsonUtility.FromJson<LoadoutData>(AssetDatabase.LoadAssetAtPath<TextAsset>(LoadoutPath).text);
+            var catalog = new SiegeCatalog(data.catalog);
+            var text = new TextAsset(JsonUtility.ToJson(data.text));
+            var session = new SiegeSession(catalog, 20261124, "calm", Guid.NewGuid().ToString("N"), id);
+            session.EnableRealtime();
+            panel.gameObject.SetActive(false);
+            panel.UnbindEncounter();
+            if (_loadoutText != null) UnityEngine.Object.Destroy(_loadoutText);
+            _loadoutText = text;
+            panel.SetFieldMode(true);
+            var portals = catalog.Lanes.Select(lane => lane.PointAt(lane.Length * 0.15))
+                .Select(point => new Vector2((float)point.X, (float)point.Y)).ToArray();
+            panel.Scene.Configure(AssetDatabase.LoadAssetAtPath<Sprite>(CatPath), 80, portals);
+            panel.BindEncounter(session, text, null, () => StartLoadout(id), session.SetPaused);
+            panel.gameObject.SetActive(true);
         }
 
         public static void CreateAssets()

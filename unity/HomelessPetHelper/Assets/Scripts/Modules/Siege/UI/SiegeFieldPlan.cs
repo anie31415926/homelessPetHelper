@@ -17,6 +17,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         { ChooseLane(lane); DeployPoint = point; }
         public int? FocusedUnit { get; private set; }
         public int? Anchor { get; private set; }
+        public int RequiredMaterials { get; private set; }
         public bool SelectingMaterials { get; private set; }
         public bool SelectingReroute { get; private set; }
         public string RerouteLane { get; private set; }
@@ -53,7 +54,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 string anchorType = Definition(Anchor.Value, state);
                 if (Definition(id, state) != anchorType) return;
                 if (_materials.Contains(id)) _materials.Remove(id);
-                else if (_materials.Count < 3) _materials.Add(id);
+                else if (_materials.Count < RequiredMaterials) _materials.Add(id);
                 return;
             }
             FocusedUnit = id;
@@ -63,7 +64,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         public bool CanMerge(SiegeCatalog catalog, SiegeState state) => FocusedUnit.HasValue &&
             Eligible(FocusedUnit.Value, catalog, state) &&
-            !string.IsNullOrEmpty(catalog.Unit(Definition(FocusedUnit.Value, state)).UpgradeId);
+            catalog.MergeMaterialCount(Definition(FocusedUnit.Value, state)) > 0;
 
         public bool CanReroute(SiegeState state)
         {
@@ -76,6 +77,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             if (!CanMerge(catalog, state)) return;
             Anchor = FocusedUnit;
+            RequiredMaterials = catalog.MergeMaterialCount(Definition(Anchor.Value, state));
             _materials.Clear(); _materials.Add(Anchor.Value);
             SelectingMaterials = true;
             SelectingReroute = false;
@@ -104,7 +106,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         public void CancelSelection()
         {
             SelectedCard = null; FocusedUnit = null; SelectingReroute = false;
-            if (Anchor.HasValue && _materials.Count != 3)
+            if (Anchor.HasValue && _materials.Count != RequiredMaterials)
             { Anchor = null; _materials.Clear(); SelectingMaterials = false; }
         }
         public void Clear()

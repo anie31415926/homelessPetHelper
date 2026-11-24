@@ -53,7 +53,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private readonly List<int> _selected = new List<int>(3);
         private int _hudSeconds = -1, _hudEnergy = -1, _hudDefenderEnergy = -1;
         private double _hudProgress = -1;
-        private string _hudIntent;
+        private string _hudIntent, _nextCardId, _nextCardHint;
         private Vector2[] _portals;
         private float _refreshIn;
         private SiegeState.BattlePhase _renderedPhase;
@@ -145,6 +145,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _completed = completed; _returnRequested = returnRequested; _suspend = suspend;
             _plan.Clear(); _reported = _paused = _backgrounded = false; _focused = true;
             _error = _tower = _externalFeedback = null; _turn = -1;
+            _nextCardId = _nextCardHint = null;
         }
 
         private void OnEnable()
@@ -286,7 +287,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             if (!CanAct || !Allows("siege.unit")) return;
             _plan.Focus(id, _catalog, _session.Snapshot); _tower = _error = null;
-            if (_session.Realtime && _plan.Materials.Count == 3) Submit();
+            if (_session.Realtime && _plan.Anchor.HasValue && _plan.Materials.Count == _plan.RequiredMaterials)
+                Submit();
             else Render();
         }
         private void SelectTower(string id)
@@ -351,7 +353,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (_turn != state.Turn) { _turn = state.Turn; _plan.Clear(); }
             bool terminal = state.Phase == SiegeState.BattlePhase.Won || state.Phase == SiegeState.BattlePhase.Timeout;
             string reason = null; int cost = 0;
-            bool valid = !_plan.HasAction || _session.TryOrder(_plan.Order(state), false, out reason, out cost);
+            bool choosingMaterials = _plan.Anchor.HasValue && _plan.Materials.Count < _plan.RequiredMaterials;
+            bool valid = !choosingMaterials && (!_plan.HasAction ||
+                _session.TryOrder(_plan.Order(state), false, out reason, out cost));
             int seconds = (int)Math.Ceiling((_catalog.Rules.DurationMs - state.ElapsedMs) / 1000.0);
             bool hudChanged = seconds != _hudSeconds || state.Energy != _hudEnergy ||
                 state.DefenderEnergy != _hudDefenderEnergy || state.Progress != _hudProgress;
@@ -378,13 +382,22 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _playerBar.SetValueWithoutNotify((float)state.PlayerChargeMs / (state.Realtime
                 ? _catalog.Rules.ResourcePeriodMs : _catalog.Rules.PlayerPeriodMs));
             _animalBar.SetValueWithoutNotify((float)animal.Charge);
+            if (_nextCardId != state.NextCardDefinitionId)
+            {
+                _nextCardId = state.NextCardDefinitionId;
+                var nextCard = _catalog.Unit(_nextCardId);
+                _nextCardHint = nextCard == null ? null :
+                    _text.Format("field.nextCard", _text.Get(nextCard.NameKey), nextCard.Cost);
+            }
             _hint.text = _externalFeedback ?? (_error != null ? _text.Get(_error) :
                 terminal ? _text.Get(state.Phase == SiegeState.BattlePhase.Won ? "game.won" : "game.timeout") :
                 !CanAct ? _text.Get(_paused ? "unity.paused" : "unity.running") :
+                choosingMaterials ? _text.Format("field.materials",
+                    _plan.Materials.Count, _plan.RequiredMaterials) :
                 _plan.HasAction ? valid ? _text.Format("field.plan", cost, state.Energy - cost) : _text.Get(reason) :
-                _text.Get(_plan.ShowsEntrances ? "field.deploy" : "field.ready"));
+                _nextCardHint ?? _text.Get(_plan.ShowsEntrances ? "field.deploy" : "field.ready"));
             _hint.gameObject.SetActive(!_paused && (_externalFeedback != null || _error != null || terminal ||
-                _plan.HasAction || _plan.Anchor.HasValue));
+                _plan.HasAction || _plan.Anchor.HasValue || _nextCardHint != null));
             Label(_submit, _text.Get(terminal ? state.Phase == SiegeState.BattlePhase.Won ? "game.transport" :
                 "game.return" :
                 _plan.HasAction ? "unity.submit" : "unity.skip"));
@@ -500,7 +513,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 _detail.text = defense == null ? string.Empty : _text.Format("unity.towerType",
                     _text.Get(defense.NameKey), Math.Max(0, tower.Hp), defense.Hp, defense.Range);
             }
-            else _detail.text = _plan.Anchor.HasValue ? _text.Format("field.materials", _plan.Materials.Count) :
+            else _detail.text = _plan.Anchor.HasValue ?
+                _text.Format("field.materials", _plan.Materials.Count, _plan.RequiredMaterials) :
                 string.Empty;
         }
 

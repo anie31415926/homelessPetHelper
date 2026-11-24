@@ -164,6 +164,8 @@ namespace HomelessPetHelper.Modules.Siege
             return null;
         }
 
+        public int MergeMaterialCount(string unitId) => SiegeEntities.MergeCount(Unit(unitId));
+
         public SiegeTowerTypeDefinition Defense(SiegeState.Tower tower) =>
             tower.DefinitionId == null ? _legacyTower : Content.Tower(tower.DefinitionId);
 
@@ -211,8 +213,8 @@ namespace HomelessPetHelper.Modules.Siege
                         && u.cost <= Rules.EnergyCap,
                     "unit numbers"
                 );
-                Require(new[] { "none", "aura", "brace", "reroute", "burst", "braceAura" }
-                    .Contains(u.ability), "ability");
+                Require(new[] { "none", "aura", "brace", "reroute", "burst", "braceAura",
+                    "mend", "interfere", "impact" }.Contains(u.ability), "ability");
                 Require(!string.IsNullOrWhiteSpace(u.nameKey) && !string.IsNullOrWhiteSpace(u.detailKey), "unit text");
                 Require(
                     string.IsNullOrEmpty(u.upgradeId)
@@ -220,6 +222,9 @@ namespace HomelessPetHelper.Modules.Siege
                     "upgrade"
                 );
                 Require(!u.bag || !string.IsNullOrEmpty(u.upgradeId), "base upgrade");
+                Require(u.mergeCount == 0 || (u.mergeCount >= 2 && u.mergeCount <= 3
+                    && !string.IsNullOrEmpty(u.upgradeId)), "merge count");
+                Require(SiegeUnitAbilities.Valid(u), "unit ability parameters");
                 Require(u.ability != "aura" || (u.abilityRadius > 0 && u.abilityPeriodMs > 0), "aura");
                 Require(u.ability != "burst" || (u.burstHits >= 2 && u.burstHits <= 5
                     && u.burstIntervalMs > 0), "burst");
