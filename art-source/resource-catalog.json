@@ -2248,7 +2248,7 @@
       "status": "temporary",
       "loadTiming": "first-play",
       "availability": "用户指定替换外出地图；Main 静态依赖，未接按需加载。",
-      "use": "673×1024 Q版整绘地图，建筑和地形共用一张底图；「冻干工厂」为场景招牌，UI地名和点选区独立。",
+      "use": "673×1024 绘本山谷地形、水面和道路；原画地点另拆透明 Sprite，地名与热区保持独立。",
       "plannedBytes": 204800,
       "files": [
         {
@@ -2287,7 +2287,319 @@
       "generation": {
         "tool": "本机 ComfyUI Qwen Image 2.1 / Sharp",
         "record": "art-source/city-map-storybook-20261124/README.md",
-        "notes": "参考整图重绘底图及地标；融合首版矿车和轨道并略向洞口收回，避免遮挡风车叶片。现有 OFL 字型用于原有工厂招牌。其余画面沿用用户认可版本。"
+        "notes": "参考整图重绘底图及地标；融合首版矿车和轨道并略向洞口收回，避免遮挡风车叶片。现有 OFL 字型用于原有工厂招牌。使用同一绘本原画派生，裁出十二处地标，底图局部续画草地、水面和道路。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.storybook.cloud-park",
+      "name": "绘本地图 · 云朵乐园",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 地图静态视觉；沿用既有地点与解锁，不新增可玩内容。",
+      "use": "从绘本地图原像素裁出的透明地标；由共享 MapArt 一起拖动，图层不接收点击。",
+      "plannedBytes": 24576,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/StorybookLandmarks/T_Storybook_CloudPark.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp / 手工轮廓",
+        "record": "art-source/city-map-storybook-20261124/README.md",
+        "notes": "底图及 ComfyUI 母图见 city-map.valley.terrain。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.storybook.ferry-dock",
+      "name": "绘本地图 · 轮船码头",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 地图静态视觉；沿用既有地点与解锁，不新增可玩内容。",
+      "use": "从绘本地图原像素裁出的透明地标；由共享 MapArt 一起拖动，图层不接收点击。",
+      "plannedBytes": 24576,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/StorybookLandmarks/T_Storybook_FerryDock.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp / 手工轮廓",
+        "record": "art-source/city-map-storybook-20261124/README.md",
+        "notes": "底图及 ComfyUI 母图见 city-map.valley.terrain。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.storybook.crystal-mine",
+      "name": "绘本地图 · 水晶矿洞",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 地图静态视觉；沿用既有地点与解锁，不新增可玩内容。",
+      "use": "从绘本地图原像素裁出的透明地标；由共享 MapArt 一起拖动，图层不接收点击。",
+      "plannedBytes": 24576,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/StorybookLandmarks/T_Storybook_CrystalMine.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp / 手工轮廓",
+        "record": "art-source/city-map-storybook-20261124/README.md",
+        "notes": "底图及 ComfyUI 母图见 city-map.valley.terrain。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.storybook.windmill",
+      "name": "绘本地图 · 风车",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 地图静态视觉；沿用既有地点与解锁，不新增可玩内容。",
+      "use": "从绘本地图原像素裁出的透明地标；由共享 MapArt 一起拖动，图层不接收点击。",
+      "plannedBytes": 24576,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/StorybookLandmarks/T_Storybook_Windmill.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp / 手工轮廓",
+        "record": "art-source/city-map-storybook-20261124/README.md",
+        "notes": "底图及 ComfyUI 母图见 city-map.valley.terrain。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.storybook.treehouse",
+      "name": "绘本地图 · 树屋",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 地图静态视觉；沿用既有地点与解锁，不新增可玩内容。",
+      "use": "从绘本地图原像素裁出的透明地标；由共享 MapArt 一起拖动，图层不接收点击。",
+      "plannedBytes": 24576,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/StorybookLandmarks/T_Storybook_Treehouse.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp / 手工轮廓",
+        "record": "art-source/city-map-storybook-20261124/README.md",
+        "notes": "底图及 ComfyUI 母图见 city-map.valley.terrain。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.storybook.vegetable-yard",
+      "name": "绘本地图 · 菜园",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 地图静态视觉；沿用既有地点与解锁，不新增可玩内容。",
+      "use": "从绘本地图原像素裁出的透明地标；由共享 MapArt 一起拖动，图层不接收点击。",
+      "plannedBytes": 24576,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/StorybookLandmarks/T_Storybook_VegetableYard.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp / 手工轮廓",
+        "record": "art-source/city-map-storybook-20261124/README.md",
+        "notes": "底图及 ComfyUI 母图见 city-map.valley.terrain。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.storybook.flower-garden",
+      "name": "绘本地图 · 花园",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 地图静态视觉；沿用既有地点与解锁，不新增可玩内容。",
+      "use": "从绘本地图原像素裁出的透明地标；由共享 MapArt 一起拖动，图层不接收点击。",
+      "plannedBytes": 24576,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/StorybookLandmarks/T_Storybook_FlowerGarden.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp / 手工轮廓",
+        "record": "art-source/city-map-storybook-20261124/README.md",
+        "notes": "底图及 ComfyUI 母图见 city-map.valley.terrain。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.storybook.bubble-pool",
+      "name": "绘本地图 · 泡泡湖",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 地图静态视觉；沿用既有地点与解锁，不新增可玩内容。",
+      "use": "从绘本地图原像素裁出的透明地标；由共享 MapArt 一起拖动，图层不接收点击。",
+      "plannedBytes": 24576,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/StorybookLandmarks/T_Storybook_BubblePool.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp / 手工轮廓",
+        "record": "art-source/city-map-storybook-20261124/README.md",
+        "notes": "底图及 ComfyUI 母图见 city-map.valley.terrain。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.storybook.moon-pool",
+      "name": "绘本地图 · 月光湖",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 地图静态视觉；沿用既有地点与解锁，不新增可玩内容。",
+      "use": "从绘本地图原像素裁出的透明地标；由共享 MapArt 一起拖动，图层不接收点击。",
+      "plannedBytes": 24576,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/StorybookLandmarks/T_Storybook_MoonPool.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp / 手工轮廓",
+        "record": "art-source/city-map-storybook-20261124/README.md",
+        "notes": "底图及 ComfyUI 母图见 city-map.valley.terrain。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.storybook.freeze-dry-factory",
+      "name": "绘本地图 · 冻干工厂",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 地图静态视觉；沿用既有地点与解锁，不新增可玩内容。",
+      "use": "从绘本地图原像素裁出的透明地标；由共享 MapArt 一起拖动，图层不接收点击。",
+      "plannedBytes": 24576,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/StorybookLandmarks/T_Storybook_FreezeDryFactory.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp / 手工轮廓",
+        "record": "art-source/city-map-storybook-20261124/README.md",
+        "notes": "底图及 ComfyUI 母图见 city-map.valley.terrain。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.storybook.shelter",
+      "name": "绘本地图 · 救助站",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 地图静态视觉；沿用既有地点与解锁，不新增可玩内容。",
+      "use": "从绘本地图原像素裁出的透明地标；由共享 MapArt 一起拖动，图层不接收点击。",
+      "plannedBytes": 24576,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/StorybookLandmarks/T_Storybook_Shelter.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp / 手工轮廓",
+        "record": "art-source/city-map-storybook-20261124/README.md",
+        "notes": "底图及 ComfyUI 母图见 city-map.valley.terrain。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.storybook.rainbow-bridge",
+      "name": "绘本地图 · 彩虹桥",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 地图静态视觉；沿用既有地点与解锁，不新增可玩内容。",
+      "use": "从绘本地图原像素裁出的透明地标；由共享 MapArt 一起拖动，图层不接收点击。",
+      "plannedBytes": 24576,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/StorybookLandmarks/T_Storybook_RainbowBridge.png"
+        }
+      ],
+      "generation": {
+        "tool": "Sharp / 手工轮廓",
+        "record": "art-source/city-map-storybook-20261124/README.md",
+        "notes": "底图及 ComfyUI 母图见 city-map.valley.terrain。"
       },
       "review": {
         "visual": "pending",

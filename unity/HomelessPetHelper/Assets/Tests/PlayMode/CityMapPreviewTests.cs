@@ -309,9 +309,12 @@ namespace HomelessPetHelper.Tests.PlayMode
         {
             Image terrain = Button("Parking").transform.parent.GetComponent<Image>();
             Sprite original = terrain.sprite;
-            GameObject[] layers = terrain.GetComponentsInChildren<Image>()
-                .Where(image => image.transform.parent == terrain.transform)
-                .Select(image => image.gameObject).ToArray();
+            Transform landmarks = terrain.transform.Find("Landmarks");
+            Assert.That(landmarks, Is.Not.Null);
+            Assert.That(landmarks.gameObject.activeInHierarchy, Is.True);
+            GameObject[] layers = terrain.transform.Cast<Transform>()
+                .Where(child => child.gameObject.activeSelf)
+                .Select(child => child.gameObject).ToArray();
             Assert.That(layers.Length, Is.GreaterThanOrEqualTo(_view.GetComponentsInChildren<Button>()
                 .Count(button => button.transform.parent == terrain.transform)));
             try
@@ -319,6 +322,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                 foreach (GameObject layer in layers) layer.SetActive(false);
                 Canvas.ForceUpdateCanvases();
                 Assert.That(terrain.sprite, Is.SameAs(original));
+                Assert.That(landmarks.gameObject.activeInHierarchy, Is.False);
                 Capture(camera, target, Path.Combine(folder, "map-terrain-only.png"));
             }
             finally

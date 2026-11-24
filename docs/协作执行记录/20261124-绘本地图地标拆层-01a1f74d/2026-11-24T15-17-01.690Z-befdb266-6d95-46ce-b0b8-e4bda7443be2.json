@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261124-绘本地图地标拆层-01a1f74d.md",
+  "sessionId": "01a1f74d-412d-7613-a27d-fae91bb606ef",
+  "phase": "scope-change",
+  "readAt": "2026-11-24T15:17:01.690Z",
+  "writePaths": [
+    "art-source/city-map-storybook-20261124/README.md",
+    "art-source/city-map-storybook-20261124/landmarks.json",
+    "art-source/city-map-storybook-20261124/split-landmarks.mjs",
+    "art-source/resource-catalog.json",
+    "docs/协作任务/20261124-绘本地图地标拆层-01a1f74d.md",
+    "docs/协作执行记录/20261124-绘本地图地标拆层-01a1f74d/",
+    "test-results/city-map-landmark-layers/",
+    "unity/HomelessPetHelper/Assets/Art/CityMap/StorybookLandmarks.meta",
+    "unity/HomelessPetHelper/Assets/Art/CityMap/StorybookLandmarks/",
+    "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityMap_Neighborhood.jpg",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_CityMap.prefab",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/CityMapLayerAssetTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/CityMapPreviewTests.cs"
+  ],
+  "contextDigest": "4555144feab67db18418dec35261eb60a853092f3d9d054621071fcea82f3e05",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261124-绘本地图地标拆层-01a1f74d.md",
+      "sha256": "7307e415819fc4c668ee8cdcc32dbf6c420a55896648ac4750279bc125efed16"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "18be29799fff69955a919d60116e703d0fabd2d2871f7b35c76ca2ff0e992a03"
+    }
+  ]
+}

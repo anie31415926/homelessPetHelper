@@ -16,7 +16,7 @@ namespace HomelessPetHelper.Tests.EditMode
         private const string PanelPath = "Assets/Prefabs/Panels/Panel_CityMap.prefab";
 
         [Test]
-        public void StorybookMapUsesSingleArtworkAndIndependentIdBoundHitAreas()
+        public void StorybookTerrainAndLandmarksKeepIndependentIdBoundHitAreas()
         {
             var root = AssetDatabase.LoadAssetAtPath<GameObject>(PanelPath);
             Image[] images = root.GetComponentsInChildren<Image>(true);
@@ -24,10 +24,25 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(AssetDatabase.GetAssetPath(terrain.sprite),
                 Is.EqualTo(ArtFolder + "T_CityMap_Neighborhood.jpg"));
             Assert.That(terrain.sprite.rect.size, Is.EqualTo(new Vector2(673, 1024)));
-            Assert.That(terrain.rectTransform.childCount, Is.EqualTo(7));
+            Assert.That(terrain.rectTransform.childCount, Is.EqualTo(8));
+            var landmarks = terrain.transform.Find("Landmarks");
+            Assert.That(landmarks, Is.Not.Null);
+            Assert.That(landmarks.GetSiblingIndex(), Is.Zero, "Artwork must render below the point labels.");
+            Assert.That(landmarks.childCount, Is.EqualTo(12));
+            foreach (RectTransform landmark in landmarks)
+            {
+                var visual = landmark.GetComponent<Image>();
+                Assert.That(visual, Is.Not.Null, landmark.name);
+                Assert.That(visual.raycastTarget, Is.False, landmark.name);
+                Assert.That(AssetDatabase.GetAssetPath(visual.sprite),
+                    Is.EqualTo(ArtFolder + "StorybookLandmarks/T_Storybook_" + landmark.name + ".png"));
+                Vector2 expectedSize = Vector2.Scale(landmark.anchorMax - landmark.anchorMin, terrain.sprite.rect.size);
+                Assert.That(Vector2.Distance(visual.sprite.rect.size, expectedSize), Is.LessThan(.01f));
+            }
             var areas = new System.Collections.Generic.List<Rect>();
             foreach (RectTransform hotspot in terrain.rectTransform)
             {
+                if (hotspot == landmarks) continue;
                 bool shelter = hotspot.name == "ShelterArtwork";
                 Image hit = hotspot.GetComponent<Image>();
                 Assert.That(hit.sprite, Is.Null, hotspot.name);
@@ -112,7 +127,7 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [Test]
-        public void MainUsesStorybookTerrainWithoutHistoricalLandmarkTextures()
+        public void MainUsesStorybookTerrainAndOnlyTheCurrentLandmarkTextures()
         {
             var source = new Texture2D(2, 2);
             try
@@ -126,6 +141,8 @@ namespace HomelessPetHelper.Tests.EditMode
             finally { UnityEngine.Object.DestroyImmediate(source); }
             string[] dependencies = AssetDatabase.GetDependencies("Assets/Scenes/Main.unity", true);
             Assert.That(dependencies, Does.Contain(ArtFolder + "T_CityMap_Neighborhood.jpg"));
+            Assert.That(dependencies.Count(path => path.StartsWith(ArtFolder + "StorybookLandmarks/",
+                StringComparison.Ordinal) && path.EndsWith(".png", StringComparison.Ordinal)), Is.EqualTo(12));
             Assert.That(dependencies.Any(path => path.StartsWith(ArtFolder + "ValleyIcons/",
                 StringComparison.Ordinal)), Is.False);
             Assert.That(dependencies.Any(path => path.StartsWith(ArtFolder + "T_CityPlace_",
