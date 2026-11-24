@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 namespace HomelessPetHelper.Framework.UI
 {
-    /// <summary>Explicitly referenced single-line notice. Long text is paged, never shrunk or discarded.</summary>
+    /// <summary>Explicitly referenced single-line notice. Text steps down through type roles to stay on one line,
+    /// then pages evenly; nothing is discarded.</summary>
     public sealed class ToastView : MonoBehaviour
     {
         [SerializeField] private CanvasGroup _group;
@@ -100,21 +101,58 @@ namespace HomelessPetHelper.Framework.UI
             _width = _bounds.rect.width - _metrics.margin * 2;
             _pixelScale = _label.pixelsPerUnit;
             float textWidth = Mathf.Max(_metrics.bodySize, _width - _metrics.gap * 2);
-            int low = _start + 1, high = _elements.Length;
-            while (low < high)
+            int oneLine = OneLineFontSize(textWidth);
+            if (oneLine > 0) { _label.fontSize = oneLine; _end = _elements.Length; }
+            else
             {
-                int middle = (low + high + 1) / 2;
-                _label.text = Slice(_start, middle);
-                if (_label.preferredWidth <= textWidth) low = middle;
-                else high = middle - 1;
+                _label.fontSize = _metrics.bodySize;
+                float remaining = Measure(_start, _elements.Length);
+                int pages = Mathf.Max(2, Mathf.CeilToInt(remaining / textWidth));
+                _end = FarthestEnd(_start, Mathf.Min(textWidth, remaining / pages * 1.02f));
             }
-            _end = low; _label.text = Slice(_start, _end);
+            _label.text = Slice(_start, _end);
             var rect = (RectTransform)transform;
             rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
                 Mathf.Min(_width, _label.preferredWidth + _metrics.gap * 2));
             rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
                 Mathf.Max(_metrics.captionHeight,
-                    Mathf.Max(_label.preferredHeight, _metrics.bodySize * 1.6f) + _metrics.gap * 2));
+                    Mathf.Max(_label.preferredHeight, _label.fontSize * 1.6f) + _metrics.gap * 2));
+        }
+
+        /// <summary>Largest type role fitting the whole message on one line; 0 when the floor overflows.</summary>
+        private int OneLineFontSize(float textWidth)
+        {
+            int body = _metrics.bodySize;
+            int floor = Mathf.Clamp(_metrics.auxiliarySize, 1, body);
+            int label = Mathf.Clamp(_metrics.labelSize, floor, body);
+            _label.fontSize = body;
+            if (Measure(0, _elements.Length) <= textWidth) return body;
+            if (label != body)
+            {
+                _label.fontSize = label;
+                if (Measure(0, _elements.Length) <= textWidth) return label;
+            }
+            if (floor == body) return 0;
+            _label.fontSize = floor;
+            return Measure(0, _elements.Length) <= textWidth ? floor : 0;
+        }
+
+        private float Measure(int start, int end)
+        {
+            _label.text = Slice(start, end);
+            return _label.preferredWidth;
+        }
+
+        private int FarthestEnd(int start, float limit)
+        {
+            int low = start + 1, high = _elements.Length;
+            while (low < high)
+            {
+                int middle = (low + high + 1) / 2;
+                if (Measure(start, middle) <= limit) low = middle;
+                else high = middle - 1;
+            }
+            return low;
         }
     }
 }
