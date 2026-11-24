@@ -26,3 +26,14 @@ test-results/
 *.unitypackage
 *.apk
 *.aab
+
+# 微信小游戏转换的本地配置（MiniGameConfig.asset 含 AppID，不入库）。
+# WebGLTemplates 是转换构建必需，仍应入库。
+unity/HomelessPetHelper/Assets/WX-WASM-SDK-V2/
+unity/HomelessPetHelper/Assets/WX-WASM-SDK-V2.meta
+
+# 微信转换工具生成的中间产物（slim/backup.txt 约 22MB，可重新生成，不入库）。
+unity/HomelessPetHelper/TextToolDatas/
+
+# 会话私有记忆与本机备份，不入库。
+.workbuddy/
