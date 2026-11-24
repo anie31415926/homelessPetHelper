@@ -55,8 +55,10 @@ namespace HomelessPetHelper.Tests.PlayMode
             _map.StopMovement();
             Assert.That(details.content.anchoredPosition, Is.EqualTo(detailPosition));
             Assert.That(Button("Primary").transform.position, Is.EqualTo(actionPosition));
-            details.verticalNormalizedPosition = 0;
+            // Let ScrollRect settle its own edge clamp before isolating the details-scroll input.
+            yield return null;
             Vector2 mapPosition = _map.content.anchoredPosition;
+            details.verticalNormalizedPosition = 0;
             yield return null;
             Assert.That(_map.content.anchoredPosition, Is.EqualTo(mapPosition));
             LogAssert.NoUnexpectedReceived();

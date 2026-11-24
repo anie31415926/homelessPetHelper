@@ -1,0 +1,18 @@
+[
+  {
+    "name": "props",
+    "input": "valley-props.png",
+    "steps": 18,
+    "denoise": 1,
+    "prompt": "Faithfully recreate the exact four isometric watercolor game icons in this 2 by 2 sheet. Upper-left bubbly turquoise pool; upper-right enchanted moon pond; lower-left small rainbow bridge with clouds; lower-right red mushroom and tiny mushrooms. Do not add new objects. Same designs, same silhouettes and colors, clean edges, pure white background, no lettering, no watermark.",
+    "id": "118ca0b9-bdfe-4ce7-b17c-5737d3361854"
+  },
+  {
+    "name": "fantasy",
+    "input": "valley-fantasy.png",
+    "steps": 18,
+    "denoise": 1,
+    "prompt": "Faithfully recreate the exact four separate watercolor game icons in this 2 by 2 sheet. Upper left ancient doorway with treasure, upper right violet crystal portal, bottom left floating sky islands and rainbow, bottom right rounded-square valley scene. Preserve original designs, distinct silhouettes and colors. Clean white backdrop. No lettering or watermarks.",
+    "id": "dbf6005b-6606-47a2-81b9-51d034b5da8c"
+  }
+]

@@ -1,0 +1,168 @@
+{
+  "prompt": [
+    0,
+    "f576b934-9321-414c-8f15-2d615f6783a3",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "valley-original.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Faithfully reproduce this exact portrait watercolor game-map painting with visibly crisp foliage, mountain ridges and ripple lines. Remove ONLY the small overlaid white stamp in the bottom right, paint continuous matching little pine trees there. Keep the identical original composition, elevation, shoreline outline, river winding left and center, exact winding dirt paths, cloud positions, perspective, colors, and scale. No buildings, icons, people, letters, frame, labels or new objects.",
+          "negative_prompt": "text, typography, watermark, loss of original composition, blur, smudge, edge artifacts, changed shoreline, duplicate objects, different colors, checkerboard background",
+          "resolution": 0,
+          "images.image_1": [
+            "4",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112430,
+          "steps": 20,
+          "cfg": 4,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 0.92
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "map-valley/valley"
+        }
+      }
+    },
+    {
+      "create_time": 1795515615158
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "valley_00001_.png",
+          "subfolder": "map-valley",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "f576b934-9321-414c-8f15-2d615f6783a3",
+          "timestamp": 1795515615160
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "f576b934-9321-414c-8f15-2d615f6783a3",
+          "timestamp": 1795515615184
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "f576b934-9321-414c-8f15-2d615f6783a3",
+          "timestamp": 1795515643596
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

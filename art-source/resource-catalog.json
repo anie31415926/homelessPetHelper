@@ -1709,14 +1709,14 @@
       "id": "city-map.forest-edge.terrain",
       "name": "林缘社区分层地面底图临时图",
       "module": "CityMap",
-      "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "status": "retired",
+      "loadTiming": "preview-only",
+      "availability": "原底图，2026-11-24 已被山谷地图替换，保留来源与旧图作历史对照。",
       "use": "无文字、UI和动物的环境候选；与林缘社区布局、暖光水彩画风一致，背景按内容区比例制作，不新增玩法。",
       "plannedBytes": 204800,
       "files": [
         {
-          "role": "reference",
+          "role": "candidate",
           "path": "art-source/forest-edge-20261121/terrain/candidate.jpg"
         },
         {
@@ -1734,10 +1734,6 @@
         {
           "role": "generation-record",
           "path": "art-source/forest-edge-20261121/terrain/submission.json"
-        },
-        {
-          "role": "runtime",
-          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityMap_Neighborhood.jpg"
         }
       ],
       "generation": {
@@ -1754,12 +1750,592 @@
       }
     },
     {
+      "id": "city-map.valley.icon.ancient-gate",
+      "name": "古遗迹门",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "已整理的美术备选，未进入 Unity 和关卡。",
+      "use": "透明地图候选图。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/city-map-icons-20261124/preview/T_Valley_AncientGate.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户提供生成素材 / Sharp 抠图",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.valley-trail",
+      "name": "峡谷小径",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "已整理的美术备选，未进入 Unity 和关卡。",
+      "use": "透明地图候选图。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/city-map-icons-20261124/preview/T_Valley_ValleyTrail.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户提供生成素材 / Sharp 抠图",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.flower-garden",
+      "name": "花语花园",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立图标历史对照，现行整绘地图和 Main 不再引用。",
+      "use": "独立透明地图图标。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/ValleyIcons/T_Valley_FlowerGarden.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户提供生成素材 / Sharp 抠图",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.mystic-forest",
+      "name": "迷雾森林",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "已整理的美术备选，未进入 Unity 和关卡。",
+      "use": "透明地图候选图。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/city-map-icons-20261124/preview/T_Valley_MysticForest.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户提供生成素材 / Sharp 抠图",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.tree-house",
+      "name": "树屋",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立图标历史对照，现行整绘地图和 Main 不再引用。",
+      "use": "独立透明地图图标。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/ValleyIcons/T_Valley_TreeHouse.png"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1 + Sharp",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.snow-inn",
+      "name": "雪境驿站",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "已整理的美术备选，未进入 Unity 和关卡。",
+      "use": "透明地图候选图。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/city-map-icons-20261124/preview/T_Valley_SnowInn.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户提供生成素材 / Sharp 抠图",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.moon-pool",
+      "name": "月光湖",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立图标历史对照，现行整绘地图和 Main 不再引用。",
+      "use": "独立透明地图图标。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/ValleyIcons/T_Valley_MoonPool.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户提供生成素材 / Sharp 抠图",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.wind-meadow",
+      "name": "风铃草原",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立图标历史对照，现行整绘地图和 Main 不再引用。",
+      "use": "独立透明地图图标。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/ValleyIcons/T_Valley_WindMeadow.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户提供生成素材 / Sharp 抠图",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.candy-gate",
+      "name": "糖果山谷",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "已整理的美术备选，未进入 Unity 和关卡。",
+      "use": "透明地图候选图。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/city-map-icons-20261124/preview/T_Valley_CandyGate.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户提供生成素材 / Sharp 抠图",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.cloud-park",
+      "name": "云朵乐园",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立图标历史对照，现行整绘地图和 Main 不再引用。",
+      "use": "独立透明地图图标。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/ValleyIcons/T_Valley_CloudPark.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户提供生成素材 / Sharp 抠图",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.cart-mine",
+      "name": "矿车洞",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立图标历史对照，现行整绘地图和 Main 不再引用。",
+      "use": "独立透明地图图标。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/ValleyIcons/T_Valley_CartMine.png"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1 + Sharp",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.crystal-portal",
+      "name": "水晶传送门",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "已整理的美术备选，未进入 Unity 和关卡。",
+      "use": "透明地图候选图。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/city-map-icons-20261124/preview/T_Valley_CrystalPortal.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户提供生成素材 / Sharp 抠图",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.freeze-dry-factory",
+      "name": "冻干工厂",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立图标历史对照，现行整绘地图和 Main 不再引用。",
+      "use": "独立透明地图图标。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/ValleyIcons/T_Valley_FreezeDryFactory.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户提供生成素材 / Sharp 抠图",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.bubble-pool",
+      "name": "泡泡湖",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立图标历史对照，现行整绘地图和 Main 不再引用。",
+      "use": "独立透明地图图标。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/ValleyIcons/T_Valley_BubblePool.png"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1 + Sharp",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.rainbow-bridge",
+      "name": "彩虹桥",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立图标历史对照，现行整绘地图和 Main 不再引用。",
+      "use": "独立透明地图图标。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/ValleyIcons/T_Valley_RainbowBridge.png"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1 + Sharp",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.mushroom-hill",
+      "name": "蘑菇丘",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立图标历史对照，现行整绘地图和 Main 不再引用。",
+      "use": "独立透明地图图标。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/ValleyIcons/T_Valley_MushroomHill.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户提供生成素材 / Sharp 抠图",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.heart-shelter",
+      "name": "爱心救助站",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立图标历史对照，现行整绘地图和 Main 不再引用。",
+      "use": "独立透明地图图标。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/ValleyIcons/T_Valley_HeartShelter.png"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1 + Sharp",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.vegetable-yard",
+      "name": "菜园",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立图标历史对照，现行整绘地图和 Main 不再引用。",
+      "use": "独立透明地图图标。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/ValleyIcons/T_Valley_VegetableYard.png"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1 + Sharp",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon.sky-islands",
+      "name": "浮空群岛",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "已整理的美术备选，未进入 Unity 和关卡。",
+      "use": "透明地图候选图。",
+      "plannedBytes": 61440,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/city-map-icons-20261124/preview/T_Valley_SkyIslands.png"
+        }
+      ],
+      "generation": {
+        "tool": "用户提供生成素材 / Sharp 抠图",
+        "record": "art-source/city-map-icons-20261124/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.icon-comfy-sheets",
+      "name": "山谷地标三组 ComfyUI 重绘母图",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "仅用于挑选图标，不进入 Unity。",
+      "use": "白底图标重绘对照；运行资产为独立透明图。",
+      "plannedBytes": 1048576,
+      "files": [
+        { "role": "candidate", "path": "art-source/city-map-icons-20261124/comfy/icons_00001_.png" },
+        { "role": "master", "path": "art-source/city-map-icons-20261124/comfy/props_00001_.png" },
+        { "role": "master", "path": "art-source/city-map-icons-20261124/comfy/fantasy_00001_.png" }
+      ],
+      "generation": { "tool": "本机 ComfyUI / Qwen Image 2.1", "record": "art-source/city-map-icons-20261124/README.md" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "city-map.valley.terrain",
+      "name": "山谷全屏地图底图",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "用户指定替换外出地图；Main 静态依赖，未接按需加载。",
+      "use": "673×1024 Q版整绘地图，建筑和地形共用一张底图；「冻干工厂」为场景招牌，UI地名和点选区独立。",
+      "plannedBytes": 204800,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityMap_Neighborhood.jpg"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/city-map-storybook-20261124/comfy/user-reference.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/city-map-storybook-20261124/comfy/refined_00001_.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/city-map-storybook-20261124/comfy/storybook_00001_.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/city-map-storybook-20261124/comfy/miniature_00001_.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/city-map-storybook-20261124/factory-sign.svg"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/city-map-storybook-20261124/comfy/refined-workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/city-map-storybook-20261124/comfy/refined-history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI Qwen Image 2.1 / Sharp",
+        "record": "art-source/city-map-storybook-20261124/README.md",
+        "notes": "参考整图重绘底图及地标；融合首版矿车和轨道并略向洞口收回，避免遮挡风车叶片。现有 OFL 字型用于原有工厂招牌。其余画面沿用用户认可版本。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "city-map.valley.terrain-redraw",
+      "name": "山谷全屏地图底图 ComfyUI 对照",
+      "module": "CityMap",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "用户选择使用原画，保留重绘作对照，不进入 Unity。",
+      "use": "重绘母图和真实作业记录。",
+      "plannedBytes": 2097152,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/city-map-icons-20261124/comfy/valley_00001_.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/city-map-icons-20261124/comfy/valley-workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/city-map-icons-20261124/comfy/valley-history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1",
+        "record": "art-source/city-map-icons-20261124/README.md",
+        "notes": "参考用户原图重绘全图；因树林和画面笔触与原画有差异，仅作对照。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
       "id": "city-map.forest-edge.place.parking",
       "name": "林缘地图独立单车棚临时图",
       "module": "CityMap",
       "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "loadTiming": "preview-only",
+      "availability": "历史地标备用，山谷地图不再引用；保留原像素与历史来源。",
       "use": "俯视地图独立透明地标，背景/文字/状态分层；从约256档显示尺寸比较，候选保留最多512长边。",
       "plannedBytes": 61440,
       "files": [
@@ -1796,8 +2372,8 @@
       "name": "林缘地图独立居民小院临时图",
       "module": "CityMap",
       "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "loadTiming": "preview-only",
+      "availability": "历史地标备用，山谷地图不再引用；保留原像素与历史来源。",
       "use": "俯视地图独立透明地标，背景/文字/状态分层；从约256档显示尺寸比较，候选保留最多512长边。",
       "plannedBytes": 61440,
       "files": [
@@ -1834,8 +2410,8 @@
       "name": "林缘地图独立临街门廊临时图",
       "module": "CityMap",
       "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "loadTiming": "preview-only",
+      "availability": "历史地标备用，山谷地图不再引用；保留原像素与历史来源。",
       "use": "俯视地图独立透明地标，背景/文字/状态分层；从约256档显示尺寸比较，候选保留最多512长边。",
       "plannedBytes": 61440,
       "files": [
@@ -1872,8 +2448,8 @@
       "name": "林缘地图独立林缘公园临时图",
       "module": "CityMap",
       "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "loadTiming": "preview-only",
+      "availability": "历史地标备用，山谷地图不再引用；保留原像素与历史来源。",
       "use": "俯视地图独立透明地标，背景/文字/状态分层；从约256档显示尺寸比较，候选保留最多512长边。",
       "plannedBytes": 61440,
       "files": [
@@ -1910,8 +2486,8 @@
       "name": "林缘地图独立市场后院临时图",
       "module": "CityMap",
       "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "loadTiming": "preview-only",
+      "availability": "历史地标备用，山谷地图不再引用；保留原像素与历史来源。",
       "use": "俯视地图独立透明地标，背景/文字/状态分层；从约256档显示尺寸比较，候选保留最多512长边。",
       "plannedBytes": 61440,
       "files": [
@@ -1948,8 +2524,8 @@
       "name": "林缘地图独立河岸步道临时图",
       "module": "CityMap",
       "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "loadTiming": "preview-only",
+      "availability": "历史地标备用，山谷地图不再引用；保留原像素与历史来源。",
       "use": "俯视地图独立透明地标，背景/文字/状态分层；从约256档显示尺寸比较，候选保留最多512长边。",
       "plannedBytes": 61440,
       "files": [
@@ -1986,8 +2562,8 @@
       "name": "林缘地图独立救助站临时图",
       "module": "CityMap",
       "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "用户认可候选后授权接入；静态Main依赖按first-play记账，未做按需加载；许可与目标验证待完成。",
+      "loadTiming": "preview-only",
+      "availability": "历史地标备用，山谷地图不再引用；保留原像素与历史来源。",
       "use": "俯视地图独立透明地标，背景/文字/状态分层；从约256档显示尺寸比较，候选保留最多512长边。",
       "plannedBytes": 61440,
       "files": [

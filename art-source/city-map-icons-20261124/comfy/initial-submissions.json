@@ -1,0 +1,18 @@
+[
+  {
+    "name": "valley",
+    "input": "valley-original.png",
+    "steps": 20,
+    "denoise": 0.92,
+    "prompt": "Faithfully reproduce this exact portrait watercolor game-map painting with visibly crisp foliage, mountain ridges and ripple lines. Remove ONLY the small overlaid white stamp in the bottom right, paint continuous matching little pine trees there. Keep the identical original composition, elevation, shoreline outline, river winding left and center, exact winding dirt paths, cloud positions, perspective, colors, and scale. No buildings, icons, people, letters, frame, labels or new objects.",
+    "id": "f576b934-9321-414c-8f15-2d615f6783a3"
+  },
+  {
+    "name": "icons",
+    "input": "valley-sheet.png",
+    "steps": 18,
+    "denoise": 1,
+    "prompt": "Faithful cleanup of a 2 by 2 hand-painted isometric game icon sheet, same designs and colors. Upper left one oak tree house, upper right one dark crystal mine with a clearly visible small wooden mine cart and rail at the entrance, lower left one small pink heart-roof shelter, lower right one red-roof vegetable farm. Keep exactly four separate icons and their quadrant centers. Preserve original fine illustration and outlines, pure untextured white isolated background, no shadow beyond the foot of each object, no frames, text, marks, or new icon. Leave generous white space between quadrants.",
+    "id": "dace08bb-17e2-4505-b748-bd337d523f70"
+  }
+]

@@ -74,7 +74,8 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(present, Is.Not.Null);
             present.Invoke(presenter, null);
             Assert.That(FeedbackContains("救助消息"), Is.True);
-            Assert.That(FeedbackContains("居民小院"), Is.True);
+            var content = Resources.FindObjectsOfTypeAll<GameContent>().Single(item => item.name == "GameContent");
+            Assert.That(FeedbackContains(new OptionPreviewText(content.MapText).Get("yard")), Is.True);
             yield return new UiLayoutCompliancePlayTests().CaptureAndAssert(_station, "rescue-notice");
             Click(_station, "OverlayConfirm");
             Assert.That(_map.gameObject.activeInHierarchy, Is.True);

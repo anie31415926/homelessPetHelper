@@ -1,6 +1,4 @@
 using HomelessPetHelper.Game.CityMap;
-using HomelessPetHelper.Game.Text;
-using HomelessPetHelper.Game.Station;
 using System;
 using System.IO;
 using System.Linq;
@@ -17,50 +15,34 @@ namespace HomelessPetHelper.Tests.EditMode
         private const string ArtFolder = "Assets/Art/CityMap/";
         private const string PanelPath = "Assets/Prefabs/Panels/Panel_CityMap.prefab";
 
-        [Serializable] private sealed class Layout
-        {
-            public int width = 0;
-            public int height = 0;
-            public Layer[] layers = Array.Empty<Layer>();
-        }
-
-        [Serializable] private sealed class Layer
-        {
-            public string name = string.Empty;
-            public string path = string.Empty;
-            public int x = 0;
-            public int y = 0;
-            public int width = 0;
-            public int height = 0;
-        }
-
         [Test]
-        public void SavedPrefabBindsIndependentLayersAndIdBasedNameplateHighlights()
+        public void StorybookMapUsesSingleArtworkAndIndependentIdBoundHitAreas()
         {
             var root = AssetDatabase.LoadAssetAtPath<GameObject>(PanelPath);
             Image[] images = root.GetComponentsInChildren<Image>(true);
             Image terrain = images.Single(image => image.name == "MapArt");
             Assert.That(AssetDatabase.GetAssetPath(terrain.sprite),
                 Is.EqualTo(ArtFolder + "T_CityMap_Neighborhood.jpg"));
-            Layout layout = JsonUtility.FromJson<Layout>(AssetDatabase.LoadAssetAtPath<TextAsset>(
-                ArtFolder + "CityMapLayers.json").text);
-            Assert.That(layout.layers.Length, Is.EqualTo(7));
-            foreach (Layer layer in layout.layers)
+            Assert.That(terrain.sprite.rect.size, Is.EqualTo(new Vector2(673, 1024)));
+            Assert.That(terrain.rectTransform.childCount, Is.EqualTo(7));
+            var areas = new System.Collections.Generic.List<Rect>();
+            foreach (RectTransform hotspot in terrain.rectTransform)
             {
-                string nodeName = layer.name == "Shelter" ? "ShelterArtwork" : layer.name;
-                Image image = images.Single(item => item.name == nodeName);
-                Assert.That(image.transform.parent, Is.SameAs(terrain.transform));
-                Assert.That(AssetDatabase.GetAssetPath(image.sprite), Is.EqualTo(layer.path));
-                Assert.That(image.rectTransform.anchorMin, Is.EqualTo(new Vector2((float)layer.x / layout.width,
-                    1f - (float)(layer.y + layer.height) / layout.height)));
-                Assert.That(image.rectTransform.anchorMax,
-                    Is.EqualTo(new Vector2((float)(layer.x + layer.width) / layout.width,
-                    1f - (float)layer.y / layout.height)));
-                Assert.That(image.preserveAspect, Is.True);
-                Assert.That(image.color, Is.EqualTo(Color.white));
-                Assert.That(image.GetComponentsInChildren<Text>(true).Length,
-                    Is.EqualTo(layer.name == "Shelter" ? 1 : 2));
-                Assert.That(image.GetComponent<Button>() != null, Is.EqualTo(layer.name != "Shelter"));
+                bool shelter = hotspot.name == "ShelterArtwork";
+                Image hit = hotspot.GetComponent<Image>();
+                Assert.That(hit.sprite, Is.Null, hotspot.name);
+                Assert.That(hit.color.a, Is.Zero);
+                Assert.That(hit.raycastTarget, Is.EqualTo(!shelter));
+                Assert.That(hotspot.GetComponentsInChildren<Text>(true).Length, Is.EqualTo(shelter ? 1 : 2));
+                Assert.That(hotspot.GetComponent<Button>() != null, Is.EqualTo(!shelter));
+                var area = Rect.MinMaxRect(hotspot.anchorMin.x, hotspot.anchorMin.y,
+                    hotspot.anchorMax.x, hotspot.anchorMax.y);
+                Assert.That(area.xMin, Is.GreaterThanOrEqualTo(0), hotspot.name);
+                Assert.That(area.yMin, Is.GreaterThanOrEqualTo(0), hotspot.name);
+                Assert.That(area.xMax, Is.LessThanOrEqualTo(1), hotspot.name);
+                Assert.That(area.yMax, Is.LessThanOrEqualTo(1), hotspot.name);
+                Assert.That(areas.Any(previous => previous.Overlaps(area)), Is.False, hotspot.name);
+                areas.Add(area);
             }
             MonoBehaviour view = root.GetComponents<MonoBehaviour>()
                 .Single(item => item.GetType().Name == "CityMapView");
@@ -79,6 +61,7 @@ namespace HomelessPetHelper.Tests.EditMode
                 var plate = (Image)binding.FindPropertyRelative("_highlight").objectReferenceValue;
                 var label = (Text)binding.FindPropertyRelative("_label").objectReferenceValue;
                 var stateLabel = (Text)binding.FindPropertyRelative("_stateLabel").objectReferenceValue;
+                Assert.That(button.transform.parent, Is.SameAs(terrain.transform));
                 Assert.That(plate.transform.parent, Is.SameAs(button.transform));
                 Assert.That(plate, Is.Not.SameAs(button.image));
                 Assert.That(plate.raycastTarget, Is.True);
@@ -129,26 +112,24 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [Test]
-        public void TerrainHasNoBakedLandmarksAndMapLayersStayOutsideMainDependencies()
+        public void MainUsesStorybookTerrainWithoutHistoricalLandmarkTextures()
         {
             var source = new Texture2D(2, 2);
             try
             {
                 Assert.That(source.LoadImage(File.ReadAllBytes(ArtFolder + "T_CityMap_Neighborhood.jpg")), Is.True);
-                Assert.That(source.width, Is.EqualTo(768));
+                Assert.That(source.width, Is.EqualTo(673));
                 Assert.That(source.height, Is.EqualTo(1024));
-                // Cleared landmark footprints retain the light terrain rather than baked roofs.
-                foreach (Vector2Int point in new[] { new Vector2Int(180, 730), new Vector2Int(190, 500),
-                    new Vector2Int(560, 750), new Vector2Int(380, 920) })
-                {
-                    Color color = source.GetPixel(point.x, source.height - 1 - point.y);
-                    Assert.That(color.grayscale, Is.GreaterThan(.65f));
-                    Assert.That(color.b, Is.LessThan(color.g));
-                }
+                Assert.That(new FileInfo(ArtFolder + "T_CityMap_Neighborhood.jpg").Length,
+                    Is.LessThanOrEqualTo(204800));
             }
             finally { UnityEngine.Object.DestroyImmediate(source); }
             string[] dependencies = AssetDatabase.GetDependencies("Assets/Scenes/Main.unity", true);
-            Assert.That(dependencies.Any(path => path.StartsWith(ArtFolder, StringComparison.Ordinal)), Is.True);
+            Assert.That(dependencies, Does.Contain(ArtFolder + "T_CityMap_Neighborhood.jpg"));
+            Assert.That(dependencies.Any(path => path.StartsWith(ArtFolder + "ValleyIcons/",
+                StringComparison.Ordinal)), Is.False);
+            Assert.That(dependencies.Any(path => path.StartsWith(ArtFolder + "T_CityPlace_",
+                StringComparison.Ordinal)), Is.False);
             Assert.That(dependencies.Any(path => path.StartsWith("Assets/EditorScenes/", StringComparison.Ordinal)),
                 Is.False);
         }

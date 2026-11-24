@@ -1,0 +1,111 @@
+{
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "storybook-reference.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Redraw the reference as a single continuous portrait game world map. Match its exquisite cute chibi storybook illustration: rounded bushy trees, warm spring lime grass, pastel teal river on the left, miniature toy-like landmarks, softly hand-painted cel shading, fine clean warm contour lines, small colorful flowers and buttery cream winding paths. Same playful proportions, readable silhouettes and oblique top-down viewpoint throughout. Preserve the left river and vertically meandering land paths. Every location is built into the landscape: grass and flowers overlap foundations, soft contact shadows, paths meet doorways and entrances, the pier meets water. No large empty top area, no mountain horizon. Art reaches all edges, no card border, no UI, no letters, no writing, no numbers or watermark. Keep the reference map composition and decorative scales. Prioritize delicate tiny details, curving bank vegetation and consistent whimsical toy scale. From top to bottom, draw: a tiny rainbow cloud amusement park by the upper left river and a toy ferry dock, one violet crystal mine in the upper right with a visible little mine cart and short rail, one single leafy oak treehouse beside the right-hand bend, one small red-roof vegetable garden courtyard on the middle trail, a small pink flower garden on the left lower bank, a turquoise bubbling pebble pool and a blue moon pond on the lower trail, one cream-and-blue miniature candy factory with a blank fascia on the lower right, a pastel rainbow footbridge across a small channel or trail near the bottom, and a small coral heart-roof animal shelter on the lower-left land near the bridge. No duplicate trees with doors, no second cave, no floating buildings except the cloud park. Leave clear grass near each landmark.",
+        "negative_prompt": "decals, white sticker outline, cut-out bases, pale fringing, detached shadows, photo, harsh 3D, landscape horizon, rectangular island frames, text, signs with writing, watermark, double cave, duplicate treehouse, disconnected paths, large solid outlines, manufactured gloss",
+        "resolution": 0,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112481,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "storybook/miniature"
+      }
+    }
+  }
+}

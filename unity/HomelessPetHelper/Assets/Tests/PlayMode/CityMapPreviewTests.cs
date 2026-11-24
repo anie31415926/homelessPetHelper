@@ -84,16 +84,12 @@ namespace HomelessPetHelper.Tests.PlayMode
             string initialStatus = Label("Status").text;
             Image terrain = Button("Parking").transform.parent.GetComponent<Image>();
             Sprite terrainSprite = terrain.sprite;
-            Image[] artwork = new[] { Button("Parking").image, Button("Yard").image, Button("Porch").image };
-            Sprite[] originalSprites = artwork.Select(image => image.sprite).ToArray();
+            Image[] hitAreas = new[] { Button("Parking").image, Button("Yard").image, Button("Porch").image };
             Click("Yard");
             Click("Porch");
-            Assert.That(artwork.Select(image => image.sprite), Is.EqualTo(originalSprites));
-            Assert.That(artwork.All(image => image.color == Color.white), Is.True,
-                "Selection must highlight nameplates, not recolor the replaceable artwork.");
-            artwork[0].sprite = originalSprites[1];
+            Assert.That(hitAreas.All(image => image.sprite == null && image.color.a == 0), Is.True,
+                "Selection must not place a second visual sprite over the painted landmarks.");
             Assert.That(terrain.sprite, Is.SameAs(terrainSprite));
-            artwork[0].sprite = originalSprites[0];
             Assert.That(Label("Status").text, Is.EqualTo(initialStatus));
             Assert.That(Label("Heading").text, Is.EqualTo(Copy("porch")));
             _view.SendMessage("OnApplicationPause", true);
@@ -184,7 +180,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                 yield return null;
                 Canvas.ForceUpdateCanvases();
                 AssertLayout(canvas);
-                AssertLayeredMarkers(camera);
+                AssertMapHitAreas(camera);
                 PrepareCapture("Parking");
                 Capture(camera, target, Path.Combine(folder, $"map-{size.x}x{size.y}.png"));
                 if (size == sizes[0]) CaptureTerrainOnly(camera, target, folder);
@@ -277,7 +273,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             }
         }
 
-        private void AssertLayeredMarkers(Camera camera)
+        private void AssertMapHitAreas(Camera camera)
         {
             Transform terrain = Button("Parking").transform.parent;
             Assert.That(terrain.GetComponent<Image>().sprite, Is.Not.Null);
@@ -285,12 +281,11 @@ namespace HomelessPetHelper.Tests.PlayMode
                 .Where(item => item.transform.parent == terrain))
             {
                 Assert.That(button.transform.parent, Is.SameAs(terrain));
-                Assert.That(button.image.sprite, Is.Not.Null);
+                Assert.That(button.image.sprite, Is.Null);
+                Assert.That(button.image.color.a, Is.Zero);
                 var rect = (RectTransform)button.transform;
                 Assert.That(rect.anchorMax.x, Is.GreaterThan(rect.anchorMin.x));
                 Assert.That(rect.anchorMax.y, Is.GreaterThan(rect.anchorMin.y));
-                Assert.That(rect.rect.width / rect.rect.height,
-                    Is.EqualTo(button.image.sprite.rect.width / button.image.sprite.rect.height).Within(0.01f));
                 Image plate = button.GetComponentsInChildren<Image>().Single(image => image.name == "Nameplate");
                 AssertHit(button, rect, camera);
                 AssertHit(button, plate.rectTransform, camera);

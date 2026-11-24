@@ -12,7 +12,7 @@ The upstream Reserved Font Names are not used as the derivative's family name.
 - Source SHA256: `7dae804b344f7bc1a1c8426b9515e9b54d7baac3e123263d0bae94d0a305a732`
 - License: https://github.com/Warren2060/ChillRound/blob/46dda1602729b58de96e3fdee9f918d7aaa64727/LICENSE
 - Derivative family/PostScript: `PetRoundGame` / `PetRoundGame-Regular`.
-- Output: **244,272 bytes / 756 cmap entries**, generated with fonttools 4.68.0.
+- Output: **251,108 bytes / 777 cmap entries**, generated with fonttools 4.68.0.
 - Shared by GameContent and saved UI Text references; dynamic font, one face,
   no fallback references, no runtime downloads or font framework change.
 
