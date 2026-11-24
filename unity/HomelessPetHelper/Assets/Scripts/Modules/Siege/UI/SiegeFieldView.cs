@@ -11,6 +11,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
     /// <summary>Scene input adapter for an existing battle. Owns UI intent, never battle rules.</summary>
     public sealed class SiegeFieldView : MonoBehaviour
     {
+        /// <summary>拖拽残影在手指上方浮起的 UI 像素，避免手指遮住道具。</summary>
+        private const float DragLift = 90f;
+
         [SerializeField] private Text _emptyHand;
         [SerializeField] private GameObject _routeRow;
         private int _contextStamp = -1;
@@ -512,8 +515,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _dragGhost.gameObject.SetActive(true); _dragIcon.Show(_catalog.Unit(card.DefinitionId).Icon);
             var ownerCanvas = GetComponentInParent<Canvas>();
             var camera = ownerCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : ownerCanvas.worldCamera;
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)_dragGhost.parent,
-                position, camera, out var local)) _dragGhost.anchoredPosition = local + Vector2.up * 90;
+            if (TryResolveGhostAnchoredPosition((RectTransform)_dragGhost.parent, _dragGhost, position,
+                camera, DragLift, out var anchored)) _dragGhost.anchoredPosition = anchored;
             if (_plan.SelectedCard != id) _plan.SelectCard(id);
             _guide?.ReportSucceeded("siege.card");
             _previewLane = _session.Realtime ? null : HitLane(position);
@@ -561,6 +564,38 @@ namespace HomelessPetHelper.Modules.Siege.UI
             }
             else { _plan.CancelSelection(); _error = "field.dropOutside"; }
             Render();
+        }
+
+        /// <summary>
+        /// 把屏幕点换算成残影的 anchoredPosition。
+        /// <para>
+        /// ScreenPointToLocalPointInRectangle 返回的是以父节点 pivot 为原点的局部坐标，
+        /// 而 anchoredPosition 是相对该节点 anchor 点的偏移。两者直接混用会相差
+        /// 「父节点 pivot → anchor 点」这一向量：本 prefab 的残影 anchor 为 (0,0)、父节点
+        /// pivot 为 (0.5,0.5)，1080×2400 下偏差约 (540,1110)，残影会甩到左下角。
+        /// </para>
+        /// 仅适用于 anchorMin == anchorMax 的定尺寸节点（拉伸节点需另算 sizeDelta）。
+        /// </summary>
+        public static bool TryResolveGhostAnchoredPosition(RectTransform container, RectTransform ghost,
+            Vector2 screenPosition, Camera camera, float lift, out Vector2 anchoredPosition)
+        {
+            anchoredPosition = default;
+            if (container == null || ghost == null) return false;
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(container, screenPosition, camera,
+                    out var local)) return false;
+            anchoredPosition = ToAnchoredPosition(local, container.rect, ghost.anchorMin, lift);
+            return true;
+        }
+
+        /// <summary>
+        /// 把容器局部坐标（原点在容器 pivot）换算成 anchor 为 <paramref name="anchor"/> 的节点的
+        /// anchoredPosition。anchorMin != anchorMax 的拉伸节点不适用。
+        /// </summary>
+        public static Vector2 ToAnchoredPosition(Vector2 localPoint, Rect containerRect, Vector2 anchor,
+            float lift)
+        {
+            Vector2 anchorReference = containerRect.min + Vector2.Scale(anchor, containerRect.size);
+            return localPoint - anchorReference + Vector2.up * lift;
         }
 
         private void Label(Button button, string value)
