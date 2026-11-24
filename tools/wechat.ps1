@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('Check', 'Probe')]
+    [ValidateSet('Check', 'Probe', 'BuildGameWebGL')]
     [string]$Task = 'Check',
     [string]$EditorPath = $env:UNITY_EDITOR_PATH,
     [string]$SdkCachePath,
@@ -81,14 +81,17 @@ if (-not [string]::IsNullOrWhiteSpace($SdkCachePath))
     $env:GIT_CONFIG_COUNT = [string]($configIndex + 1)
     Write-Output 'Using verified official SDK checkout to seed the Git package cache; manifest keeps its pinned URL.'
 }
-$method = if ($BuildWebGL) { 'WeChatEnvironmentProbe.BuildWebGl' } else { 'WeChatEnvironmentProbe.Verify' }
+$method = if ($Task -eq 'BuildGameWebGL') { 'WeChatEnvironmentProbe.BuildGameWebGl' }
+    elseif ($BuildWebGL) { 'WeChatEnvironmentProbe.BuildWebGl' }
+    else { 'WeChatEnvironmentProbe.Verify' }
+$buildPlayer = $BuildWebGL -or $Task -eq 'BuildGameWebGL'
 $log = Join-Path $probe 'unity.log'
 Write-Output "Isolated WeChat probe: $probe"
 try
 {
     $arguments = @('-batchmode', '-nographics', '-quit', '-projectPath', "`"$probe`"",
         '-logFile', "`"$log`"", '-executeMethod', $method)
-    if ($BuildWebGL) { $arguments += @('-buildTarget', 'WebGL') }
+    if ($buildPlayer) { $arguments += @('-buildTarget', 'WebGL') }
     $process = Start-Process -FilePath $EditorPath -ArgumentList $arguments -WindowStyle Hidden -PassThru
     if (-not $process.WaitForExit(1200000))
     {
@@ -100,7 +103,7 @@ try
     $installation = Join-Path $probe 'ProbeReports/installation.json'
     if (-not (Test-Path -LiteralPath $installation)) { throw "Missing verification report. See $log" }
     Get-Content -LiteralPath $installation -Raw | Write-Output
-    if ($BuildWebGL)
+    if ($buildPlayer)
     {
         Get-Content -LiteralPath (Join-Path $probe 'ProbeReports/webgl-build.json') -Raw | Write-Output
     }

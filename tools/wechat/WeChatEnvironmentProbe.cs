@@ -66,11 +66,29 @@ public static class WeChatEnvironmentProbe
         Directory.CreateDirectory("Assets/ProbeScenes");
         const string scenePath = "Assets/ProbeScenes/EnvironmentProbe.unity";
         EditorSceneManager.SaveScene(scene, scenePath);
+        BuildPlayer(new[] { scenePath });
+    }
+
+    public static void BuildGameWebGl()
+    {
+        Verify();
+        string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled)
+            .Select(scene => scene.path).ToArray();
+        if (scenes.Length == 0)
+        {
+            throw new InvalidOperationException("No enabled game scenes in Editor Build Settings.");
+        }
+
+        BuildPlayer(scenes);
+    }
+
+    private static void BuildPlayer(string[] scenes)
+    {
         PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
         PlayerSettings.WebGL.threadsSupport = false;
         var options = new BuildPlayerOptions
         {
-            scenes = new[] { scenePath },
+            scenes = scenes,
             locationPathName = "ProbeBuild/WebGL",
             target = BuildTarget.WebGL,
             options = BuildOptions.Development
@@ -78,6 +96,8 @@ public static class WeChatEnvironmentProbe
         BuildReport report = BuildPipeline.BuildPlayer(options);
         File.WriteAllText("ProbeReports/webgl-build.json", JsonUtility.ToJson(new BuildResult
         {
+            Scenes = scenes,
+            DefaultOrientation = PlayerSettings.defaultInterfaceOrientation.ToString(),
             Result = report.summary.result.ToString(),
             TotalBytes = report.summary.totalSize,
             Errors = report.summary.totalErrors,
@@ -97,6 +117,8 @@ public static class WeChatEnvironmentProbe
     [Serializable]
     private sealed class BuildResult
     {
+        public string[] Scenes;
+        public string DefaultOrientation;
         public string Result;
         public ulong TotalBytes;
         public int Errors;
