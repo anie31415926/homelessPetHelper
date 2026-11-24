@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using HomelessPetHelper.Framework.UI.Motion;
 using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Station.UI;
 using HomelessPetHelper.Tests.Support;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -103,6 +105,152 @@ namespace HomelessPetHelper.Tests.PlayMode
             ExecuteEvents.Execute(yard.gameObject, tap, ExecuteEvents.pointerClickHandler);
             Assert.That(Heading(), Is.Not.EqualTo(heading));
             LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator MainLandmarksUseSharedHoverAndPressWithoutMovingHitsOrBlockingPan()
+        {
+            yield return SceneManager.LoadSceneAsync("Main");
+            yield return null;
+            Object.FindObjectOfType<StationPanelView>().GetComponentsInChildren<Button>(true)
+                .Single(button => button.name == "Restart").onClick.Invoke();
+            Bind();
+            yield return null;
+
+            var scope = _view.GetComponent<MotionScope>();
+            var landmarks = _map.content.Find("Landmarks");
+            var pointNames = new[] { "Parking", "Park", "Porch", "Yard", "Market", "Riverside" };
+            var artNames = new[] { "CrystalMine", "Windmill", "Treehouse", "VegetableYard", "FlowerGarden", "RainbowBridge" };
+            Assert.That(scope.Library, Is.SameAs(AssetDatabase.LoadAssetAtPath<MotionLibrary>(
+                "Assets/Settings/UI/LevelMotion.asset")));
+            for (int i = 0; i < pointNames.Length; i++)
+            {
+                var button = Button(pointNames[i]);
+                var feedback = button.GetComponent<UiMotionFeedback>();
+                Assert.That(feedback, Is.Not.Null, pointNames[i]);
+                var binding = new SerializedObject(feedback);
+                Assert.That(binding.FindProperty("_control").objectReferenceValue, Is.SameAs(button));
+                Assert.That(binding.FindProperty("_scope").objectReferenceValue, Is.SameAs(scope));
+                Assert.That(binding.FindProperty("_hoverViewport").objectReferenceValue, Is.SameAs(_map.viewport));
+                var visual = (RectTransform)landmarks.Find(artNames[i]);
+                Assert.That(visual, Is.Not.Null, artNames[i]);
+                Assert.That(binding.FindProperty("_visual").objectReferenceValue, Is.SameAs(visual));
+                Assert.That(visual.GetComponent<Image>().raycastTarget, Is.False);
+                Assert.That(visual.GetComponent<Image>().maskable, Is.True);
+                Assert.That(ExecuteEvents.GetEventHandler<IDragHandler>(button.gameObject), Is.SameAs(_map.gameObject));
+            }
+            Assert.That(landmarks.GetComponentsInChildren<UiMotionFeedback>(), Is.Empty);
+            yield return AssertLandmarkMotionFitsAtMapEdges(landmarks, pointNames, artNames, scope);
+
+            var yard = Button("Yard");
+            var hit = (RectTransform)yard.transform;
+            var artwork = (RectTransform)landmarks.Find("VegetableYard");
+            _map.FocusOn(hit);
+            yield return null;
+            var originalBounds = new Vector3[4];
+            hit.GetWorldCorners(originalBounds);
+            var mouse = Pointer(-1, hit);
+            ExecuteEvents.Execute(yard.gameObject, mouse, ExecuteEvents.pointerEnterHandler);
+            yield return FinishFeedback(scope, MotionCue.Hover);
+            Assert.That(artwork.localScale.x, Is.EqualTo(scope.Library.Target(MotionCue.Hover).Scale.x).Within(.001f));
+            var hoveredBounds = new Vector3[4];
+            hit.GetWorldCorners(hoveredBounds);
+            Assert.That(hoveredBounds, Is.EqualTo(originalBounds));
+            ExecuteEvents.Execute(yard.gameObject, mouse, ExecuteEvents.pointerExitHandler);
+            yield return FinishFeedback(scope, MotionCue.Hover);
+            Assert.That(artwork.localScale, Is.EqualTo(Vector3.one));
+
+            var touch = Pointer(9, hit);
+            ExecuteEvents.Execute(yard.gameObject, touch, ExecuteEvents.pointerEnterHandler);
+            yield return FinishFeedback(scope, MotionCue.Hover);
+            Assert.That(artwork.localScale, Is.EqualTo(Vector3.one), "A touch does not hover.");
+            ExecuteEvents.Execute(yard.gameObject, touch, ExecuteEvents.pointerDownHandler);
+            yield return FinishFeedback(scope, MotionCue.Press);
+            Assert.That(artwork.localScale.x, Is.EqualTo(scope.Library.Target(MotionCue.Press).Scale.x).Within(.001f));
+            _map.OnBeginDrag(touch);
+            Assert.That(artwork.localScale, Is.EqualTo(Vector3.one), "Dragging must immediately clear press.");
+            Assert.That(yard.GetComponent<UiMotionFeedback>().isActiveAndEnabled, Is.False);
+            _map.OnEndDrag(touch);
+            Assert.That(yard.GetComponent<UiMotionFeedback>().isActiveAndEnabled, Is.True);
+
+            ExecuteEvents.Execute(yard.gameObject, mouse, ExecuteEvents.pointerEnterHandler);
+            yield return FinishFeedback(scope, MotionCue.Hover);
+            _view.OpenDetails();
+            Assert.That(artwork.localScale, Is.EqualTo(Vector3.one), "Details must reset the underlying map.");
+            _view.CloseDetails();
+            yard.interactable = false;
+            ExecuteEvents.Execute(yard.gameObject, mouse, ExecuteEvents.pointerEnterHandler);
+            yield return FinishFeedback(scope, MotionCue.Hover);
+            Assert.That(artwork.localScale, Is.EqualTo(Vector3.one), "Unavailable points do not animate.");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        private IEnumerator AssertLandmarkMotionFitsAtMapEdges(Transform landmarks, string[] pointNames,
+            string[] artNames, MotionScope scope)
+        {
+            Assert.That(_map.viewport.GetComponent<RectMask2D>(), Is.Not.Null);
+            var canvas = _view.GetComponent<Canvas>();
+            var camera = new GameObject("MapMotionViewport", typeof(Camera)).GetComponent<Camera>();
+            camera.orthographic = true;
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = camera;
+            var corners = new Vector3[4];
+            foreach (var size in new[] { new Vector2Int(390, 844), new Vector2Int(540, 960) })
+            {
+                var fullySeen = new HashSet<string>();
+                var renderTarget = new RenderTexture(size.x, size.y, 24);
+                camera.targetTexture = renderTarget;
+                Canvas.ForceUpdateCanvases();
+                yield return null;
+                foreach (Vector2 side in new[] { Vector2.zero, Vector2.one })
+                {
+                    _map.normalizedPosition = side;
+                    Canvas.ForceUpdateCanvases();
+                    for (int i = 0; i < artNames.Length; i++)
+                    {
+                        string name = artNames[i];
+                        var art = (RectTransform)landmarks.Find(name);
+                        art.GetWorldCorners(corners);
+                        if (!corners.All(corner => _map.viewport.rect.Contains(_map.viewport.InverseTransformPoint(corner))))
+                            continue; // Dragging may leave a naturally partial landmark at the viewport boundary.
+                        fullySeen.Add(name);
+                        var button = Button(pointNames[i]);
+                        if (button.IsInteractable())
+                        {
+                            var mouse = Pointer(-1, (RectTransform)button.transform);
+                            ExecuteEvents.Execute(button.gameObject, mouse, ExecuteEvents.pointerEnterHandler);
+                            yield return FinishFeedback(scope, MotionCue.Hover);
+                            art.GetWorldCorners(corners);
+                            Rect clip = _map.viewport.rect;
+                            clip.xMin -= .05f; clip.xMax += .05f; clip.yMin -= .05f; clip.yMax += .05f;
+                            Assert.That(corners.All(corner => clip.Contains(_map.viewport.InverseTransformPoint(corner))),
+                                Is.True, $"{name} clipped at {size} on map edge {side}");
+                            ExecuteEvents.Execute(button.gameObject, mouse, ExecuteEvents.pointerExitHandler);
+                            yield return FinishFeedback(scope, MotionCue.Hover);
+                        }
+                    }
+                }
+                Assert.That(fullySeen, Is.EquivalentTo(artNames), $"{size}: each landmark needs a complete review position.");
+                camera.targetTexture = null;
+                renderTarget.Release();
+                Object.Destroy(renderTarget);
+            }
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.worldCamera = null;
+            Object.Destroy(camera.gameObject);
+            yield return null;
+        }
+
+        private static IEnumerator FinishFeedback(MotionScope scope, MotionCue cue)
+        {
+            float finish = scope.UiSeconds + scope.Library.Duration(cue);
+            // Allow one frame for the instance to observe input, then advance its actual UI clock.
+            yield return null;
+            finish += Mathf.Min(Time.unscaledDeltaTime, .1f);
+            float deadline = Time.realtimeSinceStartup + 2f;
+            while (scope.UiSeconds < finish && Time.realtimeSinceStartup < deadline) yield return null;
+            yield return null;
+            Assert.That(scope.UiSeconds, Is.GreaterThanOrEqualTo(finish));
         }
 
         [UnityTest]

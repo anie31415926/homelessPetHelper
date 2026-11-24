@@ -1,4 +1,5 @@
 using System;
+using HomelessPetHelper.Framework.UI.Motion;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,6 +13,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
         // Design-basis width (1080 canvas). Must stay at or below the viewport width so the art
         // is never upscaled beyond the screen; anything larger crops most of the map on a phone.
         [SerializeField, Min(1)] private float _minimumMapWidth = 1080;
+
+        [SerializeField] private UiMotionFeedback[] _pointFeedback = Array.Empty<UiMotionFeedback>();
 
         private RectTransform _pendingFocus;
         private int? _dragPointer;
@@ -89,6 +92,7 @@ namespace HomelessPetHelper.Modules.Outing.UI
                 eventData.button != PointerEventData.InputButton.Left) return;
             _pendingFocus = null;
             _dragPointer = eventData.pointerId;
+            SetPointFeedbackEnabled(false);
             base.OnBeginDrag(eventData);
         }
 
@@ -102,14 +106,37 @@ namespace HomelessPetHelper.Modules.Outing.UI
             if (_dragPointer != eventData.pointerId) return;
             base.OnEndDrag(eventData);
             _dragPointer = null;
+            SetPointFeedbackEnabled(true);
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            onValueChanged.AddListener(RefreshPointMotionViewport);
+            SetPointFeedbackEnabled(true);
         }
 
         protected override void OnDisable()
         {
+            onValueChanged.RemoveListener(RefreshPointMotionViewport);
             _pendingFocus = null;
             _dragPointer = null;
             StopMovement();
+            SetPointFeedbackEnabled(false);
             base.OnDisable();
+        }
+
+        private void RefreshPointMotionViewport(Vector2 _)
+        {
+            foreach (UiMotionFeedback feedback in _pointFeedback)
+                if (feedback != null) feedback.RefreshViewportConstraint();
+        }
+
+        // The ScrollRect owns drag events even when a gesture starts over a point button.
+        private void SetPointFeedbackEnabled(bool enabled)
+        {
+            foreach (UiMotionFeedback feedback in _pointFeedback)
+                if (feedback != null) feedback.enabled = enabled;
         }
     }
 }

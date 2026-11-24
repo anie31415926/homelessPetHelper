@@ -11,6 +11,7 @@ namespace HomelessPetHelper.Framework.UI.Motion
         [SerializeField] private MotionScope _scope;
         [SerializeField] private Selectable _control;
         [SerializeField] private RectTransform _visual;
+        [SerializeField] private RectTransform _hoverViewport;
         private bool _hovered, _selected, _dragging;
         private int? _pointer;
         private MotionCue _cue;
@@ -91,9 +92,48 @@ namespace HomelessPetHelper.Framework.UI.Motion
 
         private void Apply(MotionPose pose)
         {
-            _visual.localScale = new Vector3(pose.Scale.x, pose.Scale.y, 1);
             _visual.anchoredPosition = pose.Offset;
             _visual.localRotation = Quaternion.Euler(0, 0, pose.AngleDegrees);
+            SetVisualScale(pose.Scale);
         }
+
+        /// <summary>Recheck a held hover when its scroll viewport moves relative to the visual.</summary>
+        public void RefreshViewportConstraint()
+        {
+            if (_hoverViewport != null && isActiveAndEnabled && IsGrowing(_pose.Scale))
+                SetVisualScale(_pose.Scale);
+        }
+
+        private void SetVisualScale(Vector2 scale)
+        {
+            if (_hoverViewport != null && IsGrowing(scale))
+                scale = ConstrainGrowth(scale);
+            _visual.localScale = new Vector3(scale.x, scale.y, 1);
+        }
+
+        private static bool IsGrowing(Vector2 scale) => scale.x > 1 || scale.y > 1;
+
+        private Vector2 ConstrainGrowth(Vector2 scale)
+        {
+            var toViewport = _hoverViewport.worldToLocalMatrix * _visual.parent.localToWorldMatrix;
+            var origin = toViewport.MultiplyPoint3x4(_visual.localPosition);
+            var rotation = _visual.localRotation;
+            var rect = _visual.rect;
+            var viewport = _hoverViewport.rect;
+            float allowed = 1;
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 corner = new Vector2((i & 1) == 0 ? rect.xMin : rect.xMax, i < 2 ? rect.yMin : rect.yMax);
+                Vector3 position = origin + toViewport.MultiplyVector(rotation * corner);
+                if (!viewport.Contains(position)) return Vector2.one;
+                Vector3 growth = toViewport.MultiplyVector(rotation * Vector2.Scale(corner, scale - Vector2.one));
+                allowed = Mathf.Min(allowed, AllowedGrowth(position.x, growth.x, viewport.xMin, viewport.xMax));
+                allowed = Mathf.Min(allowed, AllowedGrowth(position.y, growth.y, viewport.yMin, viewport.yMax));
+            }
+            return Vector2.Lerp(Vector2.one, scale, allowed);
+        }
+
+        private static float AllowedGrowth(float position, float growth, float min, float max) =>
+            growth > 0 ? (max - position) / growth : growth < 0 ? (min - position) / growth : 1;
     }
 }
