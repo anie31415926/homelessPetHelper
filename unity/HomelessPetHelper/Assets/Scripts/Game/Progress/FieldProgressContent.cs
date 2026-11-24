@@ -44,6 +44,8 @@ namespace HomelessPetHelper.Game.Progress
             return _fields.Find(pointId, layoutId) ?? throw new ArgumentException("Saved field layout is unavailable.");
         }
 
+        internal bool HasPlayableLocation(string pointId) => _fields.Get(pointId) != null;
+
         internal string Version(string pointId, string layoutId) =>
             Hash((Layout(pointId, layoutId)?.ContentVersion ?? _openingVersion) + _battleVersion);
 

@@ -86,7 +86,11 @@ namespace HomelessPetHelper.Game
                     Audio.PersistenceError, this);
         }
 
-        private void Update() => RefreshMusic();
+        private void Update()
+        {
+            RefreshMusic();
+            if (Application.isFocused) Presenter?.PresentPendingRescueNotice();
+        }
 
         private void RefreshMusic()
         {

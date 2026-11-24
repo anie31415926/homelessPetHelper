@@ -59,6 +59,41 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator RescueNoticeOpensTheSameMapRequestAndAcceptedOutingSurvivesReload()
+        {
+            yield return Load();
+            var presenter = _root.Presenter;
+            var session = presenter.Session;
+            var old = session.Requests.Requests.Single(request => request.PointId == "yard");
+            Assert.That(session.Requests.TryTransition(old.RequestId, RequestSignal.HelpedElsewhere, out _), Is.True);
+            Assert.That(session.Clock.TryAdvance(session.Clock.Current.Version, 180, out _, out _), Is.True);
+            Assert.That(presenter.Progress.TryCheckpoint(), Is.True, presenter.Progress.PersistenceError?.ToString());
+            var notice = session.Requests.Requests.Last();
+            var present = typeof(MainLoopPresenter).GetMethod("PresentPendingRescueNotice",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            Assert.That(present, Is.Not.Null);
+            present.Invoke(presenter, null);
+            Assert.That(FeedbackContains("救助消息"), Is.True);
+            Assert.That(FeedbackContains("居民小院"), Is.True);
+            yield return new UiLayoutCompliancePlayTests().CaptureAndAssert(_station, "rescue-notice");
+            Click(_station, "OverlayConfirm");
+            Assert.That(_map.gameObject.activeInHierarchy, Is.True);
+            Assert.That(session.Outing.Session.HasDeparted, Is.False);
+            Assert.That(notice.State, Is.EqualTo(RequestState.Available));
+            Assert.That(session.Station.AvailableTemporaryPlaces, Is.EqualTo(2));
+            Click(_map, "Primary");
+            yield return WaitForPanel<Game.Approach.ApproachPanelView>();
+            Guid animalId = presenter.OutingAnimal.AnimalId;
+            Assert.That(session.Outing.Session.AcceptedRequestId, Is.EqualTo(notice.RequestId));
+            Assert.That(notice.State, Is.EqualTo(RequestState.Accepted));
+
+            yield return Load();
+            Assert.That(_root.Presenter.Progress.CanContinue, Is.True);
+            Assert.That(_root.Presenter.Session.Outing.Session.AcceptedRequestId, Is.EqualTo(notice.RequestId));
+            Assert.That(_root.Presenter.OutingAnimal.AnimalId, Is.EqualTo(animalId));
+        }
+
+        [UnityTest]
         public IEnumerator RealControlsRescueCatThenDogAndReloadTheirIndividualCareAndTime()
         {
             yield return Load();
@@ -153,6 +188,81 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(session.Station.Animals.Count, Is.EqualTo(2));
             Click(_map, "Cancel");
             LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator AdoptionPublishesChoosesAndArchivesWithoutReleasingOnCancelOrSaveFailure()
+        {
+            yield return Load();
+            Click(_station, "StationMenu"); Click(_station, "StationMemorial");
+            Assert.That(FeedbackContains("送养完成后"), Is.True);
+            Click(_station, "OverlayCancel");
+            Click(_station, "Restart"); Click(_map, "Parking"); Click(_map, "Primary");
+            yield return WaitForPanel<Game.Approach.ApproachPanelView>();
+            MainApproachDriver.Complete();
+            yield return Win();
+            Click(_siege, "Retry");
+            yield return WaitForPanel<StationPanelView>();
+            Click(_station, "Enter"); Click(_station, "Animal0");
+            var animal = _root.Presenter.Session.Station.Animals.Single();
+            var layout = new UiLayoutCompliancePlayTests();
+            Click(_station, "QuietSpace");
+            Assert.That(FeedbackContains("基础检查"), Is.True);
+            Click(_station, "OverlayCancel"); Click(_station, "Check");
+            yield return layout.CaptureAndAssert(_station, "adoption-detail");
+            Click(_station, "QuietSpace"); Click(_station, "OverlayConfirm");
+            Assert.That(FeedbackContains("1/2"), Is.True);
+            Click(_station, "OverlayBrowse");
+            Assert.That(FeedbackContains("2/2"), Is.True);
+            yield return layout.CaptureAndAssert(_station, "adoption-applicants");
+            Click(_station, "OverlayConfirm");
+            Assert.That(Button(_station, "OverlayConfirm").IsInteractable(), Is.False);
+            Button(_station, "OverlayConfirm").onClick.Invoke(); // Simulate a queued duplicate.
+            Assert.That(_root.Presenter.Session.Station.Animals.Single().AnimalId, Is.EqualTo(animal.AnimalId));
+            yield return new WaitForSecondsRealtime(0.4f);
+            yield return layout.CaptureAndAssert(_station, "adoption-farewell");
+            Click(_station, "OverlayCancel");
+            Assert.That(_root.Presenter.Session.Station.AvailableTemporaryPlaces, Is.EqualTo(1));
+            yield return Load();
+            Click(_station, "Animal0"); Click(_station, "QuietSpace");
+            Assert.That(FeedbackContains("1/2"), Is.True, "Published state is durable.");
+            Click(_station, "OverlayConfirm");
+            yield return new WaitForSecondsRealtime(0.4f);
+            _storage.FailWrites = true;
+            Click(_station, "OverlayConfirm");
+            Assert.That(FeedbackContains("保存失败"), Is.True);
+            Assert.That(_root.Presenter.Session.Station.Animals.Count, Is.EqualTo(1));
+            _storage.FailWrites = false;
+            yield return Load();
+            Click(_station, "Animal0"); Click(_station, "QuietSpace"); Click(_station, "OverlayConfirm");
+            yield return new WaitForSecondsRealtime(0.4f);
+            Click(_station, "OverlayConfirm");
+            Assert.That(FeedbackContains("去新家"), Is.True);
+            Assert.That(_root.Presenter.Session.Station.AvailableTemporaryPlaces, Is.EqualTo(2));
+            Assert.That(_root.Presenter.Session.LastArrival, Is.Null);
+            Assert.That(_root.Presenter.Session.Requests.Requests.Count(r => r.State == RequestState.Resolved),
+                Is.EqualTo(1));
+            Assert.That(_storage.Slots.Any(slot => slot != null && !slot.Contains(animal.AnimalId.ToString("N")) &&
+                slot.Contains("Memorials")), Is.True, "The committed memorial keeps no detailed animal data.");
+            yield return Load();
+            Assert.That(_root.Presenter.Progress.CanContinue, Is.True);
+            Assert.That(_root.Presenter.Session.Station.Animals, Is.Empty);
+            Click(_station, "StationMenu"); Click(_station, "StationMemorial");
+            Assert.That(FeedbackContains("救助猫咪"), Is.True);
+            Assert.That(_station.GetComponentsInChildren<Image>().Single(i => i.name == "DialogPortrait").sprite,
+                Is.Not.Null);
+            yield return layout.CaptureAndAssert(_station, "adoption-memorial");
+            Click(_station, "OverlayCancel");
+            Click(_station, "Restart"); Click(_map, "Yard"); Click(_map, "Primary");
+            yield return WaitForPanel<Game.Approach.ApproachPanelView>();
+        }
+
+        private static IEnumerator WaitForPanel<T>() where T : MonoBehaviour
+        {
+            float deadline = Time.realtimeSinceStartup + 5;
+            while (UnityEngine.Object.FindObjectOfType<T>() == null && Time.realtimeSinceStartup < deadline)
+                yield return null;
+            Assert.That(UnityEngine.Object.FindObjectOfType<T>(), Is.Not.Null, typeof(T).Name);
         }
 
         [UnityTest]

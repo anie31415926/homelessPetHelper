@@ -31,6 +31,78 @@ namespace HomelessPetHelper.Tests.EditMode
         private MainProgressSession Open(ISaveStorage storage) => new MainProgressSession(_config,
             _content.Artwork, storage);
 
+        [TestCase(0, 240)]
+        [TestCase(1, 180)]
+        [TestCase(5, 150)]
+        public void DispatchWaitsForWorldTimeAndPersistsTheSameNotice(int capacity, int waitMinutes)
+        {
+            var storage = new MemorySaveStorage();
+            Guid noticeId;
+            using (var progress = OpenDispatch(storage, capacity))
+            {
+                var session = progress.Session;
+                var initial = session.Requests.Requests.Single(request => request.PointId == "parking");
+                Assert.That(session.Requests.TryTransition(initial.RequestId, RequestSignal.HelpedElsewhere, out _),
+                    Is.True);
+                AdvanceDispatchTime(progress, waitMinutes - 1);
+                Assert.That(session.Requests.Requests.Count, Is.EqualTo(3));
+                if (capacity == 0)
+                {
+                    Assert.That(session.Station.TryExpandTemporaryCapacity(session.StationSessionId, 1, out _),
+                        Is.True);
+                    Assert.That(progress.TryCheckpoint(), Is.True);
+                    Assert.That(session.Requests.Requests.Count, Is.EqualTo(3), "Expansion must not send a notice.");
+                }
+                AdvanceDispatchTime(progress, 1);
+                noticeId = session.Requests.Requests.Last().RequestId;
+                Assert.That(session.Map.TrySelectPoint("parking", out var notice, out _), Is.True);
+                Assert.That(notice.RequestId, Is.EqualTo(noticeId));
+            }
+
+            using var restored = OpenDispatch(storage, capacity);
+            Assert.That(restored.TryCheckpoint(), Is.True, restored.PersistenceError?.ToString());
+            Assert.That(restored.Session.Requests.Requests.Count, Is.EqualTo(4));
+            Assert.That(restored.Session.Map.TrySelectPoint("parking", out var same, out _), Is.True);
+            Assert.That(same.RequestId, Is.EqualTo(noticeId));
+        }
+
+        [Test]
+        public void FullStationCanReceiveNoticeAndExpiredNoticeDoesNotEmptyPlayableMapAfterExpansion()
+        {
+            using var progress = OpenDispatch(new MemorySaveStorage(), 0);
+            var session = progress.Session;
+            foreach (var request in session.Requests.Requests.Where(request => request.ReunionPlan == null))
+                Assert.That(session.Requests.TryTransition(request.RequestId, RequestSignal.HelpedElsewhere, out _),
+                    Is.True);
+            AdvanceDispatchTime(progress, 240);
+            var notice = session.Requests.Requests.Last();
+            Assert.That(notice.State, Is.EqualTo(RequestState.Available));
+            Assert.That(session.Map.TryPlanDeparture(notice.PointId, 0, out _, out var blocked), Is.False);
+            Assert.That(blocked, Is.EqualTo(OutingFailure.CapacityNotAvailable));
+            Assert.That(session.Station.TryExpandTemporaryCapacity(session.StationSessionId, 5, out _), Is.True);
+            Assert.That(progress.TryCheckpoint(), Is.True);
+            Assert.That(session.Requests.Requests.Count, Is.EqualTo(4));
+
+            AdvanceDispatchTime(progress, 120);
+            Assert.That(notice.State, Is.EqualTo(RequestState.HelpedElsewhere));
+            var fallback = session.Requests.Requests.Last();
+            Assert.That(fallback.RequestId, Is.Not.EqualTo(notice.RequestId));
+            Assert.That(fallback.PointId, Is.Not.EqualTo(notice.PointId));
+            Assert.That(session.Map.TryPlanDeparture(fallback.PointId, 5, out _, out _), Is.True);
+            Assert.That(session.Station.Animals, Is.Empty);
+        }
+
+        private MainProgressSession OpenDispatch(ISaveStorage storage, int capacity) =>
+            new MainProgressSession(WithInitialCapacity(capacity), _content.Artwork, storage,
+                _content.CreateFieldProgressContent(_content.CreateFields()));
+
+        private static void AdvanceDispatchTime(MainProgressSession progress, long minutes)
+        {
+            var clock = progress.Session.Clock;
+            Assert.That(clock.TryAdvance(clock.Current.Version, minutes, out _, out _), Is.True);
+            Assert.That(progress.TryCheckpoint(), Is.True, progress.PersistenceError?.ToString());
+        }
+
         private CityMapPreviewConfig WithInitialCapacity(int capacity)
         {
             var data = JObject.Parse(AssetDatabase.LoadAssetAtPath<TextAsset>(
@@ -103,6 +175,48 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(again.Session.Station.TemporaryCapacity, Is.EqualTo(2));
             Assert.That(again.Session.Station.Animals.Count, Is.EqualTo(2));
             Assert.That(again.Session.Station.IsFull, Is.True);
+        }
+
+        [Test]
+        public void ConfirmedAdoptionFreesTheOnlyBedAndSurvivesAnotherRescue()
+        {
+            var storage = new MemorySaveStorage();
+            _config = WithInitialCapacity(1);
+            Guid cat, dog;
+            using (var first = Open(storage))
+            {
+                cat = Rescue(first, "ordinary");
+                int applicant = (cat.ToByteArray()[0] % 3 + 1) % 3;
+                Assert.That(first.TryPublishAdoption(cat), Is.False, "An unchecked animal cannot be listed.");
+                Check(first, cat);
+                Assert.That(first.TrySendForAdoption(cat, "Milo", applicant), Is.False);
+                Assert.That(first.TryPublishAdoption(cat), Is.True);
+                Assert.That(first.TryPublishAdoption(cat), Is.False);
+                Assert.That(first.Session.Station.IsFull, Is.True);
+                Assert.That(first.TrySendForAdoption(cat, "Milo", -1), Is.False);
+                long elapsed = first.Session.Clock.Current.ElapsedMinutes;
+                Assert.That(first.TrySendForAdoption(cat, "Milo", applicant), Is.True,
+                    first.PersistenceError?.ToString());
+                Assert.That(first.TrySendForAdoption(cat, "Milo", applicant), Is.False);
+                Assert.That(first.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(elapsed));
+                Assert.That(first.Session.Station.AvailableTemporaryPlaces, Is.EqualTo(1));
+                dog = Rescue(first, "ordinary-dog");
+                Check(first, dog);
+                Assert.That(first.TryCheckpoint(), Is.True);
+            }
+            using var restored = Open(storage);
+            Assert.That(restored.CanContinue, Is.True, restored.PersistenceError?.ToString());
+            Assert.That(restored.Session.Station.Animals.Single().AnimalId, Is.EqualTo(dog));
+            Assert.That(restored.Session.Station.TryGetCurrentAnimal(cat, out _), Is.False);
+            var raw = new SaveService(storage);
+            var section = new SaveSection<JObject>("main.station", 4, () => new JObject(), _ => null);
+            raw.Register(section);
+            Assert.That(raw.TryOpen(out _, out _), Is.True);
+            Assert.That(raw.TryRead(section, out var data, out _), Is.True);
+            var memorial = data["Memorials"].Single();
+            Assert.That((string)memorial["Name"], Is.EqualTo("Milo"));
+            Assert.That((string)memorial["Appearance"], Is.EqualTo("cat.shy"));
+            Assert.That(data.ToString(), Does.Not.Contain(cat.ToString("N")));
         }
 
         [Test]
@@ -323,7 +437,7 @@ namespace HomelessPetHelper.Tests.EditMode
                 Assert.That(progress.TryCheckpoint(), Is.True);
             }
             var raw = new SaveService(storage);
-            var section = new SaveSection<JObject>("main.station", 2, () => new JObject(), _ => null);
+            var section = new SaveSection<JObject>("main.station", 4, () => new JObject(), _ => null);
             raw.Register(section);
             Assert.That(raw.TryOpen(out _, out _), Is.True);
             Assert.That(raw.TryRead(section, out var data, out _), Is.True);

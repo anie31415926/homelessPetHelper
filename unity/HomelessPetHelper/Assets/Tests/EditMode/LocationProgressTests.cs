@@ -63,10 +63,12 @@ namespace HomelessPetHelper.Tests.EditMode
             using (var current = new MainProgressSession(content.CreateMapConfig(), content.Artwork, storage))
                 Assert.That(current.TryCheckpoint(), Is.True);
             var raw = new SaveService(storage);
-            var section = new SaveSection<JObject>("main.station", 2, () => new JObject(), _ => null);
+            var section = new SaveSection<JObject>("main.station", 4, () => new JObject(), _ => null);
             raw.Register(section); Assert.That(raw.TryOpen(out _, out _), Is.True);
             Assert.That(raw.TryRead(section, out var data, out _), Is.True);
             data.Remove("Fields");
+            data.Remove("Memorials");
+            data.Remove("Dispatch");
             var oldStorage = new MemorySaveStorage();
             var old = new SaveService(oldStorage);
             var oldSection = new SaveSection<JObject>("main.station", 1, () => data, _ => null);

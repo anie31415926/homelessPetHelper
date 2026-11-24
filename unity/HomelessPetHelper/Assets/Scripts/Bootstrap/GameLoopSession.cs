@@ -216,6 +216,14 @@ namespace HomelessPetHelper.Bootstrap
         }
 
         /// <summary>Restores the last frozen arrival only on a fresh, staged station session.</summary>
+        public void ForgetDepartedResident(Guid animalId)
+        {
+            Outing.ForgetDepartedResident(animalId);
+            if (LastArrival?.Arrival.AnimalId != animalId) return;
+            LastArrival = Station.Animals.Count == 0 ? null :
+                Station.GetHistoricalReturn(Station.Animals[Station.Animals.Count - 1].AnimalId);
+        }
+
         public void RestoreLastArrival()
         {
             if (Outing.Session != null || LastArrival != null) throw new InvalidOperationException("Session is live.");

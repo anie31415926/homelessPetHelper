@@ -232,6 +232,25 @@ namespace HomelessPetHelper.Modules.Station
             return true;
         }
 
+        public bool CanReleaseHealthyResident(Guid sessionId, Guid animalId) =>
+            ValidateSession(sessionId, out _) &&
+            TryGetCareSnapshot(animalId, out var care) &&
+            care.BasicAssessment == StationHealthAssessment.NoUrgentCareRequired &&
+            TryGetCurrentAnimal(animalId, out var animal) && animal.Health.Problems.Count == 0 &&
+            animal.Disposition.Stress == AnimalStress.None;
+
+        /// <summary>Applies an already confirmed and committed placement. Keeps live outing deduplication.</summary>
+        public bool TryReleaseHealthyResident(Guid sessionId, Guid animalId)
+        {
+            if (!CanReleaseHealthyResident(sessionId, animalId)) return false;
+            var next = new List<StationAnimalIntake>(_animals);
+            next.Remove(_animalsById[animalId]);
+            _animalsById.Remove(animalId);
+            _careByAnimalId.Remove(animalId);
+            _animals = next.AsReadOnly();
+            return true;
+        }
+
         /// <summary>Read-only admission gate. Valid until another operation mutates this station.</summary>
         public bool CanReceive(Guid stationSessionId, StationAnimalIntake arrival, out StationFailure failure)
         {

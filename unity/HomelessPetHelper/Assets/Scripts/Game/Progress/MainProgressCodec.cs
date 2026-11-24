@@ -16,7 +16,8 @@ namespace HomelessPetHelper.Game.Progress
         {
             Capacity = config.InitialCapacity, ElapsedMinutes = 0,
             Requests = config.CreateRequestPool().Requests.Select(CaptureRequest).ToArray(),
-            Residents = Array.Empty<ResidentData>(), Fields = FieldProgressSession.Empty()
+            Residents = Array.Empty<ResidentData>(), Fields = FieldProgressSession.Empty(),
+            Memorials = Array.Empty<MemorialData>()
         };
 
         internal static MainProgressData Capture(GameLoopSession session, StationCareRoster care,
@@ -46,7 +47,8 @@ namespace HomelessPetHelper.Game.Progress
         internal static GameLoopSession Restore(MainProgressData data, CityMapPreviewConfig config,
             StationArtwork artwork, out StationCareRoster care, out Dictionary<Guid, Guid> links)
         {
-            if (data == null || data.Requests == null || data.Residents == null || data.ElapsedMinutes < 0 ||
+            if (data == null || data.Requests == null || data.Residents == null || data.Memorials == null ||
+                data.ElapsedMinutes < 0 ||
                 data.Capacity < 0 || data.Residents.Length > data.Capacity)
                 throw new ArgumentException("Invalid station checkpoint header.");
             var pool = RestoreRequests(data.Requests, config, data.Fields?.Active);
@@ -72,11 +74,21 @@ namespace HomelessPetHelper.Game.Progress
                     if (!links.TryAdd(restored.Arrival.OutingId, requestId))
                         throw new ArgumentException("Duplicate outing identity.");
                 }
-                if (pool.Requests.Count(request => request.State == RequestState.Resolved) != residents.Count)
+                foreach (var memorial in data.Memorials)
+                {
+                    if (memorial == null || !MainProgressSession.IsMemorialName(memorial.Name) ||
+                        !Guid.TryParseExact(memorial.RequestId, "N", out var requestId) ||
+                        !pool.TryGet(requestId, out var request) || request.State != RequestState.Resolved ||
+                        request.ReunionPlan != null || !usedRequests.Add(requestId) ||
+                        memorial.Appearance != config.GetRescue(request.TemplateId)?.AnimalDefinitionId ||
+                        config.GetAnimalPresentation(memorial.Appearance) == null)
+                        throw new ArgumentException("Invalid adoption memorial.");
+                }
+                if (pool.Requests.Count(request => request.State == RequestState.Resolved) != usedRequests.Count)
                     throw new ArgumentException("Resolved requests and arrivals differ.");
                 session.Station.RestoreResidents(residents);
-                long minimumMinutes = 0;
                 config.TimePolicy.TryGetDuration(OutingReturnProgress.HandingOver, false, out var rescueMinutes, out _);
+                long minimumMinutes = checked(rescueMinutes * (long)(usedRequests.Count - residents.Count));
                 for (int i = 0; i < residents.Count; i++)
                 {
                     var state = MainResidentCodec.RestoreCoat(data.Residents[i].Coat);
@@ -96,7 +108,6 @@ namespace HomelessPetHelper.Game.Progress
         private static RequestPoolState RestoreRequests(RequestData[] data, CityMapPreviewConfig config,
             ActiveOutingData active)
         {
-            var authored = config.CreateRequestPool().Requests;
             if (active != null && (data.Count(item => item?.State == (int)RequestState.Accepted) != 1 ||
                 !data.Any(item => item != null && item.Id == active.RequestId &&
                     item.State == (int)RequestState.Accepted)))
@@ -108,11 +119,11 @@ namespace HomelessPetHelper.Game.Progress
                 if (item == null || !Guid.TryParseExact(item.Id, "N", out var id))
                     throw new ArgumentException("Invalid request identity.");
                 var template = config.GetRequestTemplate(item.TemplateId);
-                var definition = authored.FirstOrDefault(request => request.TemplateId == item.TemplateId &&
-                    request.PointId == item.PointId);
-                if (template == null || definition == null || item.Version != definition.TemplateVersion ||
-                    !template.AllowsPoint(item.PointId) || item.OwnerId != definition.ReunionPlan?.OwnerId ||
-                    item.ReceivingId != definition.ReunionPlan?.ReceivingArrangementId ||
+                var definition = config.RequestBinding(item.TemplateId, item.PointId, item.Version);
+                var reunionBinding = definition?.hasDirectReception == true ? definition.reunion : null;
+                if (template == null || definition == null ||
+                    !template.AllowsPoint(item.PointId) || item.OwnerId != reunionBinding?.ownerId ||
+                    item.ReceivingId != reunionBinding?.receivingArrangementId ||
                     !config.Definition.TryGetPoint(item.PointId, out _) ||
                     (item.OwnerId == null) != (item.ReceivingId == null) ||
                     item.State == (int)RequestState.Accepted && active?.RequestId != item.Id)

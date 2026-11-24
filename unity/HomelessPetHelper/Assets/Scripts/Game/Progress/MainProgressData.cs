@@ -3,7 +3,7 @@ using UnityEngine.Scripting;
 
 namespace HomelessPetHelper.Game.Progress
 {
-    // Version 2 adds retained field results and one resumable outing to the station aggregate.
+    // Version 4 adds dispatch timing and its latest notice to the station/field aggregate.
     // Explicit fields and constructors preserve the contract on stripped/AOT builds.
     [Preserve, JsonObject(MemberSerialization.OptIn)]
     internal sealed class MainProgressData
@@ -13,7 +13,31 @@ namespace HomelessPetHelper.Game.Progress
         [Preserve, JsonProperty(Required = Required.Always)] public RequestData[] Requests;
         [Preserve, JsonProperty(Required = Required.Always)] public ResidentData[] Residents;
         [Preserve, JsonProperty(Required = Required.Always)] public WorldFieldData Fields;
+        [Preserve, JsonProperty(Required = Required.Always)] public MemorialData[] Memorials;
+        [Preserve, JsonProperty(Required = Required.AllowNull)] public RequestDispatchData Dispatch;
         [Preserve] public MainProgressData() { }
+    }
+
+    [Preserve, JsonObject(MemberSerialization.OptIn)]
+    internal sealed class RequestDispatchData
+    {
+        [Preserve, JsonProperty(Required = Required.Always)] public long ObservedMinute;
+        [Preserve, JsonProperty(Required = Required.Always)] public long NextMinute;
+        [Preserve, JsonProperty(Required = Required.Always)] public long ExpiresMinute;
+        [Preserve, JsonProperty(Required = Required.AllowNull)] public string NoticeId;
+        [Preserve, JsonProperty(Required = Required.Always)] public bool Shown;
+        [Preserve, JsonProperty(Required = Required.Always)] public bool Protected;
+        [Preserve] public RequestDispatchData() { }
+    }
+
+    [Preserve, JsonObject(MemberSerialization.OptIn)]
+    internal sealed class MemorialData
+    {
+        // Request identity is retained for the resolved-request ledger, not as an animal ID.
+        [Preserve, JsonProperty(Required = Required.Always)] public string RequestId;
+        [Preserve, JsonProperty(Required = Required.Always)] public string Name;
+        [Preserve, JsonProperty(Required = Required.Always)] public string Appearance;
+        [Preserve] public MemorialData() { }
     }
 
     [Preserve, JsonObject(MemberSerialization.OptIn)]
@@ -60,6 +84,7 @@ namespace HomelessPetHelper.Game.Progress
         [Preserve, JsonProperty(Required = Required.Always)] public int Assessment;
         [Preserve, JsonProperty(Required = Required.AllowNull)] public string[] AssessedProblemIds;
         [Preserve, JsonProperty(Required = Required.Always)] public CoatData Coat;
+        [Preserve, JsonProperty(Required = Required.Always)] public bool AdoptionListed;
         [Preserve] public ResidentData() { }
     }
 

@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 namespace HomelessPetHelper.Game.Progress
 {
     /// <summary>Owns one gameplay aggregate. Explicit stable checkpoints are the only disk mutations.</summary>
-    public sealed class MainProgressSession : IDisposable
+    public sealed partial class MainProgressSession : IDisposable
     {
         private JToken _checkpointBattle;
         private Modules.Siege.SiegeState.BattlePhase _checkpointPhase;
@@ -19,6 +19,7 @@ namespace HomelessPetHelper.Game.Progress
         private readonly StationArtwork _artwork;
         private readonly FieldProgressContent _fieldContent;
         private readonly Dictionary<Guid, Guid> _requestsByOuting;
+        private readonly RequestDispatch _dispatch;
         public GameLoopSession Session { get; }
         public StationCareRoster Care { get; }
         public FieldProgressSession Fields { get; }
@@ -37,9 +38,12 @@ namespace HomelessPetHelper.Game.Progress
             else
             {
                 _saves = new SaveService(storage);
-                _section = new SaveSection<MainProgressData>("main.station", 2,
+                _section = new SaveSection<MainProgressData>("main.station", 4,
                     () => MainProgressCodec.NewGame(config), Validate,
-                    new Dictionary<int, Func<JObject, JObject>> { [1] = MigrateVersionOne });
+                    new Dictionary<int, Func<JObject, JObject>>
+                    {
+                        [1] = MigrateVersionOne, [2] = MigrateVersionTwo, [3] = MigrateVersionThree
+                    });
                 _saves.Register(_section);
                 if (!_saves.TryOpen(out var status, out var error) ||
                     !_saves.TryRead(_section, out data, out error))
@@ -53,7 +57,12 @@ namespace HomelessPetHelper.Game.Progress
             Care = care;
             _requestsByOuting = links;
             Fields = new FieldProgressSession(data.Fields, fieldContent, config);
+            _memorials = data.Memorials ?? Array.Empty<MemorialData>();
+            foreach (var resident in data.Residents)
+                if (resident.AdoptionListed) _listed.Add(Guid.ParseExact(resident.Current.Id, "N"));
             Fields.RestoreActive(Session);
+            _dispatch = new RequestDispatch(config, fieldContent, Session, data.Dispatch);
+            _dispatch.Refresh(Fields.HasActive);
         }
 
         private static JObject MigrateVersionOne(JObject data)
@@ -64,6 +73,25 @@ namespace HomelessPetHelper.Game.Progress
             };
             return data;
         }
+
+        private static JObject MigrateVersionTwo(JObject data)
+        {
+            data["Memorials"] = new JArray();
+            if (data["Residents"] is JArray residents)
+                foreach (var item in residents)
+                    if (item is JObject resident) resident["AdoptionListed"] = false;
+            return data;
+        }
+
+        private static JObject MigrateVersionThree(JObject data)
+        {
+            data["Dispatch"] = JValue.CreateNull();
+            return data;
+        }
+
+        internal Modules.Outing.HelpRequest UnshownRescueNotice => _dispatch?.UnshownNotice;
+
+        internal void MarkRescueNoticeShown() => _dispatch.MarkShown();
 
         public void RecordRescuedReturn(Guid outingId, Guid requestId)
         {
@@ -83,7 +111,8 @@ namespace HomelessPetHelper.Game.Progress
             if (!CanContinue) return false;
             try
             {
-                var data = MainProgressCodec.Capture(Session, Care, _requestsByOuting, Fields.Capture(Session));
+                _dispatch.Refresh(Fields.HasActive);
+                var data = Capture();
                 if (_saves == null) return true;
                 var battle = (Session.Activity as SiegeRescueActivity)?.Battle;
                 if (battle != null && data.Fields.Active?.Battle != null)
@@ -110,9 +139,11 @@ namespace HomelessPetHelper.Game.Progress
             try
             {
                 using var staged = MainProgressCodec.Restore(data, _config, _artwork, out _, out _);
+                RequestDispatch.Validate(data.Dispatch, staged, data.Fields);
                 bool capturedBattle = _checkpointBattle != null && data.Fields?.Active?.Battle != null &&
                     JToken.DeepEquals(_checkpointBattle, JToken.FromObject(data.Fields.Active.Battle));
                 FieldProgressValidator.Validate(data.Fields, staged, _config, _fieldContent, data.Residents,
+                    data.Memorials,
                     capturedBattle ? _checkpointPhase : (Modules.Siege.SiegeState.BattlePhase?)null);
                 return null;
             }

@@ -8,6 +8,14 @@ using UnityEngine;
 
 namespace HomelessPetHelper.Game.UI
 {
+    public sealed class StationDialog
+    {
+        internal string Title, Body, ConfirmLabel, CancelLabel, BrowseLabel;
+        internal Sprite Portrait;
+        internal Action Accept, Browse;
+        internal bool Deliberate, CenterBody;
+    }
+
     /// <summary>One level owns one popup chain, input guide and draft settings lifetime.</summary>
     public sealed class LevelOverlaySession : ILevelOverlay, IDisposable
     {
@@ -23,6 +31,8 @@ namespace HomelessPetHelper.Game.UI
         private GuideSession _guide;
         private AudioPreferences _settingsBefore;
         private Confirmation _confirmation;
+        private StationDialog _stationDialog;
+        private float _stationConfirmAfter;
         private bool _focused = true, _backgrounded, _disposed, _completionHandled;
         private bool _saveNeedsReload;
         private readonly bool _settingsOnly;
@@ -33,6 +43,8 @@ namespace HomelessPetHelper.Game.UI
         public string PauseCaption => _text.Get("menu.pause");
         public string ObjectivesCaption => _text.Get("menu.objectives");
         private bool CanInteract => !_disposed && _focused && !_backgrounded;
+        internal bool StationConfirmReady => _stationDialog?.Accept != null &&
+            Time.unscaledTime >= _stationConfirmAfter;
 
         public LevelOverlaySession(LevelOverlayView view, LevelOverlayBindings bindings, MainAudioSession audio,
             GuidanceProgressSession progress, OptionPreviewText text, Settings.PlaySettingsSession play = null,
@@ -162,8 +174,31 @@ namespace HomelessPetHelper.Game.UI
             Refresh();
         }
 
+        internal void ShowStationDialog(StationDialog dialog)
+        {
+            if (!_settingsOnly || !CanInteract ||
+                (_stationDialog == null && !_stack.TryOpen(LevelPopupKind.Confirmation))) return;
+            _stationDialog = dialog;
+            _stationConfirmAfter = Time.unscaledTime + (dialog.Deliberate ? 0.35f : 0f);
+            _view.SetStationDialog(dialog);
+            Refresh();
+        }
+
+        internal void BrowseStationDialog()
+        {
+            if (CanInteract && Top == LevelPopupKind.Confirmation) _stationDialog?.Browse?.Invoke();
+        }
+
         public void Confirm()
         {
+            if (CanInteract && Top == LevelPopupKind.Confirmation && _stationDialog != null)
+            {
+                var dialog = _stationDialog;
+                if (!StationConfirmReady) return;
+                CloseStationDialog();
+                dialog.Accept();
+                return;
+            }
             if (!CanInteract || Top != LevelPopupKind.Confirmation || _confirmation == Confirmation.None) return;
             Confirmation action = _confirmation;
             _confirmation = Confirmation.None;
@@ -199,7 +234,15 @@ namespace HomelessPetHelper.Game.UI
         public void CancelConfirmation()
         {
             if (!CanInteract || Top != LevelPopupKind.Confirmation) return;
+            if (_stationDialog != null) { CloseStationDialog(); return; }
             _confirmation = Confirmation.None;
+            CloseTop(LevelPopupKind.Confirmation);
+        }
+
+        private void CloseStationDialog()
+        {
+            _stationDialog = null;
+            _view.SetConfirmation(string.Empty);
             CloseTop(LevelPopupKind.Confirmation);
         }
 
@@ -285,6 +328,7 @@ namespace HomelessPetHelper.Game.UI
             _guide?.Cancel();
             _stack.Clear();
             _confirmation = Confirmation.None;
+            _stationDialog = null;
             _bindings.BindInput(null, null);
             _bindings.Suspend(false);
             if (_view != null) _view.Close();

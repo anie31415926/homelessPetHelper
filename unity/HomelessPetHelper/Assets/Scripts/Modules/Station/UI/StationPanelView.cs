@@ -54,6 +54,7 @@ namespace HomelessPetHelper.Modules.Station.UI
         public event Action<Vector2, int> StrokeRequested;
         public event Action<bool> SuspensionChanged;
         public event Action SettingsRequested;
+        public event Action MemorialRequested;
 
         public DirtSurfaceView Surface => _surface;
         public Habitat.StationHabitatView Habitat => _habitat;
@@ -85,6 +86,8 @@ namespace HomelessPetHelper.Modules.Station.UI
         public void SetSettingsAvailable(bool available)
         { if (_chrome != null) _chrome.SetSettingsAvailable(available); }
         public void RequestSettings() => SettingsRequested?.Invoke();
+        internal void RequestMemorial() => MemorialRequested?.Invoke();
+        public void SetMemorialLabel(string label) => _chrome?.SetMemorialLabel(label);
         public void BindOverlay(ILevelOverlay overlay) => _overlay = overlay;
         public void SetOverlaySuspended(bool suspended)
         {
@@ -98,6 +101,12 @@ namespace HomelessPetHelper.Modules.Station.UI
             _chrome?.ShowBlockingError(title, message);
         }
         public void SetQuietSpaceAvailable(bool available) => _quietSpace.gameObject.SetActive(available);
+        public void SetAdoptionCommand(string label, bool interactive)
+        {
+            _quietSpace.GetComponentInChildren<Text>(true).text = label;
+            _quietSpace.gameObject.SetActive(true);
+            _quietSpace.interactable = interactive;
+        }
 
         public void ApplyFont(Font font)
         {

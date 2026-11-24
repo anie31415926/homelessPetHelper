@@ -42,6 +42,11 @@ namespace HomelessPetHelper.Bootstrap
         public OutingSession Session => _session;
         public OutingSummary LastSummary => _lastSummary;
         public StationReturnSummary LastStationReturn { get; private set; }
+        internal void ForgetDepartedResident(Guid animalId)
+        {
+            if (LastStationReturn?.Arrival.AnimalId == animalId) LastStationReturn = null;
+            if (_returnedAnimalId == animalId) _returnedAnimalId = Guid.Empty;
+        }
 
         public OutingCoordinator(RescueFlow flow, RescueStation station, Guid stationSessionId,
             ActionWorldClock clock, Guid worldSessionId, CityMapRules mapRules,

@@ -44,6 +44,37 @@ namespace HomelessPetHelper.Game.CityMap
             _rescueEncounters = (_data.rescueEncounters ?? Array.Empty<CityMapPreviewConfigData.RescueEncounter>())
                 .Select(entry => new RescueEncounterDefinition(entry ??
                     throw new ArgumentException("Missing rescue encounter."))).ToArray();
+            ValidateDispatch();
+        }
+
+        internal CityMapPreviewConfigData.RequestDispatch Dispatch =>
+            _data.dispatch?.enabled == true ? _data.dispatch : null;
+
+        internal CityMapPreviewConfigData.Request RequestBinding(string templateId, string pointId, int version) =>
+            _data.initialRequests.Concat(Dispatch?.candidates ?? Array.Empty<CityMapPreviewConfigData.Request>())
+                .FirstOrDefault(entry => entry.templateId == templateId && entry.pointId == pointId &&
+                    entry.templateVersion == version);
+
+        private void ValidateDispatch()
+        {
+            var dispatch = Dispatch;
+            if (dispatch == null) return;
+            if (dispatch.lifetimeMinutes <= 0 || dispatch.highIntervalMinutes <= 0 ||
+                dispatch.highIntervalMinutes > dispatch.lowIntervalMinutes ||
+                dispatch.lowIntervalMinutes > dispatch.fullIntervalMinutes || dispatch.highCapacityThreshold < 2 ||
+                dispatch.candidates == null || dispatch.candidates.Length == 0)
+                throw new ArgumentException("Invalid rescue dispatch timing or candidates.");
+            var points = new HashSet<string>();
+            foreach (var entry in dispatch.candidates)
+                if (entry == null || entry.templateVersion <= 0 || entry.hasDirectReception ||
+                    (entry.reunion != null && (!string.IsNullOrEmpty(entry.reunion.ownerId) ||
+                        !string.IsNullOrEmpty(entry.reunion.receivingArrangementId))) ||
+                    !Definition.TryGetPoint(entry.pointId, out _) || !points.Add(entry.pointId) ||
+                    GetRequestTemplate(entry.templateId)?.AllowsPoint(entry.pointId) != true ||
+                    GetRescue(entry.templateId) == null || _data.initialRequests.Any(initial =>
+                        initial.templateId == entry.templateId && initial.pointId == entry.pointId &&
+                        initial.templateVersion == entry.templateVersion && initial.hasDirectReception))
+                    throw new ArgumentException("Invalid dispatch rescue binding: " + entry?.pointId);
         }
 
         public RescueEncounterDefinition GetRescue(string templateId) =>
@@ -94,6 +125,14 @@ namespace HomelessPetHelper.Game.CityMap
             ValidateTextEntry(text, "detail.request", string.Empty, string.Empty);
             ValidateTextEntry(text, "departure.rescue", 0L, string.Empty);
             ValidateTextEntry(text, "departure.preview", 0L, string.Empty);
+            if (Dispatch != null)
+            {
+                ValidateTextEntry(text, "dispatch.title");
+                ValidateTextEntry(text, "dispatch.body", string.Empty, string.Empty);
+                ValidateTextEntry(text, "dispatch.closed", string.Empty);
+                ValidateTextEntry(text, "dispatch.map");
+                ValidateTextEntry(text, "dispatch.later");
+            }
             foreach (MapPointDefinition point in Definition.Points)
             {
                 ValidateTextEntry(text, point.DisplayNameKey);

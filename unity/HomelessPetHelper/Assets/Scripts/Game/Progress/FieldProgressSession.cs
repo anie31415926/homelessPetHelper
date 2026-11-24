@@ -171,8 +171,11 @@ namespace HomelessPetHelper.Game.Progress
             _opening = null;
             _activity = null;
             _pendingRestore = null;
+            _encounter = null;
             Animal = null;
         }
+
+        internal void ApplyArchivedEncounters(EncounterData[] encounters) => _data.Encounters = encounters;
 
         internal void Dispose() => _opening?.Dispose();
 

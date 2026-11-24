@@ -42,6 +42,8 @@ namespace HomelessPetHelper.Game.Station
             return care;
         }
 
+        internal void Forget(Guid animalId) => _care.Remove(animalId);
+
         public void Restore(Guid animalId, StationCoatCareState state)
         {
             if (_care.ContainsKey(animalId)) throw new ArgumentException("Duplicate care state.");

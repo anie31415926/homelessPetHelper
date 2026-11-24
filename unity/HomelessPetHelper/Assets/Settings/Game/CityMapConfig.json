@@ -43,6 +43,18 @@
       "initialDisposition": { "emotion": 0, "stress": 0, "behavior": 0 },
       "rescuedDisposition": { "emotion": 2, "stress": 0, "behavior": 9 } }
   ],
+  "dispatch": {
+    "enabled": true,
+    "fullIntervalMinutes": 240,
+    "lowIntervalMinutes": 180,
+    "highIntervalMinutes": 150,
+    "highCapacityThreshold": 3,
+    "lifetimeMinutes": 120,
+    "candidates": [
+      { "templateId": "ordinary", "pointId": "parking", "templateVersion": 1 },
+      { "templateId": "ordinary-dog", "pointId": "yard", "templateVersion": 1 }
+    ]
+  },
   "initialRequests": [
     { "templateId": "ordinary", "pointId": "parking", "templateVersion": 1 },
     { "templateId": "ordinary-dog", "pointId": "yard", "templateVersion": 1 },

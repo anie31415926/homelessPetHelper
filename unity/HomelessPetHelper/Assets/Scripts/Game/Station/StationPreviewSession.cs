@@ -4,6 +4,8 @@ using HomelessPetHelper.Bootstrap;
 using HomelessPetHelper.Modules.Animals;
 using HomelessPetHelper.Modules.Rescue;
 using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Game.Progress;
+using HomelessPetHelper.Game.UI;
 using HomelessPetHelper.Modules.Station;
 using HomelessPetHelper.Modules.Station.Cleaning;
 using HomelessPetHelper.Modules.Station.UI;
@@ -28,6 +30,8 @@ namespace HomelessPetHelper.Game.Station
         private readonly Action _leaveStation;
         private readonly StationCareRoster _careRoster;
         private readonly Func<bool> _checkpoint;
+        private readonly MainProgressSession _progress;
+        private readonly Action<StationDialog> _showDialog;
         private bool _persistenceBlocked;
         private readonly Dictionary<Guid, IReadOnlyList<string>> _sampleAssessments =
             new Dictionary<Guid, IReadOnlyList<string>>();
@@ -38,19 +42,24 @@ namespace HomelessPetHelper.Game.Station
         private WorldTimeVersion _cleaningVersion;
         private int _selected = -1;
         private bool _showSummary;
+        internal bool CanPresentRescueNotice => !_suspended && !_persistenceBlocked && !_showSummary &&
+            _selected < 0 && _tool == StationCareTool.None;
         private StationCareTool _tool;
         private bool _suspended;
         private string _feedback;
 
         public StationPreviewSession(StationPanelView view, TextAsset text, StationArtwork artwork, Font font,
             GameLoopSession loop = null, Action leaveStation = null, StationCareRoster careRoster = null,
-            Func<bool> checkpoint = null)
+            Func<bool> checkpoint = null, MainProgressSession progress = null,
+            Action<StationDialog> showDialog = null)
         {
             _view = view;
             _loop = loop;
             _leaveStation = leaveStation;
             _careRoster = careRoster;
             _checkpoint = checkpoint;
+            _progress = progress;
+            _showDialog = showDialog;
             _text = new OptionPreviewText(text);
             _artwork = artwork ?? throw new ArgumentNullException(nameof(artwork));
             _font = font != null ? font : throw new ArgumentNullException(nameof(font));
@@ -59,6 +68,8 @@ namespace HomelessPetHelper.Game.Station
             _view.AnimalSelected += Select;
             _view.StrokeRequested += Stroke;
             _view.SuspensionChanged += Suspend;
+            _view.MemorialRequested += OpenMemorial;
+            if (progress != null) _view.SetMemorialLabel(_text.Get("adoption.memorial"));
             if (loop == null) Restart();
             else
             {
@@ -203,6 +214,7 @@ namespace HomelessPetHelper.Game.Station
             }
             else if (_tool == StationCareTool.None && command == StationCommand.QuietSpace)
             {
+                if (_progress != null) { OpenAdoption(); return; }
                 if (_loop == null) Resident(_selected).Contact.ArrangeQuietSpace(_clock.Current.ElapsedMinutes);
                 _feedback = _text.Get("quietArranged", Resident(_selected).Name);
             }
@@ -242,6 +254,108 @@ namespace HomelessPetHelper.Game.Station
             _feedback = _text.Get(grooming ? "grooming" : "cleaning", Resident(_selected).Name);
             if (_checkpoint != null) _feedback = _text.Get("save.careBoundary", _feedback);
         }
+
+        private void OpenAdoption()
+        {
+            Guid animalId = _station.Animals[_selected].AnimalId;
+            var resident = Resident(_selected);
+            string blocked = _progress.AdoptionBlock(animalId);
+            if (blocked != null)
+            {
+                ShowAdoptionMessage("adoption.entry", _text.Get(blocked));
+                return;
+            }
+            if (_progress.IsListed(animalId)) ShowApplicants(animalId, resident, 0);
+            else _showDialog(new StationDialog
+            {
+                Title = _text.Get("adoption.entry"), Body = _text.Get("adoption.publishInfo", resident.Name),
+                CancelLabel = _text.Get("adoption.later"), ConfirmLabel = _text.Get("adoption.publish"),
+                Accept = () => PublishAdoption(animalId, resident)
+            });
+        }
+
+        private void PublishAdoption(Guid animalId, StationResidentPresentation resident)
+        {
+            if (!_progress.TryPublishAdoption(animalId)) { ReportAdoptionFailure(); return; }
+            Refresh();
+            ShowApplicants(animalId, resident, 0);
+        }
+
+        private void ShowApplicants(Guid animalId, StationResidentPresentation resident, int index)
+        {
+            int applicant = MainProgressSession.Applicant(animalId, index);
+            string family = _text.Get("adoption.family." + applicant);
+            _showDialog(new StationDialog
+            {
+                Title = _text.Get("adoption.applications"),
+                Body = _text.Get("adoption.application", index + 1, family, _text.Get("adoption.profile." + applicant)),
+                CancelLabel = _text.Get("adoption.later"), ConfirmLabel = _text.Get("adoption.pick"),
+                BrowseLabel = _text.Get(index == 0 ? "adoption.nextFamily" : "adoption.prevFamily"),
+                Browse = () => ShowApplicants(animalId, resident, 1 - index),
+                Accept = () => ShowFarewell(animalId, resident, applicant, family)
+            });
+        }
+
+        private void ShowFarewell(Guid animalId, StationResidentPresentation resident, int applicant, string family)
+        {
+            _showDialog(new StationDialog
+            {
+                Title = _text.Get("adoption.farewell"), Portrait = resident.Art,
+                Body = _text.Get("adoption.confirmInfo", resident.Name, family),
+                CancelLabel = _text.Get("adoption.later"), ConfirmLabel = _text.Get("adoption.send"),
+                Deliberate = true, Accept = () => SendForAdoption(animalId, resident, applicant)
+            });
+        }
+
+        private void SendForAdoption(Guid animalId, StationResidentPresentation resident, int applicant)
+        {
+            if (!_progress.TrySendForAdoption(animalId, resident.Name, applicant))
+            { ReportAdoptionFailure(); return; }
+            _residents.Remove(animalId);
+            if (_view.Scene != null) _view.Scene.ClearResidents();
+            if (_view.Habitat != null) _view.Habitat.ClearResidents();
+            ShowSharedStation(false);
+            ShowAdoptionMessage("adoption.completed", _text.Get("adoption.sent", resident.Name), resident.Art);
+        }
+
+        private void ReportAdoptionFailure()
+        {
+            if (!_progress.CanContinue) ReportPersistenceFailure();
+            else ShowAdoptionMessage("adoption.entry", _text.Get("adoption.unavailable"));
+        }
+
+        private void OpenMemorial()
+        {
+            if (_progress == null || _persistenceBlocked || _suspended || _showSummary || _selected >= 0) return;
+            if (_progress.MemorialCount == 0)
+            { ShowAdoptionMessage("adoption.memorial", _text.Get("adoption.empty")); return; }
+            ShowMemorial(_progress.MemorialCount - 1);
+        }
+
+        private void ShowMemorial(int index)
+        {
+            var memorial = _progress.GetMemorial(index);
+            bool canBrowse = _progress.MemorialCount > 1;
+            _showDialog(new StationDialog
+            {
+                Title = _text.Get("adoption.memorial"),
+                Body = canBrowse ? _text.Get("adoption.memory", memorial.Name, _progress.MemorialCount - index,
+                    _progress.MemorialCount) : memorial.Name,
+                CenterBody = true,
+                Portrait = _artwork.Get(_careRoster.UsesDogArtwork(memorial.Appearance), out _),
+                CancelLabel = _text.Get("adoption.close"),
+                BrowseLabel = _text.Get("adoption.nextMemory"),
+                Browse = canBrowse ?
+                    (Action)(() => ShowMemorial(index == 0 ? _progress.MemorialCount - 1 : index - 1)) : null
+            });
+        }
+
+        private void ShowAdoptionMessage(string titleKey, string body, Sprite art = null) =>
+            _showDialog(new StationDialog
+            {
+                Title = _text.Get(titleKey), Body = body, Portrait = art,
+                CancelLabel = _text.Get("adoption.close")
+            });
 
         private void CheckSelectedAnimal()
         {
@@ -502,7 +616,10 @@ namespace HomelessPetHelper.Game.Station
                 _view.ShowDetail(selected.Name, Condition(_selected), progress, selected.Art, dirt,
                     _tool != StationCareTool.None, true, CareAvailability(_selected), _suspended
                         || _persistenceBlocked, selected.Fur);
-                if (_loop != null) _view.SetQuietSpaceAvailable(false);
+                if (_progress != null && _tool == StationCareTool.None)
+                    _view.SetAdoptionCommand(_text.Get(_progress.IsListed(_station.Animals[_selected].AnimalId)
+                        ? "adoption.view" : "adoption.entry"), !_suspended && !_persistenceBlocked);
+                else if (_loop != null) _view.SetQuietSpaceAvailable(false);
             }
         }
 
@@ -544,6 +661,7 @@ namespace HomelessPetHelper.Game.Station
             _view.AnimalSelected -= Select;
             _view.StrokeRequested -= Stroke;
             _view.SuspensionChanged -= Suspend;
+            _view.MemorialRequested -= OpenMemorial;
             if (_loop == null)
             {
                 _station.Close();

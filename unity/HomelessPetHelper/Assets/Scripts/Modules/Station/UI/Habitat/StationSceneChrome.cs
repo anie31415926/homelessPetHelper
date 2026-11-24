@@ -19,6 +19,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         [SerializeField] private Button _menuClose;
         [SerializeField] private Button _history;
         [SerializeField] private Button _settings;
+        [SerializeField] private Button _memorial;
         [SerializeField] private GameObject _menu;
         [SerializeField] private GameObject _footer;
         [SerializeField] private ToastView _notice;
@@ -38,10 +39,18 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         public void SetSettingsAvailable(bool available)
         { if (_settings != null) _settings.gameObject.SetActive(available); }
 
+        public void SetMemorialLabel(string label)
+        {
+            if (_memorial == null) return;
+            _memorial.GetComponentInChildren<Text>(true).text = label;
+            _memorial.gameObject.SetActive(true);
+        }
+
         public void SetOverlayCovered(bool covered)
         {
             if (_overlayCovered == covered) return;
             _overlayCovered = covered;
+            _detailInput.alpha = covered ? 0 : 1;
             if (covered) { _restoreMenu = _menu.activeSelf; _menu.SetActive(false); _notice.Clear(); }
             else { _menu.SetActive(_restoreMenu); _restoreMenu = false; }
             RefreshBackdrop();
@@ -135,6 +144,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _menuClose.onClick.AddListener(CloseMenu);
             _history.onClick.AddListener(CloseMenu);
             _settings.onClick.AddListener(_owner.RequestSettings);
+            if (_memorial != null) _memorial.onClick.AddListener(OpenMemorial);
             _backdrop.onClick.AddListener(DismissTop);
         }
         private void OnDisable()
@@ -144,12 +154,14 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _menuClose.onClick.RemoveListener(CloseMenu);
             _history.onClick.RemoveListener(CloseMenu);
             _settings.onClick.RemoveListener(_owner.RequestSettings);
+            if (_memorial != null) _memorial.onClick.RemoveListener(OpenMemorial);
             _backdrop.onClick.RemoveListener(DismissTop);
             CloseMenu();
             _notice.Clear();
             _blockingError.SetActive(false);
             _menuButton.interactable = true;
             _overlayCovered = _restoreMenu = false;
+            _detailInput.alpha = 1;
         }
         private void ToggleMenu()
         {
@@ -161,6 +173,11 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         {
             _menu.SetActive(false);
             RefreshBackdrop();
+        }
+        private void OpenMemorial()
+        {
+            CloseMenu();
+            _owner.RequestMemorial();
         }
         private void DismissTop()
         {

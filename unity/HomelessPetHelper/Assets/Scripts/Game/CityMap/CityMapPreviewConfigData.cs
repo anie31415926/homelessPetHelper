@@ -19,6 +19,16 @@ namespace HomelessPetHelper.Game.CityMap
         public Template[] requestTemplates = Array.Empty<Template>();
         public RescueEncounter[] rescueEncounters = Array.Empty<RescueEncounter>();
         public Request[] initialRequests = Array.Empty<Request>();
+        public RequestDispatch dispatch = null;
+
+        [Serializable]
+        internal sealed class RequestDispatch
+        {
+            public bool enabled;
+            public int fullIntervalMinutes, lowIntervalMinutes, highIntervalMinutes;
+            public int highCapacityThreshold, lifetimeMinutes;
+            public Request[] candidates = Array.Empty<Request>();
+        }
 
         [Serializable]
         internal sealed class RescueEncounter

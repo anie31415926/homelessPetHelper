@@ -43,6 +43,11 @@
     { "key": "paused", "value": "已暂停" },
     { "key": "ready", "value": "选择想前往的地点" },
     { "key": "full", "value": "安置位已满，请先腾出位置。" },
+    { "key": "dispatch.title", "value": "救助消息" },
+    { "key": "dispatch.body", "value": "{0}\n{1}" },
+    { "key": "dispatch.closed", "value": "{0}的动物已经被其他人接走了。" },
+    { "key": "dispatch.map", "value": "查看地图" },
+    { "key": "dispatch.later", "value": "稍后" },
     { "key": "failure", "value": "当前无法继续，请稍后重试。" },
     { "key": "shelter", "value": "救助站" }
   ]

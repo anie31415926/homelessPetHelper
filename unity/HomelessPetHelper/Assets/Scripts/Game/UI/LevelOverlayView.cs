@@ -18,6 +18,9 @@ namespace HomelessPetHelper.Game.UI
         [SerializeField] private Button _resume, _settings, _return, _closeObjectives, _replay;
         [SerializeField] private Button _saveSettings, _cancelSettings, _resetSettings, _confirm, _cancel;
         [SerializeField] private UiText _objectivesText, _confirmationText, _settingsStatus, _notice;
+        [SerializeField] private UiText _confirmationTitle, _confirmLabel, _cancelLabel, _browseLabel;
+        [SerializeField] private Button _browse;
+        [SerializeField] private Image _dialogPortrait;
         [SerializeField] private AudioSettingsView _audio;
         [SerializeField] private Toggle _pauseAtDecision;
         public bool PauseAtDecisionDraft => false;
@@ -31,6 +34,8 @@ namespace HomelessPetHelper.Game.UI
         [SerializeField] private string[] _labelKeys;
         private LevelOverlaySession _session;
         private float _noticeUntil;
+        private string _defaultTitle, _defaultConfirm, _defaultCancel;
+        private TextAnchor _defaultConfirmationAlignment;
         public AudioSettingsView Audio => _audio;
 
         public void Open(LevelOverlaySession session, OptionPreviewText text)
@@ -41,6 +46,11 @@ namespace HomelessPetHelper.Game.UI
             for (int index = 0; index < _labelKeys.Length; index++)
                 _localizedLabels[index].text = text.Get(_labelKeys[index]);
             _session = session ?? throw new ArgumentNullException(nameof(session));
+            _defaultTitle = _confirmationTitle.text;
+            _defaultConfirm = _confirmLabel.text;
+            _defaultCancel = _cancelLabel.text;
+            _defaultConfirmationAlignment = _confirmationText.alignment;
+            SetConfirmation(string.Empty);
             _noticeUntil = 0;
             Refresh(null, true);
             HideGuide();
@@ -61,7 +71,34 @@ namespace HomelessPetHelper.Game.UI
 
         public void SetObjectives(string text, bool canReplay)
         { _objectivesText.text = text; _replay.interactable = canReplay; }
-        public void SetConfirmation(string text) => _confirmationText.text = text;
+        public void SetConfirmation(string text)
+        {
+            _confirmationText.text = text;
+            _confirmationText.alignment = _defaultConfirmationAlignment;
+            _confirmationTitle.text = _defaultTitle;
+            _confirmLabel.text = _defaultConfirm;
+            _cancelLabel.text = _defaultCancel;
+            _confirm.interactable = true;
+            _confirm.gameObject.SetActive(true);
+            _browse.gameObject.SetActive(false);
+            _dialogPortrait.sprite = null;
+            _dialogPortrait.gameObject.SetActive(false);
+        }
+
+        internal void SetStationDialog(StationDialog dialog)
+        {
+            _confirmationTitle.text = dialog.Title;
+            _confirmationText.text = dialog.Body;
+            _confirmationText.alignment = dialog.CenterBody ? TextAnchor.MiddleCenter : _defaultConfirmationAlignment;
+            _cancelLabel.text = dialog.CancelLabel;
+            _confirmLabel.text = dialog.ConfirmLabel ?? string.Empty;
+            _confirm.interactable = !dialog.Deliberate;
+            _confirm.gameObject.SetActive(dialog.Accept != null);
+            _browseLabel.text = dialog.BrowseLabel ?? string.Empty;
+            _browse.gameObject.SetActive(dialog.Browse != null);
+            _dialogPortrait.sprite = dialog.Portrait;
+            _dialogPortrait.gameObject.SetActive(dialog.Portrait != null);
+        }
         public void SetSettingsStatus(string text)
         {
             _settingsStatus.text = text;
@@ -83,6 +120,7 @@ namespace HomelessPetHelper.Game.UI
         public void Close()
         {
             _session = null;
+            SetConfirmation(string.Empty);
             _audio.Unbind();
             _modalRoot.SetActive(false);
             _modalBackdrop.SetActive(false);
@@ -103,6 +141,7 @@ namespace HomelessPetHelper.Game.UI
             _resetSettings.onClick.AddListener(ResetSettings);
             _confirm.onClick.AddListener(Confirm);
             _cancel.onClick.AddListener(Cancel);
+            _browse.onClick.AddListener(Browse);
         }
 
         private void OnDisable()
@@ -117,11 +156,14 @@ namespace HomelessPetHelper.Game.UI
             _resetSettings.onClick.RemoveListener(ResetSettings);
             _confirm.onClick.RemoveListener(Confirm);
             _cancel.onClick.RemoveListener(Cancel);
+            _browse.onClick.RemoveListener(Browse);
         }
 
         private void LateUpdate()
         {
             _session?.RefreshGuidance();
+            if (!_confirm.interactable && _session != null && _session.StationConfirmReady)
+                _confirm.interactable = true;
             bool visible = Time.unscaledTime < _noticeUntil && !_modalRoot.activeSelf;
             if (_notice.gameObject.activeSelf != visible) _notice.gameObject.SetActive(visible);
             if (Input.GetKeyDown(KeyCode.Escape)) _session?.Back();
@@ -137,5 +179,6 @@ namespace HomelessPetHelper.Game.UI
         private void ResetSettings() => _session?.RequestResetSettings();
         private void Confirm() => _session?.Confirm();
         private void Cancel() => _session?.CancelConfirmation();
+        private void Browse() => _session?.BrowseStationDialog();
     }
 }

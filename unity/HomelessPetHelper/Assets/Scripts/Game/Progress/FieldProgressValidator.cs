@@ -12,7 +12,8 @@ namespace HomelessPetHelper.Game.Progress
     internal static class FieldProgressValidator
     {
         internal static void Validate(WorldFieldData data, GameLoopSession staged, CityMapPreviewConfig config,
-            FieldProgressContent content, ResidentData[] residents, SiegeState.BattlePhase? capturedPhase = null)
+            FieldProgressContent content, ResidentData[] residents, MemorialData[] memorials,
+            SiegeState.BattlePhase? capturedPhase = null)
         {
             if (data?.Encounters == null || data.Locations == null ||
                 data.Encounters.Length > staged.Requests.Requests.Count ||
@@ -53,6 +54,10 @@ namespace HomelessPetHelper.Game.Progress
                 ValidateOpening(content, location.PointId, location.LayoutId, location.ContentVersion,
                     location.TemplateId, location.Mode, location.Opening);
                 var source = data.Encounters.SingleOrDefault(item => item.RequestId == location.RequestId);
+                if (source == null && Guid.TryParseExact(location.RequestId, "N", out var memorialRequestId) &&
+                    memorials != null && memorials.Any(item => item.RequestId == location.RequestId) &&
+                    staged.Requests.TryGet(memorialRequestId, out var completed) &&
+                    completed.PointId == location.PointId) continue;
                 if (source == null || source.PointId != location.PointId || source.LayoutId != location.LayoutId ||
                     source.Mode != location.Mode || source.TemplateId != location.TemplateId ||
                     source.Opening.Bridge != location.Opening.Bridge ||

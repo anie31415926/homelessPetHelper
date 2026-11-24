@@ -123,7 +123,7 @@ namespace HomelessPetHelper.Game.CityMap
                 ?? _config.InitialPointId;
         }
 
-        private void Select(string pointId)
+        internal void Select(string pointId)
         {
             if (_disposed || _paused || _travelling || _outing.Session.Stage != OutingStage.MapSelecting) return;
             MapPointView point = _rules.BuildSnapshot().Points.SingleOrDefault(item => item.PointId == pointId);

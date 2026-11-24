@@ -101,7 +101,8 @@ namespace HomelessPetHelper.Game
                 return;
             }
             _stationPresenter = new StationPreviewSession(station, content.StationText,
-                content.Artwork, content.Font, Session, OpenMap, Progress.Care, Checkpoint);
+                content.Artwork, content.Font, Session, OpenMap, Progress.Care, Checkpoint,
+                Progress, OpenStationDialog);
             _station.SettingsRequested += OpenStationSettings;
             _station.SetSettingsAvailable(_audioSession != null);
             _approach.CheckpointRequested += FlushFieldProgress;
@@ -156,7 +157,9 @@ namespace HomelessPetHelper.Game
             if (suspended) FlushFieldProgress();
         }
 
-        private void OpenMap()
+        private void OpenMap() => OpenMap(null);
+
+        private void OpenMap(string noticePoint)
         {
             if (!Progress.CanContinue) return;
             // Validate the care gate before saving or opening an outing.
@@ -184,11 +187,48 @@ namespace HomelessPetHelper.Game
                 EnterApproach, () => ShowStation(false), GetDepartureRestriction,
                 hasOpeningRoute: true, beginTravel: BeginMapDeparture);
             _mapPresenter.ShowFeedback(_text.Get("save.outingBoundary"));
+            if (noticePoint != null) _mapPresenter.Select(noticePoint);
+        }
+
+        internal void PresentPendingRescueNotice()
+        {
+            if (_disposed || !Progress.CanContinue || !_station.isActiveAndEnabled ||
+                !_stationPresenter.CanPresentRescueNotice || _overlays?.Top != null ||
+                Session.Flow.IsSuspended || !_station.gameObject.activeInHierarchy) return;
+            var request = Progress.UnshownRescueNotice;
+            if (request == null || !_config.Definition.TryGetPoint(request.PointId, out var point)) return;
+            Progress.MarkRescueNoticeShown();
+            if (!Checkpoint()) return;
+
+            string place = _mapText.Get(point.DisplayNameKey);
+            bool available = request.State == RequestState.Available;
+            bool canDepart = available && !Session.Station.IsFull;
+            var body = available ? _mapText.Get("dispatch.body", place,
+                _mapText.Get(_config.GetRequestTemplate(request.TemplateId).TextKey)) :
+                _mapText.Get("dispatch.closed", place);
+            if (available && !canDepart) body += "\n" + _mapText.Get("full");
+            OpenStationDialog(new StationDialog
+            {
+                Title = _mapText.Get("dispatch.title"), Body = body,
+                CancelLabel = _mapText.Get("dispatch.later"), ConfirmLabel = _mapText.Get("dispatch.map"),
+                Accept = canDepart ? (Action)(() => OpenMap(request.PointId)) : null
+            });
         }
 
         private void OpenStationSettings()
         {
             if (_disposed || !Progress.CanContinue || _audioSession == null || !_station.isActiveAndEnabled) return;
+            GetStationOverlays().OpenStandaloneSettings();
+        }
+
+        private void OpenStationDialog(StationDialog dialog)
+        {
+            if (_disposed || !Progress.CanContinue || !_station.isActiveAndEnabled) return;
+            GetStationOverlays().ShowStationDialog(dialog);
+        }
+
+        private LevelOverlaySession GetStationOverlays()
+        {
             if (_overlays == null)
             {
                 var target = _station.MenuTarget;
@@ -203,7 +243,7 @@ namespace HomelessPetHelper.Game
                         (action, targets) => false, target, target),
                     _audioSession, null, _uiText, _playSettings, settingsOnly: true);
             }
-            _overlays.OpenStandaloneSettings();
+            return _overlays;
         }
 
         private string GetDepartureRestriction(MapDeparturePlan plan)
