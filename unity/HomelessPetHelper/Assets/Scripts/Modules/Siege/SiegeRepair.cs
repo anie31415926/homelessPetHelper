@@ -44,11 +44,9 @@ namespace HomelessPetHelper.Modules.Siege
                 tower.Hp = Math.Min(c.Defense(tower).Hp, tower.Hp + c.Rules.RepairAmount);
                 s.Stats.Repairs++;
                 a.RepairTowerId = null;
-                s.VisualEffects.Add(new Effect
-                {
-                    Kind = "repair", From = c.Lane(tower.LaneId).PointAt(tower.Distance),
-                    UntilMs = s.ElapsedMs + 650,
-                });
+                s.EmitEffect(kind: "repair",
+                    from: SiegeGeometry.Position(c, tower),
+                    untilMs: s.ElapsedMs + 650);
                 SiegeEntities.Record(s, c, "event.repaired");
             }
         }

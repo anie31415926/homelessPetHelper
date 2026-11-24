@@ -58,6 +58,15 @@ namespace HomelessPetHelper.Modules.Siege
             public int animalBuilds;
             public double relaxAtProgress;
             public int rerouteDurationMs;
+            public int resourcePeriodMs;
+            public int defenderResourcePeriodMs;
+            public int defenderEnergyCap;
+            public int defenderOpeningEnergy;
+            public int defenderBuildCost;
+            public int fastBuildDurationMs;
+            public int maxTroops;
+            public double deploymentFraction;
+            public int defenseGridSize;
         }
 
         [Serializable]
@@ -222,6 +231,15 @@ namespace HomelessPetHelper.Modules.Siege
         public int AnimalBuilds { get; }
         public double RelaxAtProgress { get; }
         public int RerouteDurationMs { get; }
+        public int ResourcePeriodMs { get; }
+        public int DefenderResourcePeriodMs { get; }
+        public int DefenderEnergyCap { get; }
+        public int DefenderOpeningEnergy { get; }
+        public int DefenderBuildCost { get; }
+        public int FastBuildDurationMs { get; }
+        public int MaxTroops { get; }
+        public double DeploymentFraction { get; }
+        public int DefenseGridSize { get; }
 
         internal SiegeRulesDefinition(SiegeCatalogData.RulesDto data)
         {
@@ -263,6 +281,15 @@ namespace HomelessPetHelper.Modules.Siege
             AnimalBuilds = data.animalBuilds;
             RelaxAtProgress = data.relaxAtProgress;
             RerouteDurationMs = data.rerouteDurationMs;
+            ResourcePeriodMs = data.resourcePeriodMs;
+            DefenderResourcePeriodMs = data.defenderResourcePeriodMs;
+            DefenderEnergyCap = data.defenderEnergyCap;
+            DefenderOpeningEnergy = data.defenderOpeningEnergy;
+            DefenderBuildCost = data.defenderBuildCost;
+            FastBuildDurationMs = data.fastBuildDurationMs;
+            MaxTroops = data.maxTroops;
+            DeploymentFraction = data.deploymentFraction;
+            DefenseGridSize = data.defenseGridSize;
         }
     }
 

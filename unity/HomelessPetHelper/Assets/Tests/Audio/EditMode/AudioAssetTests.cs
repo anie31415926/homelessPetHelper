@@ -12,13 +12,14 @@ namespace HomelessPetHelper.Tests.Audio.EditMode
     public sealed class AudioAssetTests
     {
         [Test]
-        public void MainContentHasSixUniquePlayableShortEffectsWithExplicitImportSettings()
+        public void MainContentHasUniquePlayableShortEffectsWithExplicitImportSettings()
         {
             var content = AssetDatabase.LoadAssetAtPath<GameContent>("Assets/Settings/Game/GameContent.asset");
             Assert.That(content.AudioCatalog, Is.Not.Null);
             var cues = content.AudioCatalog.CreateCues();
             Assert.That(cues.Select(cue => cue.Id), Is.EquivalentTo(new[] { GameAudioCues.Tap, GameAudioCues.Open,
-                GameAudioCues.Merge, GameAudioCues.RescueSuccess, GameAudioCues.Reward, GameAudioCues.Notice }));
+                GameAudioCues.Merge, GameAudioCues.RescueSuccess, GameAudioCues.Reward, GameAudioCues.Notice,
+                "siege.toy-drop", "siege.paper-shot", "siege.paper-impact", "siege.toy-retire", "siege.kennel-ball" }));
             foreach (var cue in cues)
             {
                 Assert.That(cue.Channel, Is.EqualTo(AudioChannel.Effects));

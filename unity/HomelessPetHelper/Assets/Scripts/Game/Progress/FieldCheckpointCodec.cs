@@ -35,7 +35,8 @@ namespace HomelessPetHelper.Game.Progress
                 SimulationVersion = SiegeReplay.SimulationVersion, AccumulatorMs = replay.AccumulatorMs,
                 Steps = replay.Steps.Select(step => new ReplayStepData
                 {
-                    Ticks = step.Ticks, PauseAtDecision = step.PauseAtDecision, DecisionHeld = step.DecisionHeld,
+                    Ticks = step.Ticks, Realtime = step.Realtime, PauseAtDecision = step.PauseAtDecision,
+                        DecisionHeld = step.DecisionHeld,
                     Order = CaptureOrder(step.Order)
                 }).ToArray()
             };
@@ -43,24 +44,36 @@ namespace HomelessPetHelper.Game.Progress
 
         internal static SiegeReplay Restore(BattleReplayData data)
         {
-            if (data == null || data.SimulationVersion != SiegeReplay.SimulationVersion || data.Steps == null ||
+            if (data == null || (data.SimulationVersion != 1
+                && data.SimulationVersion != SiegeReplay.SimulationVersion) || data.Steps == null ||
                 data.Steps.Any(step => step == null)) throw new ArgumentException("Incompatible battle replay.");
             return new SiegeReplay(data.Steps.Select(step => new SiegeReplay.Step(step.Ticks,
-                step.PauseAtDecision, step.DecisionHeld, RestoreOrder(step.Order))), data.AccumulatorMs);
+                step.PauseAtDecision, step.DecisionHeld, RestoreOrder(step.Order),
+                data.SimulationVersion >= 2 && step.Realtime)), data.AccumulatorMs);
         }
 
         private static OrderData CaptureOrder(SiegeOrder order) => order == null ? null : new OrderData
         {
             SessionId = order.SessionId, Turn = order.Turn, DeployCardId = order.DeployCardId,
-            DeployLaneId = order.DeployLaneId, MergeIds = order.MergeIds, AnchorId = order.AnchorId,
+            DeployLaneId = order.DeployLaneId, DeployX = order.DeployPoint?.X, DeployY = order.DeployPoint?.Y,
+                MergeIds = order.MergeIds, AnchorId = order.AnchorId,
             RerouteUnitId = order.RerouteUnitId, RerouteLaneId = order.RerouteLaneId,
             DiscardCardId = order.DiscardCardId
         };
 
+        private static SiegePoint? RestorePoint(OrderData order)
+        {
+            if (order.DeployX.HasValue != order.DeployY.HasValue)
+                throw new ArgumentException("Incomplete saved deployment point.");
+            return order.DeployX.HasValue ? new SiegePoint(order.DeployX.Value, order.DeployY.Value) :
+                (SiegePoint?)null;
+        }
+
         private static SiegeOrder RestoreOrder(OrderData order) => order == null ? null : new SiegeOrder
         {
             SessionId = order.SessionId, Turn = order.Turn, DeployCardId = order.DeployCardId,
-            DeployLaneId = order.DeployLaneId, MergeIds = order.MergeIds, AnchorId = order.AnchorId,
+            DeployLaneId = order.DeployLaneId, DeployPoint = RestorePoint(order), MergeIds = order.MergeIds,
+                AnchorId = order.AnchorId,
             RerouteUnitId = order.RerouteUnitId, RerouteLaneId = order.RerouteLaneId,
             DiscardCardId = order.DiscardCardId
         };

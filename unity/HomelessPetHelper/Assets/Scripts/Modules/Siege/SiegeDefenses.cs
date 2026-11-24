@@ -16,17 +16,23 @@ namespace HomelessPetHelper.Modules.Siege
                 var d = c.Defense(tower);
                 if (tower.WindingUp)
                 {
-                    if (s.ElapsedMs >= tower.WarningReadyMs && s.ResolvedTurn >= tower.SeenTurn)
+                    if (s.ElapsedMs >= tower.WarningReadyMs && (s.Realtime || s.ResolvedTurn >= tower.SeenTurn))
                         ReleasePush(s, c, tower, d);
                     continue;
                 }
                 if (s.ElapsedMs < tower.NextShotMs)
                     continue;
-                var point = c.Lane(tower.LaneId).PointAt(tower.Distance);
-                var target = s.Troops.Where(x => x.Hp > 0 && !x.IsCarried
-                    && point.Distance(SiegeEntities.Position(c, x)) <= d.Range)
-                    .OrderByDescending(x => x.Distance / c.Lane(x.LaneId).Length)
-                    .ThenBy(x => x.Id).FirstOrDefault();
+                var point = SiegeGeometry.Position(c, tower);
+                Unit target = null;
+                double best = double.NegativeInfinity;
+                foreach (var candidate in s.Troops)
+                {
+                    if (candidate.Hp <= 0 || candidate.IsCarried ||
+                        point.Distance(SiegeEntities.Position(c, candidate)) > d.Range) continue;
+                    double score = candidate.Distance / c.Lane(candidate.LaneId).Length;
+                    if (score < best || score == best && target != null && candidate.Id >= target.Id) continue;
+                    target = candidate; best = score;
+                }
                 if (target == null)
                     continue;
                 Fire(s, c, tower, d, point, target);
@@ -54,8 +60,12 @@ namespace HomelessPetHelper.Modules.Siege
             }
             else
                 SiegeEntities.Hit(target, d.Damage);
-            s.VisualEffects.Add(new Effect { Kind = "towerShot", From = point, To = destination,
-                StartMs = s.ElapsedMs, UntilMs = s.ElapsedMs + 180, Visual = d.Visual });
+            s.EmitEffect(kind: EffectKind.TowerShot,
+                from: point,
+                to: destination,
+                startMs: s.ElapsedMs,
+                untilMs: s.ElapsedMs + (s.Realtime ? 260 : 180),
+                visual: d.Visual, unitId: d.Attack == "slow" ? 0 : target.Id);
         }
 
         private static void ReleasePush(SiegeState s, SiegeCatalog c, Tower tower,
@@ -67,8 +77,12 @@ namespace HomelessPetHelper.Modules.Siege
                 if (unit.Hp > 0 && !unit.IsCarried
                     && SiegeEntities.Position(c, unit).Distance(tower.LockedPoint) <= d.Radius)
                     SiegeEntities.Hit(unit, d.Damage, d.Push, s.ElapsedMs);
-            s.VisualEffects.Add(new Effect { Kind = "push", From = tower.LockedPoint,
-                Radius = d.Radius, StartMs = s.ElapsedMs, UntilMs = s.ElapsedMs + 400, Visual = d.Visual });
+            s.EmitEffect(kind: "push",
+                from: tower.LockedPoint,
+                radius: d.Radius,
+                startMs: s.ElapsedMs,
+                untilMs: s.ElapsedMs + 400,
+                visual: d.Visual);
         }
     }
 }

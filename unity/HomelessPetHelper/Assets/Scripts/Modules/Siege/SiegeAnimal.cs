@@ -65,7 +65,7 @@ namespace HomelessPetHelper.Modules.Siege
                 .OrderBy(x => Array.IndexOf(pressure, x.LaneId))
                 .ThenBy(x => x.At)
                 .FirstOrDefault();
-            if (a.BuildsLeft > 0 && a.Actions + 1 >= c.Rules.BuildOnAnimalTurn && pad != null)
+            if (!s.Realtime && a.BuildsLeft > 0 && a.Actions + 1 >= c.Rules.BuildOnAnimalTurn && pad != null)
             {
                 SiegeAnimalCasting.Plan(s, c, IntentKind.Build, new SkillTarget(pad.LaneId, pad.Id));
             }

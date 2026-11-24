@@ -8,6 +8,9 @@ namespace HomelessPetHelper.Modules.Siege
                     unit.TransitTo,
                     1 - (double)unit.TransitRemainingMs / catalog.Rules.RerouteDurationMs
                 )
-                : catalog.Lane(unit.LaneId).PointAt(unit.Distance);
+                : unit.FreePosition ?? catalog.Lane(unit.LaneId).PointAt(unit.Distance);
+
+        public static SiegePoint Position(SiegeCatalog catalog, SiegeState.Tower tower) =>
+            tower.FreePosition ?? catalog.Lane(tower.LaneId).PointAt(tower.Distance);
     }
 }

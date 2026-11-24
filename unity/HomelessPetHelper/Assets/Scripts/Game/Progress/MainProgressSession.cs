@@ -11,6 +11,8 @@ namespace HomelessPetHelper.Game.Progress
     /// <summary>Owns one gameplay aggregate. Explicit stable checkpoints are the only disk mutations.</summary>
     public sealed class MainProgressSession : IDisposable
     {
+        private JToken _checkpointBattle;
+        private Modules.Siege.SiegeState.BattlePhase _checkpointPhase;
         private readonly SaveService _saves;
         private readonly SaveSection<MainProgressData> _section;
         private readonly CityMapPreviewConfig _config;
@@ -83,8 +85,18 @@ namespace HomelessPetHelper.Game.Progress
             {
                 var data = MainProgressCodec.Capture(Session, Care, _requestsByOuting, Fields.Capture(Session));
                 if (_saves == null) return true;
-                if (_saves.TryCommit(writer => writer.Set(_section, data), out var error)) return true;
-                PersistenceError = error;
+                var battle = (Session.Activity as SiegeRescueActivity)?.Battle;
+                if (battle != null && data.Fields.Active?.Battle != null)
+                {
+                    _checkpointBattle = JToken.FromObject(data.Fields.Active.Battle);
+                    _checkpointPhase = battle.Phase;
+                }
+                try
+                {
+                    if (_saves.TryCommit(writer => writer.Set(_section, data), out var error)) return true;
+                    PersistenceError = error;
+                }
+                finally { _checkpointBattle = null; }
             }
             catch (InvalidOperationException cause)
             { PersistenceError = new SaveError(SaveErrorCode.InvalidSection, "Invalid Main checkpoint.", cause); }
@@ -98,7 +110,10 @@ namespace HomelessPetHelper.Game.Progress
             try
             {
                 using var staged = MainProgressCodec.Restore(data, _config, _artwork, out _, out _);
-                FieldProgressValidator.Validate(data.Fields, staged, _config, _fieldContent, data.Residents);
+                bool capturedBattle = _checkpointBattle != null && data.Fields?.Active?.Battle != null &&
+                    JToken.DeepEquals(_checkpointBattle, JToken.FromObject(data.Fields.Active.Battle));
+                FieldProgressValidator.Validate(data.Fields, staged, _config, _fieldContent, data.Residents,
+                    capturedBattle ? _checkpointPhase : (Modules.Siege.SiegeState.BattlePhase?)null);
                 return null;
             }
             catch (ArgumentException) { return "Invalid or incompatible Main station checkpoint."; }

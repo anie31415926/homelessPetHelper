@@ -1,0 +1,276 @@
+{
+  "schemaVersion": 1,
+  "status": "candidate",
+  "tool": "Local ComfyUI 0.37.1",
+  "models": "../provenance/models.json",
+  "plan": "plan.json",
+  "processing": {
+    "tool": "../process.py via ./process.py",
+    "avVersion": "17.0.1",
+    "numpyVersion": "2.4.4"
+  },
+  "audition": {
+    "file": "audition.wav",
+    "sha256": "f04de087f8d7a1f7b4f0f7d941289ec93789ae83c4f624224b10e15d830bd999",
+    "timeline": [
+      {
+        "id": "toy-drop",
+        "startSeconds": 0.3,
+        "endSeconds": 0.443
+      },
+      {
+        "id": "paper-shot",
+        "startSeconds": 1.143,
+        "endSeconds": 1.366
+      },
+      {
+        "id": "paper-knock",
+        "startSeconds": 2.066,
+        "endSeconds": 2.211
+      },
+      {
+        "id": "toy-retire",
+        "startSeconds": 2.911,
+        "endSeconds": 3.113
+      },
+      {
+        "id": "kennel-ball",
+        "startSeconds": 3.813,
+        "endSeconds": 4.045
+      }
+    ]
+  },
+  "assets": [
+    {
+      "id": "toy-drop",
+      "status": "candidate",
+      "loadTiming": "unassigned",
+      "source": {
+        "file": "raw/toy-drop.flac",
+        "sha256": "4e9e06b7da828384250501ea8bb5a9972a5d56ec1a888d894fcfd872e1df533a",
+        "sampleRate": 44100,
+        "channels": 2,
+        "seconds": 47.554467,
+        "peakDbfs": -13.669,
+        "rmsDbfs": -59.736,
+        "clippedSamples": 0,
+        "dcOffset": -5e-08
+      },
+      "candidate": {
+        "file": "candidates/toy-drop.wav",
+        "sha256": "718fe565427fa3065ece33afd0cb22122666129698dd87349c2fe0cfa073d041",
+        "bytes": 12648,
+        "sampleRate": 44100,
+        "channels": 1,
+        "encoding": "PCM16 WAV",
+        "seconds": 0.142902,
+        "peakDbfs": -9.0,
+        "rmsDbfs": -29.847,
+        "clippedSamples": 0,
+        "dcOffset": 7.88e-06
+      },
+      "processing": {
+        "cropStartSample": 89735,
+        "cropEndSample": 96037,
+        "dcRemoved": -5.757275251160346e-05,
+        "fadeInSamples": 132,
+        "fadeOutSamples": 794,
+        "gainDb": 4.6692,
+        "monoStereoRmsRatio": 1.0,
+        "selection": "Highest energy window, then low-level edge trim; requires listening review."
+      },
+      "workflow": "workflows/toy-drop-api.json",
+      "history": "history/toy-drop-history.json",
+      "review": {
+        "listening": "pending",
+        "rights": "pending",
+        "targetDevice": "pending"
+      }
+    },
+    {
+      "id": "paper-shot",
+      "status": "candidate",
+      "loadTiming": "unassigned",
+      "source": {
+        "file": "raw/paper-shot.flac",
+        "sha256": "a5aaae809240c3bce04f53de0ddca9cd5cda765410263fe8d07733033bee7b72",
+        "sampleRate": 44100,
+        "channels": 2,
+        "seconds": 47.554467,
+        "peakDbfs": -25.991,
+        "rmsDbfs": -69.853,
+        "clippedSamples": 0,
+        "dcOffset": -1e-08
+      },
+      "candidate": {
+        "file": "candidates/paper-shot.wav",
+        "sha256": "63719c8437c26542344862840778a53aad7c5cd7dd170f8f03bddba3ad553edf",
+        "bytes": 19732,
+        "sampleRate": 44100,
+        "channels": 1,
+        "encoding": "PCM16 WAV",
+        "seconds": 0.22322,
+        "peakDbfs": -10.0,
+        "rmsDbfs": -27.398,
+        "clippedSamples": 0,
+        "dcOffset": -0.00034943
+      },
+      "processing": {
+        "cropStartSample": 12530,
+        "cropEndSample": 22374,
+        "dcRemoved": 2.0987810230216376e-05,
+        "fadeInSamples": 132,
+        "fadeOutSamples": 794,
+        "gainDb": 20.4729,
+        "monoStereoRmsRatio": 1.0,
+        "selection": "Highest energy window, then low-level edge trim; requires listening review."
+      },
+      "workflow": "workflows/paper-shot-api.json",
+      "history": "history/paper-shot-history.json",
+      "review": {
+        "listening": "pending",
+        "rights": "pending",
+        "targetDevice": "pending"
+      }
+    },
+    {
+      "id": "paper-knock",
+      "status": "candidate",
+      "loadTiming": "unassigned",
+      "source": {
+        "file": "raw/paper-knock.flac",
+        "sha256": "71f44ea165a6725c8b41260fc82fa865cfd2eca23d16e2b52abd6921e9a56c68",
+        "sampleRate": 44100,
+        "channels": 2,
+        "seconds": 47.554467,
+        "peakDbfs": -19.326,
+        "rmsDbfs": -69.055,
+        "clippedSamples": 0,
+        "dcOffset": 1.2e-07
+      },
+      "candidate": {
+        "file": "candidates/paper-knock.wav",
+        "sha256": "11e44a6da123640b97e9ad5570b6c04fe3f63313ee00d5fb28b3f54a1217f884",
+        "bytes": 12792,
+        "sampleRate": 44100,
+        "channels": 1,
+        "encoding": "PCM16 WAV",
+        "seconds": 0.144535,
+        "peakDbfs": -11.0,
+        "rmsDbfs": -35.538,
+        "clippedSamples": 0,
+        "dcOffset": 1.491e-05
+      },
+      "processing": {
+        "cropStartSample": 40638,
+        "cropEndSample": 47012,
+        "dcRemoved": 1.4686644320432616e-05,
+        "fadeInSamples": 132,
+        "fadeOutSamples": 794,
+        "gainDb": 8.4625,
+        "monoStereoRmsRatio": 0.999835,
+        "selection": "Highest energy window, then low-level edge trim; requires listening review."
+      },
+      "workflow": "workflows/paper-knock-api.json",
+      "history": "history/paper-knock-history.json",
+      "review": {
+        "listening": "pending",
+        "rights": "pending",
+        "targetDevice": "pending"
+      }
+    },
+    {
+      "id": "toy-retire",
+      "status": "candidate",
+      "loadTiming": "unassigned",
+      "source": {
+        "file": "raw/toy-retire.flac",
+        "sha256": "5aa0b09ba47149524f75b9b6cf55d4c21263b1977796e9e846b0ff1ed1a6c17d",
+        "sampleRate": 44100,
+        "channels": 2,
+        "seconds": 47.554467,
+        "peakDbfs": -14.069,
+        "rmsDbfs": -70.908,
+        "clippedSamples": 0,
+        "dcOffset": 6e-08
+      },
+      "candidate": {
+        "file": "candidates/toy-retire.wav",
+        "sha256": "65bfd763521477cfe5a558206f03630d4f64888733a1328cc0ae01e404411bdf",
+        "bytes": 17874,
+        "sampleRate": 44100,
+        "channels": 1,
+        "encoding": "PCM16 WAV",
+        "seconds": 0.202154,
+        "peakDbfs": -11.0,
+        "rmsDbfs": -44.124,
+        "clippedSamples": 0,
+        "dcOffset": 6e-08
+      },
+      "processing": {
+        "cropStartSample": 23012,
+        "cropEndSample": 31927,
+        "dcRemoved": 1.5558316609997196e-06,
+        "fadeInSamples": 132,
+        "fadeOutSamples": 794,
+        "gainDb": 3.0883,
+        "monoStereoRmsRatio": 0.998614,
+        "selection": "Highest energy window, then low-level edge trim; requires listening review."
+      },
+      "workflow": "workflows/toy-retire-api.json",
+      "history": "history/toy-retire-history.json",
+      "review": {
+        "listening": "pending",
+        "rights": "pending",
+        "targetDevice": "pending"
+      }
+    },
+    {
+      "id": "kennel-ball",
+      "status": "candidate",
+      "loadTiming": "unassigned",
+      "source": {
+        "file": "raw/kennel-ball.flac",
+        "sha256": "b79b5f1490838e1e443609a9364e67957704cdba66a29898582466c4e4ec77a3",
+        "sampleRate": 44100,
+        "channels": 2,
+        "seconds": 47.554467,
+        "peakDbfs": -21.717,
+        "rmsDbfs": -62.445,
+        "clippedSamples": 0,
+        "dcOffset": -1.2e-07
+      },
+      "candidate": {
+        "file": "candidates/kennel-ball.wav",
+        "sha256": "e752b4a7fca2fbfcda21dcd96fec3d8c9c2127d437b79a48016755190f5b4166",
+        "bytes": 20552,
+        "sampleRate": 44100,
+        "channels": 1,
+        "encoding": "PCM16 WAV",
+        "seconds": 0.232517,
+        "peakDbfs": -10.0,
+        "rmsDbfs": -32.527,
+        "clippedSamples": 0,
+        "dcOffset": 0.00010471
+      },
+      "processing": {
+        "cropStartSample": 60081,
+        "cropEndSample": 70335,
+        "dcRemoved": -3.197738620675468e-05,
+        "fadeInSamples": 132,
+        "fadeOutSamples": 794,
+        "gainDb": 12.2705,
+        "monoStereoRmsRatio": 0.989274,
+        "selection": "Highest energy window, then low-level edge trim; requires listening review."
+      },
+      "workflow": "workflows/kennel-ball-api.json",
+      "history": "history/kennel-ball-history.json",
+      "review": {
+        "listening": "pending",
+        "rights": "pending",
+        "targetDevice": "pending"
+      }
+    }
+  ],
+  "verification": "Decoded raw FLAC and exported/reopened WAV; finite, non-silent, mono fold-down and peak checks passed. No manual listening or target-device validation claimed."
+}

@@ -40,6 +40,7 @@ namespace HomelessPetHelper.Modules.Siege
         {
             var d = Definition(s, c);
             var unit = Target(s);
+            unit.FreePosition = null;
             unit.IsCarried = true;
             unit.CarryStartedMs = s.ElapsedMs;
             unit.CarriedUntilMs = s.ElapsedMs + d.CarryDurationMs;

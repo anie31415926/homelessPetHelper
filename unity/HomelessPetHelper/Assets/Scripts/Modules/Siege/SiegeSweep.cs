@@ -27,8 +27,11 @@ namespace HomelessPetHelper.Modules.Siege
             foreach (var unit in s.Troops)
                 if (unit.Hp > 0 && SiegeEntities.Position(c, unit).Distance(cast.Point) <= cast.Radius)
                     SiegeEntities.Hit(unit, c.Rules.SweepDamage, c.Rules.SweepPush, s.ElapsedMs);
-            s.VisualEffects.Add(new Effect { Kind = "sweep", From = cast.Point, Radius = cast.Radius,
-                StartMs = s.ElapsedMs, UntilMs = s.ElapsedMs + 650 });
+            s.EmitEffect(kind: "sweep",
+                from: cast.Point,
+                radius: cast.Radius,
+                startMs: s.ElapsedMs,
+                untilMs: s.ElapsedMs + 650);
             SiegeEntities.Record(s, c, "event.sweep");
             return 0;
         }

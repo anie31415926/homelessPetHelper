@@ -218,7 +218,24 @@ namespace HomelessPetHelper.Tests.PlayMode
         {
             for (int i = 0; i < 700 && activity.Battle.Phase != SiegeState.BattlePhase.Won; i++)
             {
-                if (activity.Battle.Phase == SiegeState.BattlePhase.Decision)
+                if (activity.Battle.Realtime)
+                {
+                    var state = activity.Battle.Snapshot;
+                    var card = state.Hand.FirstOrDefault(item =>
+                        activity.Battle.Catalog.Unit(item.DefinitionId).Cost <= state.Energy);
+                    if (card != null)
+                    {
+                        var lane = activity.Battle.Catalog.Lanes[state.Stats.Deployed % 3];
+                        var point = lane.PointAt(lane.Length * .2);
+                        if (!SiegeDeployment.CanDeploy(activity.Battle.Catalog, point)) point = lane.PointAt(0);
+                        activity.Battle.TryOrder(new SiegeOrder
+                        {
+                            SessionId = state.SessionId, Turn = state.Turn, DeployCardId = card.Id,
+                            DeployPoint = point
+                        }, true, out _, out _);
+                    }
+                }
+                else if (activity.Battle.Phase == SiegeState.BattlePhase.Decision)
                 {
                     var cell = _siege.GetComponentsInChildren<SiegeChoiceCell>().FirstOrDefault();
                     if (cell != null) cell.GetComponent<Button>().onClick.Invoke();
@@ -230,7 +247,9 @@ namespace HomelessPetHelper.Tests.PlayMode
                 yield return null;
             }
             yield return null;
-            Assert.That(activity.Battle.Phase, Is.EqualTo(SiegeState.BattlePhase.Won));
+            Assert.That(activity.Battle.Phase, Is.EqualTo(SiegeState.BattlePhase.Won),
+                "progress=" + activity.Battle.Snapshot.Progress +
+                ", deployed=" + activity.Battle.Snapshot.Stats.Deployed);
         }
 
         private void Stroke(Vector2 normalized)

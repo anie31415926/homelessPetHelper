@@ -1,0 +1,184 @@
+{
+  "prompt": [
+    4,
+    "19219df4-7f9f-4fc9-8cef-5a70c7bd3d5b",
+    {
+      "1": {
+        "class_type": "CheckpointLoaderSimple",
+        "inputs": {
+          "ckpt_name": "stable-audio-open-1.0.safetensors"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "t5-base.safetensors",
+          "type": "stable_audio",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "text": "A clearly audible single crisp, dry tok. A finger briskly tapping tightly crumpled kraft paper against a thin wooden desk, tiny paper rustle immediately after the short knock. Record very close with strong initial impact and no echo, no other sounds."
+        }
+      },
+      "4": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "text": "Voices, music, tones, percussion loop, ambience, echo, harsh transients, weapons, explosion, electronic synthesizer."
+        }
+      },
+      "5": {
+        "class_type": "ConditioningStableAudio",
+        "inputs": {
+          "positive": [
+            "3",
+            0
+          ],
+          "negative": [
+            "4",
+            0
+          ],
+          "seconds_start": 0,
+          "seconds_total": 3
+        }
+      },
+      "6": {
+        "class_type": "EmptyLatentAudio",
+        "inputs": {
+          "seconds": 47.6,
+          "batch_size": 1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "6",
+            0
+          ],
+          "seed": 2026112413,
+          "steps": 32,
+          "cfg": 5,
+          "sampler_name": "dpmpp_3m_sde_gpu",
+          "scheduler": "exponential",
+          "denoise": 1
+        }
+      },
+      "8": {
+        "class_type": "VAEDecodeAudio",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "1",
+            2
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveAudioAdvanced",
+        "inputs": {
+          "audio": [
+            "10",
+            0
+          ],
+          "filename_prefix": "audio-basic-20261120/yard-combat-20261124/paper-knock",
+          "format": "flac"
+        }
+      },
+      "10": {
+        "class_type": "AudioAdjustVolume",
+        "inputs": {
+          "audio": [
+            "8",
+            0
+          ],
+          "volume": -18
+        }
+      }
+    },
+    {
+      "client_id": "audio-basic-20261120",
+      "create_time": 1795493115702
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "audio": [
+        {
+          "filename": "paper-knock_00001.flac",
+          "subfolder": "audio-basic-20261120\\yard-combat-20261124",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "19219df4-7f9f-4fc9-8cef-5a70c7bd3d5b",
+          "timestamp": 1795493115704
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "4",
+            "6"
+          ],
+          "prompt_id": "19219df4-7f9f-4fc9-8cef-5a70c7bd3d5b",
+          "timestamp": 1795493115706
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "19219df4-7f9f-4fc9-8cef-5a70c7bd3d5b",
+          "timestamp": 1795493120262
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

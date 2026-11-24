@@ -10,11 +10,11 @@ namespace HomelessPetHelper.Tests.Audio.EditMode
     public sealed class MusicAssetTests
     {
         [Test]
-        public void ThreeTemporaryLoopsHaveExplicitNativeAndWebglImportsWithoutChangingSixEffects()
+        public void ThreeTemporaryLoopsHaveExplicitNativeAndWebglImportsSeparateFromEffects()
         {
             var content = AssetDatabase.LoadAssetAtPath<GameContent>("Assets/Settings/Game/GameContent.asset");
             Assert.That(content.MusicCatalog, Is.Not.Null.And.Not.SameAs(content.AudioCatalog));
-            Assert.That(content.AudioCatalog.CreateCues().Length, Is.EqualTo(6));
+            Assert.That(content.AudioCatalog.CreateCues().All(cue => cue.Channel == AudioChannel.Effects), Is.True);
             var cues = content.MusicCatalog.CreateCues();
             Assert.That(cues.Select(cue => cue.Id), Is.EquivalentTo(new[] { GameAudioCues.StationMusic,
                 GameAudioCues.ExploreMusic, GameAudioCues.RescueMusic }));

@@ -33,6 +33,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         public RectTransform PauseTarget => (RectTransform)_pause.transform;
         public RectTransform ObjectivesTarget => (RectTransform)_objectives.transform;
         private readonly SiegeFieldPlan _plan = new SiegeFieldPlan();
+        private readonly SiegeState _presentation = new SiegeState();
         private SiegeSession _session;
         private SiegeCatalog _catalog;
         private SiegeText _text;
@@ -44,6 +45,12 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private int _turn = -1;
         private int? _dragCard;
         private string _previewLane;
+        private Button[] _routeButtons;
+        private readonly Dictionary<Button, Text> _labels = new Dictionary<Button, Text>();
+        private readonly List<int> _selected = new List<int>(3);
+        private int _hudSeconds = -1, _hudEnergy = -1, _hudDefenderEnergy = -1;
+        private double _hudProgress = -1;
+        private string _hudIntent;
         private Vector2[] _portals;
         private float _refreshIn;
         private SiegeState.BattlePhase _renderedPhase;
@@ -52,6 +59,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private float _handWidth = -1;
         public SiegeFieldPlan Plan => _plan;
         public SiegeBattlefield Field => _field;
+        public void SetPresentationAudio(Action<string> play) => _field.SetPresentationAudio(play);
 
         public void BindOverlay(ILevelOverlay overlay, GuideSession guide)
         {
@@ -66,6 +74,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
         public bool ResolveGuideTarget(string action, List<RectTransform> targets)
         {
             if (!CanAct || _handPool == null) return false;
+            if (_session.Realtime && action == "siege.route")
+            { targets.Add(_field.rectTransform); return true; }
             if (action == "siege.card")
             {
                 var state = _session.Snapshot;
@@ -121,6 +131,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             Action<bool> suspend)
         {
             _session = session ?? throw new ArgumentNullException(nameof(session));
+            _field.ResetPresentation();
             _catalog = session.Catalog;
             _text = new SiegeText(text);
             _text.Validate(_catalog);
@@ -139,6 +150,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _handLayout = _hand.GetComponent<HorizontalLayoutGroup>();
             if (_dock != null) _dock.SetCapacity(_catalog.Rules.HandSize);
             _handWidth = -1; _handStamp = 0;
+            _routeButtons = new[] { _top, _mid, _bottom };
+            _hudSeconds = _hudEnergy = _hudDefenderEnergy = -1; _hudProgress = -1; _hudIntent = null;
             _handPool = new SiegeCellPool(_cellPrefab, _hand, _catalog.Rules.HandSize);
             _top.onClick.AddListener(Top); _mid.onClick.AddListener(Mid); _bottom.onClick.AddListener(Bottom);
             _submit.onClick.AddListener(Submit); _pause.onClick.AddListener(Pause);
@@ -147,6 +160,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _clear.onClick.AddListener(Clear); _discard.onClick.AddListener(Discard);
             _objectives.onClick.AddListener(Objectives);
             _field.LaneClicked += SelectLane;
+            _field.DeploymentClicked += DeployAt;
             _field.UnitClicked += SelectUnit; _field.TowerClicked += SelectTower; _field.EmptyClicked += Empty;
             _pauseMenu.SetActive(false); _dragGhost.gameObject.SetActive(false);
             Render();
@@ -161,8 +175,10 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _clear.onClick.RemoveListener(Clear); _discard.onClick.RemoveListener(Discard);
             _objectives.onClick.RemoveListener(Objectives);
             _field.LaneClicked -= SelectLane;
+            _field.DeploymentClicked -= DeployAt;
             _field.UnitClicked -= SelectUnit; _field.TowerClicked -= SelectTower; _field.EmptyClicked -= Empty;
             _handPool?.Dispose(); _handPool = null;
+            _field.ResetPresentation();
             _dragGhost.gameObject.SetActive(false); _plan.Clear();
         }
 
@@ -173,7 +189,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _plan.Clear(); _externalFeedback = null;
         }
 
-        private bool CanAct => _session != null && _session.Phase == SiegeState.BattlePhase.Decision &&
+        private bool CanAct => _session != null && (_session.Realtime ?
+            _session.Phase == SiegeState.BattlePhase.Running : _session.Phase == SiegeState.BattlePhase.Decision) &&
             !_session.Paused && !_paused;
 
         private void Update()
@@ -181,6 +198,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (_session == null) return;
             _session.SetDecisionHold(_guide != null && _guide.IsActive);
             _session.Advance(Math.Min(100, Time.unscaledDeltaTime * 1000));
+            if (!_paused && !_backgrounded && _focused)
+                _field.AdvanceTerminalEffects(Time.unscaledDeltaTime * 1000);
             if (!_reported && !_paused && _session.Phase == SiegeState.BattlePhase.Won)
             { _reported = true; _completed?.Invoke(); }
             _refreshIn -= Time.unscaledDeltaTime;
@@ -235,8 +254,21 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (!CanAct || !Allows("siege.route") || !_plan.ShowsEntrances) return;
             _plan.ChooseLane(lane); _error = null; Render();
             _guide?.ReportSucceeded("siege.route");
+            if (_session.Realtime && _plan.RerouteLane != null) Submit();
+            else Render();
+        }
+        private void DeployAt(SiegePoint point)
+        {
+            if (!CanAct || !Allows("siege.route") || !_plan.SelectedCard.HasValue) return;
+            var lane = SiegeDeployment.NearestLane(_catalog, point);
+            if (lane == null) return;
+            _plan.ChoosePoint(point, lane.Id);
+            bool success = _session.TryOrder(_plan.Order(_presentation), true, out _error, out _);
+            _plan.Clear();
+            if (success) _guide?.ReportSucceeded("siege.route");
             Render();
         }
+
         private void SelectCard(int id)
         {
             if (!CanAct || !Allows("siege.card") || !_session.Snapshot.Hand.Any(card => card.Id == id)) return;
@@ -250,7 +282,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private void SelectUnit(int id)
         {
             if (!CanAct || !Allows("siege.unit")) return;
-            _plan.Focus(id, _catalog, _session.Snapshot); _tower = _error = null; Render();
+            _plan.Focus(id, _catalog, _session.Snapshot); _tower = _error = null;
+            if (_session.Realtime && _plan.Materials.Count == 3) Submit();
+            else Render();
         }
         private void SelectTower(string id)
         { if (!CanAct || !Allows("siege.tower")) return; _tower = id; _plan.CancelSelection(); Render(); }
@@ -276,7 +310,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (_session == null) return;
             if (_session.Phase == SiegeState.BattlePhase.Won || _session.Phase == SiegeState.BattlePhase.Timeout)
             { Return(); return; }
-            if (!CanAct || !Allows("siege.submit")) return;
+            if (!CanAct || !_session.Realtime && !Allows("siege.submit")) return;
             bool hasDeployment = _plan.DeployCard.HasValue && _plan.DeployLane != null;
             if (_session.TryOrder(_plan.Order(_session.Snapshot), true, out _error, out _))
             {
@@ -307,15 +341,27 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private void Render()
         {
             if (_session == null || _handPool == null) return;
-            var state = _session.Snapshot;
+            _session.CopyPresentationTo(_presentation);
+            var state = _presentation;
             if (_motion != null) _motion.SetScenePaused(state.Paused || _paused);
             _renderedPhase = state.Phase;
             if (_turn != state.Turn) { _turn = state.Turn; _plan.Clear(); }
             bool terminal = state.Phase == SiegeState.BattlePhase.Won || state.Phase == SiegeState.BattlePhase.Timeout;
-            bool valid = _session.TryOrder(_plan.Order(state), false, out string reason, out int cost);
-            _status.text = _text.Format("field.compactStatus", state.Progress, _catalog.Rules.Target,
-                Math.Ceiling((_catalog.Rules.DurationMs - state.ElapsedMs) / 1000.0), state.Energy);
-            if (_resource != null) _resource.text = _text.Format("field.resource", state.Energy);
+            string reason = null; int cost = 0;
+            bool valid = !_plan.HasAction || _session.TryOrder(_plan.Order(state), false, out reason, out cost);
+            int seconds = (int)Math.Ceiling((_catalog.Rules.DurationMs - state.ElapsedMs) / 1000.0);
+            bool hudChanged = seconds != _hudSeconds || state.Energy != _hudEnergy ||
+                state.DefenderEnergy != _hudDefenderEnergy || state.Progress != _hudProgress;
+            if (hudChanged)
+            {
+                _hudSeconds = seconds; _hudEnergy = state.Energy; _hudDefenderEnergy = state.DefenderEnergy;
+                _hudProgress = state.Progress;
+                _status.text = _text.Format("field.compactStatus", state.Progress, _catalog.Rules.Target,
+                    seconds, state.Energy);
+                if (_resource != null) _resource.text = _text.Format(
+                    state.Realtime ? "field.realtimeResource" : "field.resource", state.Energy,
+                    _catalog.Rules.EnergyCap, state.DefenderEnergy, _catalog.Rules.DefenderEnergyCap);
+            }
             var encounter = _catalog.Content.Encounter(state.EncounterId);
             var animal = state.AnimalState;
             string intentKey = animal.Intent == SiegeState.IntentKind.Guard ? encounter.GuardNameKey :
@@ -323,8 +369,11 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 animal.Intent == SiegeState.IntentKind.Hold ? encounter.HoldNameKey :
                 animal.Intent == SiegeState.IntentKind.Carry ? encounter.CarryNameKey : "unity." +
                     animal.Intent.ToString().ToLowerInvariant();
-            _intent.text = _text.Format("field.intent", _text.Get(intentKey));
-            _playerBar.SetValueWithoutNotify((float)state.PlayerChargeMs / _catalog.Rules.PlayerPeriodMs);
+            bool intentChanged = _hudIntent != intentKey;
+            if (intentChanged)
+            { _hudIntent = intentKey; _intent.text = _text.Format("field.intent", _text.Get(intentKey)); }
+            _playerBar.SetValueWithoutNotify((float)state.PlayerChargeMs / (state.Realtime
+                ? _catalog.Rules.ResourcePeriodMs : _catalog.Rules.PlayerPeriodMs));
             _animalBar.SetValueWithoutNotify((float)animal.Charge);
             _hint.text = _externalFeedback ?? (_error != null ? _text.Get(_error) :
                 terminal ? _text.Get(state.Phase == SiegeState.BattlePhase.Won ? "game.won" : "game.timeout") :
@@ -336,8 +385,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
             Label(_submit, _text.Get(terminal ? state.Phase == SiegeState.BattlePhase.Won ? "game.transport" :
                 "game.return" :
                 _plan.HasAction ? "unity.submit" : "unity.skip"));
+            _submit.gameObject.SetActive(terminal || !state.Realtime);
             _submit.interactable = !_paused && (terminal || CanAct && valid && Allows("siege.submit"));
-            _pauseInfo.text = _text.Format("field.help", _status.text, _intent.text,
+            if (hudChanged || intentChanged) _pauseInfo.text = _text.Format("field.help", _status.text, _intent.text,
                 _text.Get("field.pauseInfo"));
             Label(_pause, _overlay == null ? _text.Get("field.menu") : _overlay.PauseCaption);
             if (_overlay != null) Label(_objectives, _overlay.ObjectivesCaption);
@@ -346,13 +396,15 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _resume.interactable = _focused && !_backgrounded;
             _retry.interactable = _focused && !_backgrounded;
             RenderHand(state); RenderPortals(); RenderContext(state);
-            System.Collections.Generic.IEnumerable<int> selected = _plan.Materials.Count > 0 ? _plan.Materials :
-                _plan.FocusedUnit.HasValue ? new[] { _plan.FocusedUnit.Value } : Array.Empty<int>();
-            _field.Show(_catalog, state, selected, _tower,
+            _selected.Clear();
+            if (_plan.Materials.Count > 0) _selected.AddRange(_plan.Materials);
+            else if (_plan.FocusedUnit.HasValue) _selected.Add(_plan.FocusedUnit.Value);
+            _field.Show(_catalog, state, _selected, _tower,
                 CanAct && (Allows("siege.unit") || Allows("siege.route")));
             string ghost = _plan.DeployCard.HasValue ? _plan.Definition(SiegeOrder.NewUnit, state) : null;
             _field.ShowPlan(ghost, _plan.DeployLane, _plan.Materials.Contains(SiegeOrder.NewUnit),
-                _previewLane ?? (_plan.ShowsEntrances ? _plan.DeployLane : null), _plan.ShowsEntrances);
+                _previewLane ?? (_plan.ShowsEntrances ? _plan.DeployLane : null), _plan.ShowsEntrances,
+                state.Realtime && _plan.SelectedCard.HasValue);
         }
 
         private void RenderHand(SiegeState state)
@@ -393,9 +445,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         private void RenderPortals()
         {
-            var buttons = new[] { _top, _mid, _bottom };
+            var buttons = _routeButtons;
             bool show = CanAct && _plan.ShowsEntrances;
-            _routeRow.SetActive(show);
+            _routeRow.SetActive(show && !_session.Realtime);
             for (int i = 0; i < buttons.Length; i++)
             {
                 buttons[i].gameObject.SetActive(show);
@@ -415,7 +467,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _context.gameObject.SetActive(focused || CanAct && (_plan.SelectedCard.HasValue || _plan.HasAction));
             _merge.gameObject.SetActive(focused && _plan.CanMerge(_catalog, state));
             _reroute.gameObject.SetActive(focused && _plan.CanReroute(state));
-            _discard.gameObject.SetActive(CanAct && _plan.SelectedCard.HasValue);
+            _discard.gameObject.SetActive(CanAct && !_session.Realtime && _plan.SelectedCard.HasValue);
             _clear.gameObject.SetActive(CanAct && (_plan.HasAction || focused || _plan.SelectedCard.HasValue));
             Label(_merge, _text.Format("unity.mergeCost", _catalog.Rules.MergeCost));
             Label(_reroute, _text.Get("field.reroute")); Label(_clear, _text.Get("field.cancel"));
@@ -452,7 +504,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private void DragCard(int id, Vector2 position)
         {
             if (!CanAct || !Allows("siege.card") || _dragCard.HasValue && _dragCard != id) return;
-            var card = _session.Snapshot.Hand.FirstOrDefault(item => item.Id == id);
+            var card = _presentation.Hand.FirstOrDefault(item => item.Id == id);
             if (card == null) return;
             if (_guide != null && _guide.IsActive &&
                 _catalog.Unit(card.DefinitionId).Cost > _session.Snapshot.Energy) return;
@@ -464,7 +516,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 position, camera, out var local)) _dragGhost.anchoredPosition = local + Vector2.up * 90;
             if (_plan.SelectedCard != id) _plan.SelectCard(id);
             _guide?.ReportSucceeded("siege.card");
-            _previewLane = HitLane(position);
+            _previewLane = _session.Realtime ? null : HitLane(position);
             Render();
         }
 
@@ -487,6 +539,16 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private void DropCard(int id, Vector2 position)
         {
             if (_dragCard != id) return;
+            if (_session.Realtime)
+            {
+                var owner = GetComponentInParent<Canvas>();
+                bool inside = _field.PickDeployment(position, owner.renderMode == RenderMode.ScreenSpaceOverlay ?
+                    null : owner.worldCamera, out var point);
+                CancelDrag();
+                if (inside) DeployAt(point);
+                else { _plan.CancelSelection(); _error = "field.dropOutside"; Render(); }
+                return;
+            }
             string lane = HitLane(position);
             CancelDrag();
             if (!CanAct || !Allows("siege.route")) return;
@@ -501,6 +563,11 @@ namespace HomelessPetHelper.Modules.Siege.UI
             Render();
         }
 
-        private static void Label(Button button, string value) => button.GetComponentInChildren<Text>().text = value;
+        private void Label(Button button, string value)
+        {
+            if (!_labels.TryGetValue(button, out var label))
+            { label = button.GetComponentInChildren<Text>(); _labels.Add(button, label); }
+            if (label.text != value) label.text = value;
+        }
     }
 }

@@ -166,11 +166,11 @@
     },
     {
       "key": "guide.siege.route",
-      "value": "拖到亮起的路线后松手。"
+      "value": "拖到己方亮起的范围内，松手立即部署。"
     },
     {
       "key": "guide.siege.submit",
-      "value": "点执行，确认部署。"
+      "value": "资源足够时即可部署。"
     },
     {
       "key": "settings.pauseAtDecision",

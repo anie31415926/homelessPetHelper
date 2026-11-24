@@ -36,18 +36,39 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private string _tower;
         private bool _interactive;
         private bool _sceneMode;
+        private readonly SiegePresentation _presentationMotion = new SiegePresentation();
+        private bool StyledCombat => _sceneMode && _state.Realtime;
+        private Action<string> _playPresentationCue;
+        private float _terminalTailMs;
+        private int PresentationTime => _state.ElapsedMs + (int)_terminalTailMs;
         private Sprite _sceneAnimal;
         private float _animalWidth;
         private string _ghostDefinition, _ghostLane, _previewLane;
-        private bool _ghostSelected, _showRoutes;
+        private bool _ghostSelected, _showRoutes, _freeDeployment;
         [SerializeField] private RectTransform _routeViewport;
         [SerializeField, Min(1)] private float _routeDropRadius = 72;
         [SerializeField, Min(0)] private float _routeAmbiguity = 6;
         public event Action<string> LaneClicked;
+        public event Action<SiegePoint> DeploymentClicked;
         public event Action EmptyClicked;
         private SiegeCatalog _validatedCatalog;
         public event Action<int> UnitClicked;
         public event Action<string> TowerClicked;
+
+        internal void SetPresentationAudio(Action<string> play) => _playPresentationCue = play;
+        internal void ResetPresentation()
+        {
+            _terminalTailMs = 0;
+            _presentationMotion.Reset();
+        }
+
+        internal void AdvanceTerminalEffects(float milliseconds)
+        {
+            if (_state == null || !StyledCombat || _state.Paused || _terminalTailMs >= SiegePresentation.MaxTailMs ||
+                _state.Phase != BattlePhase.Won && _state.Phase != BattlePhase.Timeout) return;
+            _terminalTailMs = Mathf.Min(SiegePresentation.MaxTailMs, _terminalTailMs + milliseconds);
+            SetVerticesDirty();
+        }
 
         public void ConfigureScene(Sprite animal, float width)
         {
@@ -60,10 +81,10 @@ namespace HomelessPetHelper.Modules.Siege.UI
         }
 
         public void ShowPlan(string definition, string lane, bool selected, string previewLane,
-            bool showRoutes = false)
+            bool showRoutes = false, bool freeDeployment = false)
         {
             _ghostDefinition = definition; _ghostLane = lane; _ghostSelected = selected; _previewLane = previewLane;
-            _showRoutes = showRoutes;
+            _showRoutes = showRoutes; _freeDeployment = freeDeployment;
             SetVerticesDirty();
         }
 
@@ -94,7 +115,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private Vector2 Local(SiegePoint p) => rectTransform.rect.center + Vector2.Scale(
             new Vector2((float)(p.X - _catalog.Width / 2), (float)(_catalog.Height / 2 - p.Y)), ProjectionScale);
 
-        private float PropScale => _state?.EncounterId == null ? Scale
+        private float PropScale => _sceneMode
+            ? Mathf.Max(Scale, 1.35f / (canvas == null ? 1 : canvas.scaleFactor))
+            : _state?.EncounterId == null ? Scale
             : Mathf.Max(Scale, .6f / (canvas == null ? 1 : canvas.scaleFactor));
 
         public void Show(
@@ -126,7 +149,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
             }
             _catalog = catalog;
             _state = state;
-            _selected = new HashSet<int>(selected);
+            if (StyledCombat) _presentationMotion.Observe(catalog, state, PresentationTime, _playPresentationCue);
+            _selected.Clear();
+            foreach (int id in selected) _selected.Add(id);
             _tower = tower;
             _interactive = interactive;
             SetVerticesDirty();
@@ -169,7 +194,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (_state != null && _state.AnimalState.Cast?.Kind == IntentKind.Carry)
                 position = CarryAnimalPosition(home);
             _cat.rectTransform.anchoredPosition = position + Vector2.up * jump;
-            _cat.rectTransform.sizeDelta = _sceneMode ? new Vector2(_animalWidth, _animalWidth * 1.15f) * Scale :
+            _cat.rectTransform.sizeDelta = _sceneMode
+                ? new Vector2(_animalWidth, _animalWidth * 1.15f) * (Scale * 1.6f) :
                 Vector2.one * (78 * Scale);
             bool acting = _state != null && _state.AnimalState.Cast?.Kind != IntentKind.Carry
                 && _state.Effects.Any(x => x.Kind == "slap" || x.Kind == "sweep");
@@ -185,16 +211,17 @@ namespace HomelessPetHelper.Modules.Siege.UI
             vh.Clear();
             if (_catalog == null || _state == null)
                 return;
+            if (_freeDeployment) DrawDeployment(vh);
             foreach (var lane in _catalog.Lanes)
             {
-                if (_sceneMode && !_showRoutes && lane.Id != _previewLane) continue;
+                if (_freeDeployment || _sceneMode && !_showRoutes && lane.Id != _previewLane) continue;
                 for (int i = 1; i < lane.Points.Count; i++)
                     Line(
                         vh,
                         Local(lane.Points[i - 1]),
                         Local(lane.Points[i]),
-                        (_sceneMode ? lane.Id == _previewLane ? 7 : 3 : 13) * Scale,
-                        _sceneMode ? new Color32(116, 153, 128, 120) : new Color32(222, 233, 226, 255)
+                        (_sceneMode ? lane.Id == _previewLane ? 4 : 2 : 13) * Scale,
+                        _sceneMode ? new Color32(116, 153, 128, 70) : new Color32(222, 233, 226, 255)
                     );
             }
             foreach (var pad in _catalog.Pads)
@@ -225,6 +252,41 @@ namespace HomelessPetHelper.Modules.Siege.UI
             DrawEffects(vh);
         }
 
+        private readonly List<SiegePoint> _deploymentPolygon = new List<SiegePoint>(8);
+        private readonly List<SiegePoint> _clipPolygon = new List<SiegePoint>(8);
+        private void DrawDeployment(VertexHelper vh)
+        {
+            _deploymentPolygon.Clear();
+            _deploymentPolygon.Add(new SiegePoint(0, 0));
+            _deploymentPolygon.Add(new SiegePoint(_catalog.Width, 0));
+            _deploymentPolygon.Add(new SiegePoint(_catalog.Width, _catalog.Height));
+            _deploymentPolygon.Add(new SiegePoint(0, _catalog.Height));
+            ClipDeployment(-.1, false);
+            ClipDeployment(_catalog.Rules.DeploymentFraction, true);
+            for (int index = 1; index + 1 < _deploymentPolygon.Count; index++)
+                Triangle(vh, Local(_deploymentPolygon[0]), Local(_deploymentPolygon[index]),
+                    Local(_deploymentPolygon[index + 1]), new Color32(76, 165, 139, 38));
+            for (int index = 0; index < _deploymentPolygon.Count; index++)
+                Line(vh, Local(_deploymentPolygon[index]),
+                    Local(_deploymentPolygon[(index + 1) % _deploymentPolygon.Count]), 2 * Scale, Mint);
+        }
+
+        private void ClipDeployment(double bound, bool upper)
+        {
+            _clipPolygon.Clear();
+            for (int index = 0; index < _deploymentPolygon.Count; index++)
+            {
+                var a = _deploymentPolygon[index];
+                var b = _deploymentPolygon[(index + 1) % _deploymentPolygon.Count];
+                double fa = SiegeDeployment.Fraction(_catalog, a), fb = SiegeDeployment.Fraction(_catalog, b);
+                bool insideA = upper ? fa <= bound : fa >= bound;
+                bool insideB = upper ? fb <= bound : fb >= bound;
+                if (insideA) _clipPolygon.Add(a);
+                if (insideA != insideB) _clipPolygon.Add(a.Lerp(b, (bound - fa) / (fb - fa)));
+            }
+            _deploymentPolygon.Clear(); _deploymentPolygon.AddRange(_clipPolygon);
+        }
+
         private void DrawIntent(VertexHelper vh)
         {
             var a = _state.AnimalState;
@@ -241,7 +303,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 );
                 Ring(vh, center, 18 * Scale, 3 * Scale, Coral);
             }
-            if (a.IntentPad != null)
+            if (!_state.Realtime && a.IntentPad != null)
             {
                 var pad = _catalog.Pads.First(x => x.Id == a.IntentPad);
                 Ring(
@@ -366,20 +428,26 @@ namespace HomelessPetHelper.Modules.Siege.UI
             foreach (var tower in _state.Towers)
             {
                 var d = _catalog.Defense(tower);
-                Vector2 point = Local(_catalog.Lane(tower.LaneId).PointAt(tower.Distance));
+                Vector2 point = Local(SiegeGeometry.Position(_catalog, tower));
+                if (StyledCombat && tower.Status == TowerStatus.Destroyed) continue;
                 if (tower.Id == _tower && tower.Status != TowerStatus.Destroyed)
                 {
-                    Area(vh, _catalog.Lane(tower.LaneId).PointAt(tower.Distance), d.Range,
+                    Area(vh, SiegeGeometry.Position(_catalog, tower), d.Range,
                         new Color32(224, 112, 104, 20));
-                    AreaOutline(vh, _catalog.Lane(tower.LaneId).PointAt(tower.Distance), d.Range, Scale, Coral);
+                    AreaOutline(vh, SiegeGeometry.Position(_catalog, tower), d.Range, Scale, Coral);
                 }
                 Color tint = tower.Status == TowerStatus.Destroyed ? new Color32(172, 181, 174, 255) : Coral;
                 if (tower.DefinitionId != null && tower.Status != TowerStatus.Destroyed)
                 {
                     float unfold = tower.Status == TowerStatus.Building
                         ? Mathf.Lerp(.3f, 1, 1 - (tower.ReadyAtMs - _state.ElapsedMs)
-                            / (float)_catalog.Rules.BuildDurationMs) : 1;
-                    SiegeTokenArt.Tower(vh, d.Visual, point, 11 * PropScale * unfold, tower.WindingUp, _spritePalette);
+                            / (float)(_state.Realtime
+                                ? _catalog.Rules.FastBuildDurationMs : _catalog.Rules.BuildDurationMs)) : 1;
+                    if (StyledCombat)
+                        _presentationMotion.DrawTower(vh, _spritePalette, tower, d.Visual, point,
+                            11 * PropScale * unfold, PresentationTime, d.PeriodMs);
+                    else SiegeTokenArt.Tower(vh, d.Visual, point, 11 * PropScale * unfold,
+                        tower.WindingUp, _spritePalette);
                 }
                 else Quad(vh, point, new Vector2(16, 18) * Scale, tint);
                 if (tower.WindingUp && tower.Status == TowerStatus.Active)
@@ -410,10 +478,14 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 Ring(vh, point, radius + 2 * Scale, Scale, new Color32(130, 182, 224, 255));
             if (_state.EncounterId != null)
             {
-                float phase = (float)(unit.Distance / 8 + unit.Id * .7);
-                Vector2 bob = unit.IsCarried ? Vector2.zero
-                    : Vector2.up * Mathf.Abs(Mathf.Sin(phase)) * 1.5f * Scale;
-                SiegeTokenArt.Draw(vh, d.Icon, point + bob, radius, phase, unit.Brace > 0, _spritePalette);
+                if (StyledCombat)
+                    _presentationMotion.DrawUnit(vh, _spritePalette, unit, d.Icon, point, radius, PresentationTime);
+                else
+                {
+                    float phase = (float)(unit.Distance / 8 + unit.Id * .7);
+                    var bob = Vector2.up * Mathf.Abs(Mathf.Sin(phase)) * 1.5f * Scale;
+                    SiegeTokenArt.Draw(vh, d.Icon, point + bob, radius, phase, unit.Brace > 0, _spritePalette);
+                }
                 if (unit.Brace > 0)
                     Line(vh, point + new Vector2(-radius, -radius), point + new Vector2(radius, -radius),
                         2 * Scale, new Color32(224, 173, 80, 255));
@@ -449,6 +521,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             foreach (var effect in _state.Effects)
             {
+                if (StyledCombat && _presentationMotion.DrawEffect(vh, _spritePalette, effect,
+                    Local(effect.From), Local(effect.To), ProjectionScale * (float)effect.Radius,
+                    11 * PropScale, PresentationTime)) continue;
                 float duration = Mathf.Max(1, effect.UntilMs - effect.StartMs);
                 float t = Mathf.Clamp01((_state.ElapsedMs - effect.StartMs) / duration);
                 if (effect.Kind == "mergePart")
@@ -513,6 +588,19 @@ namespace HomelessPetHelper.Modules.Siege.UI
             return first <= _routeDropRadius && second - first > _routeAmbiguity ? best : null;
         }
 
+        public bool PickDeployment(Vector2 screen, Camera camera, out SiegePoint point)
+        {
+            point = default;
+            if (_catalog == null || _routeViewport == null || rectTransform.rect.width <= 0 ||
+                rectTransform.rect.height <= 0 ||
+                !RectTransformUtility.RectangleContainsScreenPoint(_routeViewport, screen, camera) ||
+                !RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, screen, camera,
+                    out var local)) return false;
+            point = new SiegePoint(_catalog.Width / 2 + (local.x - rectTransform.rect.center.x) / ProjectionScale.x,
+                _catalog.Height / 2 - (local.y - rectTransform.rect.center.y) / ProjectionScale.y);
+            return SiegeDeployment.CanDeploy(_catalog, point);
+        }
+
         public void OnPointerClick(PointerEventData eventData)
         {
             if (
@@ -525,6 +613,13 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 )
             )
                 return;
+            if (_freeDeployment && _interactive)
+            {
+                if (PickDeployment(eventData.position, eventData.pressEventCamera, out var deploy))
+                    DeploymentClicked?.Invoke(deploy);
+                else EmptyClicked?.Invoke();
+                return;
+            }
             if (_sceneMode && _interactive && _ghostDefinition != null && _ghostLane != null &&
                 Vector2.Distance(Local(_catalog.Lane(_ghostLane).PointAt(0)), local) <= 17 * PropScale)
             { UnitClicked?.Invoke(SiegeOrder.NewUnit); return; }
@@ -546,7 +641,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 return;
             }
             var tower = _state.Towers.FirstOrDefault(x =>
-                Vector2.Distance(Local(_catalog.Lane(x.LaneId).PointAt(x.Distance)), local) <= 14 * PropScale
+                x.Status != TowerStatus.Destroyed &&
+                Vector2.Distance(Local(SiegeGeometry.Position(_catalog, x)), local) <= 14 * PropScale
             );
             if (tower != null)
                 TowerClicked?.Invoke(tower.Id);
@@ -607,7 +703,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         private static void Circle(VertexHelper vh, Vector2 center, float radius, Color tint)
         {
-            const int segments = 48;
+            const int segments = 16;
             for (int i = 0; i < segments; i++)
                 Triangle(
                     vh,
@@ -620,7 +716,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         private static void Ring(VertexHelper vh, Vector2 center, float radius, float width, Color tint)
         {
-            const int segments = 64;
+            const int segments = 24;
             for (int i = 0; i < segments; i++)
             {
                 Vector2 a = Direction(i, segments),

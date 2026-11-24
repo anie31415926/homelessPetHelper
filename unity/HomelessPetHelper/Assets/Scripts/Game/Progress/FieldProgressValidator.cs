@@ -12,7 +12,7 @@ namespace HomelessPetHelper.Game.Progress
     internal static class FieldProgressValidator
     {
         internal static void Validate(WorldFieldData data, GameLoopSession staged, CityMapPreviewConfig config,
-            FieldProgressContent content, ResidentData[] residents)
+            FieldProgressContent content, ResidentData[] residents, SiegeState.BattlePhase? capturedPhase = null)
         {
             if (data?.Encounters == null || data.Locations == null ||
                 data.Encounters.Length > staged.Requests.Requests.Count ||
@@ -60,13 +60,13 @@ namespace HomelessPetHelper.Game.Progress
                     !source.Opening.Remaining.SequenceEqual(location.Opening.Remaining))
                     throw new ArgumentException("Location and its latest encounter results disagree.");
             }
-            ValidateActive(data, staged, config, content);
+            ValidateActive(data, staged, config, content, capturedPhase);
         }
 
         private static void ValidateOpening(FieldProgressContent content, string pointId, string layoutId,
             string version, string templateId, int mode, OpeningData state)
         {
-            if (version != content.Version(pointId, layoutId) || !Enum.IsDefined(typeof(ApproachMode), mode))
+            if (!content.IsCompatibleVersion(pointId, layoutId, version) || !Enum.IsDefined(typeof(ApproachMode), mode))
                 throw new ArgumentException("Saved field content version is incompatible.");
             var catalog = content.Opening(pointId, layoutId);
             var template = catalog.Get((ApproachMode)mode);
@@ -76,7 +76,7 @@ namespace HomelessPetHelper.Game.Progress
         }
 
         private static void ValidateActive(WorldFieldData data, GameLoopSession staged, CityMapPreviewConfig config,
-            FieldProgressContent content)
+            FieldProgressContent content, SiegeState.BattlePhase? capturedPhase)
         {
             var active = data.Active;
             if (active == null) return;
@@ -112,8 +112,10 @@ namespace HomelessPetHelper.Game.Progress
             opening.Dispose();
             if (!entered)
             { activity.Dispose(); throw new ArgumentException("Cannot restore battle ownership."); }
-            activity.Battle.RestoreReplay(FieldCheckpointCodec.Restore(active.Battle));
-            if (active.Stage == 2 && activity.Battle.Phase != SiegeState.BattlePhase.Won)
+            // The capture witness is scoped to this synchronous save and compares every replay field.
+            // Disk reads have no witness and always replay all simulation inputs.
+            if (!capturedPhase.HasValue) activity.Battle.RestoreReplay(FieldCheckpointCodec.Restore(active.Battle));
+            if (active.Stage == 2 && (capturedPhase ?? activity.Battle.Phase) != SiegeState.BattlePhase.Won)
                 throw new ArgumentException("Confirmed rescue has no winning battle.");
         }
     }

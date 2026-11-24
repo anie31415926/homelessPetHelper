@@ -12,6 +12,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
         public int? SelectedCard { get; private set; }
         public int? DeployCard { get; private set; }
         public string DeployLane { get; private set; }
+        public SiegePoint? DeployPoint { get; private set; }
+        public void ChoosePoint(SiegePoint point, string lane)
+        { ChooseLane(lane); DeployPoint = point; }
         public int? FocusedUnit { get; private set; }
         public int? Anchor { get; private set; }
         public bool SelectingMaterials { get; private set; }
@@ -91,7 +94,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             SessionId = state.SessionId,
             Turn = state.Turn,
             DeployCardId = DeployCard,
-            DeployLaneId = DeployLane,
+            DeployLaneId = DeployLane, DeployPoint = DeployPoint,
             MergeIds = Anchor.HasValue ? _materials.ToArray() : null,
             AnchorId = Anchor ?? 0,
             RerouteUnitId = RerouteLane == null ? null : RerouteUnit,
@@ -106,7 +109,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         }
         public void Clear()
         {
-            CancelSelection(); DeployCard = null; DeployLane = null;
+            CancelSelection(); DeployCard = null; DeployLane = null; DeployPoint = null;
             Anchor = null; _materials.Clear(); SelectingMaterials = false; RerouteLane = null; RerouteUnit = null;
         }
 

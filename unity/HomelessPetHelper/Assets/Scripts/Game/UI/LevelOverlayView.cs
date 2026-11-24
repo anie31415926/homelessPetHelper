@@ -20,8 +20,9 @@ namespace HomelessPetHelper.Game.UI
         [SerializeField] private UiText _objectivesText, _confirmationText, _settingsStatus, _notice;
         [SerializeField] private AudioSettingsView _audio;
         [SerializeField] private Toggle _pauseAtDecision;
-        public bool PauseAtDecisionDraft => _pauseAtDecision.isOn;
-        public void SetPlaySettings(bool pause) => _pauseAtDecision.SetIsOnWithoutNotify(pause);
+        public bool PauseAtDecisionDraft => false;
+        public void SetPlaySettings(bool pause)
+        { _pauseAtDecision.SetIsOnWithoutNotify(false); _pauseAtDecision.gameObject.SetActive(false); }
         [SerializeField] private GuideMaskGraphic _guideMask;
         [SerializeField] private GameObject _guideCaption;
         [SerializeField] private UiText _guideText;

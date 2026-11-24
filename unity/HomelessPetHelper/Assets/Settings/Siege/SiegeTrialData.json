@@ -38,7 +38,16 @@
     "buildOnAnimalTurn": 3,
     "animalBuilds": 1,
     "relaxAtProgress": 0.5,
-    "rerouteDurationMs": 700
+    "rerouteDurationMs": 700,
+    "resourcePeriodMs": 1000,
+    "defenderResourcePeriodMs": 2000,
+    "defenderEnergyCap": 6,
+    "defenderOpeningEnergy": 0,
+    "defenderBuildCost": 3,
+    "fastBuildDurationMs": 600,
+    "maxTroops": 96,
+    "deploymentFraction": 0.3,
+    "defenseGridSize": 7
   },
   "units": [
     {

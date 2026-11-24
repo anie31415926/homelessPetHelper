@@ -7,6 +7,7 @@ namespace HomelessPetHelper.Modules.Siege
         public int Turn { get; set; }
         public int? DeployCardId { get; set; }
         public string DeployLaneId { get; set; }
+        public SiegePoint? DeployPoint { get; set; }
         public int[] MergeIds { get; set; }
         public int AnchorId { get; set; }
         public int? RerouteUnitId { get; set; }

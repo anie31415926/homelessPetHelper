@@ -64,7 +64,11 @@ namespace HomelessPetHelper.Modules.Siege
                 && e.holdCooldownMs >= e.holdDurationMs + e.holdRecoveryMs), "hold enabled");
         }
 
-        public SiegeTowerTypeDefinition Tower(string id) => Towers.FirstOrDefault(x => x.Id == id);
+        public SiegeTowerTypeDefinition Tower(string id)
+        {
+            for (int index = 0; index < Towers.Count; index++) if (Towers[index].Id == id) return Towers[index];
+            return null;
+        }
 
         private static void ValidateCarry(SiegeCatalogData.EncounterDto e)
         {
@@ -82,7 +86,12 @@ namespace HomelessPetHelper.Modules.Siege
                 && e.carryCooldownMs >= e.carryDelayMs + e.carryDurationMs + e.carryRecoveryMs), "carry enabled");
         }
 
-        public SiegeEncounterDefinition Encounter(string id) => Encounters.FirstOrDefault(x => x.Id == id);
+        public SiegeEncounterDefinition Encounter(string id)
+        {
+            for (int index = 0; index < Encounters.Count;
+                index++) if (Encounters[index].Id == id) return Encounters[index];
+            return null;
+        }
 
         private static bool Positive(double value) => SiegeCatalog.Finite(value) && value > 0;
 

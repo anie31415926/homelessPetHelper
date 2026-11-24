@@ -130,7 +130,7 @@ namespace HomelessPetHelper.Game.Field
                 if (effect.Cue != MotionCue.Clear) continue;
                 var pose = _motion.Library.Sample(effect.Cue, age);
                 // Vertex alpha belongs to this isolated prop mesh; no Image/Canvas alpha is animated.
-                DrawSprite(mesh, effect.Visual, Local(_layout.CellPoint(effect.Cell)), size * .9f, pose);
+                DrawSprite(mesh, effect.Visual, Local(_layout.CellPoint(effect.Cell)), size * 1.02f, pose);
             }
         }
         private static string DebrisVisual(ApproachTool tool) => tool == ApproachTool.Weeds ? "weeds"
@@ -210,9 +210,9 @@ namespace HomelessPetHelper.Game.Field
                 char terrain = template.Terrain(cell);
                 if (terrain == '#') DrawHedgeSprites(mesh, point, size, cell);
                 else if (terrain == '~') DrawSprite(mesh, "water", point, size, Ambient(MotionCue.Water, cell));
-                else if (cell % 2 == 0) DrawSprite(mesh, "stones", point, size * .35f);
+                else if (cell % 2 == 0) DrawSprite(mesh, "stones", point, size * .22f);
                 if (_snapshot.Bridge == cell) DrawSprite(mesh, "bridge", point, size * .96f, Placement(cell));
-                if (_snapshot.Boxes.Contains(cell)) DrawSprite(mesh, "box", point, size * .85f, Placement(cell));
+                if (_snapshot.Boxes.Contains(cell)) DrawSprite(mesh, "box", point, size * 1.02f, Placement(cell));
             }
             for (int index = 0; index < template.Debris.Count; index++)
             {
@@ -220,7 +220,7 @@ namespace HomelessPetHelper.Game.Field
                 var debris = template.Debris[index];
                 var pose = debris.Tool == ApproachTool.Weeds ? Ambient(MotionCue.Foliage, debris.Cell) :
                     MotionPose.Identity;
-                DrawSprite(mesh, DebrisVisual(debris.Tool), Local(_layout.CellPoint(debris.Cell)), size * .9f, pose);
+                DrawSprite(mesh, DebrisVisual(debris.Tool), Local(_layout.CellPoint(debris.Cell)), size * 1.02f, pose);
             }
             DrawEffects(mesh, size);
         }
@@ -229,11 +229,12 @@ namespace HomelessPetHelper.Game.Field
         {
             float height = _layout.Grid.height / _snapshot.Template.Rows * rectTransform.rect.height / _layout.Height;
             int count = Mathf.Max(1, Mathf.CeilToInt(height / size.y));
+            // A quiet continuous boundary remains readable without a wall of oversized foliage.
+            Quad(mesh, center, new Vector2(size.x * .38f, height), new Color(0.65f, 0.71f, 0.53f, .22f));
             for (int index = 0; index < count; index++)
             {
                 float offset = (index + .5f) / count * height - height / 2;
-                DrawSprite(mesh, "hedge", center + Vector2.up * offset, size * 1.15f,
-                    Ambient(MotionCue.Foliage, cell));
+                DrawSprite(mesh, "hedge", center + Vector2.up * offset, size * .68f, MotionPose.Identity);
             }
         }
 
@@ -243,7 +244,8 @@ namespace HomelessPetHelper.Game.Field
         private void DrawSprite(VertexHelper mesh, string id, Vector2 center, Vector2 size, MotionPose pose)
         {
             float scale = rectTransform.rect.width / _layout.Width;
-            var tint = new Color(1, 1, 1, pose.Opacity);
+            var tint = id == "hedge" ? new Color(.94f, .96f, .88f, .48f)
+                : id == "stones" ? new Color(1, 1, 1, .3f) : new Color(1, 1, 1, pose.Opacity);
             if (!_spritePalette.TryDraw(mesh, id, center + pose.Offset * scale, Vector2.Scale(size, pose.Scale),
                 pose.AngleDegrees * Mathf.Deg2Rad, tint))
                 throw new System.InvalidOperationException("Missing field sprite: " + id);
@@ -254,11 +256,11 @@ namespace HomelessPetHelper.Game.Field
             // Continuous rounded foliage; adjoining cells form garden strips without square grid seams.
             for (int leaf = 0; leaf < 6; leaf++)
             {
-                var center = point + new Vector2((leaf % 3 - 1) * size.x * .29f,
-                    (leaf / 3 - .5f) * size.y * .42f);
-                float radius = size.y * (.32f + ((cell + leaf) % 3) * .025f);
-                Disc(vh, center + Vector2.down * scale * 3, radius * 1.07f, _soil);
-                Disc(vh, center, radius, (cell + leaf) % 2 == 0 ? _leafLight : _leaves);
+                var center = point + new Vector2((leaf % 3 - 1) * size.x * .18f,
+                    (leaf / 3 - .5f) * size.y * .26f);
+                float radius = size.y * (.20f + ((cell + leaf) % 3) * .025f);
+                Disc(vh, center + Vector2.down * scale * 3, radius * 1.07f, new Color(.65f, .71f, .53f, .18f));
+                Disc(vh, center, radius, new Color(.65f, .71f, .53f, .48f));
             }
 
         }

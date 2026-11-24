@@ -298,7 +298,7 @@ namespace HomelessPetHelper.Game
         private Framework.UI.GuideSession CreateRescueGuide()
         {
             var battle = _activity.Battle;
-            if (battle.Phase != Modules.Siege.SiegeState.BattlePhase.Decision) return null;
+            if (battle.Phase != Modules.Siege.SiegeState.BattlePhase.Decision && !battle.Realtime) return null;
             var state = battle.Snapshot;
             if (!state.Hand.Any(card => battle.Catalog.Unit(card.DefinitionId).Cost <= state.Energy)) return null;
             return _guides.Create("siege.field");
@@ -362,7 +362,7 @@ namespace HomelessPetHelper.Game
                 Progress.Fields.AttachBattle(activity, Session);
             }
             _activity = activity;
-            activity.Battle.DecisionCommitted += FlushFieldProgress;
+            activity.Battle.EnableRealtime();
             activity.Battle.PhaseChanged += FlushFieldProgress;
             ApplyPlaySettings(_playSettings.PauseAtDecision);
             _approach.gameObject.SetActive(false);
@@ -375,8 +375,11 @@ namespace HomelessPetHelper.Game
             _petMotion.ShowAnimal(_outingAnimal.Current);
             _siege.SetFieldMode(_activeField != null);
             if (_activeField != null)
+            {
                 _siege.Scene.Configure(_battleScene.Animal.sprite, _activeField.AnimalWidthFor(encounter.DogArtwork),
                     Enumerable.Range(0, _activeField.LaneCount).Select(_activeField.Portal).ToArray());
+                _siege.Scene.SetPresentationAudio(PlayBattleEffect);
+            }
             _siege.BindEncounter(activity.Battle, _content.SiegeText, ConfirmRescue, ReturnFromSiege,
                 SetFieldSuspended);
             _siege.gameObject.SetActive(true);
@@ -392,6 +395,8 @@ namespace HomelessPetHelper.Game
             }
             if (!Checkpoint()) return;
         }
+
+        private void PlayBattleEffect(string cue) => _audio?.PlayEffect(cue);
 
         private void ConfirmRescue()
         {
@@ -524,7 +529,7 @@ namespace HomelessPetHelper.Game
         private void UnsubscribeBattle()
         {
             if (_activity == null) return;
-            _activity.Battle.DecisionCommitted -= FlushFieldProgress;
+            // Real-time orders are coalesced by the existing periodic checkpoint; lifecycle flush remains immediate.
             _activity.Battle.PhaseChanged -= FlushFieldProgress;
         }
     }

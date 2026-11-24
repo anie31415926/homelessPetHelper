@@ -53,7 +53,7 @@ namespace HomelessPetHelper.Game.Field
             _grid.anchorMin = new Vector2(grid.x / layout.Width, 1 - grid.yMax / layout.Height);
             _grid.anchorMax = new Vector2(grid.xMax / layout.Width, 1 - grid.y / layout.Height);
             _grid.offsetMin = _grid.offsetMax = Vector2.zero;
-            float animalWidth = layout.AnimalWidthFor(dog);
+            float animalWidth = layout.AnimalWidthFor(dog) * 1.6f;
             var point = layout.CellPoint(layout.Opening.Get(ApproachMode.Cleanup).Animal);
             _animal.rectTransform.anchorMin = new Vector2((point.x - animalWidth / 2) / layout.Width,
                 1 - (point.y + animalWidth * .15f) / layout.Height);

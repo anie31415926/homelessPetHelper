@@ -12,7 +12,10 @@
     "repairDurationMs": 1800, "repairCooldownMs": 10000,
     "threatBase": 0.1, "threatNearWeight": 4, "threatExponent": 3,
     "buildDurationMs": 1600, "buildOnAnimalTurn": 3, "animalBuilds": 1,
-    "relaxAtProgress": 0.5, "rerouteDurationMs": 700
+    "relaxAtProgress": 0.5, "rerouteDurationMs": 700,
+    "resourcePeriodMs": 1000, "defenderResourcePeriodMs": 2000, "defenderEnergyCap": 6, "defenderOpeningEnergy": 0,
+    "defenderBuildCost": 3, "fastBuildDurationMs": 600, "maxTroops": 96,
+    "deploymentFraction": 0.3, "defenseGridSize": 7
   },
   "units": [
     { "id": "cart", "nameKey": "unit.cart", "detailKey": "detail.cart", "icon": "truck", "cost": 2, "speed": 20, "hp": 7, "damage": 2, "attackMs": 1000, "reach": 30, "gain": 10, "ability": "none", "abilityRadius": 0, "abilityPeriodMs": 0, "upgradeId": "ram", "bag": true },

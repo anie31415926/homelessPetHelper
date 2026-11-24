@@ -64,9 +64,25 @@ namespace HomelessPetHelper.Modules.Siege
             public int UntilMs { get; internal set; }
             internal int RecoveryMs;
 
+            internal void CopyTo(SkillCast target)
+            {
+                target.Kind = Kind;
+                target.Phase = Phase;
+                target.Target = Target;
+                target.Point = Point;
+                target.Radius = Radius;
+                target.StartedMs = StartedMs;
+                target.ResolveAtMs = ResolveAtMs;
+                target.UntilMs = UntilMs;
+            }
+
             internal SkillCast Clone() => (SkillCast)MemberwiseClone();
         }
 
+        public bool Realtime { get; internal set; }
+        public int ResourceChargeMs { get; internal set; }
+        public int DefenderEnergy { get; internal set; }
+        public int DefenderChargeMs { get; internal set; }
         public string SessionId { get; internal set; }
         public uint Seed { get; internal set; }
         public string Profile { get; internal set; }
@@ -81,12 +97,18 @@ namespace HomelessPetHelper.Modules.Siege
         public double Progress { get; internal set; }
         public Animal AnimalState { get; internal set; } = new Animal();
         public Statistics Stats { get; internal set; } = new Statistics();
-        public IReadOnlyList<Card> Hand => Cards.AsReadOnly();
-        public IReadOnlyList<Unit> Units => Troops.AsReadOnly();
-        public IReadOnlyList<Tower> Towers => Defenses.AsReadOnly();
-        public IReadOnlyList<Effect> Effects => VisualEffects.AsReadOnly();
-        public IReadOnlyList<SlowZone> SlowZones => Zones.AsReadOnly();
-        public IReadOnlyList<string> Log => Events.AsReadOnly();
+        private IReadOnlyList<Card> _handView;
+        public IReadOnlyList<Card> Hand => _handView ?? (_handView = Cards.AsReadOnly());
+        private IReadOnlyList<Unit> _unitsView;
+        public IReadOnlyList<Unit> Units => _unitsView ?? (_unitsView = Troops.AsReadOnly());
+        private IReadOnlyList<Tower> _towersView;
+        public IReadOnlyList<Tower> Towers => _towersView ?? (_towersView = Defenses.AsReadOnly());
+        private IReadOnlyList<Effect> _effectsView;
+        public IReadOnlyList<Effect> Effects => _effectsView ?? (_effectsView = VisualEffects.AsReadOnly());
+        private IReadOnlyList<SlowZone> _slowzonesView;
+        public IReadOnlyList<SlowZone> SlowZones => _slowzonesView ?? (_slowzonesView = Zones.AsReadOnly());
+        private IReadOnlyList<string> _logView;
+        public IReadOnlyList<string> Log => _logView ?? (_logView = Events.AsReadOnly());
         internal uint Rng;
         internal int Serial;
         internal double AccumulatorMs;
@@ -98,9 +120,41 @@ namespace HomelessPetHelper.Modules.Siege
         internal List<SlowZone> Zones = new List<SlowZone>();
         internal List<string> Events = new List<string>();
 
+        private SiegeEffectPool _effectPool;
+        private int _effectSequence;
+        public int LatestEffectSequence => _effectSequence;
+        private SiegeEffectPool EffectPool => _effectPool ?? (_effectPool = new SiegeEffectPool());
+
+        internal void ExpireEffects() => EffectPool.Expire(VisualEffects, ElapsedMs);
+
+        internal void EmitEffect(string kind, SiegePoint from, int untilMs, SiegePoint to = default,
+            double radius = 0, int startMs = 0, string visual = null, int unitId = 0)
+        {
+            if (VisualEffects.Count >= SiegeEffectPool.Capacity)
+            {
+                var oldest = VisualEffects[0];
+                VisualEffects.RemoveAt(0);
+                EffectPool.Return(oldest);
+            }
+            var effect = EffectPool.Rent();
+            effect.Kind = kind;
+            effect.From = from;
+            effect.To = to;
+            effect.Radius = radius;
+            effect.UntilMs = untilMs;
+            effect.StartMs = startMs;
+            effect.Visual = visual;
+            effect.Sequence = ++_effectSequence;
+            effect.UnitId = unitId;
+            VisualEffects.Add(effect);
+        }
+
         internal SiegeState Clone()
         {
             var copy = (SiegeState)MemberwiseClone();
+            copy._effectPool = null;
+            copy._handView = null; copy._unitsView = null; copy._towersView = null;
+            copy._effectsView = null; copy._slowzonesView = null; copy._logView = null;
             copy.Cards = Cards.Select(x => x.Clone()).ToList();
             copy.Bag = new List<string>(Bag);
             copy.Troops = Troops.Select(x => x.Clone()).ToList();
@@ -111,6 +165,34 @@ namespace HomelessPetHelper.Modules.Siege
             copy.AnimalState = AnimalState.Clone();
             copy.Stats = Stats.Clone();
             return copy;
+        }
+
+        internal void CopyTo(SiegeState target)
+        {
+            target.Realtime = Realtime; target.ResourceChargeMs = ResourceChargeMs;
+            target.DefenderEnergy = DefenderEnergy; target.DefenderChargeMs = DefenderChargeMs;
+            target.SessionId = SessionId; target.Seed = Seed; target.Profile = Profile;
+            target.EncounterId = EncounterId;
+            target.Phase = Phase; target.Paused = Paused; target.ElapsedMs = ElapsedMs;
+            target.PlayerChargeMs = PlayerChargeMs; target.Turn = Turn; target.ResolvedTurn = ResolvedTurn;
+            target.Energy = Energy; target.Progress = Progress;
+            // Entity snapshots are reused. Nested animal state is small and cloned for isolation.
+            AnimalState.CopyTo(target.AnimalState);
+            Stats.CopyTo(target.Stats);
+            CopyList(Cards, target.Cards, (source,
+                dest) => { dest.Id = source.Id; dest.DefinitionId = source.DefinitionId; });
+            CopyList(Troops, target.Troops, (source, dest) => source.CopyTo(dest));
+            CopyList(Defenses, target.Defenses, (source, dest) => source.CopyTo(dest));
+            target._effectSequence = _effectSequence;
+            CopyList(VisualEffects, target.VisualEffects, (source, dest) => source.CopyTo(dest));
+            CopyList(Zones, target.Zones, (source, dest) => source.CopyTo(dest));
+        }
+
+        private static void CopyList<T>(List<T> source, List<T> target, System.Action<T, T> copy) where T : new()
+        {
+            while (target.Count < source.Count) target.Add(new T());
+            if (target.Count > source.Count) target.RemoveRange(source.Count, target.Count - source.Count);
+            for (int index = 0; index < source.Count; index++) copy(source[index], target[index]);
         }
 
         public sealed class Card
@@ -127,6 +209,7 @@ namespace HomelessPetHelper.Modules.Siege
             public string DefinitionId { get; internal set; }
             public string LaneId { get; internal set; }
             public double Distance { get; internal set; }
+            public SiegePoint? FreePosition { get; internal set; }
             public double Hp { get; internal set; }
             public int Shield { get; internal set; }
             public int Brace { get; internal set; }
@@ -153,6 +236,31 @@ namespace HomelessPetHelper.Modules.Siege
                 NextAuraMs;
             internal bool Arrived;
 
+            internal void CopyTo(Unit target)
+            {
+                target.Id = Id;
+                target.DefinitionId = DefinitionId;
+                target.LaneId = LaneId;
+                target.Distance = Distance;
+                target.FreePosition = FreePosition;
+                target.Hp = Hp;
+                target.Shield = Shield;
+                target.Brace = Brace;
+                target.Reroutes = Reroutes;
+                target.TransitRemainingMs = TransitRemainingMs;
+                target.TransitFrom = TransitFrom;
+                target.TransitTo = TransitTo;
+                target.BraceReadyMs = BraceReadyMs;
+                target.AbilityCharges = AbilityCharges;
+                target.HeldUntilMs = HeldUntilMs;
+                target.HoldProtectedUntilMs = HoldProtectedUntilMs;
+                target.IsCarried = IsCarried;
+                target.CarryStartedMs = CarryStartedMs;
+                target.CarriedUntilMs = CarriedUntilMs;
+                target.CarryFromDistance = CarryFromDistance;
+                target.CarryToDistance = CarryToDistance;
+            }
+
             internal Unit Clone() => (Unit)MemberwiseClone();
         }
 
@@ -162,6 +270,7 @@ namespace HomelessPetHelper.Modules.Siege
             public string DefinitionId { get; internal set; }
             public string LaneId { get; internal set; }
             public double Distance { get; internal set; }
+            public SiegePoint? FreePosition { get; internal set; }
             public double Hp { get; internal set; }
             public TowerStatus Status { get; internal set; }
             public int ReadyAtMs { get; internal set; }
@@ -170,6 +279,24 @@ namespace HomelessPetHelper.Modules.Siege
             public int SeenTurn { get; internal set; }
             public SiegePoint LockedPoint { get; internal set; }
             internal int NextShotMs;
+            public int NextAttackAtMs => NextShotMs;
+
+            internal void CopyTo(Tower target)
+            {
+                target.Id = Id;
+                target.DefinitionId = DefinitionId;
+                target.LaneId = LaneId;
+                target.Distance = Distance;
+                target.FreePosition = FreePosition;
+                target.Hp = Hp;
+                target.Status = Status;
+                target.ReadyAtMs = ReadyAtMs;
+                target.WindingUp = WindingUp;
+                target.WarningReadyMs = WarningReadyMs;
+                target.SeenTurn = SeenTurn;
+                target.LockedPoint = LockedPoint;
+                target.NextShotMs = NextShotMs;
+            }
 
             internal Tower Clone() => (Tower)MemberwiseClone();
         }
@@ -210,6 +337,40 @@ namespace HomelessPetHelper.Modules.Siege
 
             public int SkillReadyAtMs(IntentKind kind) => SkillCooldowns.TryGetValue(kind, out int ready) ? ready : 0;
 
+            internal void CopyTo(Animal target)
+            {
+                target.Vigilance = Vigilance;
+                target.Stamina = Stamina;
+                target.Charge = Charge;
+                target.Actions = Actions;
+                target.BuildsLeft = BuildsLeft;
+                target.RepairsLeft = RepairsLeft;
+                target.RepairTowerId = RepairTowerId;
+                target.RepairReadyAtMs = RepairReadyAtMs;
+                target.GuardLane = GuardLane;
+                target.GuardUntilMs = GuardUntilMs;
+                target.RecoveryUntilMs = RecoveryUntilMs;
+                target.Intent = Intent;
+                target.IntentLane = IntentLane;
+                target.IntentPad = IntentPad;
+                target.SeenTurn = SeenTurn;
+                target.SweepCenter = SweepCenter;
+                target.SweepRadius = SweepRadius;
+                target.LeapStartMs = LeapStartMs;
+                target.IntentUnitId = IntentUnitId;
+                target.HeldUnitId = HeldUnitId;
+                target.HoldStartedMs = HoldStartedMs;
+                target.HoldUntilMs = HoldUntilMs;
+                if (Cast == null) target.Cast = null;
+                else
+                {
+                    if (target.Cast == null) target.Cast = new SkillCast();
+                    Cast.CopyTo(target.Cast);
+                }
+                target.SkillCooldowns.Clear();
+                foreach (var pair in SkillCooldowns) target.SkillCooldowns.Add(pair.Key, pair.Value);
+            }
+
             internal Animal Clone()
             {
                 var copy = (Animal)MemberwiseClone();
@@ -217,6 +378,15 @@ namespace HomelessPetHelper.Modules.Siege
                 copy.SkillCooldowns = new Dictionary<IntentKind, int>(SkillCooldowns);
                 return copy;
             }
+        }
+
+        public static class EffectKind
+        {
+            public const string Deploy = "deploy";
+            public const string UnitLost = "unitLost";
+            public const string TowerLost = "towerLost";
+            public const string TowerShot = "towerShot";
+            public const string UnitShot = "unitShot";
         }
 
         public sealed class Effect
@@ -228,6 +398,21 @@ namespace HomelessPetHelper.Modules.Siege
             public int UntilMs { get; internal set; }
             public int StartMs { get; internal set; }
             public string Visual { get; internal set; }
+            public int Sequence { get; internal set; }
+            public int UnitId { get; internal set; }
+
+            internal void CopyTo(Effect target)
+            {
+                target.Kind = Kind;
+                target.From = From;
+                target.To = To;
+                target.Radius = Radius;
+                target.UntilMs = UntilMs;
+                target.StartMs = StartMs;
+                target.Visual = Visual;
+                target.Sequence = Sequence;
+                target.UnitId = UnitId;
+            }
 
             internal Effect Clone() => (Effect)MemberwiseClone();
         }
@@ -239,6 +424,15 @@ namespace HomelessPetHelper.Modules.Siege
             public double Factor { get; internal set; }
             public int UntilMs { get; internal set; }
             public string Visual { get; internal set; }
+
+            internal void CopyTo(SlowZone target)
+            {
+                target.Center = Center;
+                target.Radius = Radius;
+                target.Factor = Factor;
+                target.UntilMs = UntilMs;
+                target.Visual = Visual;
+            }
 
             internal SlowZone Clone() => (SlowZone)MemberwiseClone();
         }
@@ -255,6 +449,20 @@ namespace HomelessPetHelper.Modules.Siege
             public int HoldMisses { get; internal set; }
             public int Carries { get; internal set; }
             public int CarryMisses { get; internal set; }
+
+            internal void CopyTo(Statistics target)
+            {
+                target.Deployed = Deployed;
+                target.Merges = Merges;
+                target.Towers = Towers;
+                target.Delivered = Delivered;
+                target.Lost = Lost;
+                target.Repairs = Repairs;
+                target.Holds = Holds;
+                target.HoldMisses = HoldMisses;
+                target.Carries = Carries;
+                target.CarryMisses = CarryMisses;
+            }
 
             internal Statistics Clone() => (Statistics)MemberwiseClone();
         }

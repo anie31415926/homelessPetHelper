@@ -15,16 +15,30 @@ namespace HomelessPetHelper.Modules.Siege
         public event Action PhaseChanged;
         public SiegeCatalog Catalog { get; }
         public SiegeState Snapshot => _state.Clone();
+        public void CopyPresentationTo(SiegeState target)
+        {
+            if (target == null) throw new ArgumentNullException(nameof(target));
+            _state.CopyTo(target);
+        }
         public SiegeState.BattlePhase Phase => _state.Phase;
         public bool Paused => _state.Paused;
         public int ElapsedMs => _state.ElapsedMs;
+        public bool Realtime => _state.Realtime;
+        public void EnableRealtime()
+        {
+            if (Realtime) return;
+            SiegeRealtime.Enable(_state, Catalog);
+            if (!_restoring) _history.Add(new SiegeReplay.Step(0, false, false, realtime: true));
+            Revision++;
+        }
         public bool PauseAtDecision { get; private set; } = true;
         private bool _decisionHold;
-        public bool IsAdvancing => !_state.Paused &&
-            (_state.Phase == BattlePhase.Running || _state.Phase == BattlePhase.Decision &&
+        public bool IsAdvancing => !_state.Paused && (Realtime
+            ? !_decisionHold && _state.Phase == BattlePhase.Running
+            : _state.Phase == BattlePhase.Running || _state.Phase == BattlePhase.Decision &&
                 !PauseAtDecision && !_decisionHold);
 
-        public void SetPauseAtDecision(bool pause) => PauseAtDecision = pause;
+        public void SetPauseAtDecision(bool pause) => PauseAtDecision = Realtime ? false : pause;
         public void SetDecisionHold(bool held) => _decisionHold = held;
 
         public SiegeReplay CaptureReplay() => new SiegeReplay(_history.Select(step => step.Copy()),
@@ -35,7 +49,7 @@ namespace HomelessPetHelper.Modules.Siege
         {
             if (_history.Count != 0 || Revision != 0) throw new InvalidOperationException("Battle is already live.");
             int maxTicks = Catalog.Rules.DurationMs / Catalog.Rules.StepMs + 1;
-            if (replay == null || replay.Steps.Count > 3 * maxTicks + 2 ||
+            if (replay == null || replay.Steps.Count > 8 * maxTicks + 8 ||
                 !SiegeCatalog.Finite(replay.AccumulatorMs) || replay.AccumulatorMs < 0 ||
                 replay.AccumulatorMs >= Catalog.Rules.StepMs)
                 throw new ArgumentException("Invalid battle replay header.");
@@ -45,8 +59,10 @@ namespace HomelessPetHelper.Modules.Siege
             foreach (var step in replay.Steps)
             {
                 if (step == null || step.Ticks < 0 || step.Ticks > maxTicks - ticks ||
-                    (step.Order == null ? step.Ticks == 0 : step.Ticks != 0))
+                    (step.Order == null ? step.Ticks == 0 && !step.Realtime : step.Ticks != 0))
                     throw new ArgumentException("Invalid battle replay step.");
+                if (step.Realtime) staged.EnableRealtime();
+                else if (staged.Realtime) throw new ArgumentException("Replay cannot revert simulation mode.");
                 staged.SetPauseAtDecision(step.PauseAtDecision);
                 staged.SetDecisionHold(step.DecisionHeld);
                 var order = step.Order;
@@ -71,8 +87,8 @@ namespace HomelessPetHelper.Modules.Siege
             if (_restoring) return;
             var last = _history.LastOrDefault();
             if (last != null && last.Ticks > 0 && last.PauseAtDecision == PauseAtDecision &&
-                last.DecisionHeld == _decisionHold) last.Ticks++;
-            else _history.Add(new SiegeReplay.Step(1, PauseAtDecision, _decisionHold));
+                last.DecisionHeld == _decisionHold && last.Realtime == Realtime) last.Ticks++;
+            else _history.Add(new SiegeReplay.Step(1, PauseAtDecision, _decisionHold, realtime: Realtime));
         }
 
         public SiegeSession(SiegeCatalog catalog, uint seed, string profile, string sessionId,
@@ -157,9 +173,10 @@ namespace HomelessPetHelper.Modules.Siege
             var r = Catalog.Rules;
             var a = s.AnimalState;
             s.ElapsedMs += r.StepMs;
-            s.PlayerChargeMs = Math.Min(r.PlayerPeriodMs, s.PlayerChargeMs + r.StepMs);
+            if (Realtime) SiegeRealtime.Advance(s, Catalog);
+            else s.PlayerChargeMs = Math.Min(r.PlayerPeriodMs, s.PlayerChargeMs + r.StepMs);
             a.Charge = Math.Min(1, a.Charge + (double)r.StepMs / Catalog.Conditions(a.Vigilance, a.Stamina).PeriodMs);
-            SiegeCombat.Advance(s, Catalog, !PauseAtDecision && !_decisionHold);
+            SiegeCombat.Advance(s, Catalog, Realtime || !PauseAtDecision && !_decisionHold);
             if (a.Vigilance == "high" && s.Progress >= r.Target * r.RelaxAtProgress)
             {
                 a.Vigilance = "watchful";
@@ -178,7 +195,7 @@ namespace HomelessPetHelper.Modules.Siege
                 return;
             }
             // A simultaneous full gauge opens strategy first; the animal keeps its pending charge.
-            if (s.Phase == BattlePhase.Running && s.PlayerChargeMs >= r.PlayerPeriodMs)
+            if (!Realtime && s.Phase == BattlePhase.Running && s.PlayerChargeMs >= r.PlayerPeriodMs)
             {
                 s.Turn++;
                 s.Phase = BattlePhase.Decision;
@@ -187,12 +204,14 @@ namespace HomelessPetHelper.Modules.Siege
                 SiegeEntities.Record(s, Catalog, "event.turn");
                 if (PauseAtDecision || _decisionHold) return;
             }
-            SiegeAnimalCasting.TryRelease(s, Catalog, !PauseAtDecision && !_decisionHold);
+            SiegeAnimalCasting.TryRelease(s, Catalog, Realtime || !PauseAtDecision && !_decisionHold);
         }
 
         /// <summary>Preview and commit share validation. Rejection leaves state, identity and RNG unchanged.</summary>
         public bool TryOrder(SiegeOrder order, bool commit, out string reason, out int cost)
         {
+            if (Realtime && order != null && order.DeployCardId.HasValue)
+                return TryDeploy(order, commit, out reason, out cost);
             cost = 0;
             reason = ValidateHeader(order);
             if (reason != null)
@@ -208,23 +227,61 @@ namespace HomelessPetHelper.Modules.Siege
             {
                 next.ResolvedTurn = next.Turn;
                 next.Phase = BattlePhase.Running;
-                next.PlayerChargeMs = 0;
-                next.AccumulatorMs = 0;
+                if (!Realtime) { next.PlayerChargeMs = 0; next.AccumulatorMs = 0; }
                 next.Energy -= cost;
                 _state = next;
                 Revision++;
-                if (!_restoring) _history.Add(new SiegeReplay.Step(0, PauseAtDecision, _decisionHold, order));
+                if (!_restoring) _history.Add(new SiegeReplay.Step(0, PauseAtDecision, _decisionHold, order, Realtime));
                 DecisionCommitted?.Invoke();
             }
             return true;
         }
 
+        private bool TryDeploy(SiegeOrder order, bool commit, out string reason, out int cost)
+        {
+            cost = 0;
+            reason = ValidateHeader(order);
+            if (reason != null) return false;
+            if (order.MergeIds != null || order.RerouteUnitId.HasValue || !order.DeployPoint.HasValue)
+            { reason = "reason.order"; return false; }
+            Card card = null;
+            foreach (var candidate in _state.Cards)
+                if (candidate.Id == order.DeployCardId.Value) { card = candidate; break; }
+            if (card == null) { reason = "reason.card"; return false; }
+            var point = order.DeployPoint.Value;
+            if (!SiegeDeployment.CanDeploy(Catalog, point)) { reason = "field.dropOutside"; return false; }
+            var lane = SiegeDeployment.NearestLane(Catalog, point);
+            if (lane == null) { reason = "reason.lane"; return false; }
+            if (_state.Troops.Count >= Catalog.Rules.MaxTroops) { reason = "field.unitLimit"; return false; }
+            var definition = Catalog.Unit(card.DefinitionId);
+            if (definition.Cost > _state.Energy) { reason = "reason.energy"; return false; }
+            cost = definition.Cost;
+            if (!commit) return true;
+            var unit = SiegeEntities.Spawn(_state, definition, lane.Id);
+            unit.Distance = lane.Project(point);
+            unit.FreePosition = point;
+            _state.EmitEffect(EffectKind.Deploy, point, _state.ElapsedMs + 320,
+                startMs: _state.ElapsedMs, visual: definition.Icon, unitId: unit.Id);
+            _state.Cards.Remove(card);
+            _state.Energy -= cost;
+            _state.Stats.Deployed++;
+            SiegeEntities.Draw(_state, Catalog, 1);
+            SiegeEntities.Record(_state, Catalog, "event.deploy");
+            Revision++;
+            if (!_restoring) _history.Add(new SiegeReplay.Step(0, false, _decisionHold, order, true));
+            DecisionCommitted?.Invoke();
+            return true;
+        }
+
         private string ValidateHeader(SiegeOrder o)
         {
-            if (_state.Phase != BattlePhase.Decision || _state.Paused)
+            if ((!Realtime && _state.Phase != BattlePhase.Decision || Realtime &&
+                _state.Phase != BattlePhase.Running) || _state.Paused)
                 return "reason.phase";
             if (o == null || o.SessionId != _state.SessionId || o.Turn != _state.Turn)
                 return "reason.stale";
+            if (Realtime && (o.DiscardCardId.HasValue || !o.DeployCardId.HasValue &&
+                o.MergeIds == null && !o.RerouteUnitId.HasValue)) return "reason.order";
             if (o.MergeIds != null && o.RerouteUnitId.HasValue)
                 return "reason.order";
             if (o.DiscardCardId.HasValue && (o.DeployCardId.HasValue || o.MergeIds != null || o.RerouteUnitId.HasValue))

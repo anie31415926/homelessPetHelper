@@ -95,6 +95,18 @@ namespace HomelessPetHelper.Modules.Siege
                     && r.sweepPush >= 0,
                 "threat"
             );
+            Require(data.rules.resourcePeriodMs >= data.rules.stepMs && data.rules.resourcePeriodMs <= 60000 &&
+                data.rules.defenderResourcePeriodMs >= data.rules.stepMs &&
+                data.rules.defenderResourcePeriodMs <= 60000 && data.rules.defenderEnergyCap > 0 &&
+                data.rules.defenderEnergyCap <= 100 &&
+                data.rules.defenderOpeningEnergy >= 0
+                    && data.rules.defenderOpeningEnergy <= data.rules.defenderEnergyCap &&
+                data.rules.defenderBuildCost > 0 && data.rules.defenderBuildCost <= data.rules.defenderEnergyCap &&
+                data.rules.fastBuildDurationMs >= data.rules.stepMs && data.rules.fastBuildDurationMs <= 10000 &&
+                data.rules.maxTroops >= data.rules.handSize && data.rules.maxTroops <= 128 &&
+                Finite(data.rules.deploymentFraction) && data.rules.deploymentFraction > 0 &&
+                data.rules.deploymentFraction < .5 && data.rules.defenseGridSize >= 2 &&
+                data.rules.defenseGridSize <= 12, "realtime rules");
             Rules = new SiegeRulesDefinition(r);
             ValidateNumbers(data.tower);
             Require(
@@ -146,17 +158,34 @@ namespace HomelessPetHelper.Modules.Siege
                 );
         }
 
-        public SiegeUnitDefinition Unit(string id) => Units.FirstOrDefault(x => x.Id == id);
+        public SiegeUnitDefinition Unit(string id)
+        {
+            for (int index = 0; index < Units.Count; index++) if (Units[index].Id == id) return Units[index];
+            return null;
+        }
 
         public SiegeTowerTypeDefinition Defense(SiegeState.Tower tower) =>
             tower.DefinitionId == null ? _legacyTower : Content.Tower(tower.DefinitionId);
 
-        public SiegeLane Lane(string id) => Lanes.FirstOrDefault(x => x.Id == id);
+        public SiegeLane Lane(string id)
+        {
+            for (int index = 0; index < Lanes.Count; index++) if (Lanes[index].Id == id) return Lanes[index];
+            return null;
+        }
 
-        public SiegeProfileDefinition Profile(string id) => Profiles.FirstOrDefault(x => x.Id == id);
+        public SiegeProfileDefinition Profile(string id)
+        {
+            foreach (var profile in Profiles) if (profile.Id == id) return profile;
+            return null;
+        }
 
-        public SiegeProfileDefinition Conditions(string vigilance, string stamina) =>
-            Profiles.First(x => x.Vigilance == vigilance && x.Stamina == stamina);
+        public SiegeProfileDefinition Conditions(string vigilance, string stamina)
+        {
+            for (int index = 0; index < Profiles.Count; index++)
+                if (Profiles[index].Vigilance == vigilance && Profiles[index].Stamina == stamina)
+                    return Profiles[index];
+            throw new ArgumentException("Unknown animal conditions.");
+        }
 
         internal static bool Finite(double value) => !double.IsNaN(value) && !double.IsInfinity(value);
 

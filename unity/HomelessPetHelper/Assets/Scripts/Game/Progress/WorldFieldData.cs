@@ -85,6 +85,7 @@ namespace HomelessPetHelper.Game.Progress
     internal sealed class ReplayStepData
     {
         [Preserve, JsonProperty(Required = Required.Always)] public int Ticks;
+        [Preserve, JsonProperty] public bool Realtime;
         [Preserve, JsonProperty(Required = Required.Always)] public bool PauseAtDecision;
         [Preserve, JsonProperty(Required = Required.Always)] public bool DecisionHeld;
         [Preserve, JsonProperty(Required = Required.AllowNull)] public OrderData Order;
@@ -98,6 +99,8 @@ namespace HomelessPetHelper.Game.Progress
         [Preserve, JsonProperty(Required = Required.Always)] public int Turn;
         [Preserve, JsonProperty(Required = Required.AllowNull)] public int? DeployCardId;
         [Preserve, JsonProperty(Required = Required.AllowNull)] public string DeployLaneId;
+        [Preserve, JsonProperty] public double? DeployX;
+        [Preserve, JsonProperty] public double? DeployY;
         [Preserve, JsonProperty(Required = Required.AllowNull)] public int[] MergeIds;
         [Preserve, JsonProperty(Required = Required.Always)] public int AnchorId;
         [Preserve, JsonProperty(Required = Required.AllowNull)] public int? RerouteUnitId;

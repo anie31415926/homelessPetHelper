@@ -64,7 +64,7 @@
     },
     {
       "contextId": "siege.field",
-      "mechanicId": "siege.drag-deploy.v2",
+      "mechanicId": "siege.direct-deploy.v3",
       "steps": [
         {
           "captionKey": "guide.siege.card",
@@ -79,13 +79,6 @@
           "allowedActions": [
             "siege.card",
             "siege.route"
-          ]
-        },
-        {
-          "captionKey": "guide.siege.submit",
-          "completionAction": "siege.submit",
-          "allowedActions": [
-            "siege.submit"
           ]
         }
       ]

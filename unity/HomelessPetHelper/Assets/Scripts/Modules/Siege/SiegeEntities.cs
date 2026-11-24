@@ -31,64 +31,60 @@ namespace HomelessPetHelper.Modules.Siege
             double fraction = materials.Sum(x => x.Hp) / (definition.Hp * 3);
             if (s.EncounterId != null)
                 foreach (var material in s.Troops.Where(x => ids.Contains(x.Id)))
-                    s.VisualEffects.Add(new SiegeState.Effect { Kind = "mergePart", From = Position(c, material),
-                        To = Position(c, anchor), Visual = definition.Icon,
-                        StartMs = s.ElapsedMs, UntilMs = s.ElapsedMs + 450 });
+                    s.EmitEffect(kind: "mergePart",
+                        from: Position(c, material),
+                        to: Position(c, anchor),
+                        visual: definition.Icon,
+                        startMs: s.ElapsedMs,
+                        untilMs: s.ElapsedMs + 450);
             s.Troops.RemoveAll(x => ids.Contains(x.Id));
             var merged = Spawn(s, c.Unit(definition.UpgradeId), anchor.LaneId);
             merged.Distance = anchor.Distance;
+            merged.FreePosition = anchor.FreePosition;
             merged.Hp = Math.Max(0.01, c.Unit(merged.DefinitionId).Hp * fraction);
             SiegeAnimalCasting.TransferMerge(s, materials, merged);
             SiegeHold.TransferMerge(s, materials, merged);
-            s.VisualEffects.Add(
-                new SiegeState.Effect
-                {
-                    Kind = "merge",
-                    From = Position(c, merged),
-                    StartMs = s.ElapsedMs,
-                    Visual = c.Unit(merged.DefinitionId).Icon,
-                    UntilMs = s.ElapsedMs + 650,
-                }
-            );
+            s.EmitEffect(kind: "merge",
+                from: Position(c, merged),
+                startMs: s.ElapsedMs,
+                visual: c.Unit(merged.DefinitionId).Icon,
+                untilMs: s.ElapsedMs + 650);
             s.Stats.Merges++;
             Record(s, c, "event.merge");
         }
 
         internal static bool NaturalMerge(SiegeState s, SiegeCatalog c)
         {
-            foreach (var anchor in s.Troops)
+            for (int anchorIndex = 0; anchorIndex < s.Troops.Count; anchorIndex++)
             {
-                if (
-                    string.IsNullOrEmpty(c.Unit(anchor.DefinitionId).UpgradeId)
-                    || anchor.TransitRemainingMs > 0
-                    || anchor.IsCarried
-                    || anchor.Distance < c.Rules.NaturalMergeMinDistance
-                )
-                    continue;
-                var candidates = s
-                    .Troops.Where(x =>
-                        x.Id != anchor.Id
-                        && x.DefinitionId == anchor.DefinitionId
-                        && x.LaneId == anchor.LaneId
-                        && x.TransitRemainingMs == 0
-                        && !x.IsCarried
-                        && x.Distance >= c.Rules.NaturalMergeMinDistance
-                        && Position(c, x).Distance(Position(c, anchor)) <= c.Rules.MergeRadius
-                    )
-                    .ToArray();
-                for (int i = 0; i < candidates.Length; i++)
+                var anchor = s.Troops[anchorIndex];
+                if (!CanNaturallyMerge(anchor, c)) continue;
+                var origin = Position(c, anchor);
+                for (int firstIndex = anchorIndex + 1; firstIndex < s.Troops.Count; firstIndex++)
                 {
-                    for (int j = i + 1; j < candidates.Length; j++)
+                    var first = s.Troops[firstIndex];
+                    if (!MergeNeighbour(anchor, first, origin, c)) continue;
+                    var firstPoint = Position(c, first);
+                    for (int secondIndex = firstIndex + 1; secondIndex < s.Troops.Count; secondIndex++)
                     {
-                        if (Position(c, candidates[i]).Distance(Position(c, candidates[j])) > c.Rules.MergeRadius)
-                            continue;
-                        Merge(s, c, new[] { anchor.Id, candidates[i].Id, candidates[j].Id }, anchor.Id);
+                        var second = s.Troops[secondIndex];
+                        if (!MergeNeighbour(anchor, second, origin, c) ||
+                            firstPoint.Distance(Position(c, second)) > c.Rules.MergeRadius) continue;
+                        Merge(s, c, new[] { anchor.Id, first.Id, second.Id }, anchor.Id);
                         return true;
                     }
                 }
             }
             return false;
         }
+
+        private static bool CanNaturallyMerge(SiegeState.Unit unit, SiegeCatalog c) =>
+            !string.IsNullOrEmpty(c.Unit(unit.DefinitionId).UpgradeId) && unit.TransitRemainingMs == 0 &&
+            !unit.IsCarried && unit.Distance >= c.Rules.NaturalMergeMinDistance;
+
+        private static bool MergeNeighbour(SiegeState.Unit anchor, SiegeState.Unit unit, SiegePoint origin,
+            SiegeCatalog c) => unit.DefinitionId == anchor.DefinitionId && unit.LaneId == anchor.LaneId &&
+            CanNaturallyMerge(unit, c) && origin.Distance(Position(c, unit)) <= c.Rules.MergeRadius;
 
         internal static void Hit(SiegeState.Unit unit, double damage, double push = 0, int elapsedMs = 0)
         {
@@ -107,6 +103,7 @@ namespace HomelessPetHelper.Modules.Siege
             else if (push > 0 && unit.TransitRemainingMs == 0)
             {
                 unit.Distance = Math.Max(0, unit.Distance - push);
+                unit.FreePosition = null;
                 unit.BurstHitsLeft = 0;
                 unit.NextAttackMs = Math.Max(unit.NextAttackMs, unit.BurstCooldownMs);
             }
@@ -118,6 +115,7 @@ namespace HomelessPetHelper.Modules.Siege
             var lane = c.Lane(laneId);
             unit.Distance = Math.Min(lane.Length * 0.97, lane.Project(from));
             unit.LaneId = laneId;
+            unit.FreePosition = null;
             unit.TransitFrom = from;
             unit.TransitTo = lane.PointAt(unit.Distance);
             unit.TransitRemainingMs = c.Rules.RerouteDurationMs;

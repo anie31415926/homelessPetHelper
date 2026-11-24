@@ -30,10 +30,9 @@ namespace HomelessPetHelper.Modules.Siege
                     && x.TransitRemainingMs == 0 && x.Distance >= reach)
                 .OrderByDescending(x => x.Distance).ThenBy(x => x.Id).FirstOrDefault();
             if (target == null) return;
-            s.VisualEffects.Add(new Effect
-            {
-                Kind = "slap", From = SiegeEntities.Position(c, target), UntilMs = s.ElapsedMs + 350,
-            });
+            s.EmitEffect(kind: "slap",
+                from: SiegeEntities.Position(c, target),
+                untilMs: s.ElapsedMs + 350);
             SiegeEntities.Hit(target, r.SlapDamage, r.SlapPush, s.ElapsedMs);
             a.NextSlapMs = s.ElapsedMs + r.SlapPeriodMs;
         }

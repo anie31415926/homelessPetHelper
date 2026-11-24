@@ -14,7 +14,8 @@ const type = (key, value) => key === 'upgradeId' || value === null ? 'string' :
     Array.isArray(value) ? 'string[]' :
     typeof value === 'boolean' ? 'bool' : typeof value === 'string' ? 'string' :
         ['cost','stepMs','durationMs','playerPeriodMs','handSize','bagCopies','openingEnergy','energyCap',
-            'turnEnergy','turnDraw','mergeCost','maxLog','guardDurationMs','slapPeriodMs','sweepRecoveryMs',
+            'resourcePeriodMs','defenderResourcePeriodMs','defenderEnergyCap','defenderOpeningEnergy','defenderBuildCost',
+            'fastBuildDurationMs','maxTroops','defenseGridSize','turnEnergy','turnDraw','mergeCost','maxLog','guardDurationMs','slapPeriodMs','sweepRecoveryMs',
             'animalRepairs','repairDurationMs','repairCooldownMs','buildDurationMs','buildOnAnimalTurn',
             'animalBuilds','rerouteDurationMs','attackMs','abilityPeriodMs','periodMs',
             'burstHits','burstIntervalMs','auraTargets','auraRearmMs','warningMs','zoneDurationMs','sweepDelayMs',

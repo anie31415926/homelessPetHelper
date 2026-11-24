@@ -1,0 +1,19 @@
+{
+  "status": "candidate",
+  "generationSeconds": 3,
+  "latentSeconds": 47.6,
+  "exportGainDb": -18,
+  "steps": 32,
+  "cfg": 5,
+  "sampler": "dpmpp_3m_sde_gpu",
+  "scheduler": "exponential",
+  "negative": "Voices, music, tones, percussion loop, ambience, echo, harsh transients, weapons, explosion, electronic synthesizer.",
+  "cues": [
+    { "id": "toy-drop", "seed": 2026112401, "prompt": "Single very short soft wooden toy landing on a thin woven mat, a dry rounded tok and subtle cloth, isolated close-mic cartoon foley, no other hits and no background.", "maxSeconds": 0.22, "peakDbfs": -9 },
+    { "id": "paper-shot", "seed": 2026112402, "prompt": "One tiny cardboard box sprung open by a paper ball, soft muffled thunk with a short dry paper flick immediately after it. Tactile real paper foley for a gentle game, isolated on silence, no weapon and no echo.", "maxSeconds": 0.23, "peakDbfs": -10 },
+    { "id": "paper-impact", "seed": 2026112403, "prompt": "A single little crumpled paper ball striking a felt toy, a close soft fp-tk with a short crisp crinkle, very brief, isolated dry foley, no background.", "maxSeconds": 0.18, "peakDbfs": -11, "status": "rejected-low-source-signal" },
+    { "id": "paper-knock", "seed": 2026112413, "prompt": "A clearly audible single crisp, dry tok. A finger briskly tapping tightly crumpled kraft paper against a thin wooden desk, tiny paper rustle immediately after the short knock. Record very close with strong initial impact and no echo, no other sounds.", "maxSeconds": 0.21, "peakDbfs": -11 },
+    { "id": "toy-retire", "seed": 2026112404, "prompt": "One little puff of tissue paper collapsing and quietly fluttering, short soft descending dry rustle, gentle and harmless, single foley event in silence.", "maxSeconds": 0.30, "peakDbfs": -11 },
+    { "id": "kennel-ball", "seed": 2026112421, "prompt": "One clearly audible bouncy hollow rubber dog toy ball popping out of a small wooden box. Single dry rounded bonk with a short airy rubber squeak, soft and playful, close-up cartoon foley isolated on silence, no voice, no repeated bounces.", "maxSeconds": 0.24, "peakDbfs": -10 }
+  ]
+}

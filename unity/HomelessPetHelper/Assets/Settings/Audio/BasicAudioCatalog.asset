@@ -55,3 +55,38 @@ MonoBehaviour:
     _maxVoices: 1
     _minIntervalSeconds: 0.15
     _loop: 0
+  - _id: siege.toy-drop
+    _channel: 2
+    _clip: {fileID: 8300000, guid: 6e50f7874a5248dda8f06393c5bc26a2, type: 3}
+    _gain: 0.72
+    _maxVoices: 1
+    _minIntervalSeconds: 0.11
+    _loop: 0
+  - _id: siege.paper-shot
+    _channel: 2
+    _clip: {fileID: 8300000, guid: b4cacc304cc3499eb67315ab05f2b784, type: 3}
+    _gain: 0.58
+    _maxVoices: 1
+    _minIntervalSeconds: 0.18
+    _loop: 0
+  - _id: siege.paper-impact
+    _channel: 2
+    _clip: {fileID: 8300000, guid: 4447619c2ee3462e83e51f338da29103, type: 3}
+    _gain: 0.76
+    _maxVoices: 1
+    _minIntervalSeconds: 0.18
+    _loop: 0
+  - _id: siege.toy-retire
+    _channel: 2
+    _clip: {fileID: 8300000, guid: bb9e1e1bc1be4d8386fae25703d0e3bf, type: 3}
+    _gain: 0.68
+    _maxVoices: 1
+    _minIntervalSeconds: 0.18
+    _loop: 0
+  - _id: siege.kennel-ball
+    _channel: 2
+    _clip: {fileID: 8300000, guid: dcec3d026f804917b503ce067d0391d0, type: 3}
+    _gain: 0.64
+    _maxVoices: 1
+    _minIntervalSeconds: 0.18
+    _loop: 0

@@ -31,9 +31,10 @@ namespace HomelessPetHelper.Modules.Siege.UI
         public void Refresh()
         {
             var safe = (RectTransform)transform;
-            float buttonWidth = _metrics.actionWidth;
+            float buttonWidth = _submit.gameObject.activeSelf ? _metrics.actionWidth : 0;
             var label = _submit.GetComponentInChildren<Text>();
-            if (label != null) buttonWidth = Mathf.Max(buttonWidth, label.preferredWidth + _metrics.margin);
+            if (label != null && _submit.gameObject.activeSelf) buttonWidth = Mathf.Max(buttonWidth,
+                label.preferredWidth + _metrics.margin);
             bool contextVisible = _context != null && _context.gameObject.activeSelf;
             bool hintVisible = _hint.gameObject.activeSelf;
             float contextWidth = contextVisible ? PreferredContextWidth() : 0;
@@ -47,7 +48,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             float width = Mathf.Max(_metrics.cardWidth, safe.rect.width - 2 * _metrics.margin);
             bool sameRow = _capacity * _metrics.cardWidth + (_capacity - 1) * _metrics.gap +
                 buttonWidth + _metrics.gap <= width;
-            float handWidth = sameRow ? width - buttonWidth - _metrics.gap : width;
+            float handWidth = sameRow && buttonWidth > 0 ? width - buttonWidth - _metrics.gap : width;
             int columns = Mathf.Max(1, Mathf.Min(_capacity,
                 Mathf.FloorToInt((handWidth + _metrics.gap) / (_metrics.cardWidth + _metrics.gap))));
             int rows = Mathf.CeilToInt(_capacity / (float)columns);
@@ -59,7 +60,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             float handHeight = rows * _metrics.fieldCardHeight + (rows - 1) * _metrics.gap;
             float bottom = _metrics.margin;
             Set(_submit, width - buttonWidth + _metrics.margin, bottom, buttonWidth, _metrics.actionHeight);
-            if (!sameRow) bottom += _metrics.actionHeight + _metrics.gap;
+            if (!sameRow && buttonWidth > 0) bottom += _metrics.actionHeight + _metrics.gap;
             Set(_hand, _metrics.margin, bottom, handWidth, handHeight);
             if (_empty != null) Set(_empty, _metrics.margin, bottom, handWidth, handHeight);
             bottom += handHeight + _metrics.gap;

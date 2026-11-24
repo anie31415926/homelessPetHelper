@@ -67,117 +67,89 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator SixSamplesKeepTheirFinishedSceneAndDragToActualThreePathsWithoutSpending()
+        public IEnumerator SixSamplesDirectDeployAnywhereInFormationAndKeepFinishedScene()
         {
             foreach (string point in new[] { "parking", "yard", "porch" })
-                foreach (int seed in new[] { 0, 1 })
-                {
-                    _point = point; _seed = seed; yield return Open();
-                    var opening = Object.FindObjectOfType<ApproachPanelView>();
-                    Assert.That(opening.FieldScene.Layout.PointId, Is.EqualTo(point));
-                    yield return Capture(opening, point + "-opening-" + seed);
-                    MainApproachDriver.Solve(opening);
-                    var snapshot = opening.FieldScene.Snapshot;
-                    MainApproachDriver.Click(opening, "Continue"); yield return null;
-                    var siege = Object.FindObjectOfType<SiegeTrialView>();
-                    var scene = siege.GetComponent<OutingFieldView>();
-                    Assert.That(scene.Snapshot.Boxes, Is.EqualTo(snapshot.Boxes));
-                    Assert.That(scene.Snapshot.Bridge, Is.EqualTo(snapshot.Bridge));
-                    Assert.That(scene.Snapshot.Remaining, Is.EqualTo(snapshot.Remaining));
-                    var root = Object.FindObjectOfType<MainGameRoot>();
-                    var battle = ((SiegeRescueActivity)root.Presenter.Session.Activity).Battle;
-                    var before = battle.Snapshot;
-                    var inputCamera = PortraitInput(siege.GetComponent<Canvas>(), out var inputTarget);
-                    _temporary.Add(inputCamera.gameObject); _temporary.Add(inputTarget);
-                    yield return null; yield return null; Canvas.ForceUpdateCanvases();
-                    // These are real scene segments well beyond the removed paper route buttons.
-                    for (int lane = 0; lane < 3; lane++)
-                    {
-                        var card = siege.Scene.GetComponentsInChildren<SiegeChoiceCell>().First();
-                        var pointer = Pointer(card);
-                        card.OnBeginDrag(pointer);
-                        pointer.position = Screen(siege.Scene.Field, scene.Layout, 8 + lane * 2);
-                        Assert.That(siege.Scene.Field.PickLane(pointer.position, inputCamera),
-                            Is.EqualTo(battle.Catalog.Lanes[lane].Id), "geometry before drag");
-                        card.OnDrag(pointer); card.OnEndDrag(pointer);
-                        Assert.That(siege.Scene.Plan.DeployLane, Is.EqualTo(battle.Catalog.Lanes[lane].Id));
-                        Assert.That(battle.Snapshot.Energy, Is.EqualTo(before.Energy));
-                        Assert.That(battle.Snapshot.Hand.Count, Is.EqualTo(before.Hand.Count));
-                        Assert.That(battle.Snapshot.Units, Is.Empty);
-                        MainApproachDriver.Click(siege, "Clear");
-                    }
-                    var selected = siege.Scene.GetComponentsInChildren<SiegeChoiceCell>().First();
-                    var drag = Pointer(selected); selected.OnBeginDrag(drag);
-                    drag.position = Screen(siege.Scene.Field, scene.Layout, 52);
-                    selected.OnDrag(drag); selected.OnEndDrag(drag);
-                    Assert.That(siege.Scene.Plan.HasAction, Is.False, "Shared paths reject ambiguous deployment.");
-                    selected.OnBeginDrag(drag); drag.position = new Vector2(-100, -100);
-                    selected.OnDrag(drag); selected.OnEndDrag(drag);
-                    Assert.That(siege.Scene.Plan.HasAction, Is.False);
-                    var hint = (Text)new SerializedObject(siege.Scene).FindProperty("_hint").objectReferenceValue;
-                    string rejected = hint.text;
-                    selected.OnBeginDrag(drag); drag.position = Screen(siege.Scene.Field, scene.Layout, 10);
-                    selected.OnDrag(drag); selected.OnEndDrag(drag);
-                    Assert.That(hint.text, Is.Not.EqualTo(rejected), "Valid drops clear the previous rejection.");
-                    yield return Capture(siege, point + "-deploy-" + seed);
-                    MainApproachDriver.Click(siege, "Submit");
-                    Assert.That(battle.Snapshot.Units.Count, Is.EqualTo(1));
-                    Assert.That(battle.Snapshot.Units[0].LaneId, Is.EqualTo("mid"));
-                    MainApproachDriver.Click(siege, "Pause");
-                    MainApproachDriver.Click(siege, "Retry");
-                    LogAssert.NoUnexpectedReceived();
-                }
+            foreach (int seed in new[] { 0, 1 })
+            {
+                _point = point; _seed = seed; yield return Open();
+                var opening = Object.FindObjectOfType<ApproachPanelView>();
+                MainApproachDriver.Solve(opening);
+                var snapshot = opening.FieldScene.Snapshot;
+                MainApproachDriver.Click(opening, "Continue"); yield return null;
+                var siege = Object.FindObjectOfType<SiegeTrialView>();
+                var scene = siege.GetComponent<OutingFieldView>();
+                Assert.That(scene.Snapshot.Boxes, Is.EqualTo(snapshot.Boxes));
+                Assert.That(scene.Snapshot.Bridge, Is.EqualTo(snapshot.Bridge));
+                var root = Object.FindObjectOfType<MainGameRoot>();
+                var battle = ((SiegeRescueActivity)root.Presenter.Session.Activity).Battle;
+                Assert.That(battle.Realtime, Is.True);
+                Assert.That(MainApproachDriver.Button(siege, "Submit").gameObject.activeSelf, Is.False);
+                var inputCamera = PortraitInput(siege.GetComponent<Canvas>(), out var inputTarget);
+                _temporary.Add(inputCamera.gameObject); _temporary.Add(inputTarget);
+                yield return null; yield return null; Canvas.ForceUpdateCanvases();
+                var card = siege.Scene.GetComponentsInChildren<SiegeChoiceCell>().First();
+                var before = battle.Snapshot;
+                var origin = battle.Catalog.Lanes[0].PointAt(0);
+                var exact = new SiegePoint(origin.X + 3, origin.Y + 2);
+                Assert.That(SiegeDeployment.CanDeploy(battle.Catalog, exact), Is.True);
+                var pointer = Pointer(card); card.OnBeginDrag(pointer);
+                pointer.position = ScreenPoint(siege.Scene.Field, exact, battle.Catalog);
+                Assert.That(siege.Scene.Field.PickDeployment(pointer.position, inputCamera, out var picked), Is.True);
+                card.OnDrag(pointer); card.OnEndDrag(pointer);
+                var after = battle.Snapshot;
+                Assert.That(after.Units.Count, Is.EqualTo(1), point + seed);
+                Assert.That(after.Energy,
+                    Is.EqualTo(before.Energy - battle.Catalog.Unit(before.Hand[0].DefinitionId).Cost));
+                Assert.That(battle.Position(after.Units[0]).Distance(picked), Is.LessThan(.001));
+                Assert.That(after.Hand.Count, Is.EqualTo(before.Hand.Count));
+                Assert.That(siege.Scene.Plan.HasAction, Is.False);
+                // Late release cannot spend twice. A failed outside drop also preserves resource/card identity.
+                card.OnEndDrag(pointer);
+                Assert.That(battle.Snapshot.Units.Count, Is.EqualTo(1));
+                card = siege.Scene.GetComponentsInChildren<SiegeChoiceCell>().First();
+                pointer = Pointer(card); card.OnBeginDrag(pointer); pointer.position = new Vector2(-100, -100);
+                card.OnDrag(pointer); card.OnEndDrag(pointer);
+                Assert.That(battle.Snapshot.Energy, Is.EqualTo(after.Energy));
+                Assert.That(battle.Snapshot.Units.Count, Is.EqualTo(1));
+                yield return Capture(siege, point + "-realtime-" + seed);
+                MainApproachDriver.Click(siege, "Pause"); MainApproachDriver.Click(siege, "Retry");
+                LogAssert.NoUnexpectedReceived();
+            }
         }
 
         [UnityTest]
-        public IEnumerator SettingsCancelResetSaveReloadAndContinuousBackgroundPauseUseActualControls()
+        public IEnumerator RealtimeSettingsHideObsoleteToggleAndMenusBackgroundStillPause()
         {
             yield return Open();
-            var root = Object.FindObjectOfType<MainGameRoot>();
             var opening = Object.FindObjectOfType<ApproachPanelView>();
             MainApproachDriver.Click(opening, "Pause"); MainApproachDriver.Click(opening, "Settings");
-            var toggle = opening.GetComponentsInChildren<Toggle>().Single(item => item.name == "PauseAtDecision");
-            toggle.isOn = false;
-            MainApproachDriver.Click(opening, "CancelSettings");
-            Assert.That(root.PlaySettings.PauseAtDecision, Is.True);
-            Assert.That(_play.Writes, Is.Zero);
-            MainApproachDriver.Click(opening, "Settings"); toggle.isOn = false;
-            MainApproachDriver.Click(opening, "ResetAudio"); MainApproachDriver.Click(opening, "Confirm");
-            Assert.That(toggle.isOn, Is.True);
-            toggle.isOn = false; _play.FailWrites = true;
-            MainApproachDriver.Click(opening, "SaveSettings");
-            Assert.That(root.PlaySettings.PauseAtDecision, Is.True);
-            _play.FailWrites = false; MainApproachDriver.Click(opening, "SaveSettings");
-            Assert.That(root.PlaySettings.PauseAtDecision, Is.False);
-            MainApproachDriver.Click(opening, "Resume");
+            var toggle = opening.GetComponentsInChildren<Toggle>(true).Single(item => item.name == "PauseAtDecision");
+            Assert.That(toggle.gameObject.activeSelf, Is.False);
+            MainApproachDriver.Click(opening, "SaveSettings"); MainApproachDriver.Click(opening, "Resume");
             MainApproachDriver.Solve(opening); MainApproachDriver.Click(opening, "Continue"); yield return null;
+            var root = Object.FindObjectOfType<MainGameRoot>();
             var siege = Object.FindObjectOfType<SiegeTrialView>();
             var battle = ((SiegeRescueActivity)root.Presenter.Session.Activity).Battle;
             Assert.That(battle.PauseAtDecision, Is.False);
-            Assert.That(siege.IsBattleRunning, Is.True, "Animation follows continuous Decision time.");
             int before = battle.ElapsedMs; battle.Advance(1000);
             Assert.That(battle.ElapsedMs, Is.GreaterThan(before));
             MainApproachDriver.Click(siege, "Pause"); before = battle.ElapsedMs;
             battle.Advance(1000); Assert.That(battle.ElapsedMs, Is.EqualTo(before));
-            MainApproachDriver.Click(siege, "Settings");
-            yield return LevelUiPlayTests.Capture(siege, "strategy-settings");
-            MainApproachDriver.Click(siege, "CancelSettings"); MainApproachDriver.Click(siege, "Resume");
+            MainApproachDriver.Click(siege, "Resume");
             siege.SendMessage("OnApplicationFocus", false); siege.SendMessage("OnApplicationFocus", true);
             before = battle.ElapsedMs; battle.Advance(1000);
             Assert.That(battle.ElapsedMs, Is.EqualTo(before));
             MainApproachDriver.Click(siege, "Resume"); battle.Advance(1000);
             Assert.That(battle.ElapsedMs, Is.GreaterThan(before));
-            yield return Open();
-            Assert.That(Object.FindObjectOfType<MainGameRoot>().PlaySettings.PauseAtDecision, Is.False);
             LogAssert.NoUnexpectedReceived();
         }
 
         [UnityTest]
-        public IEnumerator OneCapturedDragAdvancesFirstGuideAndTeachingStillHoldsContinuousMode()
+        public IEnumerator OneCapturedDragCompletesTeachingAndTeachingStillHoldsRealtime()
         {
             _scope.Dispose();
             _scope = new MainSceneStorageScope(freshGuidance: true, createPlayStorage: () => _play);
-            Assert.That(new Game.Settings.PlaySettingsSession(_play).TrySave(false), Is.True);
             yield return Open();
             var opening = Object.FindObjectOfType<ApproachPanelView>();
             MainApproachDriver.Solve(opening); MainApproachDriver.Click(opening, "Continue"); yield return null;
@@ -194,15 +166,22 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return null; yield return null; Canvas.ForceUpdateCanvases();
             var pointer = Pointer(card); card.OnBeginDrag(pointer);
             Assert.That(guide.StepIndex, Is.EqualTo(1));
-            pointer.position = Screen(siege.Scene.Field, siege.GetComponent<OutingFieldView>().Layout, 10);
+            pointer.position = ScreenPoint(siege.Scene.Field, battle.Catalog.Lanes[0].PointAt(0), battle.Catalog);
             card.OnDrag(pointer); card.OnEndDrag(pointer);
-            Assert.That(guide.StepIndex, Is.EqualTo(2));
-            Assert.That(siege.Scene.Plan.DeployLane, Is.EqualTo("mid"));
-            MainApproachDriver.Click(siege, "Submit"); yield return null;
             Assert.That(guide.IsComplete, Is.True);
+            Assert.That(battle.Snapshot.Units.Count, Is.EqualTo(1));
+            yield return null;
             before = battle.ElapsedMs; battle.Advance(1000);
             Assert.That(battle.ElapsedMs, Is.GreaterThan(before));
             LogAssert.NoUnexpectedReceived();
+        }
+
+        private static Vector2 ScreenPoint(SiegeBattlefield field, SiegePoint point, SiegeCatalog catalog)
+        {
+            var rect = field.rectTransform;
+            var local = new Vector2(Mathf.Lerp(rect.rect.xMin, rect.rect.xMax, (float)(point.X / catalog.Width)),
+                Mathf.Lerp(rect.rect.yMax, rect.rect.yMin, (float)(point.Y / catalog.Height)));
+            return RectTransformUtility.WorldToScreenPoint(RenderCamera(field), rect.TransformPoint(local));
         }
 
         private static PointerEventData Pointer(Component card) => new PointerEventData(EventSystem.current)
