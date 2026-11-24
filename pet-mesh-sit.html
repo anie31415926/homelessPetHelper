@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>橘猫 · 定长骨骼接合</title>
+</head>
+<body>
+    <main data-status="loading">
+        <header><h1>橘猫 · 定长骨骼接合</h1></header>
+        <div class="comparison">
+            <section><h2>A · 原骨骼拆件</h2><div class="stage" aria-label="原骨骼拆件预览"></div></section>
+            <section><h2>B · 连续关节</h2><div class="stage" aria-label="连续关节预览"></div></section>
+        </div>
+        <div class="controls">
+            <div class="timeline">
+                <label for="progress">进度</label>
+                <input id="progress" type="range" min="0" max="100" value="0" aria-label="动作进度">
+                <output for="progress">0%</output>
+            </div>
+            <div class="actions">
+                <button id="play" type="button" aria-pressed="false">播放</button>
+                <select id="action" aria-label="动作"><option value="sit">坐下</option><option value="paw">抬前爪</option></select>
+                <button id="grid" type="button" aria-pressed="false">骨架</button>
+                <button id="dark" type="button" aria-pressed="false">深底</button>
+                <button id="ink" type="button" aria-pressed="false">补线</button>
+                <button id="rump" type="button" aria-pressed="false">臀部修形</button>
+                <button id="deink" type="button" aria-pressed="false">去内描边</button>
+                <button id="partition" type="button" aria-pressed="true">重分层</button>
+                <button id="seat" type="button" aria-pressed="true">接地形变</button>
+                <button id="paw-seat" type="button" aria-pressed="true">后掌贴地</button>
+            </div>
+            <p id="error" role="alert" hidden></p>
+        </div>
+        <details id="side-study">
+            <summary>侧躺 · 翻侧接地</summary>
+            <div class="comparison">
+                <section><h2>翻侧结构</h2><svg class="side-diagram" viewBox="0 0 460 250" role="img" aria-label="侧躺骨架与接地点"></svg></section>
+                <section><h2>侧躺静帧参考</h2><figure><img alt="既有橘猫侧躺插画"></figure></section>
+            </div>
+            <div class="timeline">
+                <label for="roll-progress">进度</label>
+                <input id="roll-progress" type="range" min="0" max="100" value="0" aria-label="侧躺进度">
+                <output for="roll-progress">0%</output>
+            </div>
+        </details>
+    </main>
+    <script type="module" src="/src/pet-mesh-sit/main.js"></script>
+</body>
+</html>

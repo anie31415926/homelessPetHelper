@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261124-动物动画限定提交-01a2076c.md",
+  "sessionId": "01a2076c-48cc-7063-a3a1-e609ac9a8e34",
+  "phase": "delivery",
+  "readAt": "2026-11-24T12:55:50.506Z",
+  "writePaths": [
+    "art-source/pet-roster-20261124/",
+    "art-source/pet-sit-chibi-20261123/accepted-native/",
+    "art-source/pet-sit-chibi-20261123/unity-export.json",
+    "art-source/resource-catalog.json",
+    "docs/动物形象配置与制作流程.md",
+    "docs/动物状态与多视角表现.md",
+    "docs/协作任务/20261124-八种动物素材清理-01a2076c.md",
+    "docs/协作任务/20261124-动物动画限定提交-01a2076c.md",
+    "docs/协作任务/20261124-救助站同骨架坐下-01a1f74d.md",
+    "docs/协作任务/20261124-标准站姿母图-01a2076c.md",
+    "docs/协作任务/20261124-橘猫坐下工程接入-01a2076c.md",
+    "docs/协作任务/20261124-猫狗绑图样板-01a2076c.md",
+    "docs/协作执行记录/20261124-八种动物素材清理-01a2076c/",
+    "docs/协作执行记录/20261124-动物动画限定提交-01a2076c/",
+    "docs/协作执行记录/20261124-救助站同骨架坐下-01a1f74d/",
+    "docs/协作执行记录/20261124-标准站姿母图-01a2076c/",
+    "docs/协作执行记录/20261124-橘猫坐下工程接入-01a2076c/",
+    "docs/协作执行记录/20261124-猫狗绑图样板-01a2076c/",
+    "docs/救助站同骨架坐下接入.md",
+    "docs/猫坐下萌系比例.md",
+    "pet-mesh-sit.html",
+    "src/pet-mesh-sit/",
+    "src/pet-sit-chibi/",
+    "test-results/pet-animation-commit/",
+    "tests/fixtures/pet-sit-chibi-approved.json",
+    "tests/pet-appearance.test.mjs",
+    "tests/pet-mesh-sit-browser.mjs",
+    "tests/pet-sit-chibi.test.mjs",
+    "tests/pet-sit-unity.test.mjs",
+    "tools/pet-roster-dog-study.mjs",
+    "tools/pet-roster-reference.mjs",
+    "tools/pet-roster-sit-texture.mjs",
+    "tools/pet-roster-standard-comfy.mjs",
+    "tools/pet-sit-accepted-unity.mjs",
+    "tools/pet-sit-unity.mjs",
+    "unity/HomelessPetHelper/Assets/Art/PetSit.meta",
+    "unity/HomelessPetHelper/Assets/Art/PetSit/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_StationHabitatActor.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/StationHabitat/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Animals/AnimalEmotion.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Animals/UI/AnimalExpression.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Animals/UI/AnimalExpression.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/Habitat/StationHabitatMotion.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationCatPlayer.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationCatPlayer.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationCatTail.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationCatTail.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationHabitatRenderer.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationHabitatView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationResidentView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationSceneResident.cs",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/EditMode/HomelessPetHelper.Tests.StationHabitat.EditMode.asmdef",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/EditMode/StationAppearanceBakeTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/EditMode/StationAppearanceBakeTests.cs.meta",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/EditMode/StationHabitatAssetTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/EditMode/StationHabitatMotionTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PetSitFixtures.json",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PetSitFixtures.json.meta",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PlayMode/HomelessPetHelper.Tests.StationHabitat.PlayMode.asmdef",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PlayMode/StationAppearanceTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PlayMode/StationAppearanceTests.cs.meta",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PlayMode/StationCatExpressionTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PlayMode/StationCatExpressionTests.cs.meta",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PlayMode/StationCatSkeletonTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PlayMode/StationCatSkeletonTests.cs.meta",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PlayMode/StationHabitatViewTests.cs"
+  ],
+  "contextDigest": "9ce8a62032b8726a7dec286167419cd649c7f37ba6608a040360e07f1669e5de",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261124-动物动画限定提交-01a2076c.md",
+      "sha256": "1af315793f5b96319e04210b2661be2f39f23ba1fb5cfb4a871f7680b9b4ec59"
+    },
+    {
+      "path": "docs/协作任务/20261124-完成模块分别提交-01a1d310.md",
+      "sha256": "ed24fb4e15d60feedfe1416dee5839c8dc7aa12e48a1e68ed96786aa59665c6c"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "18be29799fff69955a919d60116e703d0fabd2d2871f7b35c76ca2ff0e992a03"
+    }
+  ]
+}

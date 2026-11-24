@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "sourceLabel": "用户提供的《游戏萌萌美术素材》/ 宠物  场景",
+  "sourceName": "宠物游戏操作界面背景设计",
+  "outOfScope": [
+    "宠物游戏操作界面背景设计.png",
+    "泰迪/宠物游戏操作界面背景设计 (63).png"
+  ],
+  "animals": [
+    {"folder": "二哈", "id": "dog.husky", "actionTrack": "dog", "identity": 40, "turnaround": 36, "sitReference": 41, "preserve": "黑白面罩、立耳、白胸和卷尾"},
+    {"folder": "伯恩山", "id": "dog.bernese", "actionTrack": "dog", "identity": 49, "turnaround": 44, "sitReference": 50, "preserve": "三色分区、垂耳、白胸和厚重躯干"},
+    {"folder": "奶牛猫", "id": "cat.tuxedo", "actionTrack": "cat", "identity": 0, "turnaround": 2, "preserve": "黑白斑块、黑尾和粉色围巾"},
+    {"folder": "布偶猫", "id": "cat.ragdoll", "actionTrack": "cat", "identity": 19, "turnaround": 20, "preserve": "蓝眼、重点色脸耳、蓬尾和粉色围巾"},
+    {"folder": "柴犬", "id": "dog.shiba", "actionTrack": "dog", "identity": 26, "turnaround": 27, "preserve": "赤色背、奶油胸口、立耳和背上卷尾"},
+    {"folder": "橘猫", "id": "cat.orange", "actionTrack": "cat", "identity": 2, "turnaround": 3, "preserve": "奶油橘毛纹、大眼、粉色围巾和短腿"},
+    {"folder": "泰迪", "id": "dog.poodle", "actionTrack": "dog", "identity": 62, "turnaround": 52, "sitReference": 59, "preserve": "奶白卷毛、垂耳、圆口鼻和球尾"},
+    {"folder": "狸花猫", "id": "cat.tabby", "actionTrack": "cat", "identity": 7, "turnaround": 14, "preserve": "额纹和身体条纹、环尾和粉色围巾"}
+  ]
+}

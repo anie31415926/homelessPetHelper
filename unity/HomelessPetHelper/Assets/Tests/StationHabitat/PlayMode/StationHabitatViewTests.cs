@@ -130,7 +130,7 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
                     yield return null;
                     yield return null;
                     Canvas.ForceUpdateCanvases();
-                    Assert.That(_view.Image.uvRect.width, Is.EqualTo(_view.Motion.FacingLeft ? 1 : -1));
+                    Assert.That(_view.Image.uvRect.width, Is.EqualTo(_view.Motion.FacingLeft ? -1 : 1));
                     camera.Render();
                     var texture = Read(target);
                     File.WriteAllBytes(Path.Combine(folder, size.x + "x" + size.y + "-" + action + ".png"),
@@ -158,10 +158,15 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
                 UnityEngine.Object.Destroy(target);
             }
             while (_view.Motion.Action != HabitatAction.Walk) _view.Motion.Tick(.05);
+            while (_view.Motion.RisingFromRest &&
+                _view.Motion.ActionSeconds <= StationHabitatMotion.RiseSeconds) _view.Motion.Tick(.05);
+            yield return null;
             yield return null;
             var first = Read((RenderTexture)_view.Image.texture);
             var position = _view.Motion.Position;
-            for (int i = 0; i < 7; i++) _view.Motion.Tick(.05);
+            // Avoid symmetric phases of the repeating step when comparing pixel motion.
+            for (int i = 0; i < 5; i++) _view.Motion.Tick(.05);
+            yield return null;
             yield return null;
             var second = Read((RenderTexture)_view.Image.texture);
             var pixels = first.GetPixels32();

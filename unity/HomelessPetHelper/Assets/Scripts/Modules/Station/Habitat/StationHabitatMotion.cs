@@ -18,6 +18,7 @@ namespace HomelessPetHelper.Modules.Station.Habitat
     public sealed class StationHabitatMotion
     {
         public const double MinX = .18, MaxX = .82, MinY = .13, MaxY = .38;
+        public const float RiseSeconds = 1.6f;
         public static readonly HabitatPoint RestPoint = new HabitatPoint(.24, .34);
         private readonly Random _random;
         private readonly StationHabitatArea _area;
@@ -27,15 +28,21 @@ namespace HomelessPetHelper.Modules.Station.Habitat
         private bool _goingToRest;
         private HabitatAction _interrupted;
         private double _interruptedRemaining;
+        private double _interruptedPoseSeconds;
+        private bool _interruptedRising;
 
         public HabitatPoint Position { get; private set; } = new HabitatPoint(.58, .21);
         public HabitatPoint Destination { get; private set; }
         public HabitatAction Action { get; private set; } = HabitatAction.Observe;
         public HabitatAction Pose => Action == HabitatAction.Attention &&
-            (_interrupted == HabitatAction.Sit || _interrupted == HabitatAction.Lie) ? _interrupted : Action;
+            (_interrupted == HabitatAction.Sit || _interrupted == HabitatAction.Lie || _interruptedRising) ?
+            _interrupted : Action;
         public HabitatResponse Response { get; private set; }
         public bool FacingLeft { get; private set; }
         public double ActionSeconds { get; private set; }
+        public double PoseSeconds => Action == HabitatAction.Attention && Pose != Action ?
+            _interruptedPoseSeconds + (_interruptedRising ? 0 : ActionSeconds) : ActionSeconds;
+        public bool RisingFromRest { get; private set; }
 
         public StationHabitatMotion(int seed, StationHabitatArea area = null)
         {
@@ -53,14 +60,24 @@ namespace HomelessPetHelper.Modules.Station.Habitat
             // Never catch up time spent away, even if a caller supplies a large foreground delta.
             seconds = Math.Min(seconds, .1);
             _cooldown = Math.Max(0, _cooldown - seconds);
+            double previousSeconds = ActionSeconds;
             ActionSeconds += seconds;
-            if (Action == HabitatAction.Walk) { Walk(seconds); return; }
+            if (Action == HabitatAction.Walk)
+            {
+                // Stand up in place before translating the same skin; no seated sliding.
+                double walkingSeconds = RisingFromRest ?
+                    Math.Max(0, ActionSeconds - RiseSeconds) - Math.Max(0, previousSeconds - RiseSeconds) : seconds;
+                if (walkingSeconds > 0) Walk(walkingSeconds);
+                return;
+            }
             _remaining -= seconds;
             if (_remaining > 0) return;
             if (Action == HabitatAction.Attention)
             {
                 Response = HabitatResponse.None;
                 SetAction(_interrupted, _interruptedRemaining);
+                ActionSeconds = _interruptedPoseSeconds + (_interrupted == HabitatAction.Walk ? 0 : 1.4);
+                RisingFromRest = _interruptedRising;
                 return;
             }
             if (Action == HabitatAction.Observe && _arrivals % 3 == 1)
@@ -73,9 +90,12 @@ namespace HomelessPetHelper.Modules.Station.Habitat
             if (_cooldown > 0 || Action == HabitatAction.Attention) return false;
             _interrupted = Action;
             _interruptedRemaining = _remaining;
+            _interruptedPoseSeconds = ActionSeconds;
+            _interruptedRising = RisingFromRest;
             Response = acceptsTouch ? HabitatResponse.Willing : HabitatResponse.NeedsSpace;
             _cooldown = 3;
             SetAction(HabitatAction.Attention, 1.4);
+            RisingFromRest = _interruptedRising;
             return true;
         }
 
@@ -93,8 +113,10 @@ namespace HomelessPetHelper.Modules.Station.Habitat
                 SetAction(HabitatAction.Observe, 2.8);
                 return;
             }
+            bool rising = Action == HabitatAction.Sit || Action == HabitatAction.Lie;
             if (Math.Abs(Destination.X - Position.X) > .01) FacingLeft = Destination.X < Position.X;
             SetAction(HabitatAction.Walk, 0);
+            RisingFromRest = rising;
         }
 
         private HabitatPoint ChoosePoint()
@@ -132,6 +154,7 @@ namespace HomelessPetHelper.Modules.Station.Habitat
         private void SetAction(HabitatAction action, double duration)
         {
             Action = action;
+            RisingFromRest = false;
             ActionSeconds = 0;
             _remaining = duration;
         }

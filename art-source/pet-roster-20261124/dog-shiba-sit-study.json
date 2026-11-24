@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "dog.shiba.side.sit-study",
+  "stage": "skeleton-study",
+  "coordinateSystem": "Turnaround scaled to 1000 px wide, nose points left, Y points down.",
+  "floorY": 460,
+  "standing": {
+    "nose": [341, 216],
+    "head": [426, 201],
+    "shoulder": [471, 304],
+    "elbow": [449, 368],
+    "carpus": [420, 429],
+    "frontToe": [410, 458],
+    "hip": [609, 310],
+    "stifle": [579, 366],
+    "hock": [623, 411],
+    "hindToe": [619, 453],
+    "tailRoot": [619, 271]
+  },
+  "keys": [
+    {"at": 0, "hip": [609, 310], "bodyAngle": 2.4895529219991552, "frontX": 410, "frontLift": 0, "hindX": 619, "hindLift": 0, "hockAngle": 95.44033203100551},
+    {"at": 0.15, "hip": [613, 319], "bodyAngle": 7, "frontX": 424, "frontLift": 9, "hindX": 619, "hindLift": 0, "hockAngle": 97},
+    {"at": 0.29, "hip": [616, 337], "bodyAngle": 13, "frontX": 440, "frontLift": 0, "hindX": 619, "hindLift": 0, "hockAngle": 111},
+    {"at": 0.48, "hip": [606, 383], "bodyAngle": 30, "frontX": 440, "frontLift": 0, "hindX": 586, "hindLift": 13, "hockAngle": 133},
+    {"at": 0.72, "hip": [596, 415], "bodyAngle": 49, "frontX": 440, "frontLift": 0, "hindX": 540, "hindLift": 0, "hockAngle": 160},
+    {"at": 1, "hip": [593, 417], "bodyAngle": 50, "frontX": 440, "frontLift": 0, "hindX": 540, "hindLift": 0, "hockAngle": 164}
+  ]
+}

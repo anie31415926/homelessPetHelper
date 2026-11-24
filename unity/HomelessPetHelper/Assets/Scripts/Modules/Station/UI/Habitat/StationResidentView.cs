@@ -24,6 +24,9 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         private int _slot;
         private int _place;
         private float _restSeconds;
+        private AnimalExpression _expression, _targetExpression;
+        private float _expressionSeconds;
+        private const float ExpressionBlendSeconds = .2f;
         private StationRoomView _room;
 
         public event Action<int> Selected;
@@ -37,7 +40,15 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         public void Bind(StationSceneResident resident, StationHabitatMotion motion, int slot, int place,
             StationRoomView room = null)
         {
-            bool changedKind = _resident != null && _resident.AnimatedCat != resident.AnimatedCat;
+            bool changedKind = _resident != null && (_resident.HasAnimation != resident.HasAnimation ||
+                _resident.Appearance != resident.Appearance);
+            _targetExpression = AnimalExpression.From(resident.Snapshot);
+            if (_resident == null || _resident.AnimalId != resident.AnimalId)
+            {
+                _restSeconds = 0;
+                _expressionSeconds = 0;
+                _expression = _targetExpression;
+            }
             _resident = resident;
             Motion = motion;
             _slot = slot;
@@ -48,12 +59,12 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _stillImage.sprite = resident.Art;
             _stillCoat.Show(resident.Snapshot);
             _motionCoat.Show(resident.Snapshot);
-            _stillImage.gameObject.SetActive(!resident.AnimatedCat);
-            _motionImage.gameObject.SetActive(resident.AnimatedCat);
+            _stillImage.gameObject.SetActive(!resident.HasAnimation);
+            _motionImage.gameObject.SetActive(resident.HasAnimation);
             _cage.SetActive(resident.Observing);
             _position.sizeDelta = _room != null ? new Vector2(210, 210) :
                 resident.Observing ? new Vector2(300, 300) : new Vector2(360, 360);
-            if (changedKind || !resident.AnimatedCat) Release();
+            if (changedKind || !resident.HasAnimation) Release();
             Place();
         }
 
@@ -81,6 +92,11 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         {
             if (_resident == null || _suspended || _inspecting) return;
             float seconds = Mathf.Min(Time.unscaledDeltaTime, .05f);
+            _expression = _expression.MoveTowards(_targetExpression, seconds / ExpressionBlendSeconds);
+            var appearance = _resident.Appearance != null ? _resident.Appearance : _rendererPrefab;
+            // Wrap whole cycles of this appearance; different tail periods must not jump at wrap.
+            float cycleWindow = appearance.Player.ExpressionPeriodSeconds * 100;
+            _expressionSeconds = Mathf.Repeat(_expressionSeconds + seconds, cycleWindow);
             if (Observing) _restSeconds += seconds;
             else Motion.Tick(seconds);
         }
@@ -89,16 +105,18 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         {
             if (_resident == null) return;
             Place();
-            if (!_resident.AnimatedCat) return;
+            if (!_resident.HasAnimation) return;
             if (_renderer == null)
             {
-                _renderer = Instantiate(_rendererPrefab);
+                _renderer = Instantiate(_resident.Appearance != null ? _resident.Appearance : _rendererPrefab);
                 _renderer.transform.position = new Vector3(10000 + _slot * 2000, 0, 0);
                 _renderer.Bind(_motionImage);
+                _renderer.gameObject.SetActive(true);
                 return;
             }
             _renderer.Render(Observing ? HabitatAction.Sit : Motion.Pose,
-                Observing ? _restSeconds : (float)Motion.ActionSeconds, Observing || Motion.FacingLeft);
+                Observing ? _restSeconds : (float)Motion.PoseSeconds, Observing || Motion.FacingLeft,
+                !Observing && Motion.RisingFromRest, _expression, _expressionSeconds);
         }
 
         private void Place()

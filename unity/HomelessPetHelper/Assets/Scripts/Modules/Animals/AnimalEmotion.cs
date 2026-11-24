@@ -6,6 +6,8 @@ namespace HomelessPetHelper.Modules.Animals
         Nervous = 0,
         Watchful = 1,
         Relaxed = 2,
-        Startled = 3
+        Startled = 3,
+        Irritated = 4,
+        Happy = 5
     }
 }

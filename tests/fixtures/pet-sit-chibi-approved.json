@@ -1,0 +1,11 @@
+{
+  "source": "Approved orange cat, continuous 1 second sit and emotion tail before profile extraction",
+  "sha256": {
+    "bones": "2cbbe4d650804d74b1a2d11327ac5dde07dc8cc7f698c2384e92e11876a644bc",
+    "bindposes": "33871debd95d76f11dbeda3a1993114435ee53522694f786721bf8ec5e500f15",
+    "meshes": "03776b44cbd65b1b33036ef1c75973198121bbfbf33bd8fec9a85879c5499a2d",
+    "takes": "ca32aa7c8a92f53e7b7a47eee4862d679c7138c43c375006c86e8517c9612a27",
+    "fixtures": "a9ed986c65afcbe422c1100d4b1fcdf8e1cf41d92b8dadec6ab06dfd3d9dc3d8",
+    "tailMotion": "e92fc7e50bbb7db2aea79c8f888111f19d197f0ea3341fe0e5cbe62da88c123a"
+  }
+}

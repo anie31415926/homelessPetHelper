@@ -121,10 +121,10 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
                 _renderer = Instantiate(_actorPrefab);
                 _renderer.transform.position = new Vector3(10000, 0, 0);
                 _renderer.Bind(_image);
-                return; // Let the shared player's Start run before sampling its first pose.
+                return;
             }
             PlaceActor();
-            _renderer.Render(Motion.Pose, (float)Motion.ActionSeconds, Motion.FacingLeft);
+            _renderer.Render(Motion.Pose, (float)Motion.PoseSeconds, Motion.FacingLeft, Motion.RisingFromRest);
         }
 
         private void PlaceActor()

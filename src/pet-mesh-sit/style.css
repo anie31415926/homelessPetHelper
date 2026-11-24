@@ -1,0 +1,25 @@
+:root { color-scheme: light; font: 16px/1.4 "Microsoft YaHei", "PingFang SC", sans-serif; color: #25352d; background: #fafbf9; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { width: min(100%, 1040px); margin: auto; padding: 16px; }
+h1 { margin: 0 0 12px; font-size: 21px; letter-spacing: 0; }
+.comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+h2 { margin: 0 0 6px; font-size: 15px; letter-spacing: 0; }
+.stage { position: relative; width: 100%; aspect-ratio: 1 / 1.12; background: #e7f2e9; color: #adbfaf; overflow: hidden; }
+.stage.dark { background: #26332e; color: #647b6a; }
+.stage::before { content: ""; position: absolute; inset: var(--ground, 92%) 8% auto; border-top: 1px solid currentColor; }
+canvas { position: relative; display: block; width: 100%; height: 100%; }
+canvas.contour { position: absolute; inset: 0; pointer-events: none; }
+.controls { padding-top: 12px; }
+.timeline { display: grid; grid-template-columns: auto minmax(30px, 1fr) 44px; align-items: center; gap: 8px; }
+input { width: 100%; min-height: 44px; margin: 0; accent-color: #397050; }
+output { text-align: right; font-variant-numeric: tabular-nums; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+button, select { min-width: 58px; min-height: 44px; padding: 0 8px; border: 1px solid #bdccc1; border-radius: 6px; background: #fff; color: inherit; font: inherit; cursor: pointer; }
+button[aria-pressed="true"] { background: #dcefe4; border-color: #638b73; }
+:focus-visible { outline: 2px solid #397050; outline-offset: 2px; }
+details { margin-top: 22px; border-top: 1px solid #bdccc1; }
+summary { min-height: 44px; padding: 10px 0; cursor: pointer; }
+.side-diagram, figure { width: 100%; display: block; aspect-ratio: 46 / 25; background: #e7f2e9; margin: 0; }
+figure { overflow: hidden; position: relative; }
+figure img { position: absolute; display: block; width: 90%; height: auto; left: 5%; bottom: 1%; }

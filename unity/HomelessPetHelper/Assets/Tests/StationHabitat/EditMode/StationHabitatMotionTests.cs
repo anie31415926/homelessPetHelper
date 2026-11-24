@@ -71,6 +71,26 @@ namespace HomelessPetHelper.Tests.StationHabitat.EditMode
         }
 
         [Test]
+        public void RestingCatRisesInPlaceAndTouchDoesNotRestartItsSit()
+        {
+            var motion = new StationHabitatMotion(1);
+            while (motion.Action != HabitatAction.Sit) motion.Tick(.05);
+            for (int i = 0; i < 60; i++) motion.Tick(.05);
+            double postureTime = motion.PoseSeconds;
+            Assert.That(motion.TryGetAttention(true), Is.True);
+            Assert.That(motion.PoseSeconds, Is.EqualTo(postureTime));
+            for (int i = 0; i < 30; i++) motion.Tick(.05);
+            Assert.That(motion.PoseSeconds, Is.GreaterThan(postureTime));
+            while (motion.Action != HabitatAction.Walk) motion.Tick(.05);
+            Assert.That(motion.RisingFromRest, Is.True);
+            var origin = motion.Position;
+            for (int i = 0; i < 30; i++) motion.Tick(.05);
+            Assert.That(motion.Position.DistanceTo(origin), Is.Zero, "Must rise before translating.");
+            for (int i = 0; i < 10; i++) motion.Tick(.05);
+            Assert.That(motion.Position.DistanceTo(origin), Is.GreaterThan(.02));
+        }
+
+        [Test]
         public void InvalidDeltaIsRejectedWithoutMutation()
         {
             var motion = new StationHabitatMotion(1);

@@ -1,20 +1,21 @@
 import {BufferGeometry, Color, DoubleSide, LinearFilter, Line, LineBasicMaterial, Mesh, MeshBasicMaterial, OrthographicCamera, PlaneGeometry, Scene, SRGBColorSpace, TextureLoader, Vector3, WebGLRenderer} from 'three';
 import {createChibiSkin} from './skin.js';
+import {DEFAULT_APPEARANCE} from './profile.js';
 
-export async function createPreview(host) {
+export async function createPreview(host, profile = DEFAULT_APPEARANCE) {
     const renderer = new WebGLRenderer({antialias: true, preserveDrawingBuffer: true}); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderer.outputColorSpace = SRGBColorSpace;
     renderer.domElement.setAttribute('aria-label', '短腿萌系原图比例坐下预览'); host.append(renderer.domElement);
     const scene = new Scene(), camera = new OrthographicCamera(-3, 3, 5.5, -.5, .1, 50); camera.position.z = -12; camera.lookAt(0, 0, 0);
     let skin, texture, source, sourceMesh, observer, current = {progress: 0, mode: 'skin', dark: false}, disposed = false; const overlays = [];
     try {
-        const response = await fetch('/pet-sit-chibi/atlas.json'); if (!response.ok) throw new Error('萌系拆件加载失败'); const manifest = await response.json();
-        texture = await new TextureLoader().loadAsync('/pet-sit-chibi/atlas.png'); texture.colorSpace = SRGBColorSpace; texture.minFilter = LinearFilter; texture.generateMipmaps = false;
-        source = await new TextureLoader().loadAsync('/pet-mesh/cat-side.png'); source.colorSpace = SRGBColorSpace; source.minFilter = LinearFilter; source.generateMipmaps = false;
+        const response = await fetch(profile.art.atlasManifest.replace(/^public/, '')); if (!response.ok) throw new Error('萌系拆件加载失败'); const manifest = await response.json();
+        texture = await new TextureLoader().loadAsync(profile.art.atlasTexture.replace(/^public/, '')); texture.colorSpace = SRGBColorSpace; texture.minFilter = LinearFilter; texture.generateMipmaps = false;
+        source = await new TextureLoader().loadAsync(profile.art.sourceImage.replace(/^public/, '')); source.colorSpace = SRGBColorSpace; source.minFilter = LinearFilter; source.generateMipmaps = false;
         if (disposed) {texture.dispose(); source.dispose(); return;}
-        skin = createChibiSkin(manifest, texture); scene.add(skin.rig.group);
-        const geometry = new PlaneGeometry(4.52, 5.12), positions = geometry.attributes.position;
+        skin = createChibiSkin(manifest, texture, profile); scene.add(skin.rig.group);
+        const geometry = new PlaneGeometry(source.image.width / profile.source.pixelsPerUnit, source.image.height / profile.source.pixelsPerUnit), positions = geometry.attributes.position;
         for (let i = 0; i < positions.count; i++) positions.setX(i, -positions.getX(i));
-        sourceMesh = new Mesh(geometry, new MeshBasicMaterial({map: source, side: DoubleSide, transparent: true, depthWrite: false, depthTest: false})); sourceMesh.position.y = 2.4; sourceMesh.renderOrder = 11; scene.add(sourceMesh);
+        sourceMesh = new Mesh(geometry, new MeshBasicMaterial({map: source, side: DoubleSide, transparent: true, depthWrite: false, depthTest: false})); sourceMesh.position.set((profile.source.origin[0] - source.image.width / 2) / profile.source.pixelsPerUnit, (profile.source.origin[1] - source.image.height / 2) / profile.source.pixelsPerUnit, 0); sourceMesh.renderOrder = 11; scene.add(sourceMesh);
         for (const segment of skin.rig.segments) {
             const geometry = new BufferGeometry().setFromPoints([new Vector3(), new Vector3()]), material = new LineBasicMaterial({color: segment.to.startsWith('far') ? '#80978a' : segment.to.startsWith('near') ? '#13745d' : '#394b43', transparent: true, opacity: .95, depthTest: false, depthWrite: false});
             const line = new Line(geometry, material); line.renderOrder = 30; line.frustumCulled = false; scene.add(line); overlays.push({line, segment});

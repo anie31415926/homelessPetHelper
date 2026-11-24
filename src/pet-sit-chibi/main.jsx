@@ -2,14 +2,13 @@ import React, {useEffect, useRef, useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {Pause, Play, RotateCcw, StepBack, StepForward} from 'lucide-react';
 import {DURATION, KEY_POSES} from './rig.js';
-import {samplePose} from '../pet-sit-study/rig.js';
 import {createPreview} from './preview.js';
 import '../pet-sit-study/style.css';
 import './style.css';
 
 function App() {
     const host = useRef(null), preview = useRef(null);
-    const [progress, setProgress] = useState(0), [playing, setPlaying] = useState(false), [speed, setSpeed] = useState(.5), [mode, setMode] = useState('skin'), [dark, setDark] = useState(false), [ready, setReady] = useState(false), [error, setError] = useState('');
+    const [progress, setProgress] = useState(0), [playing, setPlaying] = useState(false), [speed, setSpeed] = useState(1), [mode, setMode] = useState('skin'), [dark, setDark] = useState(false), [ready, setReady] = useState(false), [error, setError] = useState('');
     useEffect(() => {let cancelled = false; createPreview(host.current).then(result => {if (cancelled) result?.dispose(); else {preview.current = result; setReady(true);}}).catch(reason => {if (!cancelled) setError(`预览无法启动：${reason.message}`);}); return () => {cancelled = true; preview.current?.dispose(); preview.current = null;};}, []);
     useEffect(() => {preview.current?.render({progress, mode, dark});}, [progress, mode, dark, ready]);
     useEffect(() => {if (!playing) return; let frame, previous; const tick = now => {const delta = previous === undefined ? 0 : Math.min(.06, (now - previous) / 1000); previous = now; setProgress(value => Math.min(1, value + delta * speed / DURATION)); frame = requestAnimationFrame(tick);}; frame = requestAnimationFrame(tick); return () => cancelAnimationFrame(frame);}, [playing, speed]);
@@ -18,7 +17,7 @@ function App() {
     const seek = value => {setPlaying(false); setProgress(Math.max(0, Math.min(1, value))); if (mode === 'source') setMode('skin');};
     const changeMode = value => {setPlaying(false); setMode(value);};
     return <main>
-        <header><h1>猫坐下 <span>原图萌系比例</span></h1><span className="phase">{mode === 'source' ? '原图' : samplePose(progress).name}</span></header>
+        <header><h1>猫坐下 <span>原图萌系比例</span></h1><span className="phase">{mode === 'source' ? '原图' : KEY_POSES.reduce((a, b) => Math.abs(a.at - progress) <= Math.abs(b.at - progress) ? a : b).name}</span></header>
         <div className="stage"><div className="canvas-host" ref={host}/><div className="view-modes" role="group" aria-label="预览模式">{[['skin', '贴图'], ['overlay', '叠骨'], ['bones', '骨架'], ['source', '原图']].map(([value, name]) => <button key={value} aria-pressed={mode === value} onClick={() => changeMode(value)}>{name}</button>)}</div>{error && <p role="alert">{error}</p>}</div>
         <section className="transport" aria-label="动作控制">
             <div className="key-poses" role="group" aria-label="关键姿态">{KEY_POSES.map((key, i) => <button key={key.name} aria-pressed={Math.abs(progress - key.at) < .002 && mode !== 'source'} onClick={() => seek(key.at)}><small>{String(i + 1).padStart(2, '0')}</small>{key.name}</button>)}</div>

@@ -151,3 +151,61 @@ test('seeking is deterministic and motion is continuous without branch changes',
         }
     } finally {skin.dispose();}
 });
+
+test('descent carries velocity through intermediate keys instead of stopping at every pose', () => {
+    const rig = createChibiRig(), h = .0001;
+    const height = p => {rig.apply(p); return rig.world('root').y;};
+    try {
+        for (const p of [.2, .55]) {
+            const before = (height(p) - height(p - h)) / h, after = (height(p + h) - height(p)) / h;
+            assert.ok(before < -.2 && after < -.2, `Descent stalls at ${p}`);
+            assert.ok(Math.abs(before - after) < .01, `Velocity breaks at ${p}`);
+        }
+        assert.ok(Math.abs((height(h) - height(0)) / h) < .01);
+        assert.ok(Math.abs((height(1) - height(1 - h)) / h) < .01);
+    } finally {rig.dispose();}
+});
+
+
+test('tail expressions keep the root joined and stay above ground throughout posture and blends', () => {
+    const skin = createChibiSkin(manifest, null), layer = manifest.layers.find(l => l.id === 'tail');
+    const tailIndex = skin.skeleton.bones.findIndex(b => b.name === 'tailArt');
+    const pelvisIndex = skin.skeleton.bones.findIndex(b => b.name === 'bodyPelvis');
+    const tail = skin.skeleton.bones[tailIndex], local = skin.tailJoinLocal;
+    try {
+        for (const progress of [0, .2, .55, .75, .86, 1]) {
+            for (const expression of [{raise: 0, swish: 1}, {raise: 1, swish: 0}, {raise: .5, swish: .5}]) {
+                for (let frame = 0; frame <= 16; frame++) {
+                    skin.apply(progress, 0, 0, expression, frame / 20);
+                    const join = sourcePoint(363, 374).applyMatrix4(skin.skeleton.boneInverses[pelvisIndex]).applyMatrix4(skin.skeleton.bones[pelvisIndex].matrixWorld);
+                    assert.ok(local.clone().applyMatrix4(tail.matrixWorld).distanceTo(join) < 1e-9);
+                    for (const [x, y] of layer.support) {
+                        const point = sourcePoint(x, y).applyMatrix4(skin.skeleton.boneInverses[tailIndex]).applyMatrix4(tail.matrixWorld);
+                        assert.ok(point.y >= .004, 'Expressive tail crosses ground');
+                    }
+                }
+            }
+        }
+        skin.apply(1, 0, 0, {raise: 0, swish: 1}, .2); const first = tail.quaternion.clone();
+        skin.apply(1, 0, 0, {raise: 0, swish: 1}, .6);
+        assert.ok(first.angleTo(tail.quaternion) > .5, 'Irritated tail must move in both directions');
+        skin.apply(1, 0, 0, {raise: 1, swish: 0}, .2); const happy = tail.matrixWorld.clone();
+        skin.apply(1, 0, 0, {raise: 1, swish: 0}, .6); assert.deepEqual(tail.matrixWorld.elements, happy.elements);
+    } finally {skin.dispose();}
+});
+
+
+test('one-second descent reaches the seat without a separate late hip readjustment', () => {
+    const rig = createChibiRig();
+    try {
+        let previous = null;
+        for (let i = 0; i <= 100; i++) {
+            rig.apply(i / 100); const hip = rig.world('root');
+            if (previous) {
+                assert.ok(hip.x <= previous.x + 1e-9, 'Hip reverses after touching down');
+                assert.ok(hip.y <= previous.y + 1e-9, 'Hip bounces after touching down');
+            }
+            previous = hip;
+        }
+    } finally {rig.dispose();}
+});

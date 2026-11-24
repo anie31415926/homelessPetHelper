@@ -1,0 +1,123 @@
+{
+  "identity": "test-results/pet-roster-20261124/cleaned/奶牛猫/宠物游戏操作界面背景设计.png",
+  "standard": "public/pet-mesh/cat-side.png",
+  "inputSha256": [
+    "824895b5a36cbd4170fa3542a4b90faf033a54b0d50ac787087a1074764549cd",
+    "7d6d7e8a8b32b52147d8d7c8ecbfd8eb2ba3ef17edc756c52f496df8a9a12285"
+  ],
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "roster-stand-824895b5a36cbd41.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "Redraw Image 1 as ONE completed production sprite standing naturally on all four paws in strict LEFT-facing SIDE PROFILE. Preserve the exact original kitten: white muzzle and triangular blaze, asymmetrical black cap, large brown eyes, two original black saddle patches, black tail with its white band, pink scarf with its original knot, very short chunky white legs and oversized head. Image 2 controls view, level standing ground, short low stance, and composition ONLY. Do not borrow face, breed, color, coat markings, scarf or tail from Image 2. Paint one continuous watercolor character. Keep the near hind thigh-to-heel-to-paw outline connected with a single light pencil edge and no cut seams or duplicate lines. The far paws overlap naturally behind the near ones. Neutral head height, hips raised like the pose guide, no walking stride and no crouch. Exactly one subject, whole body fits, blank solid pale neutral background, no cast shadow, no text, no sample annotations.",
+        "negative_prompt": "three-quarter, frontal, biped, sitting, walking, floating paws, broken joints, extra legs, thick outlines, photoreal, 3d, cast shadow, background elements, text, watermark",
+        "resolution": 768,
+        "images.image_1": [
+          "4",
+          0
+        ],
+        "images.image_2": [
+          "10",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112471,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "roster-standard-tuxedo"
+      }
+    },
+    "10": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "roster-stand-7d6d7e8a8b32b521.png"
+      }
+    }
+  }
+}

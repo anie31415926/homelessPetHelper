@@ -12,7 +12,7 @@
     "HomelessPetHelper.Modules.Siege",
     "HomelessPetHelper.Modules.Siege.UI",
     "HomelessPetHelper.Modules.Rescue",
-    "HomelessPetHelper.Modules.Animals",
+    "HomelessPetHelper.Modules.Animals", "HomelessPetHelper.Modules.Animals.UI",
     "HomelessPetHelper.Modules.WorldTime",
     "HomelessPetHelper.Tests.Support",
     "HomelessPetHelper.Framework.Persistence",

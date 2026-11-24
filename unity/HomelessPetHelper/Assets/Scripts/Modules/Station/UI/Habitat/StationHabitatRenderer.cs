@@ -1,98 +1,72 @@
-using HomelessPetHelper.Modules.PetMotion;
 using HomelessPetHelper.Modules.Station.Habitat;
+using HomelessPetHelper.Modules.Animals.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace HomelessPetHelper.Modules.Station.UI.Habitat
 {
-    /// <summary>Owns one bounded offscreen target; rig and clips remain shared immutable assets.</summary>
+    /// <summary>Owns one bounded offscreen target; one shared skeleton is used in every station pose.</summary>
     public sealed class StationHabitatRenderer : MonoBehaviour
     {
-        [SerializeField] private PetMotionPlayer _player;
+        [SerializeField] private StationCatPlayer _player;
         [SerializeField] private Camera _camera;
-        [SerializeField] private Renderer[] _renderers;
         private RawImage _surface;
         private RenderTexture _target;
-        private int _action = -1;
-        private float _foot;
-        private float _center;
+        private HabitatAction _action = (HabitatAction)(-1);
         private float _renderedSeconds = -1;
-        private bool _renderedLeft;
-        private Mesh _boundsMesh;
+        private bool _renderedLeft, _renderedRising;
+        private bool _pendingSkinRefresh;
+        private int _sampleFrame;
+        private AnimalExpression _expression;
+        private float _expressionSeconds;
+        public StationCatPlayer Player => _player;
 
-        public PetMotionPlayer Player => _player;
+        public void Bind(RawImage surface) => _surface = surface;
 
-        public void Bind(RawImage surface)
+        public void Render(HabitatAction action, float seconds, bool left, bool rising = false,
+            AnimalExpression expression = default, float expressionSeconds = 0)
         {
-            _surface = surface;
-            _player.Playing = false;
-        }
-
-        public void Render(HabitatAction action, float seconds, bool left)
-        {
-            int clip = action == HabitatAction.Walk ? 2 : action == HabitatAction.Sit ? 4 :
-                action == HabitatAction.Lie ? 5 : action == HabitatAction.Attention ? 1 : 0;
-            if (_target != null && _action == clip && _renderedSeconds == seconds && _renderedLeft == left)
-                return;
-            if (_action != clip || _player.Action != clip)
+            if (expression.TailSwish == 0) expressionSeconds = 0;
+            bool changed = _target == null || _action != action || _renderedSeconds != seconds ||
+                _renderedLeft != left || _renderedRising != rising ||
+                _expression.TailRaise != expression.TailRaise || _expression.TailSwish != expression.TailSwish ||
+                _expressionSeconds != expressionSeconds;
+            if (!changed && !_pendingSkinRefresh) return;
+            if (changed)
             {
-                _player.Select(clip);
-                _player.Seek(0);
-                Bounds bounds = VisibleBounds();
-                _foot = bounds.min.y;
-                _center = bounds.center.x;
-                _action = clip;
+                _player.Sample(action, seconds, rising, expression, expressionSeconds);
+                _sampleFrame = Time.frameCount;
+                _pendingSkinRefresh = true;
             }
-            _player.Seek(Mathf.Repeat(seconds, _player.Duration) / _player.Duration);
-            if (_target == null)
-            {
-                _target = new RenderTexture(512, 512, 0, RenderTextureFormat.ARGB32)
-                { name = "StationHabitatCat", useMipMap = false, autoGenerateMips = false };
-                _target.Create();
-                _camera.targetTexture = _target;
-                _surface.texture = _target;
-            }
-            // A fixed feet line and framing across poses avoids recentering the cat when it lies down.
+            else if (Time.frameCount > _sampleFrame) _pendingSkinRefresh = false;
+            // Unity uploads skinned vertices once per frame. When time freezes immediately
+            // after sampling, render once more next frame to show the final sampled pose.
+            if (_target == null) CreateTarget();
+            // Framing belongs to the appearance's saved camera, authored from its profile.
             _camera.aspect = 1;
-            _camera.orthographicSize = 320;
-            _camera.transform.position = new Vector3(_center, _foot + 256, transform.position.z - 10);
-            // The accepted source cat faces left. Flip UVs, not the rig through zero scale.
-            var uv = left ? new Rect(0, 0, 1, 1) : new Rect(1, 0, -1, 1);
+            // The source rig's positive X points toward the cat's nose (source image left).
+            var uv = left ? new Rect(1, 0, -1, 1) : new Rect(0, 0, 1, 1);
             if (_surface.uvRect != uv) _surface.uvRect = uv;
             _camera.Render();
+            _action = action;
             _renderedSeconds = seconds;
             _renderedLeft = left;
+            _renderedRising = rising;
+            _expression = expression;
+            _expressionSeconds = expressionSeconds;
         }
 
-        private Bounds VisibleBounds()
+        private void CreateTarget()
         {
-            Bounds bounds = default;
-            bool found = false;
-            foreach (Renderer renderer in _renderers)
-            {
-                if (!renderer.gameObject.activeInHierarchy) continue;
-                Bounds actual = renderer.bounds;
-                if (renderer is SkinnedMeshRenderer skin)
-                {
-                    // Renderer.bounds may still describe a previously inactive pose before its first render.
-                    if (_boundsMesh == null) _boundsMesh = new Mesh { name = "HabitatPoseBounds" };
-                    skin.BakeMesh(_boundsMesh);
-                    Bounds local = _boundsMesh.bounds;
-                    actual = new Bounds(skin.transform.TransformPoint(local.center),
-                        Vector3.Scale(local.size, skin.transform.lossyScale));
-                }
-                if (!found) { bounds = actual; found = true; }
-                else bounds.Encapsulate(actual);
-            }
-            return bounds;
+            _target = new RenderTexture(512, 512, 0, RenderTextureFormat.ARGB32)
+            { name = "StationHabitatCat", useMipMap = false, autoGenerateMips = false };
+            _target.Create();
+            _camera.targetTexture = _target;
+            _surface.texture = _target;
         }
 
         private void OnDisable() => Release();
-        private void OnDestroy()
-        {
-            Release();
-            if (_boundsMesh != null) Destroy(_boundsMesh);
-        }
+        private void OnDestroy() => Release();
 
         private void Release()
         {

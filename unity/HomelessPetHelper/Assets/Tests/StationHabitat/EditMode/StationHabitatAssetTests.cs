@@ -26,6 +26,7 @@ namespace HomelessPetHelper.Tests.StationHabitat.EditMode
             var actor = AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Prefabs/Widgets/Widget_StationHabitatActor.prefab");
             RequireBindings(actor.GetComponent<StationHabitatRenderer>());
+            RequireBindings(actor.GetComponent<StationCatPlayer>());
             Assert.That(actor.GetComponentInChildren<Camera>(true).cullingMask, Is.EqualTo(1 << 29));
             var dependencies = AssetDatabase.GetDependencies("Assets/Scenes/Main.unity", true);
             Assert.That(dependencies.Any(x => x.StartsWith("Assets/EditorScenes/", StringComparison.Ordinal)),
@@ -34,6 +35,13 @@ namespace HomelessPetHelper.Tests.StationHabitat.EditMode
             Assert.That(AssetDatabase.GetDependencies(
                 "Assets/Prefabs/Widgets/Widget_StationHabitatActor.prefab", true)
                 .Count(x => x.EndsWith(".png", StringComparison.Ordinal)), Is.EqualTo(1));
+            var skin = actor.GetComponentInChildren<SkinnedMeshRenderer>(true);
+            Assert.That(AssetDatabase.GetAssetPath(skin.sharedMaterial.mainTexture),
+                Is.EqualTo("Assets/Art/PetSit/T_Cat_SitAtlas.png"));
+            var importer = (TextureImporter)AssetImporter.GetAtPath(
+                "Assets/Art/PetSit/T_Cat_SitAtlas.png");
+            Assert.That(importer.textureShape, Is.EqualTo(TextureImporterShape.Texture2D));
+            Assert.That(importer.isReadable || importer.mipmapEnabled, Is.False);
         }
 
         private static void RequireBindings(MonoBehaviour view)

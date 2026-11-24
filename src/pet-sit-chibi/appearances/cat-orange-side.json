@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 1,
+  "id": "cat.orange.side",
+  "template": "side-quadruped-v1",
+  "art": {
+    "atlasManifest": "public/pet-sit-chibi/atlas.json",
+    "atlasTexture": "public/pet-sit-chibi/atlas.png",
+    "sourceImage": "public/pet-mesh/cat-side.png"
+  },
+  "source": {
+    "origin": [
+      226,
+      496
+    ],
+    "pixelsPerUnit": 100
+  },
+  "landmarks": {
+    "hip": [
+      337,
+      350
+    ],
+    "knee": [
+      280,
+      389
+    ],
+    "hock": [
+      330,
+      449
+    ],
+    "toe": [
+      291,
+      477
+    ],
+    "shoulder": [
+      145,
+      355
+    ],
+    "elbow": [
+      150,
+      413
+    ],
+    "wrist": [
+      137,
+      465
+    ],
+    "frontToe": [
+      134,
+      487
+    ],
+    "skull": [
+      153,
+      275
+    ]
+  },
+  "rig": {
+    "spineLength": 0.28,
+    "farHindOffset": [
+      0.31,
+      0.08
+    ],
+    "farFrontOffset": [
+      0.25,
+      0.07
+    ],
+    "sideDepth": 0.2,
+    "pelvisDegrees": [
+      -12,
+      -45
+    ],
+    "neckDropDegrees": 20,
+    "skullRaiseDegrees": 7,
+    "foldHipRadians": 0.6,
+    "foldKneeRadians": -2.8,
+    "jointLimits": {
+      "frontBend": [
+        0.025,
+        2.7
+      ],
+      "hindBend": [
+        -3.12,
+        -0.025
+      ],
+      "base": [
+        -3.12,
+        2.7
+      ]
+    }
+  },
+  "sit": {
+    "seconds": 1,
+    "keys": [
+      {
+        "at": 0,
+        "name": "站立",
+        "hip": [
+          -1.11,
+          1.46
+        ],
+        "spine": [
+          35,
+          15,
+          0,
+          -5,
+          -10,
+          -15
+        ],
+        "hockDegrees": null
+      },
+      {
+        "at": 0.2,
+        "name": "预备",
+        "hip": [
+          -1.13,
+          1.35
+        ],
+        "spine": [
+          40,
+          20,
+          5,
+          0,
+          -8,
+          -10
+        ],
+        "hockDegrees": -30
+      },
+      {
+        "at": 0.55,
+        "name": "下降",
+        "hip": [
+          -1.15,
+          0.93
+        ],
+        "spine": [
+          60,
+          40,
+          25,
+          15,
+          5,
+          0
+        ],
+        "hockDegrees": -17
+      },
+      {
+        "at": 1,
+        "name": "坐稳",
+        "hip": [
+          -1.17,
+          0.42
+        ],
+        "spine": [
+          80,
+          70,
+          55,
+          45,
+          30,
+          15
+        ],
+        "hockDegrees": -5
+      }
+    ],
+    "shoulderShift": [
+      0.18,
+      -0.11
+    ],
+    "frontStep": {
+      "distance": 0.2,
+      "lift": 0.035,
+      "duration": 0.1,
+      "farDelay": 0.1
+    }
+  },
+  "walk": {
+    "seconds": 0.9,
+    "stride": 0.12,
+    "lift": 0.065,
+    "bodyBob": 0.012
+  },
+  "skin": {
+    "layers": {
+      "head": "head",
+      "torso": "torso",
+      "tail": "tail",
+      "nearHindThigh": "nearHindThigh",
+      "nearHindPaw": "nearHindPaw",
+      "hindLower": "hindLower",
+      "shaft": "shaft",
+      "nearFront": "nearFront"
+    },
+    "meshSpacingPixels": 5,
+    "hipBlendPixels": [
+      165,
+      170
+    ],
+    "elbowBlendPixels": [
+      398,
+      30
+    ],
+    "wristBlendPixels": [
+      438,
+      40
+    ],
+    "shaftPixels": {
+      "centerX": 36,
+      "startY": 36,
+      "endY": 156,
+      "width": 72,
+      "capLength": 36
+    },
+    "tibiaWidths": [
+      0.28,
+      0.15
+    ],
+    "metatarsalWidths": [
+      0.17,
+      0.17
+    ],
+    "tailBindOffset": [
+      -0.35,
+      -0.4
+    ],
+    "tailSitDegrees": -60,
+    "tailJoinPixels": [
+      363,
+      374
+    ],
+    "pelvisLift": 0.5,
+    "pelvisDegrees": [
+      35,
+      55
+    ],
+    "farTint": "#f4efe9",
+    "nearTint": "#ffffff",
+    "orders": {
+      "far": 1,
+      "near": 5,
+      "farForeleg": 2,
+      "nearForeleg": 8,
+      "torso": 4,
+      "tail": 0,
+      "head": 10,
+      "thighOffset": 0.2,
+      "pawOffset": 0.1,
+      "lowerCoatOffset": 0.15
+    }
+  },
+  "contact": {
+    "bodyFloor": 0.018,
+    "tailFloor": 0.014,
+    "coatFloor": 0.006,
+    "bodyBlendStart": 0.55,
+    "bodyBlendDuration": 0.31,
+    "tailCorrectionDegrees": 45
+  },
+  "tail": {
+    "raisedDegrees": -110,
+    "swishLiftDegrees": 25,
+    "swishDegrees": 20,
+    "periodSeconds": 0.8
+  },
+  "framing": {
+    "orthoSize": 3.2,
+    "cameraPosition": [
+      -0.15,
+      2.56,
+      -10
+    ]
+  },
+  "unity": {
+    "assetFolder": "Assets/Art/PetSit",
+    "actorPath": "Assets/Prefabs/Widgets/Widget_StationHabitatActor.prefab",
+    "templateActorPath": "Assets/Prefabs/Widgets/Widget_StationHabitatActor.prefab",
+    "atlasPath": "Assets/Art/PetSit/T_Cat_SitAtlas.png",
+    "shaderPath": "Assets/Art/PetSit/Sh_StationCat.shader",
+    "assetPrefix": "Cat"
+  },
+  "export": {
+    "bakePath": "art-source/pet-sit-chibi-20261123/unity-export.json",
+    "fixturePath": "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PetSitFixtures.json"
+  }
+}
