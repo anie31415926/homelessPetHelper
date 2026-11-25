@@ -104,8 +104,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
                 _pointBindings[i].Button.onClick.AddListener(_pointClicks[i]);
             _primary.onClick.AddListener(OnPrimary);
             _cancel.onClick.AddListener(OnCancel);
-            _closeDetails.onClick.AddListener(CloseDetails);
-            _backdrop.onClick.AddListener(CloseDetails);
+            _closeDetails.onClick.AddListener(DismissDetails);
+            _backdrop.onClick.AddListener(DismissDetails);
             _listening = true;
             PauseChanged?.Invoke(IsSuspended);
         }
@@ -118,8 +118,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
                     _pointBindings[i].Button.onClick.RemoveListener(_pointClicks[i]);
             _primary.onClick.RemoveListener(OnPrimary);
             _cancel.onClick.RemoveListener(OnCancel);
-            _closeDetails.onClick.RemoveListener(CloseDetails);
-            _backdrop.onClick.RemoveListener(CloseDetails);
+            _closeDetails.onClick.RemoveListener(DismissDetails);
+            _backdrop.onClick.RemoveListener(DismissDetails);
             _popups.Clear();
             RefreshPopup();
             _toast.Clear();
@@ -176,8 +176,6 @@ namespace HomelessPetHelper.Modules.Outing.UI
             _selecting = selecting;
             _inputPaused = paused;
             _cancel.interactable = !paused;
-            _closeDetails.interactable = !paused;
-            _backdrop.interactable = !paused;
             _detailsScroll.enabled = !paused;
             _toast.SetSuspended(paused);
             if (!selecting && !IsDetailsOpen) OpenDetails();
@@ -282,6 +280,12 @@ namespace HomelessPetHelper.Modules.Outing.UI
             RefreshPopup();
         }
 
+        private void DismissDetails()
+        {
+            if (!_selecting || _inputPaused) return;
+            CloseDetails();
+        }
+
         public void CloseDetails()
         {
             if (_popups.Top is PopupKind kind) _popups.TryClose(kind);
@@ -294,6 +298,9 @@ namespace HomelessPetHelper.Modules.Outing.UI
         {
             _detailsRoot.SetActive(IsDetailsOpen);
             _backdrop.gameObject.SetActive(IsDetailsOpen);
+            // After arrival this panel is the only way to play an activity or return to the station.
+            _closeDetails.gameObject.SetActive(_selecting);
+            _closeDetails.interactable = _backdrop.interactable = _selecting && !_inputPaused;
             _cancel.gameObject.SetActive(!IsDetailsOpen);
             if (_stationStatus != null)
             {

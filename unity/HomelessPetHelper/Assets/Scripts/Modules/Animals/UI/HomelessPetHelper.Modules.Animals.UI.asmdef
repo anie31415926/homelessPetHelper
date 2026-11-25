@@ -3,6 +3,7 @@
   "rootNamespace": "HomelessPetHelper.Modules.Animals.UI",
   "references": [
     "HomelessPetHelper.Modules.Animals",
+    "HomelessPetHelper.Modules.PetMotion",
     "UnityEngine.UI"
   ],
   "autoReferenced": false

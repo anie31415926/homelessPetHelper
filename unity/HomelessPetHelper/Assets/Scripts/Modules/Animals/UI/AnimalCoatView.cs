@@ -20,6 +20,12 @@ namespace HomelessPetHelper.Modules.Animals.UI
         public AnimalSnapshot Snapshot => _snapshot;
         public bool HasResources => _material != null || _texture != null;
 
+        internal void Bind(Graphic target, Shader shader)
+        {
+            _target = target;
+            _shader = shader;
+        }
+
         public void Show(AnimalSnapshot snapshot)
         {
             if (snapshot != null && snapshot.Coat == null) throw new ArgumentException("Explicit coat required.");

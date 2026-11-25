@@ -38,20 +38,21 @@ namespace HomelessPetHelper.Game.UI
         private float _stationConfirmAfter;
         private bool _focused = true, _backgrounded, _disposed, _completionHandled;
         private bool _saveNeedsReload, _rescueResultReturning;
-        private readonly bool _settingsOnly;
+        private readonly bool _settingsOnly, _returnToLocation;
         private int _guideRevision = -1;
         public LevelPopupKind? Top => _stack.Top;
         public int Depth => _stack.Depth;
         public GuideSession Guide => _guide;
         public string PauseCaption => _text.Get("menu.pause");
         public string ObjectivesCaption => _text.Get("menu.objectives");
+        internal string ReturnCaption => _text.Get(_returnToLocation ? "pause.returnLocation" : "pause.return");
         private bool CanInteract => !_disposed && _focused && !_backgrounded;
         internal bool StationConfirmReady => (_stationDialog?.Accept != null || _stationDialog?.AcceptInput != null) &&
             Time.unscaledTime >= _stationConfirmAfter;
 
         public LevelOverlaySession(LevelOverlayView view, LevelOverlayBindings bindings, MainAudioSession audio,
             GuidanceProgressSession progress, OptionPreviewText text, Settings.PlaySettingsSession play = null,
-            bool settingsOnly = false)
+            bool settingsOnly = false, bool returnToLocation = false)
         {
             if (view == null) throw new ArgumentNullException(nameof(view));
             _view = view;
@@ -59,6 +60,7 @@ namespace HomelessPetHelper.Game.UI
             _audio = audio;
             _play = play;
             _settingsOnly = settingsOnly;
+            _returnToLocation = returnToLocation;
             _progress = progress;
             _text = text ?? throw new ArgumentNullException(nameof(text));
             _view.Open(this, text);
@@ -79,7 +81,8 @@ namespace HomelessPetHelper.Game.UI
         public void OpenObjectives()
         {
             if (_settingsOnly || !CanInteract || _stack.Depth != 0) return;
-            _view.SetObjectives(_bindings.DescribeObjectives(), _bindings.CreateGuide() != null);
+            _view.SetObjectives(_bindings.DescribeObjectives(), _bindings.CreateGuide() != null,
+                showReplay: !_returnToLocation);
             _stack.TryOpen(LevelPopupKind.Objectives);
             Refresh();
         }
@@ -166,7 +169,8 @@ namespace HomelessPetHelper.Game.UI
         {
             if (_settingsOnly || !CanInteract) return;
             if (_stack.Depth == 0) _stack.TryOpen(LevelPopupKind.Pause);
-            RequestConfirmation(LevelPopupKind.Pause, Confirmation.Return, "confirm.return");
+            RequestConfirmation(LevelPopupKind.Pause, Confirmation.Return,
+                _returnToLocation ? "confirm.returnLocation" : "confirm.return");
         }
 
         private void RequestConfirmation(LevelPopupKind parent, Confirmation action, string captionKey)

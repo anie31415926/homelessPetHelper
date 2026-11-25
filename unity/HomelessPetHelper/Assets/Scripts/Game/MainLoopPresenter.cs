@@ -383,16 +383,18 @@ namespace HomelessPetHelper.Game
                 return;
             }
             _approach.gameObject.SetActive(true);
-            if (_activeField != null)
-            {
-                _overlays = new LevelOverlaySession(_approach.Overlays,
-                    new LevelOverlayBindings(_approach.SetOverlaySuspended, ReturnFromApproach,
-                        DescribeOpeningObjectives, () => opening.IsComplete ? null :
-                            _guides.Create(opening.Template.Id),
-                        _approach.BindOverlay, _approach.ResolveGuideTarget,
-                        _approach.PauseTarget, _approach.ObjectivesTarget),
-                    _audioSession, _guidance, _uiText, _playSettings);
-            }
+            if (_activeField != null) BindOpeningOverlays(opening, ReturnFromApproach);
+        }
+
+        private void BindOpeningOverlays(ApproachSession opening, Action returnRequested, bool exploring = false)
+        {
+            _overlays = new LevelOverlaySession(_approach.Overlays,
+                new LevelOverlayBindings(_approach.SetOverlaySuspended, returnRequested,
+                    () => DescribeOpeningObjectives(opening, exploring),
+                    () => exploring || opening.IsComplete ? null : _guides.Create(opening.Template.Id),
+                    _approach.BindOverlay, _approach.ResolveGuideTarget,
+                    _approach.PauseTarget, _approach.ObjectivesTarget),
+                _audioSession, _guidance, _uiText, _playSettings, returnToLocation: exploring);
         }
 
         private string DescribeExplorationActivity(ApproachMode mode)
@@ -426,6 +428,7 @@ namespace HomelessPetHelper.Game
             _approach.Bind(_explorationOpening, _content.ApproachText, false, CloseExplorationActivity,
                 CloseExplorationActivity, SetFieldSuspended, exploring: true);
             _approach.gameObject.SetActive(true);
+            BindOpeningOverlays(_explorationOpening, CloseExplorationActivity, exploring: true);
         }
 
         private void CaptureExploration()
@@ -441,6 +444,7 @@ namespace HomelessPetHelper.Game
         private void CloseExplorationActivity()
         {
             CaptureExploration();
+            CloseOverlays();
             _approach.gameObject.SetActive(false);
             _approach.Unbind();
             _explorationOpening.Dispose();
@@ -464,11 +468,11 @@ namespace HomelessPetHelper.Game
             return true;
         }
 
-        private string DescribeOpeningObjectives()
+        private string DescribeOpeningObjectives(ApproachSession opening, bool exploring)
         {
-            var opening = _approach.Session;
-            return _uiText.Get("objectives.opening", _uiText.Get(opening.IsComplete ? "objective.done" :
-                "objective.pending"), _approach.FieldInstruction);
+            string status = _uiText.Get(opening.IsComplete ? "objective.done" : "objective.pending");
+            return _uiText.Get(exploring ? "objectives.exploration" : "objectives.opening", status,
+                _approach.FieldInstruction);
         }
 
         private string DescribeRescueObjectives()
@@ -681,7 +685,6 @@ namespace HomelessPetHelper.Game
 
         public void Dispose()
         {
-            _explorationOpening?.Dispose();
             if (_disposed) return;
             _disposed = true;
             _travel?.Cancel();
@@ -691,6 +694,7 @@ namespace HomelessPetHelper.Game
             UnsubscribeBattle();
             _playSettings.Changed -= ApplyPlaySettings;
             CloseOverlays();
+            _explorationOpening?.Dispose();
             _mapPresenter?.Dispose();
             _approach.Unbind();
             _siege.UnbindEncounter();

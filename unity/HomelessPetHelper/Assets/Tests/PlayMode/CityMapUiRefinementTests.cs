@@ -1,11 +1,13 @@
 #if UNITY_EDITOR
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HomelessPetHelper.Framework.UI;
 using HomelessPetHelper.Framework.Persistence;
 using HomelessPetHelper.Game;
 using HomelessPetHelper.Game.Approach;
+using HomelessPetHelper.Game.UI;
 using HomelessPetHelper.Modules.Approach;
 using HomelessPetHelper.Modules.Outing;
 using HomelessPetHelper.Modules.Outing.UI;
@@ -175,8 +177,12 @@ namespace HomelessPetHelper.Tests.PlayMode
                 (!Label("Heading").text.StartsWith("已抵达") || !Button("Primary").IsInteractable())) yield return null;
             Assert.That(Label("Heading").text, Does.StartWith("已抵达"));
             Assert.That(Button("Explore").isActiveAndEnabled || Button("Puzzle").isActiveAndEnabled, Is.False);
+            Assert.That(Button("ClosePlace").isActiveAndEnabled, Is.False);
+            Button("MapModalBackdrop").onClick.Invoke();
+            Assert.That(_view.IsDetailsOpen, Is.True);
             Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero);
-            Button("Primary").onClick.Invoke();
+            yield return Settle();
+            ClickMapActionThroughRaycast("Primary");
             Assert.That(session.Outing.LastSummary.ElapsedMinutes, Is.EqualTo(5));
             Assert.That(session.Station.Animals, Is.Empty);
         }
@@ -201,21 +207,56 @@ namespace HomelessPetHelper.Tests.PlayMode
             Button("Explore").onClick.Invoke();
             var field = Object.FindObjectOfType<ApproachPanelView>();
             Assert.That(field.Session.Template.Mode, Is.EqualTo(ApproachMode.Cleanup));
+            Assert.That(FieldButton(field, "Pause").GetComponentInChildren<Text>().text, Is.EqualTo("暂停"));
+            Assert.That(FieldButton(field, "FieldObjectives").GetComponentInChildren<Text>().text, Is.EqualTo("目标"));
+            ClickField(field, "FieldObjectives");
+            Assert.That(root.Presenter.Overlays.Top, Is.EqualTo(LevelPopupKind.Objectives));
+            Assert.That(VisibleCopy(field, "ObjectivesPage"), Does.Contain("按住清理"));
+            Assert.That(VisibleCopy(field, "ObjectivesPage"),
+                Does.Not.Contain("继续进入救助").And.Not.Contain("重看操作指引"));
+            Assert.That(field.Session.IsSuspended, Is.True);
+            yield return LevelUiPlayTests.Capture(field, "exploration-cleanup-objectives");
+            ClickField(field, "OverlayCloseObjectives");
+            Assert.That(field.Session.IsSuspended, Is.False);
             int index = Enumerable.Range(0, field.Session.Template.Debris.Count)
                 .First(item => field.Session.CanReachDebris(item));
             var debris = field.Session.Template.Debris[index];
             Assert.That(field.Session.TryClean(debris.Cell, debris.Tool, .025, out var failure), Is.True,
                 failure.ToString());
             double remaining = field.Session.CaptureCheckpoint().RemainingWork[index];
-            field.SendMessage("Pause"); field.SendMessage("Return");
+            ClickField(field, "Pause");
+            Assert.That(FieldButton(field, "OverlayReturn").GetComponentInChildren<Text>().text,
+                Is.EqualTo("返回地点"));
+            ClickField(field, "OverlaySettings");
+            ClickField(field, "OverlayCancelSettings");
+            ClickField(field, "OverlayReturn");
+            Assert.That(VisibleCopy(field, "ConfirmationPage"), Does.Contain("现在返回地点"));
+            yield return LevelUiPlayTests.Capture(field, "exploration-return-confirmation");
+            ClickField(field, "OverlayCancel");
+            Assert.That(root.Presenter.Overlays.Top, Is.EqualTo(LevelPopupKind.Pause));
+            ClickField(field, "OverlayResume");
+            Assert.That(field.Session.IsSuspended, Is.False);
+            ReturnToLocation(field);
+            Assert.That(root.Presenter.Overlays, Is.Null);
+            Assert.That(Button("ClosePlace").isActiveAndEnabled, Is.False);
+            Button("MapModalBackdrop").onClick.Invoke();
+            Assert.That(_view.IsDetailsOpen, Is.True, "Dismissing the only arrival panel would strand the player.");
 
-            Button("Puzzle").onClick.Invoke();
+            yield return Settle();
+            ClickMapActionThroughRaycast("Puzzle");
             field = Object.FindObjectOfType<ApproachPanelView>();
+            Assert.That(field.Session.Template.Mode, Is.EqualTo(ApproachMode.Puzzle));
+            ClickField(field, "FieldObjectives");
+            Assert.That(VisibleCopy(field, "ObjectivesPage"), Does.Contain("移动木箱"));
+            ClickField(field, "OverlayCloseObjectives");
             int bridge = field.Session.Template.BridgeCells[0];
             Assert.That(field.Session.TryPlaceBridge(bridge, out _), Is.True);
-            field.SendMessage("Pause"); field.SendMessage("Return");
+            ReturnToLocation(field);
+            Assert.That(root.Presenter.Overlays, Is.Null);
+            Assert.That(session.Activity, Is.Null);
             Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero);
-            Button("Primary").onClick.Invoke();
+            yield return Settle();
+            ClickMapActionThroughRaycast("Primary");
             Assert.That(session.Outing.LastSummary.ElapsedMinutes, Is.EqualTo(25));
             Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(25));
             Assert.That(root.Presenter.Progress.CanContinue, Is.True);
@@ -229,14 +270,53 @@ namespace HomelessPetHelper.Tests.PlayMode
             Button("Explore").onClick.Invoke();
             field = Object.FindObjectOfType<ApproachPanelView>();
             Assert.That(field.Session.CaptureCheckpoint().RemainingWork[index], Is.EqualTo(remaining));
-            field.SendMessage("Pause"); field.SendMessage("Return");
+            ReturnToLocation(field);
             Button("Puzzle").onClick.Invoke();
             field = Object.FindObjectOfType<ApproachPanelView>();
             Assert.That(field.Session.CaptureCheckpoint().BridgeCell, Is.EqualTo(bridge));
-            field.SendMessage("Pause"); field.SendMessage("Return");
+            ReturnToLocation(field);
             Button("Primary").onClick.Invoke();
             Assert.That(session.Outing.LastSummary.ElapsedMinutes, Is.EqualTo(5));
             LogAssert.NoUnexpectedReceived();
+        }
+
+        private static Button FieldButton(ApproachPanelView field, string name) =>
+            field.GetComponentsInChildren<Button>().Single(button => button.name == name);
+
+        private static void ClickField(ApproachPanelView field, string name)
+        {
+            var button = FieldButton(field, name);
+            Assert.That(button.IsInteractable(), Is.True, name);
+            button.onClick.Invoke();
+        }
+
+        private static string VisibleCopy(ApproachPanelView field, string page) => string.Join("\n",
+            field.GetComponentsInChildren<RectTransform>().Single(rect => rect.name == page)
+                .GetComponentsInChildren<Text>().Select(label => label.text));
+
+        private static void ReturnToLocation(ApproachPanelView field)
+        {
+            ClickField(field, "Pause");
+            ClickField(field, "OverlayReturn");
+            ClickField(field, "OverlayConfirm");
+        }
+
+        private void ClickMapActionThroughRaycast(string name)
+        {
+            var button = Button(name);
+            LevelUiPlayTests.ScrollIntoView(button);
+            Canvas.ForceUpdateCanvases();
+            var rect = (RectTransform)button.transform;
+            var pointer = new PointerEventData(EventSystem.current)
+            {
+                position = RectTransformUtility.WorldToScreenPoint(null, rect.TransformPoint(rect.rect.center)),
+                button = PointerEventData.InputButton.Left
+            };
+            var hits = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointer, hits);
+            Assert.That(hits, Is.Not.Empty);
+            Assert.That(ExecuteEvents.ExecuteHierarchy(hits[0].gameObject, pointer, ExecuteEvents.pointerClickHandler),
+                Is.SameAs(button.gameObject), name);
         }
 
         private IEnumerator WaitForArrival()

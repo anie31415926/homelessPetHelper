@@ -51,7 +51,8 @@ namespace HomelessPetHelper.Game.UI
             if (_localizedLabels.Length != _labelKeys.Length)
                 throw new InvalidOperationException("Overlay localization bindings do not match.");
             for (int index = 0; index < _labelKeys.Length; index++)
-                _localizedLabels[index].text = text.Get(_labelKeys[index]);
+                _localizedLabels[index].text = _labelKeys[index] == "pause.return"
+                    ? session.ReturnCaption : text.Get(_labelKeys[index]);
             _session = session ?? throw new ArgumentNullException(nameof(session));
             _defaultTitle = _confirmationTitle.text;
             _defaultConfirm = _confirmLabel.text;
@@ -80,8 +81,12 @@ namespace HomelessPetHelper.Game.UI
             if (showKeyboard) _stationInput.OpenKeyboard();
         }
 
-        public void SetObjectives(string text, bool canReplay)
-        { _objectivesText.text = text; _replay.interactable = canReplay; }
+        public void SetObjectives(string text, bool canReplay, bool showReplay = true)
+        {
+            _objectivesText.text = text;
+            _replay.gameObject.SetActive(showReplay);
+            _replay.interactable = canReplay;
+        }
         public void SetConfirmation(string text)
         {
             _confirmationText.text = text;

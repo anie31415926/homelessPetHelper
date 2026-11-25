@@ -25,6 +25,7 @@
       "key": "pause.return",
       "value": "返回救助站"
     },
+    { "key": "pause.returnLocation", "value": "返回地点" },
     {
       "key": "settings.title",
       "value": "游戏设置"
@@ -94,6 +95,10 @@
       "value": "现在返回救助站？\n本次尚未完成的救助将结束；外出途中不保存，下次启动从站内检查点继续。"
     },
     {
+      "key": "confirm.returnLocation",
+      "value": "现在返回地点？本次清理或解谜的进度会保留，可在当前到访中继续。"
+    },
+    {
       "key": "confirm.resetAudio",
       "value": "将声音与玩法设置恢复默认？\n确认后可继续调整，点击保存才写入存档。"
     },
@@ -112,6 +117,10 @@
     {
       "key": "objectives.opening",
       "value": "安全通道：{0}\n{1}\n连通后，点击继续进入救助。旁侧杂物不必全部清完。"
+    },
+    {
+      "key": "objectives.exploration",
+      "value": "通道状态：{0}\n{1}"
     },
     {
       "key": "objectives.rescue",
