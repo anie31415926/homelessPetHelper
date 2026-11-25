@@ -33,6 +33,16 @@ namespace HomelessPetHelper.Game.Field
             }
             foreach (var variants in _layouts.Values)
                 variants.Sort((left, right) => string.CompareOrdinal(left.LayoutId, right.LayoutId));
+            // Unconfigured points still need a real scene so a visit never looks like it stayed on the map.
+            // Derive a point-specific copy of a configured, non-introductory template; saves stay isolated by
+            // point id + layout id, and the shared content version keeps the copy byte-stable.
+            OutingFieldLayout template = _layouts.Values.SelectMany(items => items)
+                .FirstOrDefault(item => !item.Introductory) ??
+                _layouts.Values.SelectMany(items => items).FirstOrDefault();
+            if (template != null)
+                foreach (string pointId in known)
+                    if (!_layouts.ContainsKey(pointId))
+                        _layouts.Add(pointId, new List<OutingFieldLayout> { template.ForPoint(pointId) });
         }
 
         public OutingFieldLayout Get(string pointId, int seed = 0, bool introductory = false)

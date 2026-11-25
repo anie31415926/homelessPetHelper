@@ -8270,8 +8270,8 @@ MonoBehaviour:
   _dirt: {fileID: 6719181031984087705}
   _fur: {fileID: 6539079470212417505}
   _bubbles: {fileID: 2997713643974717512}
-  _legacyCat: {fileID: 21300000, guid: 099cf82042a138e498db36376a0b41f0, type: 3}
-  _legacyDog: {fileID: 21300000, guid: 43f1712d098a41747a1104731c477248, type: 3}
+  _legacyCat: {fileID: 21300000, guid: e8ab41f882845da4e8d1a7be9a64343a, type: 3}
+  _legacyDog: {fileID: 21300000, guid: cd137a207a0a70f47bed528797be805e, type: 3}
   _rescueCat: {fileID: 21300000, guid: e8ab41f882845da4e8d1a7be9a64343a, type: 3}
   _rescueDog: {fileID: 21300000, guid: cd137a207a0a70f47bed528797be805e, type: 3}
   _catProjection: {fileID: 4900000, guid: e898a4a09c494a77b45bb66a9b3d6309, type: 3}
@@ -17235,7 +17235,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 099cf82042a138e498db36376a0b41f0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e8ab41f882845da4e8d1a7be9a64343a, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

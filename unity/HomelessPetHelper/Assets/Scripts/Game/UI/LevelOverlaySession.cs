@@ -42,6 +42,8 @@ namespace HomelessPetHelper.Game.UI
         private int _guideRevision = -1;
         public LevelPopupKind? Top => _stack.Top;
         public int Depth => _stack.Depth;
+        /// <summary>Settings keeps music audible for immediate volume preview while gameplay stays paused.</summary>
+        public bool IsSettingsOpen => _stack.Contains(LevelPopupKind.Settings);
         public GuideSession Guide => _guide;
         public string PauseCaption => _text.Get("menu.pause");
         public string ObjectivesCaption => _text.Get("menu.objectives");

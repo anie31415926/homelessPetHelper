@@ -151,6 +151,9 @@ namespace HomelessPetHelper.Tests.EditMode
             if (Application.isPlaying) yield return new ExitPlayMode();
         }
 
+        private static string ClockText(long minutes) =>
+            HomelessPetHelper.Modules.WorldTime.VirtualCalendar.ToDate(minutes, 1440).ToClockText();
+
         [UnityTest]
         public IEnumerator SavedMapUsesConfiguredCapacityTimingAndRequestTextInsteadOfPointNameConventions()
         {
@@ -159,9 +162,13 @@ namespace HomelessPetHelper.Tests.EditMode
             staging.SetActive(false);
             GameObject root = UnityEngine.Object.Instantiate(
                 AssetDatabase.LoadAssetAtPath<GameObject>(CityMapAssets.PanelPath), staging.transform);
-            var source = new TextAsset(AssetDatabase.LoadAssetAtPath<TextAsset>(CityMapAssets.ConfigPath).text
+            string configText = AssetDatabase.LoadAssetAtPath<TextAsset>(CityMapAssets.ConfigPath).text;
+            var baseline = new CityMapPreviewConfig(new TextAsset(configText));
+            Assert.That(baseline.TimePolicy.TryGetDuration(OutingReturnProgress.Exploring,
+                out long configuredVisit, out _), Is.True);
+            var source = new TextAsset(configText
                 .Replace("\"initialCapacity\": 2", "\"initialCapacity\": 0")
-                .Replace("\"explorationMinutes\": 5", "\"explorationMinutes\": 9")
+                .Replace("\"explorationMinutes\": " + configuredVisit, "\"explorationMinutes\": 9")
                 .Replace("\"textKey\": \"parking.rescue\"", "\"textKey\": \"yard.detail\""));
             TextAsset text = AssetDatabase.LoadAssetAtPath<TextAsset>(CityMapAssets.TextPath);
             var copy = new OptionPreviewText(text);
@@ -185,16 +192,16 @@ namespace HomelessPetHelper.Tests.EditMode
                     Assert.That(feedback.text, Is.EqualTo(copy.Get("full")));
                     primary.onClick.Invoke();
                     Assert.That(feedback.text, Is.EqualTo(copy.Get("full")));
-                    Assert.That(status.text, Is.EqualTo(copy.Get("status", 0, 0)));
+                    Assert.That(status.text, Is.EqualTo(copy.Get("status", 0, ClockText(0))));
                     root.GetComponent<CityMapView>().CloseDetails();
                     root.GetComponentsInChildren<Button>(true).Single(item => item.name == "Porch").onClick.Invoke();
                     primary.onClick.Invoke();
                     root.GetComponent<CityMapView>().OpenDetails();
                     primary.onClick.Invoke();
-                    Assert.That(status.text, Is.EqualTo(copy.Get("status", 0, 9)));
+                    Assert.That(status.text, Is.EqualTo(copy.Get("status", 0, ClockText(9))));
                     root.GetComponent<CityMapView>().OpenDetails();
                     primary.onClick.Invoke();
-                    Assert.That(status.text, Is.EqualTo(copy.Get("status", 0, 9)));
+                    Assert.That(status.text, Is.EqualTo(copy.Get("status", 0, ClockText(9))));
                 }
             }
             finally

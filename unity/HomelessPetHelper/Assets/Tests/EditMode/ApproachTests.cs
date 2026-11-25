@@ -148,6 +148,9 @@ namespace HomelessPetHelper.Tests.EditMode
         {
             using var progress = new MainProgressSession(_content.CreateMapConfig(), _content.Artwork);
             var loop = progress.Session;
+            var policy = _content.CreateMapConfig().TimePolicy;
+            Assert.That(policy.TryGetDuration(OutingReturnProgress.Negotiating,
+                out long negotiating, out _), Is.True);
             Guid id = Depart(loop);
             using var wrong = Open(mode);
             Assert.That(loop.TryStartOpeningRoute(wrong, out _), Is.False);
@@ -176,23 +179,28 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(loop.TryEnterRescueAfterOpening(activity, out _), Is.False);
             Assert.That(loop.TryConfirmRescue(out _), Is.False, "A cleared route is not rescue victory.");
             Assert.That(loop.TryReturnUnresolved(out _), Is.True);
-            Assert.That(loop.Clock.Current.ElapsedMinutes, Is.EqualTo(30));
+            Assert.That(loop.Clock.Current.ElapsedMinutes, Is.EqualTo(negotiating));
             Assert.That(loop.Station.Animals, Is.Empty);
             Assert.That(loop.TryReturnUnresolved(out _), Is.False);
-            Assert.That(loop.Clock.Current.ElapsedMinutes, Is.EqualTo(30));
+            Assert.That(loop.Clock.Current.ElapsedMinutes, Is.EqualTo(negotiating));
         }
 
         [TestCase(ApproachMode.Puzzle)] [TestCase(ApproachMode.Cleanup)]
-        public void EarlyReturnDisposesRouteAndRescuedReturnSettlesThirtyFiveMinutesOnce(ApproachMode mode)
+        public void EarlyReturnDisposesRouteAndRescuedReturnSettlesConfiguredMinutesOnce(ApproachMode mode)
         {
             using var progress = new MainProgressSession(_content.CreateMapConfig(), _content.Artwork);
             var loop = progress.Session;
+            var policy = _content.CreateMapConfig().TimePolicy;
+            Assert.That(policy.TryGetDuration(OutingReturnProgress.OpeningRoute,
+                out long opening, out _), Is.True);
+            Assert.That(policy.TryGetDuration(OutingReturnProgress.HandingOver,
+                out long fullOuting, out _), Is.True);
             Guid id = Depart(loop);
             var route = Open(mode, id);
             Assert.That(loop.TryStartOpeningRoute(route, out _), Is.True);
             Assert.That(loop.TryReturnUnresolved(out _), Is.True);
             Assert.That(route.IsClosed, Is.True);
-            Assert.That(loop.Clock.Current.ElapsedMinutes, Is.EqualTo(15));
+            Assert.That(loop.Clock.Current.ElapsedMinutes, Is.EqualTo(opening));
             Assert.That(loop.Requests.Requests.Single(r => r.TemplateId == "ordinary").State,
                 Is.EqualTo(RequestState.Available));
             id = Depart(loop);
@@ -205,10 +213,10 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(loop.TryConfirmRescue(out _), Is.True);
             Assert.That(loop.TryReturnRescued(new AnimalIntakeCondition(StationHealthAssessment.Unchecked,
                 65, Array.Empty<string>()), out _), Is.True);
-            Assert.That(loop.Clock.Current.ElapsedMinutes, Is.EqualTo(15 + 35));
+            Assert.That(loop.Clock.Current.ElapsedMinutes, Is.EqualTo(opening + fullOuting));
             Assert.That(loop.TryReturnRescued(new AnimalIntakeCondition(StationHealthAssessment.Unchecked,
                 65, Array.Empty<string>()), out _), Is.False);
-            Assert.That(loop.Clock.Current.ElapsedMinutes, Is.EqualTo(50));
+            Assert.That(loop.Clock.Current.ElapsedMinutes, Is.EqualTo(opening + fullOuting));
             Assert.That(loop.Station.Animals.Single().MatchesCurrentIndividual(activity.Individual), Is.True);
         }
 

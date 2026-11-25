@@ -77,11 +77,22 @@ namespace HomelessPetHelper.Tests.EditMode
             yield return Load();
             _loop.Dispose();
             var config = new CityMapPreviewConfig(AssetDatabase.LoadAssetAtPath<TextAsset>(CityMapAssets.ConfigPath));
-            AssertClock(config, 30, 35, "第 2 天  00:05");
-            AssertClock(config, 1, long.MaxValue, "第 9223372036854775808 天  00:00");
+            AssertClock(config, 30, 35);
+            AssertClock(config, 1, long.MaxValue);
         }
 
-        private void AssertClock(CityMapPreviewConfig config, int minutesPerDay, long elapsed, string expected)
+        private static long PolicyMinutes(HomelessPetHelper.Modules.Outing.OutingReturnProgress progress)
+        {
+            var config = new CityMapPreviewConfig(
+                AssetDatabase.LoadAssetAtPath<TextAsset>(CityMapAssets.ConfigPath));
+            Assert.That(config.TimePolicy.TryGetDuration(progress, false, out long minutes, out _), Is.True);
+            return minutes;
+        }
+
+        private static string Duration(long minutes) =>
+            HomelessPetHelper.Modules.WorldTime.GameTimeText.FormatDuration(minutes);
+
+        private void AssertClock(CityMapPreviewConfig config, int minutesPerDay, long elapsed)
         {
             var requests = config.CreateRequestPool();
             using (var shortDay = new GameLoopSession(2, minutesPerDay,
@@ -98,7 +109,9 @@ namespace HomelessPetHelper.Tests.EditMode
                 Assert.That(shortDay.Clock.Current.MinuteOfDay, Is.EqualTo(elapsed % minutesPerDay));
                 Click(_station, "StationMenu");
                 string clock = _station.GetComponentsInChildren<Text>().Single(text => text.name == "Clock").text;
-                Assert.That(clock, Is.EqualTo(expected));
+                Assert.That(clock, Is.EqualTo(
+                    HomelessPetHelper.Modules.WorldTime.VirtualCalendar
+                        .ToDate(elapsed, minutesPerDay).ToClockText()));
                 Click(_station, "CloseStationMenu");
             }
         }
@@ -147,7 +160,8 @@ namespace HomelessPetHelper.Tests.EditMode
             Click(_rescue, "Advance");
             Assert.That(_loop.Session.Station.Animals.Count, Is.EqualTo(1));
             Assert.That(_loop.Session.Station.Animals[0].AnimalId, Is.EqualTo(animalId));
-            Assert.That(_loop.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(25));
+            Assert.That(_loop.Session.Clock.Current.ElapsedMinutes,
+                Is.EqualTo(PolicyMinutes(HomelessPetHelper.Modules.Outing.OutingReturnProgress.HandingOver)));
         }
 
         [UnityTest]
@@ -165,7 +179,8 @@ namespace HomelessPetHelper.Tests.EditMode
             _loop.Session.Clock.SetSuspended(false);
             Click(_rescue, "Restart");
             Assert.That(_station.gameObject.activeSelf, Is.True);
-            Assert.That(_loop.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(20));
+            Assert.That(_loop.Session.Clock.Current.ElapsedMinutes,
+                Is.EqualTo(PolicyMinutes(HomelessPetHelper.Modules.Outing.OutingReturnProgress.Negotiating)));
 
             Click(_station, "Restart");
             Click(_map, "Primary");
@@ -214,7 +229,11 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(_loop.Session.Station.Animals, Is.Empty);
             Click(_station, "Restart");
             Assert.That(_map.gameObject.activeSelf, Is.True);
-            Assert.That(VisibleText(_map), Does.Contain("25"), "Route-free preview uses its actual time policy.");
+            Assert.That(_map.GetComponentsInChildren<Text>(true)
+                    .Single(text => text.name == "Departure").text,
+                Does.Contain(Duration(PolicyMinutes(
+                    HomelessPetHelper.Modules.Outing.OutingReturnProgress.HandingOver))),
+                "Route-free preview uses its actual time policy.");
             yield return CaptureSixRatios(_map, "map");
             Click(_map, "Primary");
             Assert.That(_rescue.gameObject.activeSelf, Is.True);
@@ -226,7 +245,8 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(_station.gameObject.activeSelf, Is.True);
             yield return CaptureSixRatios(_station, "arrival");
             Assert.That(_loop.Session.Station.Animals.Count, Is.EqualTo(1));
-            Assert.That(_loop.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(25));
+            Assert.That(_loop.Session.Clock.Current.ElapsedMinutes,
+                Is.EqualTo(PolicyMinutes(HomelessPetHelper.Modules.Outing.OutingReturnProgress.HandingOver)));
             AnimalSnapshot arrival = _loop.Session.LastArrival.Arrival.AnimalAtArrival;
             Assert.That(arrival.AnimalId, Is.EqualTo(animalId));
             Assert.That(arrival.Disposition.IsHungry, Is.False);
@@ -282,12 +302,18 @@ namespace HomelessPetHelper.Tests.EditMode
                 _map.SendMessage("OnApplicationFocus", true);
                 Click(_map, "Porch");
                 Assert.That(_map.GetComponentsInChildren<Text>().Single(text => text.name == "Departure").text,
-                    Does.Contain("5").And.Not.Contain("25"), "Reunion preview only supports arrival and return.");
+                    Does.Contain(Duration(PolicyMinutes(
+                        HomelessPetHelper.Modules.Outing.OutingReturnProgress.Exploring)))
+                        .And.Not.Contain(Duration(PolicyMinutes(
+                            HomelessPetHelper.Modules.Outing.OutingReturnProgress.HandingOver))),
+                    "Reunion preview only supports arrival and return.");
                 Click(_map, "Primary");
                 Assert.That(_loop.Session.Activity, Is.Null, "No fake owner handoff or kitten substitution.");
                 Click(_map, "Primary");
                 Assert.That(_station.gameObject.activeSelf, Is.True);
-                Assert.That(_loop.Session.Clock.Current.ElapsedMinutes, Is.EqualTo((index + 1) * 5));
+                Assert.That(_loop.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(
+                    (index + 1) * PolicyMinutes(
+                        HomelessPetHelper.Modules.Outing.OutingReturnProgress.Exploring)));
             }
             Click(_station, "Restart");
             Click(_map, "Yard");
@@ -301,7 +327,9 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(_loop.Session.Station.Animals, Is.Empty);
             Click(_rescue, "Advance");
             Assert.That(_station.gameObject.activeSelf, Is.True);
-            Assert.That(_loop.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(40));
+            Assert.That(_loop.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(
+                4 * PolicyMinutes(HomelessPetHelper.Modules.Outing.OutingReturnProgress.Exploring) +
+                PolicyMinutes(HomelessPetHelper.Modules.Outing.OutingReturnProgress.Negotiating)));
             Assert.That(_loop.Session.Map.TrySelectPoint("parking", out _, out _), Is.True);
             Click(_station, "Restart");
             Click(_map, "Primary");

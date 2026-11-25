@@ -11,6 +11,7 @@ using HomelessPetHelper.Modules.Rescue;
 using HomelessPetHelper.Modules.Siege;
 using HomelessPetHelper.Modules.Siege.UI;
 using HomelessPetHelper.Modules.Station.UI;
+using HomelessPetHelper.Modules.WorldTime;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -60,13 +61,17 @@ namespace HomelessPetHelper.Tests.PlayMode
             var outing = session.Outing.Session;
             var content = Resources.FindObjectsOfTypeAll<GameContent>().Single(item => item.name == "GameContent");
             var copy = new OptionPreviewText(content.MapText);
-            Assert.That(MapLabel("Departure"), Is.EqualTo(copy.Get("departure.rescue", 35,
-                copy.Get("space.required"))));
+            var policy = content.CreateMapConfig().TimePolicy;
+            Assert.That(policy.TryGetDuration(OutingReturnProgress.Exploring, out long visit, out _), Is.True);
+            Assert.That(policy.TryGetDuration(OutingReturnProgress.HandingOver, out long rescue, out _), Is.True);
+            Assert.That(MapLabel("Departure"), Is.EqualTo(
+                copy.Get("visit.cost", GameTimeText.FormatDuration(visit)) + "\n" +
+                copy.Get("visit.rescueCost", GameTimeText.FormatDuration(rescue))));
             Assert.That(session.Requests.Requests.All(request => request.State == RequestState.Available), Is.True);
-            Assert.That(outing.HasDeparted, Is.False);
+            Assert.That(outing.HasDeparted, Is.False, "fresh restart has not departed");
             Click(_map, "Porch");
             Button primary = FindButton(_map, "Primary");
-            Assert.That(primary.IsInteractable(), Is.False);
+            Assert.That(primary.IsInteractable(), Is.False, "reunion point is unavailable");
             Assert.That(MapLabel("Feedback"), Is.EqualTo(copy.Get("unavailable.reunion")));
             primary.onClick.Invoke();
             Assert.That(outing.Stage, Is.EqualTo(OutingStage.MapSelecting));
@@ -79,7 +84,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             primary.onClick.Invoke();
             Assert.That(primary.IsInteractable(), Is.False, "Command must recheck a stale enabled button.");
             Assert.That(MapLabel("Feedback"), Is.EqualTo(copy.Get("request.unavailable")));
-            Assert.That(outing.HasDeparted, Is.False);
+            Assert.That(outing.HasDeparted, Is.False, "stale command must not depart");
             Assert.That(session.Activity, Is.Null);
             Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero);
             Click(_map, "Cancel");
@@ -123,10 +128,14 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(session.Station.Animals.Count, Is.EqualTo(1));
             var arrival = session.Station.Animals[0];
             Assert.That(arrival.MatchesCurrentIndividual(activity.Individual), Is.True);
-            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(35));
+            var fullContent = Resources.FindObjectsOfTypeAll<GameContent>()
+                .Single(item => item.name == "GameContent");
+            Assert.That(fullContent.CreateMapConfig().TimePolicy.TryGetDuration(
+                OutingReturnProgress.HandingOver, out long fullOuting, out _), Is.True);
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(fullOuting));
             staleReturn.onClick.Invoke();
             Assert.That(session.Station.Animals.Count, Is.EqualTo(1));
-            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(35));
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(fullOuting));
             yield return Capture(_station, "summary");
             Click(_station, "Enter");
             Click(_station, "Animal0");

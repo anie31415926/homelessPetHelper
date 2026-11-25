@@ -23,7 +23,7 @@ if (await access(`${source}/${prefix}submission.json`).then(() => true, () => fa
     throw new Error('Submission exists. Inspect its history rather than enqueueing again.');
 }
 await mkdir(source, { recursive: true });
-const cat = 'unity/HomelessPetHelper/Assets/Art/Station/T_Station_CatTemporary.png';
+const cat = 'unity/HomelessPetHelper/Assets/Art/PetMotion/T_Pet_original.png';
 const reference = empty ? await readFile(`${source}/master.png`) : await sharp({ create: { width: 768, height: 768, channels: 3, background: '#ffffff' } })
     .composite([{ input: await sharp(await readFile(cat)).resize(300, 300).toBuffer(), left: 234, top: 234 }])
     .png().toBuffer();

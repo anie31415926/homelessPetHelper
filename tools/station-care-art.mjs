@@ -13,7 +13,7 @@ if (!['127.0.0.1', 'localhost', '[::1]'].includes(new URL(server).hostname)) {
   throw new Error('This preview generator only accepts a local ComfyUI endpoint.');
 }
 for (const kind of ['Dog', 'Cat']) {
-  for (const file of [`${sourceFolder}/${kind}-master.png`, `${outputFolder}/T_Station_${kind}Temporary.png`]) {
+  for (const file of [`${sourceFolder}/${kind}-master.png`, `${outputFolder}/T_Station_${kind}Care.png`]) {
     const exists = await access(file).then(() => true, () => false);
     if (exists) throw new Error(`Refusing to overwrite existing art; choose a new reviewed batch path: ${file}`);
   }
@@ -65,7 +65,7 @@ for (const [kind, reference, seed] of [
   const master = Buffer.from(await (await fetch(`${server}/view?${params}`)).arrayBuffer());
   await writeFile(path.join(sourceFolder, `${kind}-master.png`), master);
   await sharp(master).resize(512, 512, { fit: 'inside', withoutEnlargement: true }).png({ compressionLevel: 9 })
-    .toFile(path.join(outputFolder, `T_Station_${kind}Temporary.png`));
+    .toFile(path.join(outputFolder, `T_Station_${kind}Care.png`));
   await writeFile(path.join(sourceFolder, `${kind}-history.json`), JSON.stringify(result, null, 2));
   console.log(kind, 'saved for visual review');
 }

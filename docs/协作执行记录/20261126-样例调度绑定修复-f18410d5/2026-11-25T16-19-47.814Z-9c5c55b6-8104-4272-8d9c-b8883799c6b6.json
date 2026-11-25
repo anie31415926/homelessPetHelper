@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261126-样例调度绑定修复-f18410d5.md",
+  "sessionId": "f18410d5-a077-4df3-9ecd-d99ac7e7b448",
+  "phase": "delivery",
+  "readAt": "2026-11-25T16:19:47.814Z",
+  "writePaths": [
+    "docs/协作任务/20261126-样例调度绑定修复-f18410d5.md",
+    "docs/协作执行记录/20261126-样例调度绑定修复-f18410d5/",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/LevelUi/FieldSamplePreview.cs"
+  ],
+  "contextDigest": "f733120e4c775a18b5b6b2e4dffe243ca628ca9a5cbf6f06d510c50db52c517d",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261125-地图进现场与返回链路-wbmapfix.md",
+      "sha256": "49f5cf782b4ff37f49f765b09d63543ca5ddff77b68324372fbae51eb4750688"
+    },
+    {
+      "path": "docs/协作任务/20261125-暂停音频与统一计时-b1414019.md",
+      "sha256": "4271103179113d6470729b0b5616efd9ff51da172ec7bac5d4e6d988707594e0"
+    },
+    {
+      "path": "docs/协作任务/20261126-样例调度绑定修复-f18410d5.md",
+      "sha256": "dfcc3f042a89694e1b2e7dc8e759a894e58882993e751f9e41861af40f5cdb7f"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}

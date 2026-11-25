@@ -1,5 +1,7 @@
 # 街区地图临时图
 
+> 2026-11-26 清理注记：本批次 workflow / history 中引用的 `T_Station_CatTemporary.png` 等临时资源已删除，此处保留为历史快照，不是当前资源清单。
+
 2026-11-18，用户要求使用已有动画画风与 ComfyUI，替代地图白板。唯一条目：`city-map.neighborhood`，仍为 `temporary / preview-only`，人工观感、来源许可与微信交付均待验收。
 
 ## 生成与选择

@@ -50,11 +50,12 @@ namespace HomelessPetHelper.Tests.PlayMode
             var station = UnityEngine.Object.FindObjectOfType<HomelessPetHelper.Modules.Station.UI.StationPanelView>();
             station.GetComponentsInChildren<Button>().Single(button => button.name == "Restart").onClick.Invoke();
             _view = UnityEngine.Object.FindObjectOfType<CityMapView>();
-            Assert.That(Label("Status").text, Is.EqualTo(Copy("status", 7, 0)));
+            Assert.That(Label("Status").text, Is.Empty,
+                "The exploration UI reserves the status label for the station clock.");
             Assert.That(Button("Primary").IsInteractable(), Is.True);
             Assert.That(session.Station.TryExpandTemporaryCapacity(session.StationSessionId, 9, out _), Is.True);
             Click("Yard");
-            Assert.That(Label("Status").text, Is.EqualTo(Copy("status", 9, 0)));
+            Assert.That(Label("Status").text, Is.Empty);
             Click("Cancel");
             var content = AssetDatabase.LoadAssetAtPath<HomelessPetHelper.Game.GameContent>(
                 "Assets/Settings/Game/GameContent.asset");
@@ -101,6 +102,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Click("Cancel");
             Assert.That(Label("Details").text, Is.EqualTo(Copy("cancelled")));
             Assert.That(Label("Status").text, Is.EqualTo(initialStatus));
+            long visit = VisitMinutes();
             Click("Primary");
             for (int index = 0; index < 3; index++)
             {
@@ -111,14 +113,16 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Click("Yard");
                 Click("Primary");
                 Assert.That(Label("Heading").text, Is.EqualTo(Copy("station")));
-                Assert.That(Label("Status").text, Is.EqualTo(Copy("status", 2, (index + 1) * 5)));
-                Assert.That(Label("Details").text, Is.EqualTo(Copy("returned", 5)));
+                Assert.That(Label("Status").text, Is.EqualTo(Copy("status", 2, ClockAt((index + 1) * visit))));
+                Assert.That(Label("Details").text, Is.EqualTo(Copy("returned", Duration(visit)))
+                    .Or.EqualTo(Copy("returned.exploring", Duration(visit))));
                 Click("Primary");
             }
             Click("Yard");
             Click("Primary");
             Click("Primary");
-            Assert.That(Label("Details").text, Is.EqualTo(Copy("returned", 5)));
+            Assert.That(Label("Details").text, Is.EqualTo(Copy("returned", Duration(visit)))
+                .Or.EqualTo(Copy("returned.exploring", Duration(visit))));
             yield return SceneManager.LoadSceneAsync("Assets/Scenes/Main.unity");
             yield return Load();
             Assert.That(Label("Status").text, Is.EqualTo(initialStatus));
@@ -149,7 +153,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(Label("Heading").text, Is.EqualTo(Copy("parking")));
             Assert.That(Button("Primary").IsInteractable(), Is.True);
             Assert.That(Label("Departure").text,
-                Is.EqualTo(Copy("departure.preview", 5, Copy("space.required"))));
+                Is.EqualTo(Copy("departure.preview", Duration(VisitMinutes()), Copy("space.required"))));
             Assert.That(Label("Status").text, Is.EqualTo(status));
             yield return SceneManager.LoadSceneAsync("Assets/Scenes/Main.unity");
         }
@@ -348,6 +352,24 @@ namespace HomelessPetHelper.Tests.PlayMode
             File.WriteAllBytes(path, image.EncodeToPNG());
             UnityEngine.Object.Destroy(image);
         }
+
+        private static long VisitMinutes()
+        {
+            var content = AssetDatabase.LoadAssetAtPath<HomelessPetHelper.Game.GameContent>(
+                "Assets/Settings/Game/GameContent.asset");
+            Assert.That(content.CreateMapConfig().TimePolicy.TryGetDuration(
+                HomelessPetHelper.Modules.Outing.OutingReturnProgress.Exploring,
+                out long visit, out _), Is.True);
+            return visit;
+        }
+
+        private static string Duration(long minutes) =>
+            HomelessPetHelper.Modules.WorldTime.GameTimeText.FormatDuration(minutes);
+
+        private static string ClockAt(long minutes) =>
+            HomelessPetHelper.Modules.WorldTime.VirtualCalendar.ToDate(minutes,
+                HomelessPetHelper.Modules.WorldTime.VirtualCalendar.HoursPerDay *
+                HomelessPetHelper.Modules.WorldTime.VirtualCalendar.MinutesPerHour).ToClockText();
 
         private string Copy(string key, params object[] args) =>
             string.Format(_copy.entries.Single(entry => entry.key == key).value, args);

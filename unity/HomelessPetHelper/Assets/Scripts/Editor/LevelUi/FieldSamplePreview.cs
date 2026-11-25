@@ -82,6 +82,9 @@ namespace HomelessPetHelper.Editor.LevelUi
             definition["allowedPointIds"] = new JArray(point);
             map["initialRequests"] = new JArray(new JObject
             { ["templateId"] = template, ["pointId"] = point, ["templateVersion"] = 1 });
+            // The sample keeps a single authored request; keeping dispatch would reference points and
+            // templates this derived config no longer allows, and validation rejects the binding.
+            map.Remove("dispatch");
             var source = new TextAsset(map.ToString()) { hideFlags = HideFlags.DontSave };
             Bind(content, "_mapConfig", source);
             var serialized = new SerializedObject(content);

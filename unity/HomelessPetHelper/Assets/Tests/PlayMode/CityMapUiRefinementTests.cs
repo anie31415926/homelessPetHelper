@@ -163,26 +163,47 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator VisitWithoutRequestCanReturnWithoutStartingAnyActivity()
+        public IEnumerator VisitWithoutRequestEntersSceneWithDefaultFieldAndReturnsThroughMap()
         {
             yield return Load();
-            var session = Object.FindObjectOfType<MainGameRoot>().Presenter.Session;
+            var root = Object.FindObjectOfType<MainGameRoot>();
+            var session = root.Presenter.Session;
             Button("Park").onClick.Invoke();
             Assert.That(Label("PrimaryLabel").text, Is.EqualTo("去探索"));
             Button("Primary").onClick.Invoke();
+            var field = Object.FindObjectOfType<ApproachPanelView>();
             float deadline = Time.realtimeSinceStartup + 7;
             while (Time.realtimeSinceStartup < deadline &&
-                (!Label("Heading").text.StartsWith("已抵达") || !Button("Primary").IsInteractable())) yield return null;
-            Assert.That(Label("Heading").text, Does.StartWith("已抵达"));
-            Assert.That(Button("Explore").isActiveAndEnabled || Button("Puzzle").isActiveAndEnabled, Is.False);
-            Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero);
-            Button("Primary").onClick.Invoke();
-            Assert.That(session.Outing.LastSummary.ElapsedMinutes, Is.EqualTo(5));
+                (field == null || !field.isActiveAndEnabled || field.Session == null)) yield return null;
+            Assert.That(field.isActiveAndEnabled, Is.True, "A visit must enter the scene, not stay on the map.");
+            Assert.That(field.FieldScene.Layout, Is.Not.Null,
+                "An unconfigured point still shows a default field scene, not the bare map.");
+            Assert.That(field.Session.Template.Mode, Is.EqualTo(ApproachMode.Cleanup).Or.EqualTo(ApproachMode.Puzzle),
+                "The activity is picked deterministically, never left as a player choice.");
+            Assert.That(_view.gameObject.activeSelf, Is.False, "The map is hidden while the scene is shown.");
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero, "Opening a scene alone costs no time.");
+
+            // Field back steps up to the map, keeping the outing alive and free of leftover popups.
+            field.SendMessage("Return");
+            deadline = Time.realtimeSinceStartup + 7;
+            while (Time.realtimeSinceStartup < deadline && !_view.gameObject.activeSelf) yield return null;
+            Assert.That(_view.gameObject.activeSelf, Is.True);
+            Assert.That(root.Presenter.Overlays, Is.Null, "Returning to the map leaves no popup behind.");
+            Assert.That(session.Outing.Session.IsSettled, Is.False, "Field back keeps the outing alive.");
+
+            // Only the map's own back settles and returns to the station.
+            Button("Cancel").onClick.Invoke();
+            deadline = Time.realtimeSinceStartup + 7;
+            while (Time.realtimeSinceStartup < deadline && session.Outing.LastSummary == null) yield return null;
+            var content = Resources.FindObjectsOfTypeAll<GameContent>().Single(item => item.name == "GameContent");
+            Assert.That(content.CreateMapConfig().TimePolicy.TryGetDuration(
+                OutingReturnProgress.Exploring, out long visit, out _), Is.True);
+            Assert.That(session.Outing.LastSummary.ElapsedMinutes, Is.EqualTo(visit));
             Assert.That(session.Station.Animals, Is.Empty);
         }
 
         [UnityTest]
-        public IEnumerator VisitAtAnActiveRequestPlaysBothActivitiesAndRevisitsSavedBoards()
+        public IEnumerator VisitAtAnActiveRequestRandomlyEntersSceneWithoutTakingTheRequest()
         {
             _storage.Dispose();
             var saves = new MemorySaveStorage();
@@ -194,57 +215,31 @@ namespace HomelessPetHelper.Tests.PlayMode
             var requestState = request.State;
             Button("Parking").onClick.Invoke();
             Button("Explore").onClick.Invoke();
-            yield return WaitForArrival();
-            Assert.That(session.Outing.Session.AcceptedRequestId, Is.EqualTo(System.Guid.Empty));
-            Assert.That(request.State, Is.EqualTo(requestState));
-
-            Button("Explore").onClick.Invoke();
             var field = Object.FindObjectOfType<ApproachPanelView>();
-            Assert.That(field.Session.Template.Mode, Is.EqualTo(ApproachMode.Cleanup));
-            int index = Enumerable.Range(0, field.Session.Template.Debris.Count)
-                .First(item => field.Session.CanReachDebris(item));
-            var debris = field.Session.Template.Debris[index];
-            Assert.That(field.Session.TryClean(debris.Cell, debris.Tool, .025, out var failure), Is.True,
-                failure.ToString());
-            double remaining = field.Session.CaptureCheckpoint().RemainingWork[index];
-            field.SendMessage("Pause"); field.SendMessage("Return");
-
-            Button("Puzzle").onClick.Invoke();
-            field = Object.FindObjectOfType<ApproachPanelView>();
-            int bridge = field.Session.Template.BridgeCells[0];
-            Assert.That(field.Session.TryPlaceBridge(bridge, out _), Is.True);
-            field.SendMessage("Pause"); field.SendMessage("Return");
-            Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero);
-            Button("Primary").onClick.Invoke();
-            Assert.That(session.Outing.LastSummary.ElapsedMinutes, Is.EqualTo(25));
-            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(25));
-            Assert.That(root.Presenter.Progress.CanContinue, Is.True);
-
-            yield return Load();
-            session = Object.FindObjectOfType<MainGameRoot>().Presenter.Session;
-            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(25));
-            Button("Parking").onClick.Invoke();
-            (Button("Explore").isActiveAndEnabled ? Button("Explore") : Button("Primary")).onClick.Invoke();
-            yield return WaitForArrival();
-            Button("Explore").onClick.Invoke();
-            field = Object.FindObjectOfType<ApproachPanelView>();
-            Assert.That(field.Session.CaptureCheckpoint().RemainingWork[index], Is.EqualTo(remaining));
-            field.SendMessage("Pause"); field.SendMessage("Return");
-            Button("Puzzle").onClick.Invoke();
-            field = Object.FindObjectOfType<ApproachPanelView>();
-            Assert.That(field.Session.CaptureCheckpoint().BridgeCell, Is.EqualTo(bridge));
-            field.SendMessage("Pause"); field.SendMessage("Return");
-            Button("Primary").onClick.Invoke();
-            Assert.That(session.Outing.LastSummary.ElapsedMinutes, Is.EqualTo(5));
-            LogAssert.NoUnexpectedReceived();
-        }
-
-        private IEnumerator WaitForArrival()
-        {
             float deadline = Time.realtimeSinceStartup + 7;
             while (Time.realtimeSinceStartup < deadline &&
-                (!Button("Puzzle").isActiveAndEnabled || !Button("Puzzle").IsInteractable())) yield return null;
-            Assert.That(Button("Puzzle").isActiveAndEnabled && Button("Puzzle").IsInteractable(), Is.True);
+                (field == null || !field.isActiveAndEnabled || field.Session == null)) yield return null;
+            Assert.That(field.isActiveAndEnabled, Is.True, "A pure visit enters a scene even at a help point.");
+            Assert.That(field.Session.Template.Mode, Is.EqualTo(ApproachMode.Cleanup).Or.EqualTo(ApproachMode.Puzzle),
+                "The activity is seeded, not chosen by the player.");
+            Assert.That(session.Outing.Session.AcceptedRequestId, Is.EqualTo(System.Guid.Empty),
+                "A pure visit never takes the request.");
+            Assert.That(request.State, Is.EqualTo(requestState), "The help request stays open.");
+
+            field.SendMessage("Return");
+            deadline = Time.realtimeSinceStartup + 7;
+            while (Time.realtimeSinceStartup < deadline && !_view.gameObject.activeSelf) yield return null;
+            Assert.That(_view.gameObject.activeSelf, Is.True, "Field back returns to the map.");
+            Assert.That(root.Presenter.Overlays, Is.Null, "No popup survives the return.");
+            Button("Cancel").onClick.Invoke();
+            deadline = Time.realtimeSinceStartup + 7;
+            while (Time.realtimeSinceStartup < deadline && session.Outing.LastSummary == null) yield return null;
+            var content = Resources.FindObjectsOfTypeAll<GameContent>().Single(item => item.name == "GameContent");
+            Assert.That(content.CreateMapConfig().TimePolicy.TryGetDuration(
+                OutingReturnProgress.Exploring, out long visit, out _), Is.True);
+            Assert.That(session.Outing.LastSummary.ElapsedMinutes, Is.EqualTo(visit));
+            Assert.That(root.Presenter.Progress.CanContinue, Is.True);
+            LogAssert.NoUnexpectedReceived();
         }
 
         [UnityTest]
@@ -469,7 +464,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return Load(); Button("Yard").onClick.Invoke();
             var details = _view.GetComponentsInChildren<ScrollRect>(true).Single(scroll => scroll != Map());
             string paragraph = Label("Details").text;
-            _view.Render("空余安置位 999    ·    已用时 999999 分钟", Label("Heading").text,
+            _view.Render("空余安置位 999    ·    999年12月30日 23:59", Label("Heading").text,
                 string.Join("\n", Enumerable.Repeat(paragraph, 24)), Label("Departure").text,
                 "安置位已满，请先腾出位置。", "前往这里", true, false, false);
             yield return Settle();

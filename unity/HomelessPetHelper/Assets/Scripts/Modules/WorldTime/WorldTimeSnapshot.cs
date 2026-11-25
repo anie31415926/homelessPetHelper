@@ -12,6 +12,9 @@ namespace HomelessPetHelper.Modules.WorldTime
 
         public int MinuteOfDay => (int)(ElapsedMinutes % MinutesPerDay);
 
+        /// <summary>In-game calendar date derived from persisted minutes; no separate save field.</summary>
+        public VirtualDate Date => VirtualCalendar.ToDate(ElapsedMinutes, MinutesPerDay);
+
         internal WorldTimeSnapshot(WorldTimeVersion version, int minutesPerDay)
         {
             Version = version;

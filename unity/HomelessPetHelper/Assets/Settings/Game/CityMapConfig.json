@@ -7,10 +7,10 @@
   "minutesPerDay": 1440,
   "seed": 20261118,
   "timePolicy": {
-    "explorationMinutes": 5,
-    "openingMinutes": 10,
-    "negotiationMinutes": 15,
-    "handoverMinutes": 5
+    "explorationMinutes": 30,
+    "openingMinutes": 60,
+    "negotiationMinutes": 90,
+    "handoverMinutes": 30
   },
   "points": [
     { "id": "parking", "nameKey": "parking", "detailKey": "parking.detail", "regionId": "nearby",
@@ -38,17 +38,17 @@
   "rescueEncounters": [
     { "templateId": "ordinary", "animalDefinitionId": "cat.shy", "encounterId": "cat", "dogArtwork": false,
       "knownHealthy": true, "dirtiness": 65, "looseFur": 50, "rescueProfile": "calm", "isHungry": true,
-      "acceptsTouch": true, "acceptsWash": true, "acceptsGroom": true, "washMinutes": 20, "groomMinutes": 12,
+      "acceptsTouch": true, "acceptsWash": true, "acceptsGroom": true, "washMinutes": 60, "groomMinutes": 36,
       "initialDisposition": { "emotion": 0, "stress": 0, "behavior": 0 },
       "rescuedDisposition": { "emotion": 2, "stress": 0, "behavior": 9 } },
     { "templateId": "treehouse-kitten", "animalDefinitionId": "cat.shy", "encounterId": "cat", "dogArtwork": false,
       "knownHealthy": true, "dirtiness": 65, "looseFur": 50, "rescueProfile": "calm", "isHungry": true,
-      "acceptsTouch": true, "acceptsWash": true, "acceptsGroom": true, "washMinutes": 20, "groomMinutes": 12,
+      "acceptsTouch": true, "acceptsWash": true, "acceptsGroom": true, "washMinutes": 60, "groomMinutes": 36,
       "initialDisposition": { "emotion": 0, "stress": 0, "behavior": 0 },
       "rescuedDisposition": { "emotion": 2, "stress": 0, "behavior": 9 } },
     { "templateId": "ordinary-dog", "animalDefinitionId": "dog", "encounterId": "dog", "dogArtwork": true,
       "knownHealthy": true, "dirtiness": 65, "looseFur": 50, "rescueProfile": "calm", "isHungry": true,
-      "acceptsTouch": true, "acceptsWash": true, "acceptsGroom": true, "washMinutes": 20, "groomMinutes": 12,
+      "acceptsTouch": true, "acceptsWash": true, "acceptsGroom": true, "washMinutes": 60, "groomMinutes": 36,
       "initialDisposition": { "emotion": 0, "stress": 0, "behavior": 0 },
       "rescuedDisposition": { "emotion": 2, "stress": 0, "behavior": 9 } }
   ],

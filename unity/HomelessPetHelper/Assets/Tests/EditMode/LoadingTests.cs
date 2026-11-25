@@ -63,7 +63,8 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(dependencies.Where(path => path.EndsWith(".png", StringComparison.Ordinal)), Is.EquivalentTo(
                 new[] { "Assets/Art/Loading/T_Loading_Elements.png", "Assets/Art/Loading/T_Loading_Background.png",
                     "Assets/Art/UI/T_UI_LevelControls.png" }));
-            Assert.That(dependencies, Does.Contain("Assets/Art/Loading/T_WeChat_Cover.jpg"));
+            // 标题页已改为图集切片拼装；烘焙 JPG 只服务微信开屏配置（WeChatEnvironmentProbe），不在运行时依赖图里。
+            Assert.That(dependencies, Does.Not.Contain("Assets/Art/Loading/T_WeChat_Cover.jpg"));
         }
 
         [Test]
@@ -93,7 +94,7 @@ namespace HomelessPetHelper.Tests.EditMode
                 Assert.That(image.raycastTarget, Is.EqualTo(image == entry.targetGraphic));
                 Assert.That(image.sprite, Is.Not.Null, image.name + " must retain its imported sprite identity.");
             }
-            Assert.That(prefab.GetComponentsInChildren<Image>(true).Length, Is.EqualTo(35));
+            Assert.That(prefab.GetComponentsInChildren<Image>(true).Length, Is.EqualTo(42)); // 旧整图封面 Image 已移除（-1），拼装封面新增背景+7切片 Image（+8）。
             foreach (string name in new[] { "T_Loading_Elements.png", "T_Loading_Background.png" })
             {
                 var importer = (TextureImporter)AssetImporter.GetAtPath("Assets/Art/Loading/" + name);

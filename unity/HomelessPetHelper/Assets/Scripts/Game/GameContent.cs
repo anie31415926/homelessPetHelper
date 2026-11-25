@@ -66,9 +66,17 @@ namespace HomelessPetHelper.Game
 
         public OutingArtwork GetOutingArtwork(string pointId)
         {
+            // Only the two authored scenes are kept; every other point falls back to the first
+            // (parking) so entering a location always shows a real field instead of an empty map.
+            OutingArtwork fallback = null;
             foreach (OutingArtwork item in _outingArtwork)
-                if (item != null && item.PointId == pointId && item.Background != null) return item;
-            throw new ArgumentException("Missing outing artwork: " + pointId, nameof(pointId));
+            {
+                if (item == null || item.Background == null) continue;
+                if (fallback == null) fallback = item;
+                if (item.PointId == pointId) return item;
+            }
+            if (fallback == null) throw new ArgumentException("Missing outing artwork: " + pointId, nameof(pointId));
+            return fallback;
         }
 
         public Sprite GetOutingBackground(string pointId) => GetOutingArtwork(pointId).Background;
@@ -85,7 +93,7 @@ namespace HomelessPetHelper.Game
                     !ids.Add(item.PointId) || item.Background == null ||
                     !map.Definition.TryGetPoint(item.PointId, out _))
                     throw new InvalidOperationException("Invalid or duplicate outing artwork binding.");
-            foreach (var point in map.Definition.Points) GetOutingBackground(point.PointId);
+            if (ids.Count == 0) throw new InvalidOperationException("Missing outing artwork fallback.");
         }
 
         public void Validate()

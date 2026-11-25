@@ -4,6 +4,7 @@ using System.Linq;
 using HomelessPetHelper.Framework.Audio;
 using HomelessPetHelper.Framework.Persistence;
 using HomelessPetHelper.Game;
+using HomelessPetHelper.Game.UI;
 using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Rescue;
 using HomelessPetHelper.Modules.Station.UI;
@@ -74,17 +75,78 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(Source().timeSamples, Is.GreaterThanOrEqualTo(sample), "Same field cue must not restart.");
             _main.Presenter.Overlays.OpenPause();
             yield return null;
-            Assert.That(_main.Audio.Playback.IsSuspended, Is.True);
-            Assert.That(Source().isPlaying, Is.False);
+            Assert.That(_main.Audio.Playback.IsSuspended, Is.False, "pause menu must not stop music.");
+            Assert.That(Source().isPlaying, Is.True, "music keeps playing on the pause menu.");
             FocusAudio(false);
+            yield return null;
+            Assert.That(Source().isPlaying, Is.False, "lost focus still stops music.");
             _main.Presenter.Overlays.Resume();
             yield return null;
             Assert.That(Source().isPlaying, Is.False, "Gameplay resume must not clear lost focus.");
             FocusAudio(true);
             yield return WaitMusic(GameAudioCues.RescueMusic);
+            // A popup return now steps back to the map (the outing stays alive), so the shared
+            // field cue must keep playing instead of being restarted or swapped for the station cue.
             _main.Presenter.Overlays.RequestReturn();
             _main.Presenter.Overlays.Confirm();
+            yield return WaitMusic(GameAudioCues.RescueMusic);
+            Assert.That(_main.Audio.Playback.IsSuspended, Is.False,
+                "the field-to-map return keeps the shared field cue alive.");
+            Assert.That(Source().isPlaying, Is.True, "music keeps playing after returning to the map.");
+            Assert.That(Source().clip, Is.SameAs(clip), "the same field cue survives the return chain.");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator PauseAndSettingsOverlaysKeepMusicPlayingWithoutRestart()
+        {
             yield return WaitMusic(GameAudioCues.StationMusic);
+            MainApproachDriver.Click(UnityEngine.Object.FindObjectOfType<StationPanelView>(), "Restart");
+            yield return WaitMusic(GameAudioCues.ExploreMusic);
+            MainApproachDriver.Click(UnityEngine.Object.FindObjectOfType<CityMapView>(), "Primary");
+            yield return WaitMusic(GameAudioCues.RescueMusic);
+            MainApproachDriver.Complete();
+            yield return null;
+
+            var overlays = _main.Presenter.Overlays;
+            Assert.That(overlays, Is.Not.Null, "battle must own the shared overlay.");
+            overlays.OpenPause();
+            yield return null;
+            Assert.That(overlays.Top, Is.EqualTo(LevelPopupKind.Pause));
+            Assert.That(_main.Presenter.Session.Flow.IsSuspended, Is.True, "pause menu must still suspend gameplay.");
+            Assert.That(_main.Audio.Playback.IsSuspended, Is.False, "pause menu must not stop music.");
+            Assert.That(Source().isPlaying, Is.True, "music keeps playing on the pause menu.");
+            int pauseSample = Source().timeSamples;
+
+            overlays.OpenSettings();
+            yield return null;
+            yield return null;
+            Assert.That(overlays.Top, Is.EqualTo(LevelPopupKind.Settings));
+            Assert.That(overlays.IsSettingsOpen, Is.True);
+            Assert.That(_main.Presenter.Session.Flow.IsSuspended, Is.True, "settings must keep gameplay paused.");
+            Assert.That(_main.Audio.Playback.IsSuspended, Is.False, "settings must keep music audible for preview.");
+            Assert.That(Source().isPlaying, Is.True, "music keeps playing so volume changes can be heard.");
+            Assert.That(Source().timeSamples, Is.GreaterThanOrEqualTo(pauseSample),
+                "settings must not restart music.");
+
+            // Changing volume in settings is applied live without stopping the loop.
+            _main.Audio.Playback.ApplyPreferences(new AudioPreferences(
+                new AudioBusSettings(0.5f), new AudioBusSettings(0.25f), new AudioBusSettings(0.7f)));
+            yield return null;
+            Assert.That(Source().isPlaying, Is.True);
+            Assert.That(Source().volume, Is.EqualTo(0.5f * 0.25f * 0.65f).Within(0.001f));
+
+            overlays.CancelSettings();
+            yield return null;
+            Assert.That(overlays.Top, Is.EqualTo(LevelPopupKind.Pause), "settings cancel returns to pause page.");
+            Assert.That(_main.Audio.Playback.IsSuspended, Is.False, "back to pause keeps music playing.");
+            Assert.That(Source().isPlaying, Is.True, "music never stops across the overlay chain.");
+
+            overlays.Resume();
+            yield return null;
+            Assert.That(_main.Audio.Playback.IsSuspended, Is.False, "resume keeps the uninterrupted music.");
+            Assert.That(Source().isPlaying, Is.True, "music plays after leaving the pause page.");
+            Assert.That(_main.Audio.Playback.CurrentMusicId, Is.EqualTo(GameAudioCues.RescueMusic));
             LogAssert.NoUnexpectedReceived();
         }
 

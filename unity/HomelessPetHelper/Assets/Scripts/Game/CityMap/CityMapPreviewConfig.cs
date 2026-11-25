@@ -116,15 +116,15 @@ namespace HomelessPetHelper.Game.CityMap
                 "request.unavailable", "depart", "return", "reopen", "arrived.detail", "arrived.exploring",
                 "station", "cancelled", "paused", "ready", "full", "failure", "shelter"
             }) ValidateTextEntry(text, key);
-            // Use the same argument types as rendering, so numeric formats are checked too.
-            ValidateTextEntry(text, "status", 0, 0L);
+            // Use the same argument types as rendering, so formats are checked too.
+            ValidateTextEntry(text, "status", 0, string.Empty);
             ValidateTextEntry(text, "arrived", string.Empty);
-            ValidateTextEntry(text, "returned", 0L);
-            ValidateTextEntry(text, "returned.exploring", 0L);
+            ValidateTextEntry(text, "returned", string.Empty);
+            ValidateTextEntry(text, "returned.exploring", string.Empty);
             ValidateTextEntry(text, "detail.noRequest", string.Empty);
             ValidateTextEntry(text, "detail.request", string.Empty, string.Empty);
-            ValidateTextEntry(text, "departure.rescue", 0L, string.Empty);
-            ValidateTextEntry(text, "departure.preview", 0L, string.Empty);
+            ValidateTextEntry(text, "departure.rescue", string.Empty, string.Empty);
+            ValidateTextEntry(text, "departure.preview", string.Empty, string.Empty);
             if (Dispatch != null)
             {
                 ValidateTextEntry(text, "dispatch.title");

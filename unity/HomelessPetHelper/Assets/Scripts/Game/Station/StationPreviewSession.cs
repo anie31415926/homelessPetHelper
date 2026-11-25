@@ -542,7 +542,8 @@ namespace HomelessPetHelper.Game.Station
                     return false;
                 }
                 _tool = StationCareTool.None;
-                _feedback = _text.Get("careSettled", Resident(_selected).Name, settled);
+                _feedback = _text.Get("careSettled", Resident(_selected).Name,
+                    GameTimeText.FormatDuration(settled));
                 return _checkpoint?.Invoke() ?? true;
             }
             StationResidentPresentation selected = Resident(_selected);
@@ -567,7 +568,8 @@ namespace HomelessPetHelper.Game.Station
                 resident.Contact?.ObserveSettledTime(_clock.Current.ElapsedMinutes);
             }
 
-            _feedback = _text.Get("careSettled", Resident(_selected).Name, minutes);
+            _feedback = _text.Get("careSettled", Resident(_selected).Name,
+                GameTimeText.FormatDuration(minutes));
             _tool = StationCareTool.None;
             return true;
         }
@@ -659,7 +661,7 @@ namespace HomelessPetHelper.Game.Station
                     && _selected < 0 && !_showSummary);
             }
             WorldTimeSnapshot time = _clock.Current;
-            _view.SetStatus(_text.Get("clock", time.DayIndex + 1m, time.MinuteOfDay / 60, time.MinuteOfDay % 60),
+            _view.SetStatus(_text.Get("clock", GameTimeText.FormatClock(time)),
                 _text.Get("capacity", _station.Animals.Count, _station.TemporaryCapacity),
                 _suspended && !_persistenceBlocked ? _text.Get("paused") : _feedback);
             if (_showSummary)

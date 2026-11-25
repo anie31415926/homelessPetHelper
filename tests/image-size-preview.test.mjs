@@ -67,10 +67,14 @@ test('review writes previews only and reports provenance without modifying sourc
     t.after(() => fs.rm(root, {recursive: true, force: true}));
     const art = path.join(root, 'unity/HomelessPetHelper/Assets/Art/CityMap');
     await fs.mkdir(path.join(art, 'Animals'), {recursive: true});
+    await fs.mkdir(path.join(art, 'StorybookLandmarks'), {recursive: true});
     const source = await image(20, 20);
     const files = ['Animals/T_Animal_CatCalico.png', 'Animals/T_Animal_CatOrange.png',
         'Animals/T_Animal_DogWhite.png', 'Animals/T_Animal_Rabbit.png',
-        ...['Parking', 'Porch', 'Shelter', 'Yard'].map(id => `T_CityPlace_${id}.png`)];
+        'StorybookLandmarks/T_Storybook_CloudPark.png',
+        'StorybookLandmarks/T_Storybook_FlowerGarden.png',
+        'StorybookLandmarks/T_Storybook_Treehouse.png',
+        'StorybookLandmarks/T_Storybook_Shelter.png'];
     for (const file of files) await fs.writeFile(path.join(art, file), source);
     const report = await reviewImages(root);
     assert.equal(report.images.length, 8);

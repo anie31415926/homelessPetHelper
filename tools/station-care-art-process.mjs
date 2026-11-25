@@ -14,7 +14,7 @@ for (const kind of ['Dog', 'Cat']) {
     if (data[index] < 24) data.fill(0, index - 3, index + 1);
   }
   const png = await sharp(data, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
-  await writeFile(`${folder}/T_Station_${kind}Temporary.png`, png);
+  await writeFile(`${folder}/T_Station_${kind}Care.png`, png);
   const alpha = await sharp(png).resize(128, 128).ensureAlpha().raw().toBuffer();
   const mask = Buffer.alloc(128 * 128);
   for (let y = 2; y < 126; y++) {
@@ -26,7 +26,7 @@ for (const kind of ['Dog', 'Cat']) {
       mask[(127 - y) * 128 + x] = inside && !face ? 255 : 0;
     }
   }
-  await writeFile(`${folder}/T_Station_${kind}TemporaryMask.bytes`, mask);
+  await writeFile(`${folder}/T_Station_${kind}CareMask.bytes`, mask);
   await sharp(png).flatten({ background: '#f0f7f3' }).png().toFile(`art-source/station-care-temporary/${kind}-light.png`);
   await sharp(png).flatten({ background: '#333a3d' }).png().toFile(`art-source/station-care-temporary/${kind}-dark.png`);
   console.log(kind, info.width, info.height, png.length, 'bytes');

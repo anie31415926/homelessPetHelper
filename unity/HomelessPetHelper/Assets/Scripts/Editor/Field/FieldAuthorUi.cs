@@ -64,7 +64,7 @@ namespace HomelessPetHelper.Editor.Field
             var ratio = frame.gameObject.AddComponent<AspectRatioFitter>();
             ratio.aspectMode = AspectRatioFitter.AspectMode.FitInParent; ratio.aspectRatio = .75f;
             var background = Surface(Rect("Backdrop", frame), Color.white);
-            background.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Outing/T_Outing_Yard.jpg");
+            background.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Outing/T_Outing_Parking.jpg");
             var terrain = Rect("PhysicalProps", frame).gameObject.AddComponent<OutingFieldGraphic>();
             terrain.raycastTarget = false;
             var palette = new SerializedObject(terrain);

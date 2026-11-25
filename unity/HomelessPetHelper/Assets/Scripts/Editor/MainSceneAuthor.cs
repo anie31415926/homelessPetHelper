@@ -43,13 +43,13 @@ namespace HomelessPetHelper.Editor
                 ("_stationText", "Assets/Settings/Game/StationPreviewText.json"),
                 ("_siegeData", "Assets/Settings/Siege/SiegeTrialData.json"),
                 ("_siegeText", "Assets/Settings/Siege/SiegeTrialText.json"),
-                ("_catMask", "Assets/Art/Station/T_Station_CatTemporaryMask.bytes"),
-                ("_dogMask", "Assets/Art/Station/T_Station_DogTemporaryMask.bytes") })
+                ("_catMask", "Assets/Art/Station/T_Station_CatCareMask.bytes"),
+                ("_dogMask", "Assets/Art/Station/T_Station_DogCareMask.bytes") })
                 Bind(content, pair.Item1, AssetDatabase.LoadAssetAtPath<TextAsset>(pair.Item2));
             Bind(content, "_cat", AssetDatabase.LoadAssetAtPath<Sprite>(
-                "Assets/Art/Station/T_Station_CatTemporary.png"));
+                "Assets/Art/PetMotion/T_Pet_original.png"));
             Bind(content, "_dog", AssetDatabase.LoadAssetAtPath<Sprite>(
-                "Assets/Art/Station/T_Station_DogTemporary.png"));
+                "Assets/Art/Outing/T_Outing_DogNatural.png"));
             Bind(content, "_font", font);
             content.Validate();
             foreach (string path in new[] { "Assets/Prefabs/Panels/Panel_StationLoop.prefab",
@@ -72,16 +72,6 @@ namespace HomelessPetHelper.Editor
                         if (path.EndsWith("Panel_StationLoop.prefab", StringComparison.Ordinal) &&
                             label.name == "Title")
                             label.text = "救助站";
-                    }
-                    if (path.EndsWith("Panel_StationLoop.prefab", StringComparison.Ordinal))
-                    {
-                        foreach (var image in root.GetComponentsInChildren<Image>(true))
-                        {
-                            string old = AssetDatabase.GetAssetPath(image.sprite);
-                            if (!old.StartsWith("Assets/EditorScenes/StationArt/", StringComparison.Ordinal)) continue;
-                            image.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Station/T_Station_" +
-                                (old.Contains("dog") ? "Dog" : "Cat") + "Temporary.png");
-                        }
                     }
                     PrefabUtility.SaveAsPrefabAsset(root, path);
                 }

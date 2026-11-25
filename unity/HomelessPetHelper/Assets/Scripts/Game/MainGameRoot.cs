@@ -114,8 +114,11 @@ namespace HomelessPetHelper.Game
         {
             if (Presenter == null || Music == null) return;
             var session = Presenter.Session;
-            Music.Refresh(session?.Flow.Stage ?? Modules.Rescue.RescueStage.Station,
-                !Presenter.Progress.CanContinue || session == null || session.Flow.IsSuspended);
+            // UI overlays (pause/settings/objectives) suspend gameplay but not audio: music and effects
+            // keep playing so volume changes are audible. Only a broken/absent session stays silent;
+            // application-level focus/background/interruption pauses are owned by AudioHost.
+            bool gameplayPaused = !Presenter.Progress.CanContinue || session == null;
+            Music.Refresh(session?.Flow.Stage ?? Modules.Rescue.RescueStage.Station, gameplayPaused);
         }
 
         private void OnDestroy()

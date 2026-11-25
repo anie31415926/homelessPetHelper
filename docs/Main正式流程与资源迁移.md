@@ -1,5 +1,7 @@
 # Main 正式流程与资源迁移
 
+> 2026-11-26 清理注记：本文提到的 `T_CityPlace_*.png`、`T_Station_*Temporary*`、`T_Rescue_ShelterTemporary.jpg`、`T_CityMap_Forest.jpg` 等临时/过时资源，以及 `RuntimeMove`、`ForestEdgeAssets`、`StationCareLayout`、`StationCatAssets` 等一次性 Editor 工具与命令，均已在本轮清理中删除；以下相关段落保留为当时事实，当前资源与工具以工程现状为准。
+
 2026-11-20，用户授权将可用 Editor 资源迁入运行时目录，明确以逆塔防替换正式流程中的回合救助；回合方案保留为备选。本页记录运行入口的技术接通，不代表最终美术、完整经营或渠道发布验收。
 
 ## 试玩入口

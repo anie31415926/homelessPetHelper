@@ -1,5 +1,7 @@
 # B版布局停车棚背景
 
+> 2026-11-26 清理注记：本批次 workflow / history 中引用的 `T_Station_CatTemporary.png` 等临时资源已删除，此处保留为历史快照，不是当前资源清单。
+
 2026-11-18，用户允许为 B 版操作基线用本地 ComfyUI 制作必要图片。唯一台账 ID：`rescue.bicycle-shelter.layout-b`，temporary / preview-only；不代表正式美术或商用来源通过。
 
 ## 来源与结果

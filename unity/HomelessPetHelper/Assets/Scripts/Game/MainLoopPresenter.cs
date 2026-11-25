@@ -16,6 +16,7 @@ using HomelessPetHelper.Game.Station;
 using HomelessPetHelper.Game.Text;
 using HomelessPetHelper.Modules.Outing;
 using HomelessPetHelper.Modules.Approach;
+using HomelessPetHelper.Modules.WorldTime;
 using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Siege.UI;
 using HomelessPetHelper.Modules.Station;
@@ -191,6 +192,68 @@ namespace HomelessPetHelper.Game
 
         private void OpenMap() => OpenMap(null);
 
+        private void CreateMapPresenter()
+        {
+            _mapPresenter = new CityMapPresenter(_map, _content.MapText, _config, Session,
+                EnterApproach, () => ShowStation(false), GetDepartureRestriction,
+                hasOpeningRoute: true, beginTravel: BeginMapDeparture,
+                describeActivity: DescribeExplorationActivity, startActivity: StartExplorationActivity,
+                returnExploration: ReturnExploration, hasActivities: Progress.Fields.HasExplorationActivities);
+        }
+
+        /// <summary>
+        /// Single back entry for the run: dismiss the topmost popup first, then step one screen back
+        /// (field → map → station). Keeps the outing alive until the map's own back settles it.
+        /// </summary>
+        public void HandleBack()
+        {
+            if (_disposed || !Progress.CanContinue || _returnTravelling) return;
+            if (_overlays != null && _overlays.Depth > 0)
+            {
+                _overlays.Back();
+                return;
+            }
+            if (_approach.gameObject.activeInHierarchy || _siege.gameObject.activeInHierarchy)
+            {
+                ReturnFieldToMap();
+                return;
+            }
+            if (_map.gameObject.activeInHierarchy && _mapPresenter != null)
+                _mapPresenter.LeaveToStation();
+        }
+
+        /// <summary>Returns from any field screen to the map without settling; progress is saved.</summary>
+        private void ReturnFieldToMap()
+        {
+            if (_disposed || _returnTravelling || !Progress.CanContinue) return;
+            BeginFieldReturn(() =>
+            {
+                if (_explorationOpening != null)
+                {
+                    CaptureExploration();
+                    _explorationOpening.Dispose();
+                    _explorationOpening = null;
+                }
+                else if (Progress.Fields.HasActive)
+                {
+                    Progress.Fields.Capture(Session);
+                    FlushFieldProgress();
+                }
+                CloseOverlays();
+                _approach.gameObject.SetActive(false);
+                _approach.Unbind();
+                _siege.gameObject.SetActive(false);
+                _siege.UnbindEncounter();
+                UnsubscribeBattle();
+                _activity = null;
+                _fieldSuspendedRequested = false;
+                Session.SetSuspended(false);
+                _map.gameObject.SetActive(true);
+                if (_mapPresenter == null) CreateMapPresenter();
+                else _mapPresenter.RefreshArrival();
+            });
+        }
+
         public void SetWorldWeather(OutingWeather weather)
         {
             WorldWeather = weather;
@@ -222,11 +285,7 @@ namespace HomelessPetHelper.Game
             _station.gameObject.SetActive(false);
             _map.gameObject.SetActive(true);
             Session.SetSuspended(false);
-            _mapPresenter = new CityMapPresenter(_map, _content.MapText, _config, Session,
-                EnterApproach, () => ShowStation(false), GetDepartureRestriction,
-                hasOpeningRoute: true, beginTravel: BeginMapDeparture,
-                describeActivity: DescribeExplorationActivity, startActivity: StartExplorationActivity,
-                returnExploration: ReturnExploration, hasActivities: Progress.Fields.HasExplorationActivities);
+            CreateMapPresenter();
             _mapPresenter.ShowFeedback(_text.Get("save.outingBoundary"));
             if (noticePoint != null) _mapPresenter.Select(noticePoint);
         }
@@ -339,7 +398,12 @@ namespace HomelessPetHelper.Game
                 _explorationLayout = Progress.Fields.ExplorationLayout(outing.SelectedPointId,
                     _fields.Get(outing.SelectedPointId, 0));
                 _outingWeather = WorldWeather;
-                _mapPresenter.RefreshArrival();
+                // A visit always enters the scene. Pick the playable activity deterministically from the
+                // outing seed instead of asking the player to choose cleanup vs puzzle.
+                if (_explorationLayout != null)
+                    StartExplorationActivity(PickExplorationMode(outing.Seed));
+                else
+                    _mapPresenter.RefreshArrival();
                 return;
             }
             if (outing.DeparturePlan.EntryKind != MapEntryKind.HelpRequest ||
@@ -403,7 +467,14 @@ namespace HomelessPetHelper.Game
             _config.TimePolicy.TryGetDuration(OutingReturnProgress.OpeningRoute, out long openingTotal, out _);
             return _mapText.Get(opening.IsComplete ? "visit." + mode + ".done" :
                 _explorationChanges.ContainsKey(mode) ? "visit." + mode + ".resume" : "visit." + mode,
-                openingTotal - visit);
+                GameTimeText.FormatDuration(openingTotal - visit));
+        }
+
+        /// <summary>Deterministic per-outing activity pick; the same visit always resumes the same board.</summary>
+        private static ApproachMode PickExplorationMode(int seed)
+        {
+            int value = new System.Random(seed ^ 0x5f3a91d7).Next(2);
+            return value == 0 ? ApproachMode.Puzzle : ApproachMode.Cleanup;
         }
 
         private ApproachSession CreateExplorationOpening(ApproachMode mode)
@@ -424,7 +495,7 @@ namespace HomelessPetHelper.Game
                 artwork.Props, artwork, exploring: true);
             _approach.FieldScene.SetWeather(_outingWeather ?? WorldWeather);
             _approach.Bind(_explorationOpening, _content.ApproachText, false, CloseExplorationActivity,
-                CloseExplorationActivity, SetFieldSuspended, exploring: true);
+                HandleBack, SetFieldSuspended, exploring: true);
             _approach.gameObject.SetActive(true);
         }
 
@@ -501,7 +572,13 @@ namespace HomelessPetHelper.Game
 
         private void ReturnFromApproach()
         {
-            BeginFieldReturn(ReturnFromApproachImmediately);
+            if (_overlays?.Top == LevelPopupKind.RescueResult)
+            {
+                BeginFieldReturn(ReturnFromApproachImmediately);
+                return;
+            }
+            // The field's own back key returns to the map and keeps the outing alive.
+            HandleBack();
         }
 
         private void ReturnFromApproachImmediately()
@@ -624,6 +701,13 @@ namespace HomelessPetHelper.Game
             if (_disposed || _returnTravelling || !Progress.CanContinue)
             {
                 _overlays?.AllowRescueResultRetry();
+                return;
+            }
+            // A resolved rescue (battle won / result dialog) settles back to the station;
+            // leaving an in-progress battle steps up to the map and keeps the outing alive.
+            if (_activity == null || !_activity.IsRescueComplete)
+            {
+                HandleBack();
                 return;
             }
             BeginFieldReturn(ReturnFromSiegeImmediately);

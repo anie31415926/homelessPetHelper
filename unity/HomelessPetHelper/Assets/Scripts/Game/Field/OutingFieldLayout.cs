@@ -51,10 +51,10 @@ namespace HomelessPetHelper.Game.Field
 
         private readonly Data _data;
         private readonly Dictionary<int, string> _props = new Dictionary<int, string>();
-        public ApproachCatalog Opening { get; }
+        public ApproachCatalog Opening { get; private set; }
         public string PointId => _data.pointId;
         public bool Introductory => _data.introductory;
-        public string LayoutId { get; }
+        public string LayoutId { get; private set; }
         public string ContentVersion { get; }
         public int Columns => Opening.Get(ApproachMode.Cleanup).Columns;
         public int Rows => Opening.Get(ApproachMode.Cleanup).Rows;
@@ -77,6 +77,32 @@ namespace HomelessPetHelper.Game.Field
             if (source == null) throw new ArgumentNullException(nameof(source));
             _data = JsonUtility.FromJson<Data>(source.text);
             ContentVersion = Progress.FieldProgressContent.Hash(source.text);
+            Validate();
+        }
+
+        private OutingFieldLayout(Data data, string contentVersion)
+        {
+            _data = data;
+            ContentVersion = contentVersion;
+            Validate();
+        }
+
+        /// <summary>
+        /// Derives an unconfigured point's presentation from a configured template,
+        /// keeping save keys point-specific.
+        /// </summary>
+        internal OutingFieldLayout ForPoint(string pointId)
+        {
+            if (string.IsNullOrWhiteSpace(pointId))
+                throw new ArgumentException("Missing field point.", nameof(pointId));
+            var copy = JsonUtility.FromJson<Data>(JsonUtility.ToJson(_data));
+            copy.pointId = pointId;
+            copy.layoutId = pointId + ".default";
+            return new OutingFieldLayout(copy, ContentVersion);
+        }
+
+        private void Validate()
+        {
             if (_data == null || _data.schemaVersion != 1 || string.IsNullOrWhiteSpace(_data.pointId) ||
                 !Positive(_data.width) || !Positive(_data.height) || !Positive(_data.animalWidth) ||
                 !Positive(_data.catWidth) || _data.catWidth > _data.animalWidth ||
