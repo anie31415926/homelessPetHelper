@@ -17,6 +17,7 @@ namespace HomelessPetHelper.Game.Progress
         private readonly GameContent _content;
         private readonly OutingFieldCatalog _fields;
         private readonly ApproachCatalog _fallback;
+        private readonly StationEconomyRules _economy;
         private readonly string _battleVersion, _openingVersion, _legacyBattleVersion;
         private readonly Dictionary<string, SiegeCatalog> _battles = new Dictionary<string, SiegeCatalog>();
 
@@ -25,6 +26,7 @@ namespace HomelessPetHelper.Game.Progress
             _content = content;
             _fields = fields;
             _fallback = content.CreateApproachCatalog();
+            _economy = content.CreateEconomy();
             _battleVersion = Hash(battle);
             // Exact shipped v1 catalog hash; only this known configuration is compatible.
             _legacyBattleVersion = "479fd4be8dfb8f8fd0a03c4e34c30dd43ca4413c49b7c21d182394478d99fd25";
@@ -72,13 +74,15 @@ namespace HomelessPetHelper.Game.Progress
         internal ApproachCatalog Opening(string pointId, string layoutId) =>
             Layout(pointId, layoutId)?.Opening ?? _fallback;
 
-        internal SiegeCatalog Battle(string pointId, string layoutId)
+        internal SiegeCatalog Battle(string pointId, string layoutId, bool clipEquipped = false)
         {
-            string key = pointId + ":" + layoutId;
+            string key = pointId + ":" + layoutId + ":" + clipEquipped;
             if (!_battles.TryGetValue(key, out var catalog))
             {
                 var layout = Layout(pointId, layoutId);
-                catalog = layout == null ? _content.CreateSiegeCatalog() : _content.CreateFieldSiegeCatalog(layout);
+                var clip = clipEquipped ? _economy ?? throw new ArgumentException("Missing rescue equipment.") : null;
+                catalog = layout == null ? _content.CreateSiegeCatalog(clip) :
+                    _content.CreateFieldSiegeCatalog(layout, clip);
                 _battles.Add(key, catalog);
             }
             return catalog;

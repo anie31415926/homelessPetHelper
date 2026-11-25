@@ -22,6 +22,9 @@ namespace HomelessPetHelper.Game
         [SerializeField] private AudioCatalog _musicCatalog;
         [SerializeField] private TextAsset _approachConfig, _approachText;
         [SerializeField] private TextAsset[] _fieldConfigs = Array.Empty<TextAsset>();
+        [SerializeField] private TextAsset _stationEconomy, _economyLoadout;
+        internal Progress.StationEconomyRules CreateEconomy() => _stationEconomy == null ? null :
+            Progress.StationEconomyRules.Load(_stationEconomy, _economyLoadout);
         [SerializeField] private TextAsset _levelUiText, _levelGuidance;
         public Text.OptionPreviewText CreateLevelUiText() => new Text.OptionPreviewText(_levelUiText);
         public Guidance.LevelGuideCatalog CreateGuides() =>
@@ -29,7 +32,9 @@ namespace HomelessPetHelper.Game
         public Field.OutingFieldCatalog CreateFields() => new Field.OutingFieldCatalog(_fieldConfigs,
             CreateMapConfig().Definition.Points.Select(point => point.PointId));
         public SiegeCatalog CreateFieldSiegeCatalog(Field.OutingFieldLayout field) =>
-            field.CreateBattleCatalog(_siegeData);
+            CreateFieldSiegeCatalog(field, null);
+        internal SiegeCatalog CreateFieldSiegeCatalog(Field.OutingFieldLayout field,
+            Progress.StationEconomyRules clip) => field.CreateBattleCatalog(CreateSiegeData(clip));
         public Progress.FieldProgressContent CreateFieldProgressContent(Field.OutingFieldCatalog fields) =>
             new Progress.FieldProgressContent(this, fields, _siegeData.text, _approachConfig.text);
         public TextAsset ApproachText => _approachText;
@@ -44,9 +49,17 @@ namespace HomelessPetHelper.Game
         public Font Font => _font;
         public StationArtwork Artwork => new StationArtwork(_cat, _catMask, _dog, _dogMask);
         public CityMapPreviewConfig CreateMapConfig() => new CityMapPreviewConfig(_mapConfig);
-        public SiegeCatalog CreateSiegeCatalog() => _siegeData != null ?
-            new SiegeCatalog(JsonUtility.FromJson<SiegeCatalogData>(_siegeData.text)) :
-            throw new InvalidOperationException("Missing siege content.");
+        public SiegeCatalog CreateSiegeCatalog() => CreateSiegeCatalog(null);
+        internal SiegeCatalog CreateSiegeCatalog(Progress.StationEconomyRules clip) =>
+            new SiegeCatalog(CreateSiegeData(clip));
+
+        private SiegeCatalogData CreateSiegeData(Progress.StationEconomyRules clip)
+        {
+            if (_siegeData == null) throw new InvalidOperationException("Missing siege content.");
+            var data = JsonUtility.FromJson<SiegeCatalogData>(_siegeData.text);
+            clip?.ApplyClip(data);
+            return data;
+        }
 
         public Sprite GetOutingBackground(string pointId)
         {
@@ -78,6 +91,8 @@ namespace HomelessPetHelper.Game
             map.ValidateText(new Text.OptionPreviewText(_mapText));
             map.ValidateRescues(CreateSiegeCatalog());
             new Modules.Siege.UI.SiegeText(_siegeText).Validate(CreateSiegeCatalog());
+            var economy = CreateEconomy();
+            if (economy != null) new Modules.Siege.UI.SiegeText(_siegeText).Validate(CreateSiegeCatalog(economy));
             var guides = CreateGuides();
             var opening = CreateApproachCatalog();
             foreach (Modules.Approach.ApproachMode mode in Enum.GetValues(typeof(Modules.Approach.ApproachMode)))

@@ -39,7 +39,7 @@ namespace HomelessPetHelper.Game.Progress
             if (AdoptionBlock(animalId) != null || IsListed(animalId)) return false;
             var draft = Capture();
             draft.Residents.Single(item => item.Current.Id == animalId.ToString("N")).AdoptionListed = true;
-            if (!TryCommitAdoption(draft)) return false;
+            if (!TryCommitStationDraft(draft)) return false;
             _listed.Add(animalId);
             return true;
         }
@@ -60,7 +60,13 @@ namespace HomelessPetHelper.Game.Progress
                 Locations = draft.Fields.Locations,
                 Encounters = draft.Fields.Encounters.Where(item => item.RequestId != resident.RequestId).ToArray()
             };
-            if (!TryCommitAdoption(draft)) return false;
+            if (_economyRules != null && !draft.Economy.AdoptionRewarded)
+            {
+                draft.Economy.Balance = checked(draft.Economy.Balance + _economyRules.adoptionAid);
+                draft.Economy.AdoptionRewarded = true;
+            }
+            if (!TryCommitStationDraft(draft)) return false;
+            PublishEconomy(draft.Economy);
             if (!Session.Station.TryReleaseHealthyResident(Session.StationSessionId, animalId))
                 throw new InvalidOperationException("Committed adoption eligibility changed on the gameplay thread.");
             Session.ForgetDepartedResident(animalId);
@@ -75,6 +81,7 @@ namespace HomelessPetHelper.Game.Progress
         private MainProgressData Capture()
         {
             var data = MainProgressCodec.Capture(Session, Care, _requestsByOuting, Fields.Capture(Session));
+            data.Economy = CaptureEconomy();
             data.Dispatch = _dispatch.Capture();
             data.Memorials = _memorials;
             foreach (var resident in data.Residents)
@@ -82,7 +89,7 @@ namespace HomelessPetHelper.Game.Progress
             return data;
         }
 
-        private bool TryCommitAdoption(MainProgressData draft)
+        private bool TryCommitStationDraft(MainProgressData draft)
         {
             if (_saves != null)
             {
@@ -91,7 +98,7 @@ namespace HomelessPetHelper.Game.Progress
                 return false;
             }
             if (Validate(draft) == null) return true;
-            PersistenceError = new SaveError(SaveErrorCode.InvalidSection, "Invalid adoption checkpoint.");
+            PersistenceError = new SaveError(SaveErrorCode.InvalidSection, "Invalid station transaction checkpoint.");
             return false;
         }
     }

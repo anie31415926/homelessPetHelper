@@ -13,7 +13,7 @@ namespace HomelessPetHelper.Game.Progress
     {
         internal static void Validate(WorldFieldData data, GameLoopSession staged, CityMapPreviewConfig config,
             FieldProgressContent content, ResidentData[] residents, MemorialData[] memorials,
-            SiegeState.BattlePhase? capturedPhase = null)
+            SiegeState.BattlePhase? capturedPhase = null, bool clipEquipped = false)
         {
             if (data?.Encounters == null || data.Locations == null ||
                 data.Encounters.Length > staged.Requests.Requests.Count ||
@@ -65,7 +65,7 @@ namespace HomelessPetHelper.Game.Progress
                     !source.Opening.Remaining.SequenceEqual(location.Opening.Remaining))
                     throw new ArgumentException("Location and its latest encounter results disagree.");
             }
-            ValidateActive(data, staged, config, content, capturedPhase);
+            ValidateActive(data, staged, config, content, capturedPhase, clipEquipped);
         }
 
         private static void ValidateOpening(FieldProgressContent content, string pointId, string layoutId,
@@ -81,7 +81,7 @@ namespace HomelessPetHelper.Game.Progress
         }
 
         private static void ValidateActive(WorldFieldData data, GameLoopSession staged, CityMapPreviewConfig config,
-            FieldProgressContent content, SiegeState.BattlePhase? capturedPhase)
+            FieldProgressContent content, SiegeState.BattlePhase? capturedPhase, bool clipEquipped)
         {
             var active = data.Active;
             if (active == null) return;
@@ -109,7 +109,8 @@ namespace HomelessPetHelper.Game.Progress
             if (active.Stage == 0) { opening.Dispose(); return; }
             if (!opening.IsComplete) throw new ArgumentException("Battle checkpoint has an obstructed route.");
             var activity = new SiegeRescueActivity(outingId, encounter.Seed,
-                content.Battle(encounter.PointId, encounter.LayoutId), config.GetRescue(request.TemplateId),
+                content.Battle(encounter.PointId, encounter.LayoutId, clipEquipped),
+                config.GetRescue(request.TemplateId),
                 MainResidentCodec.RestoreAnimal(encounter.Animal));
             bool entered = active.OpenedRoute
                 ? staged.TryEnterRescueAfterOpening(activity, out _)

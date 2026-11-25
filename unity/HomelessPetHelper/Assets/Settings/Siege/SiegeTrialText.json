@@ -975,6 +975,8 @@
     {
       "key": "field.unitLimit",
       "value": "场上单位已满，稍后再部署"
-    }
+    },
+    {"key": "unit.clip", "value": "木夹子"},
+    {"key": "detail.clip", "value": "击中机关时可延后一次射击。"}
   ]
 }

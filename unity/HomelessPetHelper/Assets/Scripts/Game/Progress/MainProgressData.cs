@@ -3,11 +3,12 @@ using UnityEngine.Scripting;
 
 namespace HomelessPetHelper.Game.Progress
 {
-    // Version 4 adds dispatch timing and its latest notice to the station/field aggregate.
+    // Version 5 adds the lifetime station wallet and permanent purchases.
     // Explicit fields and constructors preserve the contract on stripped/AOT builds.
     [Preserve, JsonObject(MemberSerialization.OptIn)]
     internal sealed class MainProgressData
     {
+        [Preserve, JsonProperty(Required = Required.Always)] public StationEconomyData Economy;
         [Preserve, JsonProperty(Required = Required.Always)] public long ElapsedMinutes;
         [Preserve, JsonProperty(Required = Required.Always)] public int Capacity;
         [Preserve, JsonProperty(Required = Required.Always)] public RequestData[] Requests;
@@ -111,5 +112,14 @@ namespace HomelessPetHelper.Game.Progress
         [Preserve, JsonProperty(Required = Required.Always)] public byte[] Samples;
         [Preserve, JsonProperty(Required = Required.Always)] public long InitialAmount;
         [Preserve] public FieldData() { }
+    }
+    [Preserve, JsonObject(MemberSerialization.OptIn)]
+    internal sealed class StationEconomyData
+    {
+        [Preserve, JsonProperty(Required = Required.Always)] public int Balance;
+        [Preserve, JsonProperty(Required = Required.Always)] public bool Beds, Cleaning, Clip, ClipEquipped;
+        [Preserve, JsonProperty(Required = Required.Always)] public bool AssessmentRewarded, AdoptionRewarded;
+        [Preserve] public StationEconomyData() { }
+        internal StationEconomyData Copy() => (StationEconomyData)MemberwiseClone();
     }
 }

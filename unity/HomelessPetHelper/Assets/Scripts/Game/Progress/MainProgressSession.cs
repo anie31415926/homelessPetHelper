@@ -28,21 +28,25 @@ namespace HomelessPetHelper.Game.Progress
         public bool Recovered { get; }
 
         public MainProgressSession(CityMapPreviewConfig config, StationArtwork artwork, ISaveStorage storage = null,
-            FieldProgressContent fieldContent = null)
+            FieldProgressContent fieldContent = null) : this(config, artwork, storage, fieldContent, null) { }
+
+        internal MainProgressSession(CityMapPreviewConfig config, StationArtwork artwork, ISaveStorage storage,
+            FieldProgressContent fieldContent, StationEconomyRules economyRules)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _artwork = artwork ?? throw new ArgumentNullException(nameof(artwork));
             _fieldContent = fieldContent;
+            _economyRules = economyRules;
             MainProgressData data;
-            if (storage == null) data = MainProgressCodec.NewGame(config);
+            if (storage == null) data = NewGame();
             else
             {
                 _saves = new SaveService(storage);
-                _section = new SaveSection<MainProgressData>("main.station", 4,
-                    () => MainProgressCodec.NewGame(config), Validate,
+                _section = new SaveSection<MainProgressData>("main.station", 5, NewGame, Validate,
                     new Dictionary<int, Func<JObject, JObject>>
                     {
-                        [1] = MigrateVersionOne, [2] = MigrateVersionTwo, [3] = MigrateVersionThree
+                        [1] = MigrateVersionOne, [2] = MigrateVersionTwo,
+                        [3] = MigrateVersionThree, [4] = MigrateVersionFour
                     });
                 _saves.Register(_section);
                 if (!_saves.TryOpen(out var status, out var error) ||
@@ -57,12 +61,27 @@ namespace HomelessPetHelper.Game.Progress
             Care = care;
             _requestsByOuting = links;
             Fields = new FieldProgressSession(data.Fields, fieldContent, config);
+            PublishEconomy(data.Economy ?? new StationEconomyData());
             _memorials = data.Memorials ?? Array.Empty<MemorialData>();
             foreach (var resident in data.Residents)
                 if (resident.AdoptionListed) _listed.Add(Guid.ParseExact(resident.Current.Id, "N"));
             Fields.RestoreActive(Session);
             _dispatch = new RequestDispatch(config, fieldContent, Session, data.Dispatch);
             _dispatch.Refresh(Fields.HasActive);
+        }
+
+        private MainProgressData NewGame()
+        {
+            var data = MainProgressCodec.NewGame(_config);
+            if (_economyRules != null) data.Capacity = _economyRules.initialCapacity;
+            data.Economy = new StationEconomyData();
+            return data;
+        }
+
+        private static JObject MigrateVersionFour(JObject data)
+        {
+            data["Economy"] = JObject.FromObject(new StationEconomyData());
+            return data;
         }
 
         private static JObject MigrateVersionOne(JObject data)
@@ -101,6 +120,7 @@ namespace HomelessPetHelper.Game.Progress
                 _requestsByOuting.ContainsKey(outingId))
                 throw new InvalidOperationException("Only a new, committed rescue return may be recorded.");
             _requestsByOuting.Add(outingId, requestId);
+            _pendingRescueAid = checked(_pendingRescueAid + (_economyRules?.rescueAid ?? 0));
         }
 
         /// <summary>
@@ -113,7 +133,7 @@ namespace HomelessPetHelper.Game.Progress
             {
                 _dispatch.Refresh(Fields.HasActive);
                 var data = Capture();
-                if (_saves == null) return true;
+                if (_saves == null) { PublishEconomy(data.Economy); return true; }
                 var battle = (Session.Activity as SiegeRescueActivity)?.Battle;
                 if (battle != null && data.Fields.Active?.Battle != null)
                 {
@@ -122,7 +142,8 @@ namespace HomelessPetHelper.Game.Progress
                 }
                 try
                 {
-                    if (_saves.TryCommit(writer => writer.Set(_section, data), out var error)) return true;
+                    if (_saves.TryCommit(writer => writer.Set(_section, data), out var error))
+                    { PublishEconomy(data.Economy); return true; }
                     PersistenceError = error;
                 }
                 finally { _checkpointBattle = null; }
@@ -138,13 +159,15 @@ namespace HomelessPetHelper.Game.Progress
         {
             try
             {
+                if (data.Economy == null || data.Economy.Balance < 0 ||
+                    (data.Economy.ClipEquipped && (!data.Economy.Clip || _economyRules == null)))
+                    return "Invalid station economy checkpoint.";
                 using var staged = MainProgressCodec.Restore(data, _config, _artwork, out _, out _);
                 RequestDispatch.Validate(data.Dispatch, staged, data.Fields);
                 bool capturedBattle = _checkpointBattle != null && data.Fields?.Active?.Battle != null &&
                     JToken.DeepEquals(_checkpointBattle, JToken.FromObject(data.Fields.Active.Battle));
                 FieldProgressValidator.Validate(data.Fields, staged, _config, _fieldContent, data.Residents,
-                    data.Memorials,
-                    capturedBattle ? _checkpointPhase : (Modules.Siege.SiegeState.BattlePhase?)null);
+                    data.Memorials, capturedBattle ? _checkpointPhase : null, data.Economy.ClipEquipped);
                 return null;
             }
             catch (ArgumentException) { return "Invalid or incompatible Main station checkpoint."; }

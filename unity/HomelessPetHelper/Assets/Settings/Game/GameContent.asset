@@ -46,3 +46,5 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 2bf206d297f6439384220c52e4fd2589, type: 3}
   _levelUiText: {fileID: 4900000, guid: f1dc85fc5fd94e3a9aa5cac0a4944d60, type: 3}
   _levelGuidance: {fileID: 4900000, guid: 1f7d9d879dc449988548e2de06960542, type: 3}
+  _stationEconomy: {fileID: 4900000, guid: ed8ca6c54bd542b1afaed70ccfac90e3, type: 3}
+  _economyLoadout: {fileID: 4900000, guid: b507f1d43d0a4856989e08a59d2c6c0c, type: 3}

@@ -131,8 +131,12 @@ namespace HomelessPetHelper.Game.Field
         public SiegeCatalog CreateBattleCatalog(TextAsset source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-            // Derive a fresh catalog; never mutate generated content or its shared instances.
-            var data = JsonUtility.FromJson<SiegeCatalogData>(source.text);
+            return CreateBattleCatalog(JsonUtility.FromJson<SiegeCatalogData>(source.text));
+        }
+
+        internal SiegeCatalog CreateBattleCatalog(SiegeCatalogData data)
+        {
+            // The caller supplies fresh data; never mutate an already shared catalog.
             data.map.width = Width;
             data.map.height = Height;
             if (data.map.lanes.Length != LaneCount) throw new ArgumentException("Field lane count mismatch.");

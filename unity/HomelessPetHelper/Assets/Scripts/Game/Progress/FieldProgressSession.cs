@@ -5,6 +5,7 @@ using HomelessPetHelper.Game.Field;
 using HomelessPetHelper.Modules.Animals;
 using HomelessPetHelper.Modules.Approach;
 using HomelessPetHelper.Modules.Outing;
+using HomelessPetHelper.Modules.Siege;
 using HomelessPetHelper.Modules.Rescue;
 
 namespace HomelessPetHelper.Game.Progress
@@ -23,6 +24,8 @@ namespace HomelessPetHelper.Game.Progress
         internal bool HasActive => _data.Active != null;
         internal ApproachSession Opening => _opening;
         internal int Seed => _encounter.Seed;
+        internal bool ClipEquipped { get; set; }
+        internal SiegeCatalog CreateBattle() => _content.Battle(_encounter.PointId, _encounter.LayoutId, ClipEquipped);
         internal OutingFieldLayout Layout => _content.Layout(_encounter.PointId, _encounter.LayoutId);
 
         internal FieldProgressSession(WorldFieldData data, FieldProgressContent content,
@@ -101,7 +104,7 @@ namespace HomelessPetHelper.Game.Progress
             {
                 session.Requests.TryGet(Guid.ParseExact(saved.RequestId, "N"), out var request);
                 var activity = new SiegeRescueActivity(session.Outing.Session.SessionId, Seed,
-                    _content.Battle(encounter.PointId, encounter.LayoutId), _config.GetRescue(request.TemplateId),
+                    CreateBattle(), _config.GetRescue(request.TemplateId),
                     Animal);
                 bool entered = saved.OpenedRoute
                     ? session.TryEnterRescueAfterOpening(activity, out _)
