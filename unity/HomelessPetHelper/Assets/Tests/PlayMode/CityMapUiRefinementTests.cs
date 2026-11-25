@@ -27,13 +27,22 @@ namespace HomelessPetHelper.Tests.PlayMode
         [TearDown] public void TearDown() => _storage.Dispose();
 
         [UnityTest]
-        public IEnumerator BrowseShowsOnlyMapNamesAndCornerBackAndModalBlocksUnderlyingInput()
+        public IEnumerator BrowseShowsOnlyMapNamesAndBottomLeftBackAndModalBlocksUnderlyingInput()
         {
             yield return Load();
             Assert.That(_view.IsDetailsOpen, Is.False);
             Assert.That(_view.GetComponentsInChildren<Button>().Where(button =>
                 button.transform.parent.name != "MapArt").Select(button => button.name),
                 Is.EqualTo(new[] { "Cancel" }));
+            var back = Button("Cancel");
+            var backRect = (RectTransform)back.transform;
+            var backPointer = new PointerEventData(EventSystem.current)
+            { position = RectTransformUtility.WorldToScreenPoint(null, backRect.TransformPoint(backRect.rect.center)) };
+            var backHits = new System.Collections.Generic.List<RaycastResult>();
+            _view.GetComponent<GraphicRaycaster>().Raycast(backPointer, backHits);
+            Assert.That(backHits, Is.Not.Empty);
+            Assert.That(ExecuteEvents.GetEventHandler<IPointerClickHandler>(backHits[0].gameObject),
+                Is.SameAs(back.gameObject));
             Assert.That(_view.GetComponentsInChildren<Text>().Where(label =>
                 !string.IsNullOrWhiteSpace(label.text) && label.GetComponentInParent<ToastView>() == null).All(label =>
                 label.transform.IsChildOf(Map().content)), Is.True,
@@ -49,6 +58,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Button("Yard").onClick.Invoke();
             Assert.That(_view.IsDetailsOpen, Is.True);
             Assert.That(Map().enabled, Is.False);
+            Assert.That(back.isActiveAndEnabled, Is.False);
             Assert.That(Button("Primary").isActiveAndEnabled, Is.True);
             Assert.That(((Image)Button("Primary").targetGraphic).sprite.name, Is.EqualTo("Action"));
             string heading = Label("Heading").text;
@@ -67,6 +77,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Button("ClosePlace").onClick.Invoke();
             Assert.That(_view.IsDetailsOpen, Is.False);
             Assert.That(Map().enabled, Is.True);
+            Assert.That(back.isActiveAndEnabled, Is.True);
             Assert.That(Button("Yard").image.sprite, Is.SameAs(art));
             _view.OpenDetails();
             Button("MapModalBackdrop").onClick.Invoke();
@@ -99,7 +110,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                         _view.CloseDetails();
                         yield return Settle();
                         AssertFullscreen(canvas);
-                        AssertInside((RectTransform)Button("Cancel").transform, (RectTransform)safe.transform);
+                        AssertBottomLeftBack((RectTransform)safe.transform);
                         Save(camera, target, "map-" + size.x + "x" + size.y);
                         Button("Yard").onClick.Invoke();
                         yield return Settle();
@@ -116,7 +127,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                 {
                     camera.targetTexture = insetTarget; _view.CloseDetails();
                     yield return Settle(); AssertFullscreen(canvas);
-                    AssertInside((RectTransform)Button("Cancel").transform, inset);
+                    AssertBottomLeftBack(inset);
                     Save(camera, insetTarget, "map-insets");
                     Button("Porch").onClick.Invoke(); yield return Settle();
                     AssertPopup(inset);
@@ -357,6 +368,18 @@ namespace HomelessPetHelper.Tests.PlayMode
                     label.name);
             }
         }
+        private void AssertBottomLeftBack(RectTransform safe)
+        {
+            var back = (RectTransform)Button("Cancel").transform;
+            AssertInside(back, safe);
+            Vector2 bottomLeft = safe.InverseTransformPoint(back.TransformPoint(back.rect.min));
+            Vector2 inset = bottomLeft - safe.rect.min;
+            Assert.That(inset.x, Is.EqualTo(_metrics.margin).Within(1));
+            Assert.That(inset.y, Is.EqualTo(_metrics.margin).Within(1));
+            Assert.That(back.rect.width, Is.GreaterThanOrEqualTo(_metrics.touchSize));
+            Assert.That(back.rect.height, Is.GreaterThanOrEqualTo(_metrics.touchSize));
+        }
+
         private static void AssertInside(RectTransform rect, RectTransform bounds)
         {
             var corners = new Vector3[4]; rect.GetWorldCorners(corners);
