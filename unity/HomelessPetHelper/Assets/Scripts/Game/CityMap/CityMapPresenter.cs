@@ -237,7 +237,9 @@ namespace HomelessPetHelper.Game.CityMap
             bool canDepart = CanDepart(_selection, out MapDeparturePlan plan, out string restriction);
             string feedback = selecting && !canDepart ? restriction :
                 _externalFeedback ?? (_feedbackKey == "ready" ? string.Empty : _text.Get(_feedbackKey));
-            _view.Render(_text.Get("status", _station.AvailableTemporaryPlaces, _clock.Current.ElapsedMinutes),
+            WorldTimeSnapshot time = _clock.Current;
+            _view.RenderTimeOfDay(time.MinuteOfDay, time.MinutesPerDay);
+            _view.Render(_text.Get("status", _station.AvailableTemporaryPlaces, time.ElapsedMinutes),
                 heading, details, selecting ? GetDeparturePreview(plan) : string.Empty,
                 _paused ? _text.Get("paused") : feedback, _text.Get(command),
                 selecting, _paused || _travelling, !selecting || canDepart);

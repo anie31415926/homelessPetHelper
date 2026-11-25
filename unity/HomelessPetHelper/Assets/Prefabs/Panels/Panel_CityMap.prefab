@@ -1865,6 +1865,7 @@ MonoBehaviour:
   _detailsOverflow: {fileID: 4086227807934956350}
   _atmosphere: {fileID: 8461256310742633214}
   _fog: {fileID: 8461256310742633220}
+  _dayNight: {fileID: 8461256310742633234}
 --- !u!114 &6415777848133235969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5500,6 +5501,7 @@ RectTransform:
   - {fileID: 1963265588383091512}
   - {fileID: 8461256310742633218}
   - {fileID: 8461256310742633212}
+  - {fileID: 8461256310742633232}
   - {fileID: 6521132490291684357}
   - {fileID: 8911296424454637329}
   - {fileID: 56237128051934121}
@@ -7052,6 +7054,85 @@ MonoBehaviour:
   - {x: 73, y: 196}
   - {x: 47, y: 70}
   _previewRevealed: 0
+--- !u!1 &8461256310742633231
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8461256310742633232}
+  - component: {fileID: 8461256310742633233}
+  - component: {fileID: 8461256310742633234}
+  m_Layer: 0
+  m_Name: MapDayNight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8461256310742633232
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8461256310742633231}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4803925750004940751}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &8461256310742633233
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8461256310742633231}
+  m_CullTransparentMesh: 1
+--- !u!114 &8461256310742633234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8461256310742633231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49ee6dc490c24778934ef65fae35eaad, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  _terrain: {fileID: 8107095797827283166}
+  _landmarks: {fileID: 1963265588383091512}
+  _fog: {fileID: 8461256310742633220}
+  _atmosphere: {fileID: 8461256310742633214}
+  _lamps:
+  - Landmark: {fileID: 7242793240060434031}
+    Position: {x: 0.355, y: 0.37}
+    Radius: {x: 0.029, y: 0.024}
+  - Landmark: {fileID: 1574088527002862329}
+    Position: {x: 0.719, y: 0.502}
+    Radius: {x: 0.049, y: 0.064}
+  - Landmark: {fileID: 6601460775577905494}
+    Position: {x: 0.219, y: 0.273}
+    Radius: {x: 0.035, y: 0.051}
+  _editorPreview: 0
 --- !u!1 &56237128051934101
 GameObject:
   m_ObjectHideFlags: 0

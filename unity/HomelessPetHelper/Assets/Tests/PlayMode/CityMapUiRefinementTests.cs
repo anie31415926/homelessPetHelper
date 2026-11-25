@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using HomelessPetHelper.Framework.UI;
+using HomelessPetHelper.Game;
 using HomelessPetHelper.Modules.Outing;
 using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Rescue.UI;
@@ -200,6 +201,73 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Assert.That(_view.IsDetailsOpen, Is.False);
                 _view.RenderPoint("market", flowerName, "Open", PointDisplayState.NoRequest, false, true);
                 Assert.That(label.enabled && market.IsInteractable(), Is.True);
+            }
+            finally
+            {
+                camera.targetTexture = null;
+                target.Release();
+                Object.Destroy(target);
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                Object.Destroy(camera.gameObject);
+            }
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator MapLightingReadsActionTimeAndKeepsNightDeparturesAvailable()
+        {
+            yield return Load();
+            var clock = Object.FindObjectOfType<MainGameRoot>().Presenter.Session.Clock;
+            var terrain = Map().content.GetComponent<Image>().canvasRenderer;
+            var fog = _view.GetComponentInChildren<CityMapFog>().canvasRenderer;
+            var marketLabel = Button("Market").GetComponentsInChildren<Text>().Single(text => text.enabled);
+            var labelColor = marketLabel.canvasRenderer.GetColor();
+            var canvas = _view.GetComponent<Canvas>();
+            var camera = new GameObject("DayNightEvidence", typeof(Camera)).GetComponent<Camera>();
+            var target = new RenderTexture(768, 1024, 24);
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = camera;
+            canvas.planeDistance = 10;
+            camera.targetTexture = target;
+            try
+            {
+                _view.GetComponentInChildren<ToastView>(true).Clear();
+                Map().normalizedPosition = new Vector2(.5f, .5f);
+                yield return Settle();
+                Assert.That(clock.Current.ElapsedMinutes, Is.Zero);
+                Assert.That(terrain.GetColor(), Is.EqualTo(Color.white));
+                var spots = new[] { new Vector2(.49f, .50f), new Vector2(.05f, .49f) };
+                Color[] morning = ReadRegions(camera, target, spots, "lighting-morning");
+
+                Assert.That(clock.TryAdvance(clock.Current.Version, 620, out _, out _), Is.True);
+                _view.SendMessage("OnApplicationFocus", true);
+                Assert.That(terrain.GetColor(), Is.EqualTo(Color.white), "Do not snap while the map is open.");
+                yield return new WaitForSecondsRealtime(1);
+                Color[] sunset = ReadRegions(camera, target, spots, "lighting-dusk");
+                Assert.That(terrain.GetColor().b, Is.InRange(.53f, .59f));
+                Assert.That(sunset[0].b, Is.LessThan(morning[0].b * .8f));
+
+                Assert.That(clock.TryAdvance(clock.Current.Version, 220, out _, out _), Is.True);
+                _view.SendMessage("OnApplicationFocus", true);
+                yield return new WaitForSecondsRealtime(1);
+                Color[] night = ReadRegions(camera, target, spots, "lighting-night");
+                Assert.That(night[0].r, Is.LessThan(morning[0].r * .65f));
+                Assert.That(night[1].g, Is.LessThan(morning[1].g * .76f));
+                Assert.That(fog.GetColor().a, Is.EqualTo(1));
+                Assert.That(marketLabel.canvasRenderer.GetColor(), Is.EqualTo(labelColor));
+                Assert.That(clock.Current.ElapsedMinutes, Is.EqualTo(840));
+
+                Button("Parking").onClick.Invoke();
+                Assert.That(_view.IsDetailsOpen && Button("Primary").IsInteractable(), Is.True);
+                yield return Settle();
+                Save(camera, target, "lighting-night-details");
+                _view.CloseDetails();
+
+                Assert.That(clock.TryAdvance(clock.Current.Version, 600, out _, out _), Is.True);
+                _view.SendMessage("OnApplicationFocus", true);
+                yield return new WaitForSecondsRealtime(1);
+                Assert.That(clock.Current.DayIndex, Is.EqualTo(1));
+                Assert.That(terrain.GetColor(), Is.EqualTo(Color.white));
             }
             finally
             {

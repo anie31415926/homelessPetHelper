@@ -31,6 +31,7 @@ namespace HomelessPetHelper.Modules.Outing.UI
         [SerializeField] private GameObject _detailsOverflow;
         [SerializeField] private CityMapAtmosphere _atmosphere;
         [SerializeField] private CityMapFog _fog;
+        [SerializeField] private CityMapDayNight _dayNight;
 
         private readonly Dictionary<string, CityMapPointBinding> _points =
             new Dictionary<string, CityMapPointBinding>(StringComparer.Ordinal);
@@ -125,6 +126,11 @@ namespace HomelessPetHelper.Modules.Outing.UI
                     "City map definition does not match saved background/point bindings.");
         }
 
+        public void RenderTimeOfDay(int minuteOfDay, int minutesPerDay)
+        {
+            if (_dayNight != null) _dayNight.RenderTime(minuteOfDay, minutesPerDay);
+        }
+
         public void RenderPoint(string pointId, string label, string stateLabel, PointDisplayState state,
             bool selected, bool interactable)
         {
@@ -195,6 +201,7 @@ namespace HomelessPetHelper.Modules.Outing.UI
         private void LateUpdate()
         {
             if (Input.GetKeyDown(KeyCode.Escape)) OnCancel();
+            if (!IsSuspended && _dayNight != null) _dayNight.Advance(Time.unscaledDeltaTime);
             if (_selecting && !_inputPaused && !IsSuspended && !IsDetailsOpen)
             {
                 float elapsed = Time.unscaledDeltaTime;

@@ -25,7 +25,7 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(AssetDatabase.GetAssetPath(terrain.sprite),
                 Is.EqualTo(ArtFolder + "T_CityMap_Neighborhood.jpg"));
             Assert.That(terrain.sprite.rect.size, Is.EqualTo(new Vector2(673, 1024)));
-            Assert.That(terrain.rectTransform.childCount, Is.EqualTo(11));
+            Assert.That(terrain.rectTransform.childCount, Is.EqualTo(12));
             var landmarks = terrain.transform.Find("Landmarks");
             Assert.That(landmarks, Is.Not.Null);
             Assert.That(landmarks.GetSiblingIndex(), Is.Zero, "Artwork must render below the point labels.");
@@ -38,6 +38,12 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(fog.raycastTarget, Is.False);
             Assert.That(fog.maskable, Is.True);
             Assert.That(fog.PreviewRevealed, Is.False);
+            var daylight = terrain.GetComponentInChildren<CityMapDayNight>(true);
+            Assert.That(daylight.transform.GetSiblingIndex(), Is.EqualTo(3));
+            Assert.That(daylight.raycastTarget, Is.False);
+            Assert.That(daylight.maskable, Is.True);
+            Assert.That(new SerializedObject(daylight).FindProperty("_editorPreview").enumValueIndex,
+                Is.Zero);
             Assert.That(landmarks.Find("FlowerGarden").GetComponent<CityMapFlowerSway>(), Is.Not.Null);
             Assert.That(landmarks.childCount, Is.EqualTo(12));
             foreach (RectTransform landmark in landmarks)
@@ -53,7 +59,8 @@ namespace HomelessPetHelper.Tests.EditMode
             var areas = new System.Collections.Generic.List<Rect>();
             foreach (RectTransform hotspot in terrain.rectTransform)
             {
-                if (hotspot == landmarks || hotspot == atmosphere.rectTransform || hotspot == fog.rectTransform)
+                if (hotspot == landmarks || hotspot == atmosphere.rectTransform || hotspot == fog.rectTransform ||
+                    hotspot == daylight.rectTransform)
                     continue;
                 bool shelter = hotspot.name == "ShelterArtwork";
                 Image hit = hotspot.GetComponent<Image>();
