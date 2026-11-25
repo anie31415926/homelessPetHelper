@@ -89,12 +89,16 @@ namespace HomelessPetHelper.Tests.EditMode
                     if (property.propertyType == SerializedPropertyType.ObjectReference)
                         Assert.That(property.objectReferenceValue, Is.Not.Null, property.propertyPath);
             }
+            var buttons = prefab.GetComponentsInChildren<Button>(true);
+            Assert.That(buttons.Length, Is.EqualTo(7));
             foreach (Image image in prefab.GetComponentsInChildren<Image>(true))
             {
-                Assert.That(image.raycastTarget, Is.EqualTo(image == entry.targetGraphic));
+                bool backdrop = image.name == "SaveBackdrop";
+                Assert.That(image.raycastTarget, Is.EqualTo(backdrop || buttons.Any(button => button.targetGraphic == image)));
+                if (backdrop) continue;
                 Assert.That(image.sprite, Is.Not.Null, image.name + " must retain its imported sprite identity.");
             }
-            Assert.That(prefab.GetComponentsInChildren<Image>(true).Length, Is.EqualTo(42)); // 旧整图封面 Image 已移除（-1），拼装封面新增背景+7切片 Image（+8）。
+            Assert.That(prefab.GetComponentsInChildren<Image>(true).Length, Is.EqualTo(50)); // Original illustration, six extra button images, panel and backdrop.
             foreach (string name in new[] { "T_Loading_Elements.png", "T_Loading_Background.png" })
             {
                 var importer = (TextureImporter)AssetImporter.GetAtPath("Assets/Art/Loading/" + name);

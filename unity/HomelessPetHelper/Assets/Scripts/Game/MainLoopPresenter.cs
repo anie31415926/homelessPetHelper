@@ -228,6 +228,7 @@ namespace HomelessPetHelper.Game
             if (_disposed || _returnTravelling || !Progress.CanContinue) return;
             BeginFieldReturn(() =>
             {
+                CloseOverlays();
                 if (_explorationOpening != null)
                 {
                     CaptureExploration();
@@ -239,7 +240,6 @@ namespace HomelessPetHelper.Game
                     Progress.Fields.Capture(Session);
                     FlushFieldProgress();
                 }
-                CloseOverlays();
                 _approach.gameObject.SetActive(false);
                 _approach.Unbind();
                 _siege.gameObject.SetActive(false);
@@ -554,6 +554,9 @@ namespace HomelessPetHelper.Game
                 new Modules.Siege.UI.SiegeText(_content.SiegeText).Get("field.pauseInfo"));
         }
 
+        private IReadOnlyList<SiegeHandbook.Entry> DescribeHandbook(bool defense) => SiegeHandbook.Describe(_activity.Battle.Catalog,
+            _activity.Battle.Snapshot.EncounterId, new Modules.Siege.UI.SiegeText(_content.SiegeText), _uiText, defense);
+
         private Framework.UI.GuideSession CreateRescueGuide()
         {
             var battle = _activity.Battle;
@@ -657,8 +660,9 @@ namespace HomelessPetHelper.Game
                 _overlays = new LevelOverlaySession(_siege.GetComponent<LevelOverlayAnchor>().View,
                     new LevelOverlayBindings(scene.SetOverlaySuspended, ReturnFromSiege,
                         DescribeRescueObjectives, CreateRescueGuide, scene.BindOverlay,
-                        scene.ResolveGuideTarget, scene.PauseTarget, scene.ObjectivesTarget),
+                        scene.ResolveGuideTarget, scene.PauseTarget, scene.ObjectivesTarget, DescribeHandbook),
                     _audioSession, _guidance, _uiText, _playSettings);
+                scene.SetBattleHints(_overlays.TryShowBattleHint);
             }
             if (!Checkpoint()) return;
         }

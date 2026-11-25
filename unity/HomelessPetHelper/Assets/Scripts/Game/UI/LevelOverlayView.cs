@@ -34,6 +34,11 @@ namespace HomelessPetHelper.Game.UI
         [SerializeField] private GuideCaptionLayout _guideLayout;
         [SerializeField] private UiText[] _localizedLabels;
         [SerializeField] private string[] _labelKeys;
+        [SerializeField] private GameObject _handbookPage;
+        [SerializeField] private Button _openHandbook, _handbookUnits, _handbookDefense, _closeHandbook;
+        [SerializeField] private RectTransform _handbookRow;
+        private readonly List<RectTransform> _handbookRows = new List<RectTransform>();
+        [SerializeField] private ScrollRect _handbookScroll;
         private LevelOverlaySession _session;
         private float _noticeUntil;
         private string _defaultTitle, _defaultConfirm, _defaultCancel;
@@ -74,6 +79,7 @@ namespace HomelessPetHelper.Game.UI
             _pausePage.SetActive(top == LevelPopupKind.Pause);
             _settingsPage.SetActive(top == LevelPopupKind.Settings);
             _objectivesPage.SetActive(top == LevelPopupKind.Objectives);
+            _handbookPage.SetActive(top == LevelPopupKind.Handbook);
             _confirmationPage.SetActive(top == LevelPopupKind.Confirmation || top == LevelPopupKind.RescueResult);
             _modalInput.interactable = canInteract;
             _modalInput.blocksRaycasts = true;
@@ -81,12 +87,32 @@ namespace HomelessPetHelper.Game.UI
             if (showKeyboard) _stationInput.OpenKeyboard();
         }
 
-        public void SetObjectives(string text, bool canReplay, bool showReplay = true)
+        public void SetObjectives(string text, bool canReplay, bool showReplay = true, bool showHandbook = false)
         {
             _objectivesText.text = text;
             _replay.gameObject.SetActive(showReplay);
             _replay.interactable = canReplay;
+            _openHandbook.gameObject.SetActive(showHandbook);
         }
+        internal void SetHandbook(IReadOnlyList<SiegeHandbook.Entry> entries, bool defense)
+        {
+            for (int i = 0; i < entries.Count; i++)
+            {
+                if (i == _handbookRows.Count)
+                    _handbookRows.Add(Instantiate(_handbookRow, _handbookRow.parent, false));
+                var row = _handbookRows[i];
+                var entry = entries[i];
+                row.GetComponentInChildren<UiText>(true).text = entry.Text;
+                row.GetComponentInChildren<Modules.Siege.UI.SiegePropIcon>(true).Show(entry.Icon);
+                row.GetComponentInChildren<Modules.Siege.UI.SiegeResourceGraphic>(true).gameObject.SetActive(entry.UsesSupply);
+                row.gameObject.SetActive(true);
+            }
+            for (int i = entries.Count; i < _handbookRows.Count; i++) _handbookRows[i].gameObject.SetActive(false);
+            _handbookUnits.interactable = defense;
+            _handbookDefense.interactable = !defense;
+            _handbookScroll.verticalNormalizedPosition = 1;
+        }
+
         public void SetConfirmation(string text)
         {
             _confirmationText.text = text;
@@ -171,6 +197,7 @@ namespace HomelessPetHelper.Game.UI
         }
         public void HideGuide()
         { _guideMask.gameObject.SetActive(false); _guideCaption.SetActive(false); }
+        internal bool HasNotice => Time.unscaledTime < _noticeUntil;
         public void ShowNotice(string text)
         { _notice.text = text; _noticeUntil = Time.unscaledTime + 4; _notice.gameObject.SetActive(true); }
 
@@ -193,6 +220,10 @@ namespace HomelessPetHelper.Game.UI
             _return.onClick.AddListener(Return);
             _closeObjectives.onClick.AddListener(CloseObjectives);
             _replay.onClick.AddListener(Replay);
+            _openHandbook.onClick.AddListener(OpenHandbook);
+            _handbookUnits.onClick.AddListener(HandbookUnits);
+            _handbookDefense.onClick.AddListener(HandbookDefense);
+            _closeHandbook.onClick.AddListener(CloseHandbook);
             _saveSettings.onClick.AddListener(SaveSettings);
             _cancelSettings.onClick.AddListener(CancelSettings);
             _resetSettings.onClick.AddListener(ResetSettings);
@@ -213,6 +244,10 @@ namespace HomelessPetHelper.Game.UI
             _return.onClick.RemoveListener(Return);
             _closeObjectives.onClick.RemoveListener(CloseObjectives);
             _replay.onClick.RemoveListener(Replay);
+            _openHandbook.onClick.RemoveListener(OpenHandbook);
+            _handbookUnits.onClick.RemoveListener(HandbookUnits);
+            _handbookDefense.onClick.RemoveListener(HandbookDefense);
+            _closeHandbook.onClick.RemoveListener(CloseHandbook);
             _saveSettings.onClick.RemoveListener(SaveSettings);
             _cancelSettings.onClick.RemoveListener(CancelSettings);
             _resetSettings.onClick.RemoveListener(ResetSettings);
@@ -240,6 +275,10 @@ namespace HomelessPetHelper.Game.UI
         private void Settings() => _session?.OpenSettings();
         private void Return() => _session?.RequestReturn();
         private void CloseObjectives() => _session?.CloseObjectives();
+        private void OpenHandbook() => _session?.OpenHandbook();
+        private void HandbookUnits() => _session?.SelectHandbookTab(false);
+        private void HandbookDefense() => _session?.SelectHandbookTab(true);
+        private void CloseHandbook() => _session?.CloseHandbook();
         private void Replay() => _session?.ReplayGuidance();
         private void SaveSettings() => _session?.SaveSettings();
         private void CancelSettings() => _session?.CancelSettings();

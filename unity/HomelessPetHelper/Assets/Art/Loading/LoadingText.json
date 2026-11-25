@@ -1,5 +1,17 @@
 {
   "loading": "准备中",
   "failed": "准备失败，请重开",
-  "enter": "进入救助站"
+  "enter": "进入救助站",
+  "resume": "继续游戏",
+  "load": "加载存档",
+  "create": "开始新游戏",
+  "back": "返回",
+  "slotName": "存档 {0}",
+  "slotSaved": "{0} · 累计救助：{2}\n保存时间：{1}",
+  "slotEmpty": "{0} · 空位 · 创建新游戏",
+  "slotUnavailable": "{0} · 暂时无法读取",
+  "slotFailed": "无法打开所选存档，请重试或选择其他档位。",
+  "slotFull": "存档已满，已有进度会保留。",
+  "unknown": "未记录",
+  "dateFormat": "yyyy-MM-dd HH:mm"
 }

@@ -71,6 +71,11 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private float _detailUntil, _shownDetailWidth = -1;
         private string _shownDetail;
         private float _handWidth = -1;
+        private readonly HashSet<string> _shownBattleHints = new HashSet<string>();
+        private Func<string, bool> _showBattleHint;
+        private int _hintThrough;
+
+        public void SetBattleHints(Func<string, bool> show) => _showBattleHint = show;
         public SiegeFieldPlan Plan => _plan;
         public SiegeBattlefield Field => _field;
         public void SetPresentationAudio(Action<string> play) => _field.SetPresentationAudio(play);
@@ -151,6 +156,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             _session = session ?? throw new ArgumentNullException(nameof(session));
             _field.ResetPresentation();
+            _showBattleHint = null;
+            _shownBattleHints.Clear();
+            _hintThrough = session.Snapshot.LatestEffectSequence;
             _catalog = session.Catalog;
             _compact = session.Realtime && _dockResource != null && _resourceBar != null;
             bool dockBalance = _compact || _catalog.HasDeploymentZone && _dockResource != null;
@@ -294,6 +302,12 @@ namespace HomelessPetHelper.Modules.Siege.UI
         }
         private void DeployAt(SiegePoint point)
         {
+            if (_session.Realtime && _guide?.IsActive == true) return;
+            DeploySelectedAt(point);
+        }
+
+        private void DeploySelectedAt(SiegePoint point)
+        {
             if (!CanAct || !Allows("siege.route") || !_plan.SelectedCard.HasValue) return;
             var lane = SiegeDeployment.NearestLane(_catalog, point);
             if (lane == null) return;
@@ -311,7 +325,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (_guide != null && _guide.IsActive &&
                 _catalog.Unit(state.Hand.First(card => card.Id == id).DefinitionId).Cost > state.Energy) return;
             _plan.SelectCard(id); _tower = _error = null; Render();
-            _guide?.ReportSucceeded("siege.card");
+            if (!_session.Realtime) _guide?.ReportSucceeded("siege.card");
             Render();
         }
         private void SelectUnit(int id)
@@ -374,11 +388,42 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 Render();
         }
 
+        private void ObserveBattleHints(SiegeState state)
+        {
+            if (_showBattleHint == null || !state.Realtime || state.Paused || _guide?.IsActive == true) return;
+            foreach (var effect in state.Effects)
+            {
+                if (effect.Sequence <= _hintThrough) continue;
+                string hint = effect.Kind switch
+                {
+                    SiegeState.EffectKind.TowerShot => "guide.siege.defense",
+                    "merge" => "guide.siege.merge",
+                    _ => null
+                };
+                if (hint != null && !_shownBattleHints.Contains(hint))
+                {
+                    if (!_showBattleHint(hint)) return;
+                    _shownBattleHints.Add(hint);
+                }
+                _hintThrough = effect.Sequence;
+            }
+            string animal = state.AnimalState.Cast?.Kind switch
+            {
+                SiegeState.IntentKind.Hold => "guide.siege.hold",
+                SiegeState.IntentKind.Carry => "guide.siege.carry",
+                SiegeState.IntentKind.Sweep => "guide.siege.sweep",
+                _ => null
+            };
+            if (animal != null && !_shownBattleHints.Contains(animal) && _showBattleHint(animal))
+                _shownBattleHints.Add(animal);
+        }
+
         private void Render()
         {
             if (_session == null || _handPool == null) return;
             _session.CopyPresentationTo(_presentation);
             var state = _presentation;
+            ObserveBattleHints(state);
             if (_motion != null) _motion.SetScenePaused(state.Paused || _paused);
             _renderedPhase = state.Phase;
             if (_turn != state.Turn) { _turn = state.Turn; _plan.Clear(); }
@@ -646,7 +691,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 bool inside = _field.PickDeployment(position, owner.renderMode == RenderMode.ScreenSpaceOverlay ?
                     null : owner.worldCamera, out var point);
                 CancelDrag();
-                if (inside) DeployAt(point);
+                if (inside) DeploySelectedAt(point);
                 else { _plan.CancelSelection(); _error = "field.dropOutside"; Render(); }
                 return;
             }

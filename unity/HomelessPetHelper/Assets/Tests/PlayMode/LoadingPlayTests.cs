@@ -19,11 +19,23 @@ namespace HomelessPetHelper.Tests.PlayMode
     public sealed class LoadingPlayTests
     {
         private MainSceneStorageScope _storage;
-        [SetUp] public void SetUp() => _storage = new MainSceneStorageScope();
+        private HomelessPetHelper.Tests.Support.MemorySaveStorage[] _slots;
+        private void ConfigureSlots(Scene scene, LoadSceneMode mode)
+        {
+            if (scene.path == LoadingSceneRoot.ScenePath)
+                Object.FindObjectOfType<LoadingSceneRoot>().ConfigureSaveSlots(slot => _slots[slot]);
+        }
+        [SetUp] public void SetUp()
+        {
+            _storage = new MainSceneStorageScope();
+            _slots = Enumerable.Range(0, 3).Select(_ => new MemorySaveStorage()).ToArray();
+            SceneManager.sceneLoaded += ConfigureSlots;
+        }
         [TearDown] public void TearDown()
         {
             Time.timeScale = 1f;
             SceneManager.sceneLoaded -= Preview;
+            SceneManager.sceneLoaded -= ConfigureSlots;
             var host = Object.FindObjectOfType<LoadingSceneRoot>();
             if (host != null) host.enabled = false;
             _storage.Dispose();
@@ -49,7 +61,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         {
             yield return SceneManager.LoadSceneAsync(LoadingSceneRoot.ScenePath);
             var view = Object.FindObjectOfType<LoadingView>();
-            var entry = view.GetComponentInChildren<Button>(true);
+            var entry = view.GetComponentsInChildren<Button>(true).Single(button => button.name == "EnterStation");
             yield return null;
             Assert.That(entry.gameObject.activeInHierarchy, Is.True);
             var host = Object.FindObjectOfType<LoadingSceneRoot>();
@@ -82,7 +94,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         private static IEnumerator EnterAndWaitForLoading(LoadingView view)
         {
             yield return null;
-            Assert.That(ClickEntry(view.GetComponentInChildren<Button>(true)), Is.True);
+            Assert.That(ClickEntry(view.GetComponentsInChildren<Button>(true).Single(button => button.name == "EnterStation")), Is.True);
             float deadline = Time.realtimeSinceStartup + 5f;
             while (view.GetComponentInChildren<LoadingArtworkMotion>() == null && Time.realtimeSinceStartup < deadline)
                 yield return null;
@@ -148,7 +160,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return null; yield return null;
             Assert.That(view.Progress, Is.LessThan(.9f));
             Assert.That(SceneManager.GetActiveScene().path, Is.EqualTo(LoadingSceneRoot.ScenePath));
-            var entry = view.GetComponentInChildren<Button>(true);
+            var entry = view.GetComponentsInChildren<Button>(true).Single(button => button.name == "EnterStation");
             Assert.That(ClickEntry(entry), Is.False);
             task.IsComplete = true;
             yield return WaitForMain();
@@ -470,7 +482,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             inset.anchorMax = new Vector2(.96f, .93f);
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
             canvas.worldCamera = camera;
-            var entry = view.GetComponentInChildren<Button>();
+            var entry = view.GetComponentsInChildren<Button>().Single(button => button.name == "EnterStation");
             try
             {
                 foreach (var size in new[] { new Vector2Int(320, 569), new Vector2Int(390, 845),

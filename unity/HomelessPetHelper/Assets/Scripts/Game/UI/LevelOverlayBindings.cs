@@ -13,13 +13,22 @@ namespace HomelessPetHelper.Game.UI
         public Func<GuideSession> CreateGuide { get; }
         public Action<ILevelOverlay, GuideSession> BindInput { get; }
         public Func<string, List<RectTransform>, bool> ResolveTarget { get; }
+        internal Func<bool, IReadOnlyList<SiegeHandbook.Entry>> DescribeHandbook { get; }
         public RectTransform PauseTarget { get; }
         public RectTransform ObjectivesTarget { get; }
 
         public LevelOverlayBindings(Action<bool> suspend, Action returnRequested, Func<string> describeObjectives,
             Func<GuideSession> createGuide, Action<ILevelOverlay, GuideSession> bindInput,
             Func<string, List<RectTransform>, bool> resolveTarget, RectTransform pause, RectTransform objectives)
+            : this(suspend, returnRequested, describeObjectives, createGuide, bindInput, resolveTarget,
+                pause, objectives, null) { }
+
+        internal LevelOverlayBindings(Action<bool> suspend, Action returnRequested, Func<string> describeObjectives,
+            Func<GuideSession> createGuide, Action<ILevelOverlay, GuideSession> bindInput,
+            Func<string, List<RectTransform>, bool> resolveTarget, RectTransform pause, RectTransform objectives,
+            Func<bool, IReadOnlyList<SiegeHandbook.Entry>> describeHandbook)
         {
+            DescribeHandbook = describeHandbook;
             Suspend = suspend ?? throw new ArgumentNullException(nameof(suspend));
             Return = returnRequested ?? throw new ArgumentNullException(nameof(returnRequested));
             DescribeObjectives = describeObjectives ?? throw new ArgumentNullException(nameof(describeObjectives));

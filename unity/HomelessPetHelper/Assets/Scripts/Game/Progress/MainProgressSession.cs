@@ -1,3 +1,4 @@
+using HomelessPetHelper.Game.Loading;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,13 +53,15 @@ namespace HomelessPetHelper.Game.Progress
             else
             {
                 _saves = new SaveService(storage);
-                _section = new SaveSection<MainProgressData>("main.station", 6, NewGame, Validate,
+                _section = new SaveSection<MainProgressData>(StartupSaveSlots.ProgressSection,
+                    StartupSaveSlots.ProgressVersion, NewGame, Validate,
                     new Dictionary<int, Func<JObject, JObject>>
                     {
                         [1] = MigrateVersionOne, [2] = MigrateVersionTwo, [3] = MigrateVersionThree,
                         [4] = MigrateVersionFour, [5] = MigrateVersionFive
                     }, reconcileContent ? (Func<JObject, JObject>)ReconcileOnRead : null);
                 _saves.Register(_section);
+                _saves.Register(StartupSaveSlots.Summary);
                 if (!_saves.TryOpen(out var status, out var error) ||
                     !_saves.TryRead(_section, out data, out error))
                 {
@@ -170,7 +173,12 @@ namespace HomelessPetHelper.Game.Progress
                 }
                 try
                 {
-                    if (_saves.TryCommit(writer => writer.Set(_section, data), out var error))
+                    var summary = new JObject { ["savedUtc"] = DateTimeOffset.UtcNow.ToString("O") };
+                    if (_saves.TryCommit(writer =>
+                    {
+                        writer.Set(_section, data);
+                        writer.Set(StartupSaveSlots.Summary, summary);
+                    }, out var error))
                     { PublishEconomy(data.Economy); return true; }
                     PersistenceError = error;
                 }

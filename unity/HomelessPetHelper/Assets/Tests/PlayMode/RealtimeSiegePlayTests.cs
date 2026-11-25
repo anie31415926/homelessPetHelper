@@ -318,6 +318,68 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator FirstBattleUsesSharedHandbookAndRequiresSuccessfulDrop()
+        {
+            _scope.Dispose();
+            _scope = new MainSceneStorageScope(() => _storage, freshGuidance: true);
+            yield return SceneManager.LoadSceneAsync("Main"); yield return null;
+            var root = Object.FindObjectOfType<MainGameRoot>();
+            MainApproachDriver.Click(Object.FindObjectOfType<StationPanelView>(), "Restart");
+            MainApproachDriver.Click(Object.FindObjectOfType<CityMapView>(), "Primary");
+            MainApproachDriver.Complete(); yield return null;
+            var siege = Object.FindObjectOfType<SiegeTrialView>();
+            var overlay = root.Presenter.Overlays;
+            var battle = ((SiegeRescueActivity)root.Presenter.Session.Activity).Battle;
+            Assert.That(overlay.Top.ToString(), Is.EqualTo("Objectives"));
+            Assert.That(overlay.Guide.IsActive, Is.True);
+            Button Named(string name) => siege.GetComponentsInChildren<Button>().Single(button => button.name == name);
+            Named("OpenHandbook").onClick.Invoke();
+            Assert.That(overlay.Top.ToString(), Is.EqualTo("Handbook"));
+            var scroll = siege.GetComponentsInChildren<ScrollRect>().Single();
+            Canvas.ForceUpdateCanvases(); yield return null;
+            Canvas.ForceUpdateCanvases();
+            Assert.That(scroll.content.rect.height, Is.GreaterThan(scroll.viewport.rect.height));
+            Assert.That(scroll.content.GetComponentsInChildren<SiegePropIcon>().Length,
+                Is.EqualTo(battle.Catalog.Units.Count));
+            int deployed = battle.Snapshot.Stats.Deployed;
+            Named("HandbookDefense").onClick.Invoke();
+            Assert.That(scroll.content.GetComponentsInChildren<Text>().Any(label => label.text.Contains("动物的防备")), Is.True);
+            overlay.Back();
+            Assert.That(overlay.Top.ToString(), Is.EqualTo("Objectives"));
+            Assert.That(battle.Snapshot.Stats.Deployed, Is.EqualTo(deployed));
+            overlay.Back(); yield return null;
+            var card = siege.Scene.GetComponentsInChildren<SiegeChoiceCell>().First(cell => cell.IsClickable);
+            var input = new PointerEventData(EventSystem.current) { pointerId = 15, button = PointerEventData.InputButton.Left };
+            var field = siege.Scene.Field;
+            var corners = new Vector3[4];
+            field.rectTransform.GetWorldCorners(corners);
+            var canvas = field.canvas;
+            var camera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+            var min = RectTransformUtility.WorldToScreenPoint(camera, corners[0]);
+            var max = RectTransformUtility.WorldToScreenPoint(camera, corners[2]);
+            card.OnBeginDrag(input);
+            Assert.That(overlay.Guide.StepIndex, Is.EqualTo(1));
+            input.position = min - Vector2.one * 200;
+            card.OnEndDrag(input);
+            Assert.That(overlay.Guide.IsComplete, Is.False);
+            Assert.That(battle.Snapshot.Stats.Deployed, Is.EqualTo(deployed));
+            Vector2? drop = null;
+            for (int y = 1; y < 24 && !drop.HasValue; y++)
+                for (int x = 1; x < 24 && !drop.HasValue; x++)
+                {
+                    var point = new Vector2(Mathf.Lerp(min.x, max.x, x / 24f), Mathf.Lerp(min.y, max.y, y / 24f));
+                    if (field.PickDeployment(point, camera, out _)) drop = point;
+                }
+            Assert.That(drop.HasValue, Is.True);
+            input.position = drop.Value;
+            card.OnBeginDrag(input); card.OnEndDrag(input);
+            Assert.That(overlay.Guide.IsComplete, Is.True);
+            yield return null;
+            Assert.That(root.Guidance.HasCompleted(overlay.Guide.MechanicId), Is.True);
+            Assert.That(battle.Snapshot.Stats.Deployed, Is.EqualTo(deployed + 1));
+        }
+
+        [UnityTest]
         public IEnumerator DeploymentDoesNotSaveInsideInput_ExplicitCheckpointAndReloadPreserveState()
         {
             yield return SceneManager.LoadSceneAsync("Main"); yield return null;

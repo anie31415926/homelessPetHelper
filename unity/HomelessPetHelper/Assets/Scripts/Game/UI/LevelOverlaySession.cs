@@ -71,6 +71,7 @@ namespace HomelessPetHelper.Game.UI
                 _guide = candidate;
             _bindings.BindInput(this, _guide);
             Refresh();
+            if (_guide != null && _bindings.DescribeHandbook != null) OpenObjectives();
         }
 
         public void OpenPause()
@@ -84,10 +85,26 @@ namespace HomelessPetHelper.Game.UI
         {
             if (_settingsOnly || !CanInteract || _stack.Depth != 0) return;
             _view.SetObjectives(_bindings.DescribeObjectives(), _bindings.CreateGuide() != null,
-                showReplay: !_returnToLocation);
+                showReplay: !_returnToLocation, showHandbook: _bindings.DescribeHandbook != null);
             _stack.TryOpen(LevelPopupKind.Objectives);
             Refresh();
         }
+
+        public void OpenHandbook()
+        {
+            if (!CanInteract || Top != LevelPopupKind.Objectives || _bindings.DescribeHandbook == null) return;
+            if (!_stack.TryPush(LevelPopupKind.Objectives, LevelPopupKind.Handbook)) return;
+            _view.SetHandbook(_bindings.DescribeHandbook(false), false);
+            Refresh();
+        }
+
+        public void SelectHandbookTab(bool defense)
+        {
+            if (!CanInteract || Top != LevelPopupKind.Handbook) return;
+            _view.SetHandbook(_bindings.DescribeHandbook(defense), defense);
+        }
+
+        public void CloseHandbook() => CloseTop(LevelPopupKind.Handbook);
 
         public void Resume() => CloseTop(LevelPopupKind.Pause);
         public void CloseObjectives() => CloseTop(LevelPopupKind.Objectives);
@@ -318,6 +335,7 @@ namespace HomelessPetHelper.Game.UI
             if (!Top.HasValue) OpenPause();
             else if (Top == LevelPopupKind.Confirmation) CancelConfirmation();
             else if (Top == LevelPopupKind.Settings) CancelSettings();
+            else if (Top == LevelPopupKind.Handbook) CloseHandbook();
             else if (Top == LevelPopupKind.Objectives) CloseObjectives();
             else Resume();
         }
@@ -347,6 +365,14 @@ namespace HomelessPetHelper.Game.UI
             _bindings.Suspend(modalPausesBattle || !_focused || _backgrounded);
             _view.Refresh(Top, CanInteract);
             _guideRevision = -1;
+        }
+
+        internal bool TryShowBattleHint(string key)
+        {
+            if (!CanInteract || Top.HasValue || _view.HasNotice || _guide is { IsActive: true } ||
+                _guide is { IsComplete: true } && !_completionHandled) return false;
+            _view.ShowNotice(_text.Get(key));
+            return true;
         }
 
         public void RefreshGuidance()

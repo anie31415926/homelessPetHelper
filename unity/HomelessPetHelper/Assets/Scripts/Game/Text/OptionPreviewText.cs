@@ -47,6 +47,8 @@ namespace HomelessPetHelper.Game.Text
             }
         }
 
+        public bool TryGet(string key, out string value) => _entries.TryGetValue(key, out value);
+
         public string Get(string key, params object[] values)
         {
             if (!_entries.TryGetValue(key, out string value))

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.IO;
+using HomelessPetHelper.Game.Loading;
+using UnityEngine.SceneManagement;
 using System.Linq;
 using HomelessPetHelper.Bootstrap;
 using HomelessPetHelper.Framework.Audio.UI;
@@ -19,16 +21,17 @@ namespace HomelessPetHelper.Game
     [DisallowMultipleComponent]
     public sealed class MainGameRoot : MonoBehaviour
     {
-        private const int SaveSlotCount = 3;
+        private const int SaveSlotCount = StartupSaveSlots.Count;
         private const float SavingIndicatorSeconds = 0.45f;
         private const int SavingIndicatorSteps = 3;
         private enum SlotState { Empty, Occupied, Unavailable }
 
-        private Func<int, ISaveStorage> _saveSlotStorage = CreateProgressStorage;
+        private Func<int, ISaveStorage> _saveSlotStorage = StartupSaveSlots.OpenStorage;
         private LevelOverlaySession _titleOverlays;
         private Coroutine _manualSave;
         private OptionPreviewText _saveText;
         private int _activeSlot;
+        private bool _enteredFromLoading;
 
         [SerializeField] private GameBootstrap _bootstrap;
         [SerializeField] private GameContent _content;
@@ -94,8 +97,21 @@ namespace HomelessPetHelper.Game
                 if (scope == null) throw new InvalidOperationException("Missing Main audio scope.");
                 scope.Bind(Audio.Playback);
             }
+            var pending = StartupSaveSlots.Pending;
+            StartupSaveSlots.Pending = null;
             if (_progressStorage != null) StartGame(_progressStorage);
-            else ShowSaveMenu();
+            else if (pending is { } launch)
+            {
+                _enteredFromLoading = true;
+                _activeSlot = launch.slot;
+                if (!StartGame(launch.storage, launch.create))
+                {
+                    StartupSaveSlots.EntryFailed = true;
+                    SceneManager.LoadSceneAsync(LoadingSceneRoot.ScenePath);
+                    return;
+                }
+            }
+            else ShowSaveMenu(); // Direct Main entry remains available for Editor previews.
             Music = new MainMusicSession(Audio.Playback, _content.MusicCatalog);
             RefreshMusic();
             InvokeRepeating(nameof(SaveFieldProgress), 5f, 5f);
@@ -147,18 +163,6 @@ namespace HomelessPetHelper.Game
         private void OnApplicationFocus(bool focused)
         {
             if (!focused) SaveFieldProgress();
-        }
-
-        private static ISaveStorage CreateProgressStorage(int slot)
-        {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            const string key = "homeless-pet.main.v1";
-            return new WeChatSaveStorage(slot == 0 ? key : key + ".profile-" + slot);
-#else
-            const string folder = "main-progress";
-            return new FileSaveStorage(Path.Combine(Application.persistentDataPath,
-                slot == 0 ? folder : folder + "-profile-" + slot));
-#endif
         }
 
         private static ISaveStorage CreateAudioStorage()
@@ -332,7 +336,8 @@ namespace HomelessPetHelper.Game
             _bootstrap.BindSession(null);
             Presenter.Dispose();
             Presenter = null;
-            ShowSaveMenu();
+            if (_enteredFromLoading) SceneManager.LoadSceneAsync(LoadingSceneRoot.ScenePath);
+            else ShowSaveMenu();
         }
     }
 }

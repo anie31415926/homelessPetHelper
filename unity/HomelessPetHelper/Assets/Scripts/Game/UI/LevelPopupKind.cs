@@ -6,6 +6,7 @@ namespace HomelessPetHelper.Game.UI
         Settings = 1,
         Objectives = 2,
         Confirmation = 3,
-        RescueResult = 4
+        RescueResult = 4,
+        Handbook = 5
     }
 }

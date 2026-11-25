@@ -1,6 +1,9 @@
 {
   "entries": [
-    { "key": "station.keyboardUnavailable", "value": "输入法未打开，请再次点击输入框。" },
+    {
+      "key": "station.keyboardUnavailable",
+      "value": "输入法未打开，请再次点击输入框。"
+    },
     {
       "key": "menu.pause",
       "value": "暂停"
@@ -25,7 +28,10 @@
       "key": "pause.return",
       "value": "返回地图"
     },
-    { "key": "pause.returnLocation", "value": "返回地点" },
+    {
+      "key": "pause.returnLocation",
+      "value": "返回地图"
+    },
     {
       "key": "settings.title",
       "value": "游戏设置"
@@ -92,11 +98,11 @@
     },
     {
       "key": "confirm.return",
-      "value": "现在返回救助站？\n本次尚未完成的救助将结束；外出途中不保存，下次启动从站内检查点继续。"
+      "value": "现在返回地图？本次现场进度会保留，稍后可继续。"
     },
     {
       "key": "confirm.returnLocation",
-      "value": "现在返回地点？本次清理或解谜的进度会保留，可在当前到访中继续。"
+      "value": "现在返回地图？本次清理或解谜进度会保留。"
     },
     {
       "key": "confirm.resetAudio",
@@ -124,7 +130,7 @@
     },
     {
       "key": "objectives.rescue",
-      "value": "建立信任：{0} / {1}\n确认救助：{2}\n{3}"
+      "value": "让道具抵达动物身边，建立信任：{0} / {1}\n确认救助：{2}\n{3}"
     },
     {
       "key": "guide.step",
@@ -172,11 +178,11 @@
     },
     {
       "key": "guide.siege.card",
-      "value": "拖动手牌开始部署。"
+      "value": "补给会随时间恢复。拖动一张费用足够的手牌。"
     },
     {
       "key": "guide.siege.route",
-      "value": "拖到己方亮起的范围内，松手立即部署。"
+      "value": "拖到亮起的路线内松手，立即派出道具。成功派出后指引结束。"
     },
     {
       "key": "guide.siege.submit",
@@ -193,6 +199,150 @@
     {
       "key": "settings.playSaveFailed",
       "value": "声音已保存，玩法选项保存失败；原玩法偏好已保留。可重试；若原存档损坏则保留原档。"
+    },
+    {
+      "key": "handbook.open",
+      "value": "道具与机关"
+    },
+    {
+      "key": "handbook.title",
+      "value": "道具与机关"
+    },
+    {
+      "key": "handbook.units",
+      "value": "我的道具"
+    },
+    {
+      "key": "handbook.defense",
+      "value": "对方防线"
+    },
+    {
+      "key": "handbook.close",
+      "value": "返回目标"
+    },
+    {
+      "key": "handbook.tower",
+      "value": "<b>{0}</b>\n{1}"
+    },
+    {
+      "key": "handbook.attack.single",
+      "value": "自动投球机专盯一件道具。让耐打的道具走前面，或先拆掉它。"
+    },
+    {
+      "key": "handbook.attack.slow",
+      "value": "在路上留一片减速区。用跑得快的道具穿过去，也可以换一路。"
+    },
+    {
+      "key": "handbook.attack.push",
+      "value": "先亮出预警，再把范围内的道具推出去。等这一击过去再集中出发。"
+    },
+    {
+      "key": "handbook.animal",
+      "value": "<b>动物的防备</b>\n{0}：它会盯住靠近门口的道具。\n{1}：留意场上预警，别把道具放得太近。{2}"
+    },
+    {
+      "key": "handbook.attributes",
+      "value": "速度 {0} · 耐久 {1}\n威力 {2} · 射程 {3}"
+    },
+    {
+      "key": "handbook.unit",
+      "value": "<b>{0}</b>\n{1}\n{2}"
+    },
+    {
+      "key": "handbook.merge",
+      "value": "合体后：{0}"
+    },
+    {
+      "key": "handbook.rank.low",
+      "value": "轻巧"
+    },
+    {
+      "key": "handbook.rank.medium",
+      "value": "均衡"
+    },
+    {
+      "key": "handbook.rank.high",
+      "value": "出众"
+    },
+    {
+      "key": "handbook.copy.fish",
+      "value": "猫记慢烘小鱼干，香味沿着路一路跑。"
+    },
+    {
+      "key": "handbook.copy.yarn",
+      "value": "毛线铺的招牌小团，滚到哪儿，暖到哪儿。"
+    },
+    {
+      "key": "handbook.copy.feather",
+      "value": "逗猫杆的轻巧配件，风一吹就先出发。"
+    },
+    {
+      "key": "handbook.copy.bone",
+      "value": "老手艺磨出的圆边小骨头，狗狗老远就能闻到。"
+    },
+    {
+      "key": "handbook.copy.disc",
+      "value": "玩具铺的远投款，转得欢，落得稳。"
+    },
+    {
+      "key": "handbook.copy.rope",
+      "value": "结实的水手结，越咬越紧，落地还会弹两下。"
+    },
+    {
+      "key": "handbook.copy.bouquet",
+      "value": "红绳一扎，小鱼干变成了猫咪的豪华礼盒。"
+    },
+    {
+      "key": "handbook.copy.yarnLion",
+      "value": "抖开暖暖的鬃毛，身边的伙伴都想靠过来。"
+    },
+    {
+      "key": "handbook.copy.pinwheel",
+      "value": "轻羽一转，路口也跟着转了个弯。"
+    },
+    {
+      "key": "handbook.copy.boneWheel",
+      "value": "骨头铺的发条新品，见到机关就敲起鼓点。"
+    },
+    {
+      "key": "handbook.copy.triDisc",
+      "value": "三片飞盘叠成一朵小花，越转越带劲。"
+    },
+    {
+      "key": "handbook.copy.ropeOctopus",
+      "value": "绳结铺的护送队长，伸出短短的手扶住同伴。"
+    },
+    {
+      "key": "handbook.ability",
+      "value": "能力：{0}"
+    },
+    {
+      "key": "handbook.hold",
+      "value": "\n{0}：被按住的道具暂时停下，其他道具还能前进。"
+    },
+    {
+      "key": "handbook.carry",
+      "value": "\n{0}：它会把一件道具叼回去，避免只派一件领头。"
+    },
+    {
+      "key": "guide.siege.defense",
+      "value": "机关开始拦路了，手册里能查看它的招式。"
+    },
+    {
+      "key": "guide.siege.merge",
+      "value": "道具合体了！可以在手册里查看合体后的能力。"
+    },
+    {
+      "key": "guide.siege.hold",
+      "value": "它按住了一件道具，别的道具还能继续前进。"
+    },
+    {
+      "key": "guide.siege.carry",
+      "value": "它会把一件道具叼回去，试着从不同方向出发。"
+    },
+    {
+      "key": "guide.siege.sweep",
+      "value": "留意亮起的范围，等横扫过去再出发。"
     }
   ]
 }

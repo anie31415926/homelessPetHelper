@@ -185,7 +185,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero, "Opening a scene alone costs no time.");
 
             // Field back steps up to the map, keeping the outing alive and free of leftover popups.
-            field.SendMessage("Return");
+            root.Presenter.HandleBack();
             deadline = Time.realtimeSinceStartup + 7;
             while (Time.realtimeSinceStartup < deadline && !_view.gameObject.activeSelf) yield return null;
             Assert.That(_view.gameObject.activeSelf, Is.True);
