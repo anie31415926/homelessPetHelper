@@ -130,7 +130,8 @@ namespace HomelessPetHelper.Tests.PlayMode
             view.ConfigureField(field, content.GetOutingBackground("yard"), true, session);
             view.Bind(session, content.ApproachText, true, () => { }, () => { }, _ => { });
             view.FieldScene.ShowAnimal(animal.Current); root.SetActive(true); yield return null;
-            var coat = view.FieldScene.Animal.GetComponent<AnimalCoatView>();
+            var surface = view.FieldScene.Animal.GetComponent<FieldPetMotion>().Surface;
+            var coat = surface.GetComponent<AnimalCoatView>();
             var canvas = root.GetComponent<Canvas>();
             var camera = new GameObject("CoatEvidenceCamera", typeof(Camera)).GetComponent<Camera>();
             camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = Color.white;
@@ -138,16 +139,16 @@ namespace HomelessPetHelper.Tests.PlayMode
             var target = new RenderTexture(540, 960, 24); camera.targetTexture = target;
             yield return null; Canvas.ForceUpdateCanvases();
             var dirty = Capture(camera, target, "dirty");
-            var oldMaterial = view.FieldScene.Animal.material;
+            var oldMaterial = surface.material;
             animal.TryApplyCoatCondition(animal.Current, new AnimalCoatCondition(0, 0));
             coat.Show(animal.Current); yield return null;
-            Assert.That(view.FieldScene.Animal.material, Is.SameAs(oldMaterial));
+            Assert.That(surface.material, Is.SameAs(oldMaterial));
             var clean = Capture(camera, target, "clean");
             int changed = dirty.Zip(clean, (a, b) => a.Equals(b) ? 0 : 1).Sum();
             Assert.That(changed, Is.GreaterThan(50), "Dirty coat must visibly affect the actual rendered animal.");
             root.SetActive(false); Assert.That(coat.HasResources, Is.False);
             root.SetActive(true); yield return null; Assert.That(coat.HasResources, Is.True);
-            Assert.That(view.FieldScene.Animal.material, Is.Not.SameAs(oldMaterial));
+            Assert.That(surface.material, Is.Not.SameAs(oldMaterial));
             view.Unbind(); camera.targetTexture = null; target.Release(); Object.Destroy(target);
             Object.Destroy(camera.gameObject); Object.Destroy(root); yield return null;
         }

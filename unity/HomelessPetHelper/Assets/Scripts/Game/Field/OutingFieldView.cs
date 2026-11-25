@@ -51,18 +51,22 @@ namespace HomelessPetHelper.Game.Field
             _showAnimal = showAnimal;
             SetPresentationPaused(false);
             SetWeather(default);
-            if (_petMotion != null) _petMotion.Configure(layout != null && !dog);
+            if (_petMotion != null)
+            {
+                _petMotion.SetVisible(false);
+                _petMotion.Configure(layout != null && showAnimal && !dog, layout != null && showAnimal && dog);
+            }
             _sceneRoot.SetActive(layout != null);
             _background.gameObject.SetActive(layout != null);
             if (layout == null) { Snapshot = null; return; }
-            if (background == null || (dog ? _dog : _cat) == null)
+            if (background == null || (_petMotion == null && showAnimal && (dog ? _dog : _cat) == null))
                 throw new InvalidOperationException("Missing field scene art.");
             _background.sprite = background;
             _background.GetComponent<AspectRatioFitter>().aspectRatio =
                 background.rect.width / background.rect.height;
             ConfigureFrame(layout);
             ConfigureForeground(layout.IllustratedInterior ? artwork : null);
-            _animal.sprite = dog ? _dog : _cat;
+            _animal.sprite = _petMotion == null ? (dog ? _dog : _cat) : null;
             _animal.preserveAspect = true;
             var grid = layout.Grid;
             _grid.anchorMin = new Vector2(grid.x / layout.Width, 1 - grid.yMax / layout.Height);

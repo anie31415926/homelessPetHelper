@@ -25,6 +25,8 @@ namespace HomelessPetHelper.Modules.Station.UI
         [SerializeField] private Text _feedback;
         [SerializeField] private Image _summaryAnimal;
         [SerializeField] private AnimalCoatView _summaryCoat;
+        [SerializeField] private PetPortraitSet _portraits;
+        private PetPortraitView _arrivalPortrait;
         [SerializeField] private DirtSurfaceView _surface;
         [SerializeField] private StationAnimalView[] _animals;
         [SerializeField] private RectTransform _rosterContent;
@@ -145,7 +147,9 @@ namespace HomelessPetHelper.Modules.Station.UI
         {
             _summaryBody.text = body;
             _summaryAnimal.sprite = art;
-            _summaryCoat.Show(animal);
+            if (_arrivalPortrait == null) _arrivalPortrait = PetPortraitView.Attach(_summaryAnimal, _portraits);
+            if (_arrivalPortrait != null) _arrivalPortrait.Show(_portraits.IsStationDog(art), animal);
+            else _summaryCoat.Show(animal);
         }
 
         public void SetStatus(string clock, string capacity, string feedback)
@@ -165,7 +169,8 @@ namespace HomelessPetHelper.Modules.Station.UI
         public void DismissDetail() => Back();
 
         public void ShowDetail(string name, string condition, string progress, Sprite art, IReadOnlyDirtField dirt,
-            bool cleaning, bool canFinish, StationCareAvailability care, bool suspended, IReadOnlyDirtField fur = null)
+            bool cleaning, bool canFinish, StationCareAvailability care, bool suspended, IReadOnlyDirtField fur = null,
+            AnimalSnapshot animal = null)
         {
             _name.text = name;
             if (_detailRename != null) _detailRename.gameObject.SetActive(!cleaning && _renameAvailable);
@@ -182,6 +187,7 @@ namespace HomelessPetHelper.Modules.Station.UI
             }
             _progress.text = progress;
             _surface.Refresh(art, dirt, fur);
+            _surface.ShowPortrait(_portraits, animal, !cleaning);
             _surface.SetCleaning(cleaning && !suspended);
             _check.gameObject.SetActive(_chrome == null || !cleaning);
             _pet.gameObject.SetActive(_chrome == null || !cleaning);
@@ -207,6 +213,8 @@ namespace HomelessPetHelper.Modules.Station.UI
 
         public void SetSuspended(bool suspended)
         {
+            _arrivalPortrait?.SetPaused(suspended);
+            _surface.SetPortraitPaused(suspended);
             if (_habitat != null) _habitat.SetSuspended(suspended);
             if (_scene != null) _scene.SetSuspended(suspended);
             if (_chrome != null) _chrome.SetSuspended(suspended);

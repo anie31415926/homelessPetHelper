@@ -693,7 +693,7 @@ namespace HomelessPetHelper.Game.Station
                     _text.Get("bothProgress", dirt.RemovedFraction * 100, selected.Fur.RemovedFraction * 100);
                 _view.ShowDetail(selected.Name, Condition(_selected), progress, selected.Art, dirt,
                     _tool != StationCareTool.None, true, CareAvailability(_selected), _suspended
-                        || _persistenceBlocked, selected.Fur);
+                        || _persistenceBlocked, selected.Fur, Current(_selected));
                 if (_progress != null && _tool == StationCareTool.None)
                     _view.SetAdoptionCommand(_text.Get(_progress.IsListed(_station.Animals[_selected].AnimalId)
                         ? "adoption.view" : "adoption.entry"), !_suspended && !_persistenceBlocked);
@@ -726,9 +726,10 @@ namespace HomelessPetHelper.Game.Station
                 var arrival = _station.Animals[index];
                 _station.TryGetCurrentAnimal(arrival.AnimalId, out var current);
                 bool observing = StationHabitatPlacement.NeedsObservation(Care(index).BasicAssessment, current);
-                bool cat = arrival.AnimalDefinitionId == "cat.shy" || arrival.AnimalDefinitionId == "preview.cat";
+                bool dog = _careRoster?.UsesDogArtwork(arrival.AnimalDefinitionId) ??
+                    arrival.AnimalDefinitionId == "dog";
                 _sceneResidents.Add(new StationSceneResident(arrival.AnimalId, index, Resident(index).Name,
-                    Resident(index).Art, cat, observing, current, animatedShiba: arrival.AnimalDefinitionId == "dog"));
+                    Resident(index).Art, !dog, observing, current, animatedShiba: dog));
             }
             _view.Scene.Show(_sceneResidents, _selected);
         }

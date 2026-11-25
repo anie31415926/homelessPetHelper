@@ -112,15 +112,30 @@ namespace HomelessPetHelper.Tests.PlayMode
             view.ConfigureField(field, content.GetOutingBackground("parking"), true, opening);
             _ownedPanel.SetActive(true); yield return null;
             Assert.That(motion.Player, Is.Null);
-            Assert.That(motion.Surface.texture, Is.Null);
-            Assert.That(motion.Surface.gameObject.activeSelf, Is.False);
-            Assert.That(view.FieldScene.Animal.isActiveAndEnabled, Is.True);
+            Assert.That(motion.Surface.texture, Is.TypeOf<Texture2D>());
+            Assert.That(motion.Surface.texture.name, Is.EqualTo("T_Station_ShibaMotion"));
+            Assert.That(view.FieldScene.Animal.enabled, Is.False);
+            _ownedPanel.BroadcastMessage("OnApplicationFocus", true, SendMessageOptions.DontRequireReceiver);
+            view.FieldScene.SetPresentationPaused(false);
+            yield return null; yield return null;
+            var shibaUv = motion.Surface.uvRect;
+            yield return new WaitForSecondsRealtime(.15f);
+            Assert.That(motion.Surface.uvRect, Is.Not.EqualTo(shibaUv));
+            view.FieldScene.SetPresentationPaused(true);
+            shibaUv = motion.Surface.uvRect;
+            yield return new WaitForSecondsRealtime(.15f);
+            Assert.That(motion.Surface.uvRect, Is.EqualTo(shibaUv));
             _ownedPanel.SetActive(false);
             view.ConfigureField(field, content.GetOutingBackground("parking"), false, opening);
             _ownedPanel.SetActive(true); yield return null; yield return null;
             Assert.That(motion.Surface.texture, Is.TypeOf<RenderTexture>());
             Assert.That(view.FieldScene.Animal.enabled, Is.False);
             Assert.That(motion.Surface.GetComponent<AnimalCoatView>().Snapshot, Is.SameAs(individual.Current));
+            view.FieldScene.Configure(field, content.GetOutingBackground("parking"), false, opening,
+                showAnimal: false);
+            yield return null;
+            Assert.That(motion.Surface.gameObject.activeSelf, Is.False, "Exploration has no rescue animal.");
+            Assert.That(view.FieldScene.Animal.enabled, Is.False);
             view.Unbind();
             LogAssert.NoUnexpectedReceived();
         }

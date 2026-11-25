@@ -13,6 +13,7 @@ namespace HomelessPetHelper.Game.Field
     public sealed class FieldPetMotion : MonoBehaviour
     {
         [SerializeField] private PetMotionPlayer _prefab;
+        [SerializeField] private PetPortraitSet _portraits;
         [SerializeField] private Image _still;
         [SerializeField] private RawImage _surface;
         [SerializeField] private AnimalCoatView _stillCoat, _motionCoat;
@@ -24,17 +25,19 @@ namespace HomelessPetHelper.Game.Field
         private PetMotionPlayer _player;
         private Camera _camera;
         private RenderTexture _target;
-        private bool _cat, _visible = true;
+        private bool _cat, _dog, _visible = true;
         private float _renderedSeconds = -1;
         private static readonly ProfilerMarker RenderMarker = new ProfilerMarker("Field.AnimalMotion");
 
         public PetMotionPlayer Player => _player;
         public RawImage Surface => _surface;
 
-        public void Configure(bool cat)
+        public void Configure(bool cat, bool dog = false)
         {
             _cat = cat;
+            _dog = dog && _portraits != null;
             if (!cat) Release();
+            else _surface.uvRect = new Rect(0, 0, 1, 1);
             RefreshVisibility();
         }
 
@@ -48,6 +51,7 @@ namespace HomelessPetHelper.Game.Field
         {
             if (_visible == visible) return;
             _visible = visible;
+            if (!visible) Release();
             RefreshVisibility();
         }
 
@@ -55,15 +59,23 @@ namespace HomelessPetHelper.Game.Field
 
         private void RefreshVisibility()
         {
-            _still.enabled = _visible && !_cat;
-            _stillCoat.enabled = _visible && !_cat;
-            _surface.gameObject.SetActive(_visible && _cat);
+            _still.enabled = _visible && !_cat && !_dog;
+            _stillCoat.enabled = _still.enabled;
+            _surface.gameObject.SetActive(_visible && (_cat || _dog));
         }
 
         private void LateUpdate()
         {
             using var sample = RenderMarker.Auto();
-            if (!_visible || !_cat) return;
+            if (!_visible) return;
+            if (_dog)
+            {
+                _surface.texture = _portraits.ShibaAtlas;
+                Rect uv = PetPortraitSet.ShibaWalkUv(_clock.SceneSeconds);
+                if (_surface.uvRect != uv) _motionCoat.SetFrameUv(_surface, uv);
+                return;
+            }
+            if (!_cat) return;
             Rect rect = _surface.rectTransform.rect;
             if (rect.width <= 0 || rect.height <= 0) return;
             if (_player == null) CreateRenderer();

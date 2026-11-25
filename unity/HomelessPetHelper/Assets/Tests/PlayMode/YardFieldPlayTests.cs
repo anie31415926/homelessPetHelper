@@ -55,7 +55,6 @@ namespace HomelessPetHelper.Tests.PlayMode
                 MainApproachDriver.Click(station,"Restart"); MainApproachDriver.Click(map,"Yard");
                 MainApproachDriver.Click(map,"Primary");
                 Assert.That(approach.FieldScene.Layout,Is.Not.Null);
-                Assert.That(approach.FieldScene.Animal.sprite.name,Is.EqualTo("T_Outing_DogNatural"));
                 yield return Capture(approach,"opening-"+seed);
                 MainApproachDriver.Click(approach,"Pause");
                 Assert.That(approach.Session.IsSuspended,Is.True);
@@ -66,13 +65,16 @@ namespace HomelessPetHelper.Tests.PlayMode
                 MainApproachDriver.Solve(approach);
                 var openingSnapshot=approach.FieldScene.Snapshot;
                 yield return Capture(approach,"cleared-"+seed);
-                var sprite=approach.FieldScene.Animal.sprite;
+                var animalMotion=approach.FieldScene.Animal.GetComponent<FieldPetMotion>();
+                var atlas=animalMotion.Surface.texture;
+                Assert.That(atlas.name, Is.EqualTo("T_Station_ShibaMotion"));
                 MainApproachDriver.Click(approach,"Continue"); yield return null;
                 var field=siege.GetComponent<OutingFieldView>();
                 Assert.That(field.Snapshot.Boxes,Is.EqualTo(openingSnapshot.Boxes));
                 Assert.That(field.Snapshot.Remaining,Is.EqualTo(openingSnapshot.Remaining));
                 Assert.That(field.Snapshot.Bridge,Is.EqualTo(openingSnapshot.Bridge));
-                Assert.That(field.Animal.sprite,Is.SameAs(sprite));
+                yield return null;
+                Assert.That(field.Animal.GetComponent<FieldPetMotion>().Surface.texture,Is.SameAs(atlas));
                 var activity=(SiegeRescueActivity)root.Presenter.Session.Activity;
                 var before=activity.Battle.Snapshot;
                 if (_inputCamera != null) Object.DestroyImmediate(_inputCamera.gameObject);

@@ -15167,6 +15167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _prefab: {fileID: 5659517039767918949, guid: aee96d4358b4269488bf5a54fac02d7b, type: 3}
+  _portraits: {fileID: 11400000, guid: 8d84819eff0445f8a935903f610a97e3, type: 2}
   _still: {fileID: 3896252458508521495}
   _surface: {fileID: 8113239456743523099}
   _stillCoat: {fileID: 2144985845397061584}
@@ -19770,8 +19771,6 @@ MonoBehaviour:
   _foreground: {fileID: 6455012297252949110}
   _coat: {fileID: 2144985845397061584}
   _petMotion: {fileID: 632166131398157206}
-  _cat: {fileID: 21300000, guid: aa1a17f0ba7e79841846790b69853992, type: 3}
-  _dog: {fileID: 21300000, guid: cd137a207a0a70f47bed528797be805e, type: 3}
   _fitPlayableArea: 1
   _terrain: {fileID: 1958812475943174871}
   _sceneRoot: {fileID: 1328332642769085360}

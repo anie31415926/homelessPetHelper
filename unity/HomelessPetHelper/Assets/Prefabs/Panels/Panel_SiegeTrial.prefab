@@ -345,7 +345,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0472ee14575c45daa93f38dbb8bf0798, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e8ab41f882845da4e8d1a7be9a64343a, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -382,6 +382,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _prefab: {fileID: 5659517039767918949, guid: aee96d4358b4269488bf5a54fac02d7b, type: 3}
+  _portraits: {fileID: 11400000, guid: 8d84819eff0445f8a935903f610a97e3, type: 2}
   _still: {fileID: 5112105269425809342}
   _surface: {fileID: 7189019949559227958}
   _stillCoat: {fileID: 7742141277743087307}
@@ -477,9 +478,9 @@ MonoBehaviour:
   _carryOverlay: {fileID: 117896323900606577}
   _animalVisuals:
   - Id: cat
-    Sprite: {fileID: 21300000, guid: 0472ee14575c45daa93f38dbb8bf0798, type: 3}
+    Sprite: {fileID: 21300000, guid: e8ab41f882845da4e8d1a7be9a64343a, type: 3}
   - Id: dog
-    Sprite: {fileID: 21300000, guid: 73e0829001f54c728fb6bd047818fe90, type: 3}
+    Sprite: {fileID: 4781335258358289467, guid: 7bf665893c0245aa89c8ea2bc39b51a9, type: 3}
   _routeViewport: {fileID: 0}
   _routeDropRadius: 72
   _routeAmbiguity: 6
@@ -1836,8 +1837,6 @@ MonoBehaviour:
   _foreground: {fileID: 6455012297252949110}
   _coat: {fileID: 7742141277743087307}
   _petMotion: {fileID: 6890779047227287604}
-  _cat: {fileID: 21300000, guid: aa1a17f0ba7e79841846790b69853992, type: 3}
-  _dog: {fileID: 21300000, guid: cd137a207a0a70f47bed528797be805e, type: 3}
   _fitPlayableArea: 1
   _terrain: {fileID: 3768183705564533135}
   _sceneRoot: {fileID: 2062709603279637193}
@@ -3474,9 +3473,9 @@ MonoBehaviour:
   _carryOverlay: {fileID: 1388080050069412458}
   _animalVisuals:
   - Id: cat
-    Sprite: {fileID: 21300000, guid: 0472ee14575c45daa93f38dbb8bf0798, type: 3}
+    Sprite: {fileID: 21300000, guid: e8ab41f882845da4e8d1a7be9a64343a, type: 3}
   - Id: dog
-    Sprite: {fileID: 21300000, guid: 73e0829001f54c728fb6bd047818fe90, type: 3}
+    Sprite: {fileID: 4781335258358289467, guid: 7bf665893c0245aa89c8ea2bc39b51a9, type: 3}
   _routeViewport: {fileID: 8756842618331437400}
   _routeDropRadius: 72
   _routeAmbiguity: 6
@@ -5992,7 +5991,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0472ee14575c45daa93f38dbb8bf0798, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e8ab41f882845da4e8d1a7be9a64343a, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

@@ -1,5 +1,11 @@
 # Station Care Temporary Art
 
+Main care displays the cat rig's original pose and `ShibaCarePose` (frame 0 in
+`Assets/Art/PetSit/T_Station_ShibaMotion.png`). During washing or grooming the animal
+and dirt/fur layers breathe together and hold still during a stroke. The separate
+128 × 128 saved coat fields are unchanged. Run `node tools/station-care-visuals.mjs --dog-only`
+to regenerate the Shiba silhouette-to-save projection without rewriting the cat or effects.
+
 Care preview assets generated locally with ComfyUI on 2026-11-18.
 These are not final or release-approved resources. Do not overwrite the older StationArt images.
 

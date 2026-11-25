@@ -565,7 +565,8 @@ namespace HomelessPetHelper.Game
             _siege.SetFieldMode(_activeField != null);
             if (_activeField != null)
             {
-                _siege.Scene.Configure(_battleScene.Animal.sprite, _activeField.AnimalWidthFor(encounter.DogArtwork),
+                var animalPose = _content.Artwork.Get(encounter.DogArtwork, out _);
+                _siege.Scene.Configure(animalPose, _activeField.AnimalWidthFor(encounter.DogArtwork),
                     Enumerable.Range(0, _activeField.LaneCount).Select(_activeField.Portal).ToArray(),
                     _activeField.IllustratedInterior, artwork.Props);
                 _siege.Scene.SetPresentationAudio(PlayBattleEffect);

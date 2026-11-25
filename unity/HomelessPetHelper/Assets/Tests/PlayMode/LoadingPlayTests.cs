@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using HomelessPetHelper.Game;
 using HomelessPetHelper.Game.Loading;
+using HomelessPetHelper.Modules.Animals.UI;
 using HomelessPetHelper.Modules.Rescue.UI;
 using HomelessPetHelper.Tests.Support;
 using NUnit.Framework;
@@ -61,6 +62,15 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(Object.FindObjectOfType<MainGameRoot>(), Is.Null);
             Assert.That(view.Progress, Is.Zero);
             Assert.That(view.GetComponentInChildren<LoadingArtworkMotion>(), Is.Null);
+            var pets = view.GetComponentsInChildren<PetPortraitView>();
+            Assert.That(pets.Length, Is.EqualTo(2));
+            var frames = pets.Select(pet => pet.GetComponentInChildren<RawImage>()).ToArray();
+            Assert.That(frames.Select(frame => frame.texture.name), Is.EquivalentTo(
+                new[] { "T_CatPortraitMotion", "T_Station_ShibaMotion" }));
+            var firstPoses = frames.Select(frame => frame.uvRect).ToArray();
+            yield return new WaitForSecondsRealtime(.3f);
+            Assert.That(frames.Select((frame, index) => frame.uvRect != firstPoses[index]).All(changed => changed),
+                Is.True);
             Assert.That(host.HasFailed, Is.False);
             Assert.That(entry.isActiveAndEnabled && entry.interactable, Is.True);
             Assert.That(entry.GetComponentInChildren<Text>().text, Is.EqualTo("进入救助站"));

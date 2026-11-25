@@ -37,8 +37,18 @@ namespace HomelessPetHelper.Tests.PlayMode
                 {
                     string species = dog ? "Dog" : "Cat";
                     var legacy = content.Artwork.Get(dog, out var mask);
-                    var actual = AssetDatabase.LoadAssetAtPath<Sprite>(
-                        dog ? "Assets/Art/Outing/T_Outing_DogNatural.png" : "Assets/Art/PetMotion/T_Pet_original.png");
+                    panel.ShowPage(true, false);
+                    panel.ShowSummary(species, legacy);
+                    yield return null;
+                    var portrait = panel.GetComponentInChildren<PetPortraitView>();
+                    var portraitFrame = portrait.GetComponentInChildren<RawImage>();
+                    Assert.That(portraitFrame.texture.name,
+                        Is.EqualTo(dog ? "T_Station_ShibaMotion" : "T_CatPortraitMotion"));
+                    Rect firstFrame = portraitFrame.uvRect;
+                    yield return new WaitForSecondsRealtime(.35f);
+                    Assert.That(portraitFrame.uvRect, Is.Not.EqualTo(firstFrame));
+                    var actual = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                        dog ? "Assets/Art/PetSit/T_Station_ShibaMotion.png" : "Assets/Art/PetMotion/T_Pet_original.png");
                     foreach (var size in new[] { new Vector2Int(320, 568), new Vector2Int(390, 844),
                         new Vector2Int(432, 960), new Vector2Int(768, 1024) })
                     {
@@ -55,7 +65,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             }
         }
 
-        private static IEnumerator Exercise(StationPanelView panel, Sprite legacy, Sprite actual, byte[] mask,
+        private static IEnumerator Exercise(StationPanelView panel, Sprite legacy, Texture2D actual, byte[] mask,
             Shot shot, string species, bool groom)
         {
             var dirt = CreateField(mask, false, groom ? 0 : 65);
@@ -66,16 +76,18 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return null;
             Canvas.ForceUpdateCanvases();
             var surface = panel.Surface;
+            surface.SendMessage("OnApplicationFocus", true);
             var pictures = surface.GetComponentsInChildren<Image>(true);
-            Assert.That(actual, Is.Not.Null, species + " source is not imported as a Sprite");
-            var picture = pictures.SingleOrDefault(item => item.sprite == actual);
+            Assert.That(actual, Is.Not.Null, species + " source texture is missing");
+            var picture = pictures.SingleOrDefault(item => item.sprite != null && item.sprite.texture == actual);
             AssetDatabase.TryGetGUIDAndLocalFileIdentifier(actual, out string guid, out long fileId);
             Assert.That(picture, Is.Not.Null, $"{species} expected {actual.name} ({guid}/{fileId}); saw " +
                 string.Join(", ", pictures.Select(item => item.name + "=" + item.sprite?.name)));
             var fx = surface.GetComponentInChildren<CareBubbleView>();
             Assert.That(fx.mainTexture.name, Is.EqualTo("T_Station_CareEffects"));
             Rect coat = picture.rectTransform.rect;
-            Assert.That(coat.width / coat.height, Is.EqualTo(actual.rect.width / actual.rect.height).Within(.01));
+            Assert.That(coat.width / coat.height,
+                Is.EqualTo(picture.sprite.rect.width / picture.sprite.rect.height).Within(.01));
             Assert.That(surface.GetComponentsInChildren<RawImage>().All(image =>
                 Vector2.Distance(image.rectTransform.rect.size, coat.size) < .1f), Is.True);
             var active = groom ? fur : dirt;
@@ -84,7 +96,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Tap(surface, (RectTransform)surface.transform, Vector2.zero, shot.Camera);
             Assert.That(active.RemainingAmount, Is.EqualTo(amount));
             Assert.That(fx.ActiveCount, Is.Zero);
-            var contact = FindContact(surface, picture.rectTransform, shot.Camera, active, amount);
+            var contact = FindContact(surface, picture.rectTransform, shot.Camera, active, amount, species);
             Assert.That(active.RemainingAmount, Is.LessThan(amount));
             Assert.That(fx.ActiveCount, Is.EqualTo(3));
             yield return new WaitForSecondsRealtime(.13f);
@@ -106,7 +118,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         private static Vector2 FindContact(DirtSurfaceView surface, RectTransform coat, Camera camera,
-            DirtField field, long initial)
+            DirtField field, long initial, string species)
         {
             foreach (float y in new[] { .54f, .62f, .46f, .38f })
             foreach (float x in new[] { .52f, .43f, .62f, .35f, .72f })
@@ -115,7 +127,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Tap(surface, coat, point, camera);
                 if (field.RemainingAmount < initial) return point;
             }
-            Assert.Fail("No visible coat contact registered.");
+            Assert.Fail(species + ": no visible coat contact registered.");
             return default;
         }
 

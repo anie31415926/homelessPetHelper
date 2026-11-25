@@ -1,4 +1,5 @@
 using System;
+using HomelessPetHelper.Modules.Animals.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,13 +15,15 @@ namespace HomelessPetHelper.Modules.Outing.UI
         [SerializeField] private Text _stateLabel;
         [SerializeField] private Outline _selectionOutline;
         [SerializeField] private Sprite _detailArt;
-        [SerializeField] private Sprite _requestArt;
+        [SerializeField] private PetPortraitSet _requestPortraits;
+        [SerializeField] private bool _requestDog;
 
         public string PointId => _pointId;
         internal Button Button => _button;
         internal Sprite DetailArt => _detailArt;
         private float _badgeTime;
         private RectTransform _badge;
+        private PetPortraitView _badgePortrait;
 
         internal void Validate()
         {
@@ -70,24 +73,27 @@ namespace HomelessPetHelper.Modules.Outing.UI
             image.raycastTarget = false;
             var text = _stateLabel.rectTransform;
             text.SetParent(_badge, false);
-            text.anchorMin = new Vector2(_requestArt == null ? 0 : .32f, 0);
+            text.anchorMin = new Vector2(_requestPortraits == null ? 0 : .32f, 0);
             text.anchorMax = Vector2.one;
             text.offsetMin = text.offsetMax = Vector2.zero;
             _stateLabel.raycastTarget = false;
-            if (_requestArt == null) return;
+            if (_requestPortraits == null) return;
             var icon = new GameObject("HelpAnimal", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
             icon.transform.SetParent(_badge, false);
             icon.rectTransform.anchorMin = new Vector2(.02f, .08f);
             icon.rectTransform.anchorMax = new Vector2(.34f, .92f);
             icon.rectTransform.offsetMin = icon.rectTransform.offsetMax = Vector2.zero;
-            icon.sprite = _requestArt;
-            icon.preserveAspect = true;
             icon.raycastTarget = false;
+            _badgePortrait = PetPortraitView.Attach(icon, _requestPortraits);
+            _badgePortrait.SetPaused(true);
+            _badgePortrait.Show(_requestDog);
         }
 
         internal void AdvanceBadge(float elapsed)
         {
-            if (_badge == null || !_badge.gameObject.activeInHierarchy || _badgeTime >= 1.2f) return;
+            if (_badge == null || !_badge.gameObject.activeInHierarchy) return;
+            _badgePortrait?.Advance(elapsed);
+            if (_badgeTime >= 1.2f) return;
             _badgeTime = Mathf.Min(1.2f, _badgeTime + elapsed);
             float pulse = Mathf.Sin(Mathf.PI * _badgeTime / 1.2f);
             _badge.localScale = Vector3.one * (1 + .12f * pulse);
