@@ -25,6 +25,9 @@ namespace HomelessPetHelper.Game
     {
         private readonly StationPanelView _station;
         private readonly CityMapView _map;
+        private readonly OutingWeatherGraphic _mapWeather;
+        public OutingWeather WorldWeather { get; private set; } = OutingWeather.InitialWorld;
+        private OutingWeather? _outingWeather;
         private readonly SiegeTrialView _siege;
         private readonly ApproachPanelView _approach;
         private readonly GameContent _content;
@@ -61,11 +64,13 @@ namespace HomelessPetHelper.Game
             AudioService audio = null, ISaveStorage progressStorage = null, Func<int> outingSeedSource = null,
             MainAudioSession audioSession = null, GuidanceProgressSession guidance = null,
             Settings.PlaySettingsSession playSettings = null, CityMap.Travel.MapTravelView travel = null,
-            bool showOpening = true)
+            bool showOpening = true, OutingWeatherGraphic mapWeather = null)
         {
             _travel = travel;
             _station = station;
             _map = map;
+            _mapWeather = mapWeather;
+            SetWorldWeather(WorldWeather);
             _siege = siege;
             _approach = approach ?? throw new ArgumentNullException(nameof(approach));
             _content = content;
@@ -162,6 +167,12 @@ namespace HomelessPetHelper.Game
 
         private void OpenMap() => OpenMap(null);
 
+        public void SetWorldWeather(OutingWeather weather)
+        {
+            WorldWeather = weather;
+            _mapWeather?.ShowOnMap(weather);
+        }
+
         private void OpenMap(string noticePoint)
         {
             if (!Progress.CanContinue) return;
@@ -174,6 +185,7 @@ namespace HomelessPetHelper.Game
                 return;
             }
             if (!Checkpoint()) return;
+            _outingWeather = null;
             Guid outingId = Guid.NewGuid();
             int seed = _outingSeedSource != null ? _outingSeedSource() :
                 _config.Seed ^ (BitConverter.ToInt32(outingId.ToByteArray(), 0) & int.MaxValue);
@@ -314,6 +326,7 @@ namespace HomelessPetHelper.Game
             _activeField = Progress.Fields.Layout;
             _outingAnimal = Progress.Fields.Animal;
             if (!Checkpoint()) return;
+            _outingWeather ??= WorldWeather;
             _mapPresenter?.Dispose();
             _mapPresenter = null;
             _map.gameObject.SetActive(false);
@@ -321,6 +334,7 @@ namespace HomelessPetHelper.Game
             _approach.SetLocationBackground(artwork.Background);
             _approach.ConfigureField(_activeField, artwork.Background, encounter.DogArtwork, opening,
                 artwork.Props, artwork);
+            _approach.FieldScene.SetWeather(_outingWeather.Value);
             _approach.Bind(opening, _content.ApproachText, encounter.DogArtwork, EnterSiege,
                 ReturnFromApproach, SetFieldSuspended);
             _approach.FieldScene.ShowAnimal(_outingAnimal.Current);
@@ -434,6 +448,7 @@ namespace HomelessPetHelper.Game
             _siege.SetLocationBackground(artwork.Background);
             _battleScene.Configure(_activeField, artwork.Background, encounter.DogArtwork, null, fieldSnapshot,
                 artwork.Props, artwork);
+            _battleScene.SetWeather(_outingWeather ?? WorldWeather);
             _battleScene.ShowAnimal(_outingAnimal.Current);
             _siege.Battlefield.ShowAnimal(_outingAnimal.Current);
             _petMotion.ShowAnimal(_outingAnimal.Current);
@@ -507,6 +522,7 @@ namespace HomelessPetHelper.Game
         private void ShowStation(bool arrival)
         {
             Progress.Fields.EndOuting();
+            _outingWeather = null;
             CloseOverlays();
             _mapPresenter?.Dispose();
             _mapPresenter = null;

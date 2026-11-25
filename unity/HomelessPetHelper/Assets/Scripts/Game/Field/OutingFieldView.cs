@@ -26,18 +26,28 @@ namespace HomelessPetHelper.Game.Field
         [SerializeField] private OutingFieldGraphic _terrain;
         [SerializeField] private GameObject _sceneRoot;
         [SerializeField] private MotionScope _motion;
+        [SerializeField] private OutingWeatherGraphic _weatherGraphic;
         public OutingFieldLayout Layout { get; private set; }
+        public OutingWeather Weather { get; private set; }
         public RectTransform Frame => _frame;
         public Image Animal => _animal;
         public FieldSceneSnapshot Snapshot { get; private set; }
         public void SetPresentationPaused(bool paused)
         { if (_motion != null) _motion.SetScenePaused(paused); }
 
+        public void SetWeather(OutingWeather weather)
+        {
+            Weather = Layout == null ? default : weather;
+            if (_weatherGraphic != null)
+                _weatherGraphic.Show(Layout?.IllustratedInterior == true ? default : Weather, _motion);
+        }
+
         public void Configure(OutingFieldLayout layout, Sprite background, bool dog, ApproachSession opening,
             FieldSceneSnapshot snapshot = null, SceneSpritePalette props = null, OutingArtwork artwork = null)
         {
             Layout = layout;
             SetPresentationPaused(false);
+            SetWeather(default);
             if (_petMotion != null) _petMotion.Configure(layout != null && !dog);
             _sceneRoot.SetActive(layout != null);
             _background.gameObject.SetActive(layout != null);

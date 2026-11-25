@@ -4520,6 +4520,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4718414235084793354}
+  - component: {fileID: 5518723910143659000}
+  - component: {fileID: 5518723910143659001}
   m_Layer: 0
   m_Name: FieldScene
   m_TagString: Untagged
@@ -4547,6 +4549,34 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 204}
   m_SizeDelta: {x: 0, y: -408}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5518723910143659000
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1328332642769085360}
+  m_CullTransparentMesh: 1
+--- !u!114 &5518723910143659001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1328332642769085360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0b9a906650f45df852ca7f376637ad3, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1389362172291099915
 GameObject:
   m_ObjectHideFlags: 0
@@ -19746,6 +19776,7 @@ MonoBehaviour:
   _terrain: {fileID: 1958812475943174871}
   _sceneRoot: {fileID: 1328332642769085360}
   _motion: {fileID: 5438142511951479460}
+  _weatherGraphic: {fileID: 5518723910143659001}
 --- !u!114 &7075734148814614835
 MonoBehaviour:
   m_ObjectHideFlags: 0

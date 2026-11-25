@@ -4,6 +4,7 @@ using HomelessPetHelper.Bootstrap;
 using HomelessPetHelper.Framework.Audio.UI;
 using HomelessPetHelper.Framework.Persistence;
 using HomelessPetHelper.Framework.Persistence.WeChat;
+using HomelessPetHelper.Game.Field;
 using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Siege.UI;
 using HomelessPetHelper.Modules.Station.UI;
@@ -18,6 +19,7 @@ namespace HomelessPetHelper.Game
         [SerializeField] private GameContent _content;
         [SerializeField] private StationPanelView _station;
         [SerializeField] private CityMapView _map;
+        [SerializeField] private OutingWeatherGraphic _mapWeather;
         [SerializeField] private SiegeTrialView _siege;
         [SerializeField] private Approach.ApproachPanelView _approach;
         [SerializeField] private CityMap.Travel.MapTravelView _travel;
@@ -79,7 +81,7 @@ namespace HomelessPetHelper.Game
             }
             Presenter = new MainLoopPresenter(_station, _map, _siege, _approach, _content, Audio.Playback,
                 _progressStorage ?? CreateProgressStorage(), _outingSeedSource, Audio, Guidance, PlaySettings, _travel,
-                _showOpening);
+                _showOpening, _mapWeather);
             _bootstrap.BindSession(Presenter.Session);
             Music = new MainMusicSession(Audio.Playback, _content.MusicCatalog);
             RefreshMusic();
