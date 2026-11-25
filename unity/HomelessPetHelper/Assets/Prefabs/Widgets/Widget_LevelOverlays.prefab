@@ -8421,6 +8421,7 @@ GameObject:
   - component: {fileID: 91000302}
   - component: {fileID: 91000303}
   - component: {fileID: 91000304}
+  - component: {fileID: 91000310}
   m_Layer: 0
   m_Name: DialogPortrait
   m_TagString: Untagged
@@ -8428,6 +8429,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
+--- !u!114 &91000310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 91000300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe04653c393f4ea8bfddb2a697ab40b8, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _art: {fileID: 11400000, guid: 8d84819eff0445f8a935903f610a97e3, type: 2}
+  _replacedImage: {fileID: 91000303}
+  _followImage: 1
 --- !u!224 &91000301
 RectTransform:
   m_ObjectHideFlags: 0

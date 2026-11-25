@@ -17,8 +17,11 @@ TextureImporter:
   nPOTScale: 0
   alphaUsage: 1
   alphaIsTransparency: 1
-  textureType: 0
+  textureType: 8
   textureShape: 1
+  spriteMode: 2
+  spriteMeshType: 0
+  spritePixelsToUnits: 100
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -26,3 +29,21 @@ TextureImporter:
     textureFormat: -1
     textureCompression: 0
     overridden: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ShibaCarePose
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      spriteID: 1ad3edbe8f354f448b055cd468814504
+      internalID: 4781335258358289467
+    nameFileIdTable:
+      ShibaCarePose: 4781335258358289467

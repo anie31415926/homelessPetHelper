@@ -1,4 +1,6 @@
 using System;
+using HomelessPetHelper.Modules.Animals;
+using HomelessPetHelper.Modules.Animals.UI;
 using HomelessPetHelper.Modules.Station.Cleaning;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,7 +20,7 @@ namespace HomelessPetHelper.Modules.Station.UI
         private Color32[] _pixels;
         private Texture2D _furTexture;
         private Color32[] _furPixels;
-        private bool _canClean;
+        private bool _canClean, _breathing;
         private bool _pressed;
         private int _pointerId;
         private Vector2 _screenPoint;
@@ -29,6 +31,21 @@ namespace HomelessPetHelper.Modules.Station.UI
         private CareCoatProjection _projection;
         private IReadOnlyDirtField _field, _furField;
         private Rect _coatRect;
+        private PetPortraitView _portrait;
+        private Vector3 _restScale;
+        private float _breathTime;
+
+        private void Awake() => _restScale = transform.localScale;
+        internal void SetPortraitPaused(bool paused) => _portrait?.SetPaused(paused);
+
+        public void ShowPortrait(PetPortraitSet art, AnimalSnapshot animal, bool visible)
+        {
+            if (art == null) return;
+            if (_portrait == null) _portrait = PetPortraitView.Attach(_animal, art);
+            _portrait.Show(art.IsStationDog(_inputArt), animal, visible);
+            _dirt.enabled = !visible;
+            _fur.enabled = !visible;
+        }
 
         public event Action<Vector2, int> StrokeRequested;
 
@@ -140,6 +157,7 @@ namespace HomelessPetHelper.Modules.Station.UI
             _canClean = canClean;
             _animal.raycastTarget = canClean;
             CancelPointer();
+            if (!canClean) RestPose();
         }
 
         public void OnPointerDown(PointerEventData data)
@@ -176,6 +194,13 @@ namespace HomelessPetHelper.Modules.Station.UI
 
         private void Update()
         {
+            if (_canClean && _projection != null && _focused && !_applicationPaused && !_pressed)
+            {
+                _breathTime = Mathf.Repeat(_breathTime + Time.unscaledDeltaTime, 2.4f);
+                float breath = .5f - .5f * Mathf.Cos(_breathTime * (2 * Mathf.PI / 2.4f));
+                transform.localScale = Vector3.Scale(_restScale, new Vector3(1, 1 + .028f * breath, 1));
+                _breathing = true;
+            }
             if (_pressed && _canClean && _focused && !_applicationPaused)
             {
                 int strength = Mathf.Clamp(Mathf.CeilToInt(Mathf.Min(Time.unscaledDeltaTime, 0.05f) * 320), 1, 16);
@@ -229,8 +254,16 @@ namespace HomelessPetHelper.Modules.Station.UI
 
         private void OnDisable()
         {
+            RestPose();
             CancelPointer();
             ReleaseTexture();
+        }
+
+        private void RestPose()
+        {
+            if (!_breathing) return;
+            transform.localScale = _restScale;
+            _breathing = false;
         }
 
         private void OnDestroy()

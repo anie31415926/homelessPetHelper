@@ -9,13 +9,6 @@ namespace HomelessPetHelper.Editor.RescueCase
     public static class RescueCaseHost
     {
         private static RescueCasePresenter _presenter;
-        private const string StartKey = "HomelessPetHelper.RescueCase.Start";
-
-        internal static void SetStart(CaseStart start)
-        {
-            SessionState.SetInt(StartKey, (int)start);
-            _presenter?.StartScenario(start);
-        }
 
         static RescueCaseHost()
         {
@@ -70,7 +63,7 @@ namespace HomelessPetHelper.Editor.RescueCase
                         new RescueOptionContentLoader(
                             AssetDatabase.LoadAssetAtPath<TextAsset>(RescueCaseAssets.OptionsPath),
                             AssetDatabase.LoadAssetAtPath<TextAsset>(RescueCaseAssets.OptionTextPath)),
-                        (CaseStart)SessionState.GetInt(StartKey, (int)CaseStart.Normal));
+                        CaseStart.Normal);
                     return;
                 }
             }

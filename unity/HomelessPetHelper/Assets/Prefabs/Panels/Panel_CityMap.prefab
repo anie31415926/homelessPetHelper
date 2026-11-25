@@ -1830,7 +1830,8 @@ MonoBehaviour:
     _stateLabel: {fileID: 3397708220756547627}
     _selectionOutline: {fileID: 6460809751827242331}
     _detailArt: {fileID: 21300000, guid: a3ab770562662d049b071a45103776c7, type: 3}
-    _requestArt: {fileID: 21300000, guid: 73e0829001f54c728fb6bd047818fe90, type: 3}
+    _requestPortraits: {fileID: 11400000, guid: 8d84819eff0445f8a935903f610a97e3, type: 2}
+    _requestDog: 1
   - _pointId: market
     _button: {fileID: 9112566381699969867}
     _highlight: {fileID: 3478235167254271630}
@@ -1845,7 +1846,7 @@ MonoBehaviour:
     _stateLabel: {fileID: 7252128211537048007}
     _selectionOutline: {fileID: 209687110014376125}
     _detailArt: {fileID: 21300000, guid: 6aefb4b7bfd9c214e8f76591298ab7c5, type: 3}
-    _requestArt: {fileID: 21300000, guid: 67afc03b924949389f57a38463db2420, type: 3}
+    _requestPortraits: {fileID: 11400000, guid: 8d84819eff0445f8a935903f610a97e3, type: 2}
   - _pointId: treehouse
     _button: {fileID: 56237128051934110}
     _highlight: {fileID: 56237128051934103}
@@ -1853,7 +1854,7 @@ MonoBehaviour:
     _stateLabel: {fileID: 56237128051934114}
     _selectionOutline: {fileID: 56237128051934100}
     _detailArt: {fileID: 21300000, guid: 58f286ebefc25a04ab547e0d3b368a0d, type: 3}
-    _requestArt: {fileID: 21300000, guid: 67afc03b924949389f57a38463db2420, type: 3}
+    _requestPortraits: {fileID: 11400000, guid: 8d84819eff0445f8a935903f610a97e3, type: 2}
   - _pointId: porch
     _button: {fileID: 3692359656442809355}
     _highlight: {fileID: 2097790185268037746}
@@ -1861,7 +1862,8 @@ MonoBehaviour:
     _stateLabel: {fileID: 3233046356455875787}
     _selectionOutline: {fileID: 5660438825335530755}
     _detailArt: {fileID: 21300000, guid: 58f286ebefc25a04ab547e0d3b368a0d, type: 3}
-    _requestArt: {fileID: 21300000, guid: 73e0829001f54c728fb6bd047818fe90, type: 3}
+    _requestPortraits: {fileID: 11400000, guid: 8d84819eff0445f8a935903f610a97e3, type: 2}
+    _requestDog: 1
   _pointPaper: {fileID: -1900421435, guid: 14be07902d7979b41927467a46b598a3, type: 3}
   _selectedPointPaper: {fileID: -730485472, guid: 14be07902d7979b41927467a46b598a3, type: 3}
   _stationIcon: {fileID: 21300000, guid: f73a2e06ac1b21d488f6af9c95386913, type: 3}

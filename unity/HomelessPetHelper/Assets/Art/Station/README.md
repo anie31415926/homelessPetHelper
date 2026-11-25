@@ -1,10 +1,12 @@
 # Station Care Art
 
-As of the 2026-11-26 cleanup, station care uses the formal rescued-animal sprites
-`Assets/Art/PetMotion/T_Pet_original.png` (cat) and
-`Assets/Art/Outing/T_Outing_DogNatural.png` (dog). They are bound in
-`Assets/Settings/Game/GameContent.asset` and in the station panels; the temporary
-512 x 512 preview PNGs and every `*Temporary*` name in this folder were removed.
+Main care displays the cat rig's original pose and `ShibaCarePose` (frame 0 in
+`Assets/Art/PetSit/T_Station_ShibaMotion.png`). During washing or grooming the animal
+and dirt/fur layers breathe together and hold still during a stroke. The separate
+128 × 128 saved coat fields are unchanged. Run `node tools/station-care-visuals.mjs --dog-only`
+to regenerate the Shiba silhouette-to-save projection without rewriting the cat or effects.
+
+The previous temporary Unity preview PNGs were removed.
 
 The 128 x 128 bottom-left-origin care grids are kept as
 `T_Station_CatCareMask.bytes` / `T_Station_DogCareMask.bytes`. Only the file names

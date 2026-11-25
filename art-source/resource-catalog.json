@@ -1275,9 +1275,9 @@
       "id": "animal.cat-orange.map",
       "name": "橘猫地图角标",
       "module": "CityMap",
-      "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "Main静态引用随场景加载；资源已移至Assets/Art，仍为临时美术，正式许可和微信下载待审。原开放条件不变。",
+      "status": "retired",
+      "loadTiming": "preview-only",
+      "availability": "Main 已改用统一猫动画形象；仅保留历史资源与预览工具引用。",
       "use": "256×256 透明动物角标，UI 状态独立叠加；逆塔防 Unity 独立试玩复用同一 Sprite 作为守方猫，不复制图片或接分层动画",
       "plannedBytes": 61440,
       "files": [
@@ -1303,9 +1303,9 @@
       "id": "animal.dog-white.map",
       "name": "白狗地图角标",
       "module": "CityMap",
-      "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "Main静态引用随场景加载；资源已移至Assets/Art，仍为临时美术，正式许可和微信下载待审。原开放条件不变。",
+      "status": "retired",
+      "loadTiming": "preview-only",
+      "availability": "Main 已改用柴犬动画形象；仅保留历史资源与预览工具引用。",
       "use": "256×256 透明动物角标，UI 状态独立叠加；逆塔防猫狗首批复用为守方狗图，静态Prefab绑定，无新增PNG，不代表已接骨骼动作或正式美术",
       "plannedBytes": 61440,
       "files": [
@@ -2548,9 +2548,9 @@
       "id": "field-animal.dog",
       "name": "现场自然比例dog",
       "module": "Rescue",
-      "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "Main小院的清路与救助静态绑定，猫狗均成为实际随包依赖；不代表按需加载、正式美术或微信下载验收。",
+      "status": "retired",
+      "loadTiming": "preview-only",
+      "availability": "Main 现场与护理已改用柴犬动画；保留源图供历史预览及再制作。",
       "plannedBytes": 61440,
       "files": [
         {
@@ -2604,9 +2604,9 @@
       "id": "field-animal.cat",
       "name": "现场自然比例cat",
       "module": "Rescue",
-      "status": "temporary",
-      "loadTiming": "first-play",
-      "availability": "Main小院的清路与救助静态绑定，猫狗均成为实际随包依赖；不代表按需加载、正式美术或微信下载验收。",
+      "status": "retired",
+      "loadTiming": "preview-only",
+      "availability": "Main 现场已改用原有猫骨骼动画；保留源图供历史预览及再制作。",
       "plannedBytes": 61440,
       "files": [
         {
@@ -6533,7 +6533,7 @@
       "module": "Station",
       "status": "temporary",
       "loadTiming": "first-play",
-      "availability": "Main 救助站住客静态引用；检查后在房间行走，未接按需下载",
+      "availability": "启动、地图求助、现场救助和救助站共用；洗护使用第 0 帧和对应触摸投影。未接按需下载。",
       "use": "同一站姿母图的定长 IK 和网格变形，烘焙 40 帧站立、坐下、起身与走路",
       "plannedBytes": 393216,
       "files": [
@@ -6820,6 +6820,22 @@
         "rights": "pending",
         "target": "pending"
       }
+    },
+    {
+      "id": "pet-motion.cat-portrait",
+      "name": "小猫动态头像帧图",
+      "module": "CommonUI",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "启动、地图求助和救助站共用；不将整套猫骨骼带入启动场景。",
+      "use": "从已有猫骨骼的回头动作离线烘焙 12 帧，沿用现场形象。",
+      "plannedBytes": 65536,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/Art/PetMotion/T_CatPortraitMotion.png" },
+        { "role": "workflow", "path": "unity/HomelessPetHelper/Assets/Scripts/Editor/PetMotion/PetPortraitBaker.cs" }
+      ],
+      "generation": { "tool": "Unity PetPortraitBaker.Bake" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
     }
   ]
 }

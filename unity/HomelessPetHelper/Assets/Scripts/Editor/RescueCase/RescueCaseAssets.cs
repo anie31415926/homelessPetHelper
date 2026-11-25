@@ -20,41 +20,6 @@ namespace HomelessPetHelper.Editor.RescueCase
         public const string OptionsPath = "Assets/Settings/Rescue/RescueOptions.json";
         public const string OptionTextPath = "Assets/Settings/Rescue/RescueOptionText.zh-CN.json";
 
-        [MenuItem("Homeless Pet Helper/Preview/Open Rescue Case")]
-        public static void OpenScene()
-        {
-            OpenScenario(CaseStart.Normal);
-        }
-
-        [MenuItem("Homeless Pet Helper/Preview/Open Stress Recovery Case")]
-        public static void OpenStressRecovery()
-        {
-            OpenScenario(CaseStart.StressRecovery);
-        }
-
-        [MenuItem("Homeless Pet Helper/Preview/Open Rescue Case", true)]
-        [MenuItem("Homeless Pet Helper/Preview/Open Stress Recovery Case", true)]
-        private static bool CanOpenScenario()
-        {
-            return !EditorApplication.isPlayingOrWillChangePlaymode ||
-                (Application.isPlaying && UnityEngine.SceneManagement.SceneManager.GetActiveScene().path == ScenePath);
-        }
-
-        private static void OpenScenario(CaseStart start)
-        {
-            if (Application.isPlaying)
-            {
-                RescueCaseHost.SetStart(start);
-                return;
-            }
-
-            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-            {
-                RescueCaseHost.SetStart(start);
-                EditorSceneManager.OpenScene(ScenePath);
-            }
-        }
-
         public static void CreateAssets()
         {
             if (!Application.isBatchMode || AssetDatabase.LoadMainAssetAtPath(PanelPath) != null ||

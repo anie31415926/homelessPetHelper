@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 490bf270b9d74fe4b797fd4e10a860ee, type: 3}
+  m_Name: PetPortraitSet
+  m_EditorClassIdentifier:
+  _catAtlas: {fileID: 2800000, guid: 87a8fcf405ce40418fcb971cd449f2a7, type: 3}
+  _shibaAtlas: {fileID: 2800000, guid: 7bf665893c0245aa89c8ea2bc39b51a9, type: 3}
+  _stationDog: {fileID: 4781335258358289467, guid: 7bf665893c0245aa89c8ea2bc39b51a9, type: 3}
+  _coatShader: {fileID: 4800000, guid: 4f6dd0319523405c98d3a5aecef55dfb, type: 3}

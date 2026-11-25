@@ -129,12 +129,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         private void RenderShiba()
         {
             // Matches the shiba-station bake: 16 sit, 16 walk, 8 walk-in cells.
-            const int columns = 8, rows = 5;
-            int frame = ShibaFrame();
-            bool left = Observing || Motion.FacingLeft;
-            float width = 1f / columns, height = 1f / rows;
-            var uv = new Rect((frame % columns + (left ? 0 : 1)) * width,
-                (rows - 1 - frame / columns) * height, left ? width : -width, height);
+            Rect uv = PetPortraitSet.ShibaFrameUv(ShibaFrame(), Observing || Motion.FacingLeft);
             if (_motionImage.texture != _shibaAtlas) _motionImage.texture = _shibaAtlas;
             if (_motionImage.uvRect != uv) _motionCoat.SetFrameUv(_motionImage, uv);
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using HomelessPetHelper.Game.Loading;
+using HomelessPetHelper.Modules.Animals.UI;
 using HomelessPetHelper.Modules.Rescue.UI;
 using NUnit.Framework;
 using UnityEditor;
@@ -60,15 +61,15 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(dependencies, Does.Contain("Assets/Prefabs/Panels/Panel_Loading.prefab"));
             Assert.That(dependencies.Any(path => path.Contains("EditorScenes") || path.Contains("GameContent.asset")),
                 Is.False);
-            Assert.That(dependencies.Where(path => path.EndsWith(".png", StringComparison.Ordinal)), Is.EquivalentTo(
-                new[] { "Assets/Art/Loading/T_Loading_Elements.png", "Assets/Art/Loading/T_Loading_Background.png",
-                    "Assets/Art/UI/T_UI_LevelControls.png" }));
-            // 标题页已改为图集切片拼装；烘焙 JPG 只服务微信开屏配置（WeChatEnvironmentProbe），不在运行时依赖图里。
+            Assert.That(dependencies, Does.Contain("Assets/Art/PetMotion/T_CatPortraitMotion.png"));
+            Assert.That(dependencies, Does.Contain("Assets/Art/PetSit/T_Station_ShibaMotion.png"));
+            Assert.That(dependencies.Any(path => path.EndsWith(".anim", StringComparison.Ordinal) ||
+                path.EndsWith("/Widget_PetMotion.prefab", StringComparison.Ordinal)), Is.False);
             Assert.That(dependencies, Does.Not.Contain("Assets/Art/Loading/T_WeChat_Cover.jpg"));
         }
 
         [Test]
-        public void StaticArtworkHasOriginalAnimalsCompleteBindingsAndSafeArea()
+        public void ArtworkUsesOnlyAnimatedPetPortraitsAndKeepsSafeArea()
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Panels/Panel_Loading.prefab");
             Assert.That(prefab, Is.Not.Null);
@@ -78,8 +79,9 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(entry.gameObject.activeSelf, Is.False);
             Assert.That(entry.GetComponentInParent<SafeAreaView>(true), Is.Not.Null);
             Assert.That(prefab.GetComponent<GraphicRaycaster>(), Is.Not.Null);
-            Assert.That(motion.OrbitAnimalCount, Is.EqualTo(13));
+            Assert.That(motion.OrbitAnimalCount, Is.EqualTo(4));
             Assert.That(motion.DoorAnimalCount, Is.EqualTo(2));
+            Assert.That(prefab.GetComponentsInChildren<PetPortraitView>(true).Length, Is.EqualTo(9));
             Assert.That(prefab.GetComponentInChildren<SafeAreaView>(true), Is.Not.Null);
             Assert.That(prefab.GetComponent<CanvasScaler>().referenceResolution, Is.EqualTo(new Vector2(1080, 1920)));
             foreach (var component in new MonoBehaviour[] { motion, prefab.GetComponent<LoadingView>() })
@@ -96,9 +98,10 @@ namespace HomelessPetHelper.Tests.EditMode
                 bool backdrop = image.name == "SaveBackdrop";
                 Assert.That(image.raycastTarget, Is.EqualTo(backdrop || buttons.Any(button => button.targetGraphic == image)));
                 if (backdrop) continue;
-                Assert.That(image.sprite, Is.Not.Null, image.name + " must retain its imported sprite identity.");
+                if (image.GetComponent<PetPortraitView>() == null)
+                    Assert.That(image.sprite, Is.Not.Null, image.name + " must retain its imported sprite identity.");
+                else Assert.That(image.sprite, Is.Null, image.name + " must not retain a replaced animal sprite.");
             }
-            Assert.That(prefab.GetComponentsInChildren<Image>(true).Length, Is.EqualTo(50)); // Original illustration, six extra button images, panel and backdrop.
             foreach (string name in new[] { "T_Loading_Elements.png", "T_Loading_Background.png" })
             {
                 var importer = (TextureImporter)AssetImporter.GetAtPath("Assets/Art/Loading/" + name);

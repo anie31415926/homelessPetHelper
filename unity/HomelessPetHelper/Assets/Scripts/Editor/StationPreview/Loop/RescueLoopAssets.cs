@@ -16,14 +16,6 @@ namespace HomelessPetHelper.Editor.StationPreview.Loop
         public const string ConfigPath = "Assets/EditorScenes/RescueLoopConfig.json";
         public const string StationPanelPath = "Assets/Prefabs/Panels/Panel_StationLoop.prefab";
 
-        [MenuItem("Homeless Pet Helper/Preview/Open Rescue Loop")]
-        public static void OpenScene()
-        {
-            if (!EditorApplication.isPlayingOrWillChangePlaymode &&
-                EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-                EditorSceneManager.OpenScene(ScenePath);
-        }
-
         public static void CreateSavedScene()
         {
             if (!Application.isBatchMode || AssetDatabase.LoadMainAssetAtPath(ScenePath) != null ||

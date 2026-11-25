@@ -18,7 +18,7 @@ MonoBehaviour:
   _siegeData: {fileID: 4900000, guid: 7f5ca716834c6cd4ab7c3dbead4d93c9, type: 3}
   _siegeText: {fileID: 4900000, guid: 9fec97e4b62c434408162c0c2da3dc09, type: 3}
   _cat: {fileID: 21300000, guid: e8ab41f882845da4e8d1a7be9a64343a, type: 3}
-  _dog: {fileID: 21300000, guid: cd137a207a0a70f47bed528797be805e, type: 3}
+  _dog: {fileID: 4781335258358289467, guid: 7bf665893c0245aa89c8ea2bc39b51a9, type: 3}
   _catMask: {fileID: 4900000, guid: e7f3e9d489d6cda449fa658e2060ece1, type: 3}
   _dogMask: {fileID: 4900000, guid: 2ebdc47a57e7c764b90e585596ec285b, type: 3}
   _font: {fileID: 12800000, guid: f9c1d9eb9a134080bc3ffcdf2b05dc8e, type: 3}

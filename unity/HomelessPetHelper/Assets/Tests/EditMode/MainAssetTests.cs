@@ -83,8 +83,12 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(content.Font.HasCharacter('助'), Is.True);
             Assert.That(dependencies, Does.Contain("Assets/Settings/Game/ApproachConfig.json"));
             Assert.That(dependencies, Does.Contain("Assets/Settings/Game/YardFieldConfig.json"));
-            Assert.That(dependencies, Does.Contain("Assets/Art/Outing/T_Outing_DogNatural.png"));
-            Assert.That(dependencies, Does.Contain("Assets/Art/Outing/T_Outing_CatNatural.png"));
+            Assert.That(dependencies, Does.Contain("Assets/Art/PetMotion/T_CatPortraitMotion.png"));
+            Assert.That(dependencies, Does.Contain("Assets/Art/PetSit/T_Station_ShibaMotion.png"));
+            Assert.That(dependencies, Does.Not.Contain("Assets/Art/Outing/T_Outing_DogNatural.png"));
+            Assert.That(dependencies, Does.Not.Contain("Assets/Art/Outing/T_Outing_CatNatural.png"));
+            foreach (string legacy in new[] { "T_Animal_CatCalico", "T_Animal_CatOrange", "T_Animal_DogWhite" })
+                Assert.That(dependencies, Does.Not.Contain("Assets/Art/CityMap/Animals/" + legacy + ".png"));
             foreach (TextAsset source in
                 new[] { content.ApproachText, content.MapText, content.SiegeText, content.StationText })
                 foreach (char character in source.text)

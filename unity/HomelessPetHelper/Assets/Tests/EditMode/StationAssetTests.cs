@@ -58,7 +58,8 @@ namespace HomelessPetHelper.Tests.EditMode
                     if (view is StationPanelView &&
                         (field.propertyPath == "_rosterContent" || field.propertyPath == "_habitat" ||
                             field.propertyPath == "_scene" || field.propertyPath == "_chrome" ||
-                            field.propertyPath == "_summaryRename" || field.propertyPath == "_detailRename"))
+                            field.propertyPath == "_summaryRename" || field.propertyPath == "_detailRename" ||
+                            field.propertyPath == "_portraits"))
                     {
                         Assert.That(field.objectReferenceValue != null, Is.EqualTo(expandable),
                             "Only the expandable loop panel owns saved scroll content and the habitat.");

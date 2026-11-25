@@ -37,8 +37,10 @@ const clamp = (x, min, max) => Math.max(min, Math.min(max, x));
 async function project(kind) {
   const old = await readFile(new URL(`Station/T_Station_${kind}CareMask.bytes`, art));
   if (old.length !== size * size) throw new Error('Unexpected legacy mask dimensions');
-  const sprite = new URL(kind === 'Cat' ? 'PetMotion/T_Pet_original.png' : 'Outing/T_Outing_DogNatural.png', art);
-  const raster = await sharp(await readFile(sprite)).resize(size, size, { fit: 'fill' }).ensureAlpha().raw().toBuffer();
+  const sprite = new URL(kind === 'Cat' ? 'PetMotion/T_Pet_original.png' : 'PetSit/T_Station_ShibaMotion.png', art);
+  const sourceImage = sharp(await readFile(sprite));
+  if (kind === 'Dog') sourceImage.extract({ left: 0, top: 0, width: size, height: size });
+  const raster = await sourceImage.resize(size, size, { fit: 'fill' }).ensureAlpha().raw().toBuffer();
   const rows = values => Array.from({ length: size }, (_, y) =>
     Array.from({ length: size }, (_, x) => y * size + x).filter(values));
   const srcRows = rows(index => old[index] !== 0).filter(row => row.length > 0);
@@ -69,6 +71,9 @@ async function project(kind) {
   await writeFile(new URL(`Station/T_Station_${kind}CareProjection.bytes`, art), out);
 }
 
-await Promise.all(['Cat', 'Dog'].map(project));
-await sharp(Buffer.from(atlas)).png({ palette: true, quality: 92, effort: 10 }).toFile(
-  fileURLToPath(new URL('Station/T_Station_CareEffects.png', art)));
+await project('Dog');
+if (!process.argv.includes('--dog-only')) {
+  await project('Cat');
+  await sharp(Buffer.from(atlas)).png({ palette: true, quality: 92, effort: 10 }).toFile(
+    fileURLToPath(new URL('Station/T_Station_CareEffects.png', art)));
+}
