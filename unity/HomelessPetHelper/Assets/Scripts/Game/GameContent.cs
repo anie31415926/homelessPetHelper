@@ -30,6 +30,8 @@ namespace HomelessPetHelper.Game
             CreateMapConfig().Definition.Points.Select(point => point.PointId));
         public SiegeCatalog CreateFieldSiegeCatalog(Field.OutingFieldLayout field) =>
             field.CreateBattleCatalog(_siegeData);
+        public SiegeCatalog CreateFieldSiegeCatalog(Field.OutingFieldLayout field, ApproachSession opening) =>
+            field.CreateBattleCatalog(_siegeData, opening);
         public Progress.FieldProgressContent CreateFieldProgressContent(Field.OutingFieldCatalog fields) =>
             new Progress.FieldProgressContent(this, fields, _siegeData.text, _approachConfig.text);
         public TextAsset ApproachText => _approachText;
@@ -48,12 +50,17 @@ namespace HomelessPetHelper.Game
             new SiegeCatalog(JsonUtility.FromJson<SiegeCatalogData>(_siegeData.text)) :
             throw new InvalidOperationException("Missing siege content.");
 
-        public Sprite GetOutingBackground(string pointId)
+        public OutingArtwork GetOutingArtwork(string pointId)
         {
             foreach (OutingArtwork item in _outingArtwork)
-                if (item != null && item.PointId == pointId && item.Background != null) return item.Background;
+                if (item != null && item.PointId == pointId && item.Background != null) return item;
             throw new ArgumentException("Missing outing artwork: " + pointId, nameof(pointId));
         }
+
+        public Sprite GetOutingBackground(string pointId) => GetOutingArtwork(pointId).Background;
+
+        public Framework.UI.SceneSpritePalette GetOutingProps(string pointId) =>
+            _outingArtwork.FirstOrDefault(item => item.PointId == pointId)?.Props;
 
         private void ValidateArtwork(CityMapPreviewConfig map)
         {

@@ -36,7 +36,7 @@ namespace HomelessPetHelper.Game.Progress
         internal static WorldFieldData Empty() => new WorldFieldData
             { Encounters = Array.Empty<EncounterData>(), Locations = Array.Empty<LocationData>() };
 
-        internal ApproachSession Begin(GameLoopSession session, OutingFieldLayout suggested)
+        internal ApproachSession Begin(GameLoopSession session, OutingFieldLayout suggested, bool restoring = false)
         {
             var outing = session.Outing.Session;
             string requestId = outing.AcceptedRequestId.ToString("N");
@@ -46,7 +46,16 @@ namespace HomelessPetHelper.Game.Progress
             {
                 string layoutId = location == null ? suggested?.LayoutId : location.LayoutId;
                 var catalog = _content.Opening(outing.SelectedPointId, layoutId);
-                using var initial = catalog.Create(outing.SessionId, outing.Seed);
+                var layout = _content.Layout(outing.SelectedPointId, layoutId);
+                // The full cleaning room introduces the stairs. A new request can unlock the crate version.
+                bool crates = layout?.IntroduceWithCleanup == true && location != null &&
+                    location.Mode == (int)ApproachMode.Cleanup &&
+                    session.Requests.TryGet(Guid.ParseExact(location.RequestId, "N"), out var previous) &&
+                    previous.State == RequestState.Resolved;
+                bool fresh = location == null || crates;
+                using var initial = layout?.IntroduceWithCleanup == true ? new ApproachSession(outing.SessionId,
+                    outing.Seed, catalog.Get(crates ? ApproachMode.Puzzle : ApproachMode.Cleanup), catalog) :
+                    catalog.Create(outing.SessionId, outing.Seed);
                 session.Requests.TryGet(outing.AcceptedRequestId, out var request);
                 _encounter = new EncounterData
                 {
@@ -54,9 +63,9 @@ namespace HomelessPetHelper.Game.Progress
                     LayoutId = layoutId, ContentVersion = _content.Version(outing.SelectedPointId, layoutId),
                     RuleVersion = FieldProgressContent.EncounterVersion(_config.GetRescue(request.TemplateId),
                         _config.TimePolicy),
-                    Mode = location?.Mode ?? (int)initial.Template.Mode,
-                    TemplateId = location?.TemplateId ?? initial.Template.Id,
-                    Opening = location == null ? FieldCheckpointCodec.Capture(initial) :
+                    Mode = fresh ? (int)initial.Template.Mode : location.Mode,
+                    TemplateId = fresh ? initial.Template.Id : location.TemplateId,
+                    Opening = fresh ? FieldCheckpointCodec.Capture(initial) :
                         CopyForNewEncounter(location.Opening),
                     Animal = MainResidentCodec.CaptureAnimal(
                         _config.GetRescue(request.TemplateId).CreateIndividual().Current)
@@ -72,6 +81,8 @@ namespace HomelessPetHelper.Game.Progress
                 _encounter.TemplateId = location.TemplateId;
                 _encounter.Opening = CopyForNewEncounter(location.Opening);
             }
+            if (!restoring && location != null)
+                RestoreClutter(location, session.Clock.Current.ElapsedMinutes);
             Animal = MainResidentCodec.RestoreAnimal(_encounter.Animal);
             _opening = CreateOpening(_encounter, outing.SessionId);
             _activity = null;
@@ -92,7 +103,7 @@ namespace HomelessPetHelper.Game.Progress
                 !session.Outing.TrySelectAndDepart(session.Outing.Session.SessionId, encounter.PointId, out _) ||
                 session.Outing.Session.AcceptedRequestId.ToString("N") != saved.RequestId)
                 throw new ArgumentException("Saved outing no longer has a valid departure.");
-            var opening = Begin(session, null);
+            var opening = Begin(session, null, restoring: true);
             if (saved.OpenedRoute ? !session.TryStartOpeningRoute(opening, out _) : !opening.IsComplete)
                 throw new ArgumentException("Cannot restore opening ownership.");
             _pendingRestore = saved;
@@ -101,7 +112,7 @@ namespace HomelessPetHelper.Game.Progress
             {
                 session.Requests.TryGet(Guid.ParseExact(saved.RequestId, "N"), out var request);
                 var activity = new SiegeRescueActivity(session.Outing.Session.SessionId, Seed,
-                    _content.Battle(encounter.PointId, encounter.LayoutId), _config.GetRescue(request.TemplateId),
+                    _content.Battle(encounter.PointId, encounter.LayoutId, opening), _config.GetRescue(request.TemplateId),
                     Animal);
                 bool entered = saved.OpenedRoute
                     ? session.TryEnterRescueAfterOpening(activity, out _)
@@ -186,6 +197,22 @@ namespace HomelessPetHelper.Game.Progress
                 catalog.Get((ApproachMode)encounter.Mode), catalog);
             opening.RestoreCheckpoint(FieldCheckpointCodec.Restore(encounter.Opening));
             return opening;
+        }
+
+        private void RestoreClutter(LocationData location, long minutes)
+        {
+            var layout = _content.Layout(_encounter.PointId, _encounter.LayoutId);
+            if (layout == null || layout.RevisitMinutes <= 0 ||
+                minutes - location.UpdatedMinutes < layout.RevisitMinutes ||
+                _encounter.Mode != (int)ApproachMode.Cleanup) return;
+            var pieces = layout.Opening.Get(ApproachMode.Cleanup).Debris;
+            for (int index = 0; index < pieces.Count; index++)
+            {
+                if (!layout.CanRefill(pieces[index].Cell) || _encounter.Opening.Remaining[index] > 0) continue;
+                _encounter.Opening = CopyForNewEncounter(_encounter.Opening);
+                _encounter.Opening.Remaining[index] = pieces[index].WorkSeconds;
+                return;
+            }
         }
 
         private static OpeningData CopyForNewEncounter(OpeningData opening) => new OpeningData

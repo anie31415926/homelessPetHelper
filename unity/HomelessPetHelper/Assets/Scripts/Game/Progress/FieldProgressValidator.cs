@@ -109,7 +109,7 @@ namespace HomelessPetHelper.Game.Progress
             if (active.Stage == 0) { opening.Dispose(); return; }
             if (!opening.IsComplete) throw new ArgumentException("Battle checkpoint has an obstructed route.");
             var activity = new SiegeRescueActivity(outingId, encounter.Seed,
-                content.Battle(encounter.PointId, encounter.LayoutId), config.GetRescue(request.TemplateId),
+                content.Battle(encounter.PointId, encounter.LayoutId, opening), config.GetRescue(request.TemplateId),
                 MainResidentCodec.RestoreAnimal(encounter.Animal));
             bool entered = active.OpenedRoute
                 ? staged.TryEnterRescueAfterOpening(activity, out _)

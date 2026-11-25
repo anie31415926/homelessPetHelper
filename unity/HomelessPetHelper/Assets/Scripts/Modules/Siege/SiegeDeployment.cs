@@ -18,7 +18,9 @@ namespace HomelessPetHelper.Modules.Siege
             SiegeCatalog.Finite(p.Y) && p.X >= 0 && p.Y >= 0 && p.X <= c.Width && p.Y <= c.Height;
 
         public static bool CanDeploy(SiegeCatalog c, SiegePoint p) => InBounds(c, p) &&
-            Fraction(c, p) >= -.1 && Fraction(c, p) <= c.Rules.DeploymentFraction;
+            (c.HasDeploymentZone ? p.X >= c.DeploymentMin.X && p.X <= c.DeploymentMax.X &&
+                p.Y >= c.DeploymentMin.Y && p.Y <= c.DeploymentMax.Y :
+                Fraction(c, p) >= -.1 && Fraction(c, p) <= c.Rules.DeploymentFraction);
 
         public static SiegeLane NearestLane(SiegeCatalog c, SiegePoint p)
         {

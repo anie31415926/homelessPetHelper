@@ -16,7 +16,8 @@ namespace HomelessPetHelper.Modules.Siege
             foreach (var tower in s.Defenses)
             {
                 if (tower.Status == TowerStatus.Destroyed) continue;
-                int cell = SiegeDeployment.Cell(c, SiegeGeometry.Position(c, tower));
+                int cell = c.InitialDefenseCell >= 0 ? c.InitialDefenseCell :
+                    SiegeDeployment.Cell(c, SiegeGeometry.Position(c, tower));
                 if (occupied.Contains(cell))
                     for (int candidate = 0; candidate < c.Rules.DefenseGridSize * c.Rules.DefenseGridSize; candidate++)
                         if (!occupied.Contains(candidate) && SiegeDeployment.Fraction(c,
@@ -58,9 +59,11 @@ namespace HomelessPetHelper.Modules.Siege
             double bestScore = double.NegativeInfinity;
             for (int cell = 0; cell < count; cell++)
             {
+                if (!c.AllowsDefenseCell(cell)) continue;
                 var point = SiegeDeployment.CellCenter(c, cell);
                 double fraction = SiegeDeployment.Fraction(c, point);
-                if (fraction <= c.Rules.DeploymentFraction || fraction >= .95) continue;
+                if (c.HasDeploymentZone ? SiegeDeployment.CanDeploy(c, point) :
+                    fraction <= c.Rules.DeploymentFraction || fraction >= .95) continue;
                 bool occupied = false;
                 foreach (var tower in s.Defenses)
                     if (tower.Status != TowerStatus.Destroyed &&

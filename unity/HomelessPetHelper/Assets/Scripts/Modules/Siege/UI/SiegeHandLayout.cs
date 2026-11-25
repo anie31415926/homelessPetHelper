@@ -11,7 +11,27 @@ namespace HomelessPetHelper.Modules.Siege.UI
         [SerializeField] private UiLayoutMetrics _metrics;
         [SerializeField] private RectTransform _hand, _submit, _hint, _progress, _sceneArea, _context;
         [SerializeField] private GridLayoutGroup _grid;
-        [SerializeField] private RectTransform _empty;
+        [SerializeField] private RectTransform _empty, _resourceBadge;
+        [SerializeField] private RectTransform _statusBacking;
+        private bool _compact;
+
+        public void SetCompact(bool compact)
+        {
+            _compact = compact;
+            _size = Vector2.negativeInfinity;
+            if (_progress != null) _progress.gameObject.SetActive(!compact);
+            if (_statusBacking != null)
+                _statusBacking.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                    compact ? _metrics.realtimeStatusHeight : _metrics.fieldHeaderHeight - _metrics.innerGap);
+            SetResourceAtHand(compact);
+        }
+
+        public void SetResourceAtHand(bool visible)
+        {
+            if (_resourceBadge == null) return;
+            _resourceBadge.gameObject.SetActive(visible);
+            _size = Vector2.negativeInfinity;
+        }
         private int _capacity = 1;
         private Vector2 _size = Vector2.negativeInfinity;
         private float _buttonWidth = -1;
@@ -55,18 +75,32 @@ namespace HomelessPetHelper.Modules.Siege.UI
             float cardWidth = Mathf.Min(_metrics.cardWidth * 1.25f,
                 (handWidth - (columns - 1) * _metrics.gap) / columns);
             _grid.constraintCount = columns;
-            _grid.cellSize = new Vector2(cardWidth, _metrics.fieldCardHeight);
+            float cardHeight = _compact ? Mathf.Max(_metrics.touchSize, _metrics.realtimeCardHeight) :
+                _metrics.fieldCardHeight;
+            _grid.cellSize = new Vector2(cardWidth, cardHeight);
             _grid.spacing = Vector2.one * _metrics.gap;
-            float handHeight = rows * _metrics.fieldCardHeight + (rows - 1) * _metrics.gap;
+            float handHeight = rows * cardHeight + (rows - 1) * _metrics.gap;
             float bottom = _metrics.margin;
             Set(_submit, width - buttonWidth + _metrics.margin, bottom, buttonWidth, _metrics.actionHeight);
             if (!sameRow && buttonWidth > 0) bottom += _metrics.actionHeight + _metrics.gap;
             Set(_hand, _metrics.margin, bottom, handWidth, handHeight);
             if (_empty != null) Set(_empty, _metrics.margin, bottom, handWidth, handHeight);
             bottom += handHeight + _metrics.gap;
+            if (_compact)
+            {
+                LayoutRealtimeUtility(width, bottom, contextVisible, contextWidth);
+                return;
+            }
             // One stable utility strip replaces stacked context, hint and charge rows.
-            float hintWidth = contextVisible ? width - contextWidth - _metrics.gap : width;
-            Set(_hint, _metrics.margin, bottom, Mathf.Max(_metrics.touchSize, hintWidth), _metrics.touchSize);
+            float badgeWidth = _resourceBadge != null && _resourceBadge.gameObject.activeSelf
+                ? Mathf.Min(_metrics.actionWidth * 1.65f, width * .38f) : 0;
+            float badgeSpace = badgeWidth > 0 ? badgeWidth + _metrics.gap : 0;
+            float hintStart = contextVisible ? badgeSpace : 0;
+            if (badgeWidth > 0)
+                Set(_resourceBadge, _metrics.margin + (contextVisible ? 0 : width - badgeWidth),
+                    bottom, badgeWidth, _metrics.touchSize);
+            float hintWidth = width - badgeSpace - (contextVisible ? contextWidth + _metrics.gap : 0);
+            Set(_hint, _metrics.margin + hintStart, bottom, Mathf.Max(_metrics.touchSize, hintWidth), _metrics.touchSize);
             if (_context != null)
             {
                 Set(_context, _metrics.margin + width - contextWidth, bottom,
@@ -74,6 +108,24 @@ namespace HomelessPetHelper.Modules.Siege.UI
             }
             bottom += _metrics.touchSize + _metrics.gap;
             _sceneArea.offsetMin = new Vector2(_sceneArea.offsetMin.x, bottom);
+            _sceneArea.offsetMax = new Vector2(_sceneArea.offsetMax.x, -_metrics.fieldHeaderHeight);
+        }
+
+        private void LayoutRealtimeUtility(float width, float bottom, bool contextVisible, float contextWidth)
+        {
+            // Resource readout has no interaction target; the cards and context buttons retain full targets.
+            float height = _metrics.realtimeResourceHeight;
+            float badgeWidth = Mathf.Min(width, Mathf.Max(_metrics.actionWidth * 1.65f, width * .38f));
+            Set(_resourceBadge, _metrics.margin + width - badgeWidth, bottom, badgeWidth, height);
+            float hintWidth = width - badgeWidth - _metrics.gap;
+            Set(_hint, _metrics.margin, bottom, Mathf.Max(0, hintWidth), height);
+            float reserved = bottom + height + _metrics.gap;
+            if (contextVisible)
+            {
+                Set(_context, _metrics.margin, reserved, Mathf.Min(width, contextWidth), _metrics.touchSize);
+                // Context controls overlay the playing area temporarily. Do not move deployed units.
+            }
+            _sceneArea.offsetMin = new Vector2(_sceneArea.offsetMin.x, reserved);
             _sceneArea.offsetMax = new Vector2(_sceneArea.offsetMax.x, -_metrics.fieldHeaderHeight);
         }
 

@@ -21,6 +21,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
         [SerializeField] private AnimalCoatView _coat;
         public void ShowAnimal(AnimalSnapshot snapshot) => _coat.Show(snapshot);
         [SerializeField] private SiegeCarryOverlay _carryOverlay;
+        [SerializeField] private Slider _rescueBar;
+        private float _rescueFill;
+        private bool _rescueVisible;
         [Serializable]
         private sealed class AnimalVisual
         {
@@ -60,6 +63,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             _terminalTailMs = 0;
             _presentationMotion.Reset();
+            _rescueVisible = false;
+            if (_rescueBar != null) _rescueBar.gameObject.SetActive(false);
         }
 
         internal void AdvanceTerminalEffects(float milliseconds)
@@ -70,11 +75,26 @@ namespace HomelessPetHelper.Modules.Siege.UI
             SetVerticesDirty();
         }
 
-        public void ConfigureScene(Sprite animal, float width)
+        private SceneSpritePalette _defaultPalette;
+        private bool _paletteCaptured, _animalOnSeparateFloor;
+        public void ConfigureScene(Sprite animal, float width) => ConfigureScene(animal, width, false, null);
+
+        public void ConfigureScene(Sprite animal, float width, bool animalOnSeparateFloor, SceneSpritePalette props)
         {
             if (animal == null || width <= 0 || _routeViewport == null)
                 throw new ArgumentException("Invalid field animal or route viewport.");
+            if (!_paletteCaptured) { _defaultPalette = _spritePalette; _paletteCaptured = true; }
+            _spritePalette = props != null ? props : _defaultPalette;
+            _validatedCatalog = null;
+            _carryOverlay?.SetPalette(props);
+            _animalOnSeparateFloor = animalOnSeparateFloor;
+            SetMaterialDirty();
             _sceneMode = true; _sceneAnimal = animal; _animalWidth = width;
+            if (animalOnSeparateFloor)
+            {
+                _carryOverlay?.Show(null, null, 1);
+                return;
+            }
             _cat.preserveAspect = true;
             _cat.rectTransform.anchorMin = _cat.rectTransform.anchorMax = new Vector2(.5f, .5f);
             _cat.rectTransform.pivot = new Vector2(.5f, .15f);
@@ -168,8 +188,12 @@ namespace HomelessPetHelper.Modules.Siege.UI
 
         private void LateUpdate()
         {
-            if (_catalog == null || _cat == null)
+            if (_catalog == null || _cat == null) return;
+            if (_animalOnSeparateFloor)
+            {
+                RefreshRescueBar();
                 return;
+            }
             var encounter = _state?.EncounterId == null ? null : _catalog.Content.Encounter(_state.EncounterId);
             bool jumping = encounter != null && encounter.SweepDelayMs > 0;
             var sprite = _sceneMode ? _sceneAnimal : encounter == null ? _legacySprite
@@ -207,6 +231,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 && _state.AnimalState.Cast == null && _state.AnimalState.Charge > .5;
             _cat.rectTransform.localScale = winding ? new Vector3(1.05f, .9f, 1) : Vector3.one;
             _carryOverlay.Show(_catalog, _state?.Units.FirstOrDefault(x => x.IsCarried), PropScale);
+            RefreshRescueBar();
         }
 
         protected override void OnPopulateMesh(VertexHelper vh)
@@ -215,6 +240,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (_catalog == null || _state == null)
                 return;
             if (_freeDeployment) DrawDeployment(vh);
+            if (_catalog.HasDeploymentZone && !UsesHeadProgress) DrawRescueProgress(vh);
             foreach (var lane in _catalog.Lanes)
             {
                 if (_freeDeployment || _sceneMode && !_showRoutes && lane.Id != _previewLane) continue;
@@ -255,17 +281,77 @@ namespace HomelessPetHelper.Modules.Siege.UI
             DrawEffects(vh);
         }
 
+        private bool UsesHeadProgress => _rescueBar != null && _sceneMode && _state?.Realtime == true;
+
+        private void RefreshRescueBar()
+        {
+            if (_rescueBar == null) return;
+            if (!UsesHeadProgress)
+            {
+                if (_rescueVisible) _rescueBar.gameObject.SetActive(false);
+                _rescueVisible = false;
+                return;
+            }
+            float target = Mathf.Clamp01((float)(_state.Progress / _catalog.Rules.Target));
+            if (!_rescueVisible)
+            {
+                _rescueFill = target;
+                _rescueBar.gameObject.SetActive(true);
+                _rescueVisible = true;
+            }
+            _rescueFill = Mathf.MoveTowards(_rescueFill, target, Time.unscaledDeltaTime * 2f);
+            _rescueBar.SetValueWithoutNotify(_rescueFill);
+            var animal = _cat.rectTransform;
+            var bar = (RectTransform)_rescueBar.transform;
+            // The upstairs animal lives in a full-frame stretched battlefield. Share its
+            // head anchor so a late room resize moves both elements together.
+            if (_animalOnSeparateFloor && animal.parent == rectTransform && rectTransform.parent == bar.parent)
+            {
+                var anchor = new Vector2((animal.anchorMin.x + animal.anchorMax.x) * .5f, animal.anchorMax.y);
+                bar.anchorMin = bar.anchorMax = anchor;
+                bar.anchoredPosition = new Vector2((animal.offsetMin.x + animal.offsetMax.x) * .5f,
+                    animal.offsetMax.y + 10);
+                return;
+            }
+            bar.anchorMin = bar.anchorMax = new Vector2(.5f, .5f);
+            var head = animal.TransformPoint(new Vector3(animal.rect.center.x, animal.rect.yMax, 0));
+            bar.position = head + bar.parent.TransformVector(new Vector3(0, 10, 0));
+        }
+
+        private void DrawRescueProgress(VertexHelper mesh)
+        {
+            var top = rectTransform.rect;
+            float scale = Scale;
+            var origin = new Vector2(top.xMin + 40 * scale, top.yMax - 108 * scale);
+            float width = 116 * scale;
+            float filled = width * Mathf.Clamp01((float)(_state.Progress / _catalog.Rules.Target));
+            SiegeTokenArt.Paw(mesh, origin - Vector2.right * 15 * scale, 7 * scale, _spritePalette);
+            Line(mesh, origin, origin + Vector2.right * width, 7 * scale, new Color32(243, 231, 203, 255));
+            if (filled > 0) Line(mesh, origin, origin + Vector2.right * filled, 7 * scale, Mint);
+            var heart = origin + Vector2.right * (width + 10 * scale);
+            Circle(mesh, heart + new Vector2(-2.8f, 2) * scale, 3.4f * scale, Coral);
+            Circle(mesh, heart + new Vector2(2.8f, 2) * scale, 3.4f * scale, Coral);
+            Triangle(mesh, heart + new Vector2(-6, 2) * scale,
+                heart + new Vector2(6, 2) * scale, heart + Vector2.down * 6 * scale, Coral);
+        }
+
         private readonly List<SiegePoint> _deploymentPolygon = new List<SiegePoint>(8);
         private readonly List<SiegePoint> _clipPolygon = new List<SiegePoint>(8);
         private void DrawDeployment(VertexHelper vh)
         {
             _deploymentPolygon.Clear();
-            _deploymentPolygon.Add(new SiegePoint(0, 0));
-            _deploymentPolygon.Add(new SiegePoint(_catalog.Width, 0));
-            _deploymentPolygon.Add(new SiegePoint(_catalog.Width, _catalog.Height));
-            _deploymentPolygon.Add(new SiegePoint(0, _catalog.Height));
-            ClipDeployment(-.1, false);
-            ClipDeployment(_catalog.Rules.DeploymentFraction, true);
+            var min = _catalog.HasDeploymentZone ? _catalog.DeploymentMin : new SiegePoint(0, 0);
+            var max = _catalog.HasDeploymentZone ? _catalog.DeploymentMax :
+                new SiegePoint(_catalog.Width, _catalog.Height);
+            _deploymentPolygon.Add(min);
+            _deploymentPolygon.Add(new SiegePoint(max.X, min.Y));
+            _deploymentPolygon.Add(max);
+            _deploymentPolygon.Add(new SiegePoint(min.X, max.Y));
+            if (!_catalog.HasDeploymentZone)
+            {
+                ClipDeployment(-.1, false);
+                ClipDeployment(_catalog.Rules.DeploymentFraction, true);
+            }
             for (int index = 1; index + 1 < _deploymentPolygon.Count; index++)
                 Triangle(vh, Local(_deploymentPolygon[0]), Local(_deploymentPolygon[index]),
                     Local(_deploymentPolygon[index + 1]), new Color32(76, 165, 139, 38));
@@ -474,7 +560,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             Vector2 point = Local(SiegeEntitiesPosition(unit));
             bool basic = !string.IsNullOrEmpty(d.UpgradeId);
             Color tint = basic ? Mint : new Color32(71, 112, 183, 255);
-            float radius = (basic ? 8 : 11) * PropScale;
+            float radius = (basic ? 8 : 11) * PropScale * (_catalog.HasDeploymentZone ? 1.4f : 1f);
             if (_selected.Contains(unit.Id))
                 Ring(vh, point, radius + 4 * Scale, 2 * Scale, Ink);
             if (unit.Shield > 0)
@@ -604,7 +690,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             point = default;
             if (_catalog == null || _routeViewport == null || rectTransform.rect.width <= 0 ||
                 rectTransform.rect.height <= 0 ||
-                !RectTransformUtility.RectangleContainsScreenPoint(_routeViewport, screen, camera) ||
+                (!_catalog.HasDeploymentZone &&
+                    !RectTransformUtility.RectangleContainsScreenPoint(_routeViewport, screen, camera)) ||
                 !RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, screen, camera,
                     out var local)) return false;
             point = new SiegePoint(_catalog.Width / 2 + (local.x - rectTransform.rect.center.x) / ProjectionScale.x,

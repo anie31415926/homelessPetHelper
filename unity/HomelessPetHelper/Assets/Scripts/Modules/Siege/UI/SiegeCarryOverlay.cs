@@ -8,6 +8,16 @@ namespace HomelessPetHelper.Modules.Siege.UI
     public sealed class SiegeCarryOverlay : MaskableGraphic
     {
         [SerializeField] private SceneSpritePalette _spritePalette;
+        private SceneSpritePalette _defaultPalette;
+        private bool _paletteCaptured;
+        public void SetPalette(SceneSpritePalette palette)
+        {
+            if (!_paletteCaptured) { _defaultPalette = _spritePalette; _paletteCaptured = true; }
+            _spritePalette = palette != null ? palette : _defaultPalette;
+            SetMaterialDirty();
+            SetVerticesDirty();
+        }
+
         public override Texture mainTexture => _spritePalette == null ? base.mainTexture : _spritePalette.Texture;
         private SiegeUnitDefinition _definition;
         private SiegeState.Unit _unit;

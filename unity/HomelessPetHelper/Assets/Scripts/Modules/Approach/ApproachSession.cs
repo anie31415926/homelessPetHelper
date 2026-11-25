@@ -90,6 +90,9 @@ namespace HomelessPetHelper.Modules.Approach
         }
 
         public bool HasBox(int cell) => Array.IndexOf(_boxes, cell) >= 0;
+        public bool IsPassable(int cell) => Template.Contains(cell) && !_blocked[cell];
+        public bool IsAnimalRevealed => !Template.ConcealAnimal ||
+            IsReachable(Template.Animal) && DebrisAt(Template.Animal) < 0;
         public bool IsReachable(int cell) => Template.Contains(cell) && _reachable[cell];
         public double RemainingWork(int index) => _remaining[index];
         public int DebrisAt(int cell)
@@ -233,6 +236,7 @@ namespace HomelessPetHelper.Modules.Approach
                 if (col + 1 < Template.Columns) Visit(cell + 1, ref write);
                 Visit(cell - Template.Columns, ref write);
                 Visit(cell + Template.Columns, ref write);
+                Visit(Template.PassageDestination(cell), ref write);
             }
             IsComplete = _reachable[Template.Animal];
             foreach (int cell in Template.RequiredClearCells)

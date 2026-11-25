@@ -17,7 +17,7 @@ namespace HomelessPetHelper.Tests.EditMode
             var content = AssetDatabase.LoadAssetAtPath<GameContent>(ContentPath);
             Assert.DoesNotThrow(content.Validate);
             var points = content.CreateMapConfig().Definition.Points;
-            Assert.That(points.Count, Is.EqualTo(6));
+            Assert.That(points.Count, Is.EqualTo(7));
             Sprite[] pictures = points.Select(point => content.GetOutingBackground(point.PointId)).ToArray();
             Assert.That(pictures.Distinct().Count(), Is.EqualTo(points.Count));
             string[] dependencies = AssetDatabase.GetDependencies("Assets/Scenes/Main.unity", true);
@@ -25,7 +25,8 @@ namespace HomelessPetHelper.Tests.EditMode
             {
                 string path = AssetDatabase.GetAssetPath(picture);
                 Assert.That(dependencies, Does.Contain(path));
-                Assert.That(picture.rect.size, Is.EqualTo(new Vector2(768, 1024)));
+                Assert.That(picture.rect.size, Is.EqualTo(picture == content.GetOutingBackground("treehouse")
+                    ? new Vector2(569, 1024) : new Vector2(768, 1024)));
                 var importer = (TextureImporter)AssetImporter.GetAtPath(path);
                 Assert.That(importer.isReadable || importer.mipmapEnabled, Is.False);
             }

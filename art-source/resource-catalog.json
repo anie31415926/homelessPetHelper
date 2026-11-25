@@ -6631,6 +6631,509 @@
         "rights": "pending",
         "target": "pending"
       }
+    },
+    {
+      "id": "treehouse-field.room",
+      "name": "精灵树屋空场景",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "树屋场地美术候选，未开放地图点或导入 Main",
+      "use": "640×1152 竖屏清理与战斗共用空场底图",
+      "plannedBytes": 153600,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/treehouse-field-20261125/room/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/room/master.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/treehouse-field-20261125/room/treehouse-room-reference.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/treehouse-field-20261125/room/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/room/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/room/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1；Pillow / SciPy 离线派生",
+        "record": "art-source/treehouse-field-20261125/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "treehouse-field.props",
+      "name": "树屋清理物母图",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "树屋场地美术候选，未开放地图点或导入 Main",
+      "use": "768×768 生成母图；母图不导入 Unity",
+      "plannedBytes": 153600,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/treehouse-field-20261125/props/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/props/master.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/treehouse-field-20261125/props/treehouse-props-reference.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/treehouse-field-20261125/props/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/props/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/props/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1；Pillow / SciPy 离线派生",
+        "record": "art-source/treehouse-field-20261125/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "treehouse-field.units",
+      "name": "树屋战斗单位初绘",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "树屋场地美术候选，未开放地图点或导入 Main",
+      "use": "768×768 生成母图；母图不导入 Unity",
+      "plannedBytes": 153600,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/treehouse-field-20261125/units/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/units/master.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/treehouse-field-20261125/units/treehouse-units-reference.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/treehouse-field-20261125/units/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/units/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/units/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1；Pillow / SciPy 离线派生",
+        "record": "art-source/treehouse-field-20261125/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "treehouse-field.units-clean",
+      "name": "树屋战斗单位去底板重绘",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "树屋场地美术候选，未开放地图点或导入 Main",
+      "use": "768×768 生成母图；母图不导入 Unity",
+      "plannedBytes": 153600,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/treehouse-field-20261125/units-clean/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/units-clean/master.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/treehouse-field-20261125/units-clean/treehouse-units-clean-reference.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/treehouse-field-20261125/units-clean/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/units-clean/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/units-clean/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1；Pillow / SciPy 离线派生",
+        "record": "art-source/treehouse-field-20261125/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "treehouse-field.support",
+      "name": "树屋支援单位与机关",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "树屋场地美术候选，未开放地图点或导入 Main",
+      "use": "768×768 生成母图；母图不导入 Unity",
+      "plannedBytes": 153600,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/treehouse-field-20261125/support/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/support/master.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/treehouse-field-20261125/support/treehouse-support-reference.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/treehouse-field-20261125/support/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/support/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/support/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1；Pillow / SciPy 离线派生",
+        "record": "art-source/treehouse-field-20261125/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "treehouse-field.mechanisms",
+      "name": "树屋合体造型与机关",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "树屋场地美术候选，未开放地图点或导入 Main",
+      "use": "768×768 生成母图；母图不导入 Unity",
+      "plannedBytes": 153600,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/treehouse-field-20261125/mechanisms/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/mechanisms/master.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/treehouse-field-20261125/mechanisms/treehouse-mechanisms-reference.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/treehouse-field-20261125/mechanisms/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/mechanisms/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/mechanisms/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1；Pillow / SciPy 离线派生",
+        "record": "art-source/treehouse-field-20261125/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "treehouse-field.atlas",
+      "name": "树屋清障及战斗透明图集",
+      "module": "Rescue",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "精灵树屋首测，主场景静态依赖",
+      "use": "1024×512 单页；复用已有木箱、狗用单位和爪印，补齐树屋贴图并共用一次网格批绘",
+      "plannedBytes": 327680,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_TreehouseProps.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/treehouse-atlas.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/derivation.json"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/props/books.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/props/stool.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/props/blanket-basket.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/props/scrolls.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/units-clean/fish.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/units-clean/yarn.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/units-clean/feather.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/units-clean/heavy-cart.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/support/clip.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/support/scarf.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/support/tower-paper.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/support/tower-thread.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/mechanisms/tower-scratch.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/mechanisms/yarn-lion.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/mechanisms/fish-bundle.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/mechanisms/feather-wheel.png"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1；Pillow / SciPy 离线派生",
+        "record": "art-source/treehouse-field-20261125/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "treehouse-field.preview",
+      "name": "树屋关卡分阶段构图预览",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "树屋场地美术候选，未开放地图点或导入 Main",
+      "use": "384 像素宽的清理与战斗并排比例对照",
+      "plannedBytes": 153600,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/treehouse-field-20261125/field-preview.jpg"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1；Pillow / SciPy 离线派生",
+        "record": "art-source/treehouse-field-20261125/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "treehouse-field.room-stairs",
+      "name": "精灵树屋楼梯版内景",
+      "module": "Rescue",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "精灵树屋首测，主场景静态依赖",
+      "use": "树屋清理与战斗共用静态底图",
+      "plannedBytes": 245760,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_Treehouse.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/room-stairs/candidate.jpg"
+        },
+        {
+          "role": "master",
+          "path": "art-source/treehouse-field-20261125/room-stairs/master.png"
+        },
+        {
+          "role": "reference",
+          "path": "art-source/treehouse-field-20261125/room-stairs/treehouse-room-stairs-reference.png"
+        },
+        {
+          "role": "workflow",
+          "path": "art-source/treehouse-field-20261125/room-stairs/workflow.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/room-stairs/submission.json"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/room-stairs/history.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1；Pillow 静态构图",
+        "record": "art-source/treehouse-field-20261125/README.md",
+        "notes": "2026-11-25 用户认可楼梯版视觉；作为树屋关卡样板。以临时试玩图导入；来源和目标端审核待完成。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "treehouse-field.room-stairs-railing",
+      "name": "精灵树屋二楼前景木栏杆",
+      "module": "Rescue",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "树屋首测；Main 内容静态引用，和树屋底图同时使用",
+      "use": "树屋清理与战斗共用的上层木栏杆透明遮挡，使用底图归一化坐标",
+      "plannedBytes": 65536,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Outing/T_Outing_TreehouseRailing.png"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/room-stairs/foreground-cut.json"
+        }
+      ],
+      "generation": {
+        "tool": "Pillow 原图多边形裁切",
+        "record": "art-source/treehouse-field-20261125/room-stairs/foreground-cut.json",
+        "notes": "由 treehouse-field.room-stairs 的原画派生，无重新生图；保留材质 RGB，以透明度保留栏杆孔隙。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
+      "id": "treehouse-field.room-stairs-preview",
+      "name": "精灵树屋楼梯版清理与战斗预览",
+      "module": "Rescue",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "有楼梯的树屋美术候选，未导入 Unity",
+      "use": "以同一底图对照只在底层摆放的可清物和单位。",
+      "plannedBytes": 204800,
+      "files": [
+        {
+          "role": "candidate",
+          "path": "art-source/treehouse-field-20261125/room-stairs/field-preview.jpg",
+          "reviewedSha256": "6b33dfff262f1dbdd7fee4f2d89d99766368d788180d51e880a73e1bad6f1538"
+        },
+        {
+          "role": "generation-record",
+          "path": "art-source/treehouse-field-20261125/room-stairs/preview-layout.json"
+        }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1；Pillow 静态构图",
+        "record": "art-source/treehouse-field-20261125/README.md",
+        "notes": "2026-11-25 用户认可楼梯版视觉；作为树屋关卡样板。仍是预览，来源和目标端审核待完成。"
+      },
+      "review": {
+        "visual": "accepted",
+        "rights": "pending",
+        "target": "pending"
+      }
     }
   ]
 }

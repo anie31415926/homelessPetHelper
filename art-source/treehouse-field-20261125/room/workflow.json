@@ -1,0 +1,117 @@
+{
+  "source": "游戏界面地图图标设计 (30).png",
+  "localReference": "treehouse-room-reference.png",
+  "size": [
+    640,
+    1152
+  ],
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "treehouse-room-reference.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Make a NEW original cozy fantasy elf treehouse interior for a portrait mobile game. The attached room provides only the warm woodland watercolor palette, round window and living timber architecture. Completely redesign the composition as a playable game board: elevated three-quarter dollhouse camera tilted down 55 degrees, looking from the open near threshold toward the rear wall. One structurally plausible room inside a giant tree trunk. Visible wood walls and load-bearing curves at the top and sides only. Round clear window in the rear upper quarter, with soft daylight, and small built-in empty shelving flush in the rear wall. Small green vines and creamy flowers on rear window trim, small peripheral accents. The bottom 72 percent of this portrait picture is one wide uninterrupted flat wooden plank floor, highly visible from above, with uniform subdued honey-cream color, low-contrast seams, minimal shadows, and ample usable width from top to bottom. The vast empty floor can accommodate THREE parallel paths side by side, each freely usable from the near threshold to the rear at the same elevation. The lower edge is a broad, unobstructed entrance across the room. Keep the width of the painted floor at least 85 percent of canvas except at the very top, no pinched foreground. No props or staging on the floor: no carpet, seating, shelves, table, stool, chest, books, plants, stairs, ladder or trees on the floor. No figures, no HUD, no drawn lanes. Soft hand-painted watercolor game art, matte gouache edge details, simple chunky timber shapes. Low contrast foreground so colored toy units can stand out. Clean original illustration without any writing, signature, logo, symbols or watermark.",
+        "negative_prompt": "watermark, signature, caption, lettering, logo, UI, noisy details, photorealism, heavy black line, glossy plastic, staircase, ladder, chairs, table, rug, props on playable floor, ground at different heights",
+        "resolution": 0,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112501,
+        "steps": 30,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "treehouse-field/room"
+      }
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "source": "游戏界面地图图标设计 (30).png",
+  "localReference": "treehouse-props-reference.png",
+  "size": [
+    768,
+    768
+  ],
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "treehouse-props-reference.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Draw a fresh matching game sprite sheet of four distinct indoor treehouse cleanup obstacles, on perfectly solid pure white (#ffffff), no cast shadows, no contact shadow. Exactly four separated objects, one per quadrant, with wide plain white gutters and no panel divisions. Slightly elevated three-quarter view, consistent 55-degree downward view, fronts facing the viewer. TOP LEFT: a short leaning stack of three closed muted sage and peach hardback books, pale page edges. TOP RIGHT: a tipped-over low arched wooden milking stool, warm honey brown, simple solid silhouette. BOTTOM LEFT: a shallow oval wicker basket filled and fully covered by a draped muted pale blue blanket, with enough volume to conceal a small kitten, no animal visible. BOTTOM RIGHT: a compact pile of two pale rolled scrolls with a dropped tan fabric pouch and crumpled paper. Match cozy warm hand-painted woodland watercolor from reference, simplify shapes, keep low contrast and medium saturation so active units are easier to see. All silhouettes complete and fully inside cells. No floor, border, text, animal, watermark, labels or signature.",
+        "negative_prompt": "watermark, signature, caption, lettering, logo, UI, noisy details, photorealism, heavy black line, glossy plastic, ground texture, colored background, cropped cutout, shadows",
+        "resolution": 0,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112502,
+        "steps": 26,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "treehouse-field/props"
+      }
+    }
+  }
+}

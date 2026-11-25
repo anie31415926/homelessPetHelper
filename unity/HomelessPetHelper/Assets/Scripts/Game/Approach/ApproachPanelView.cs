@@ -29,6 +29,11 @@ namespace HomelessPetHelper.Game.Approach
 
         [SerializeField] private ApproachBoardView _board, _sceneBoard;
         [SerializeField] private FieldPanelPlacement _sceneChrome;
+        [SerializeField] private UiLayoutMetrics _layoutMetrics;
+        [SerializeField] private RectTransform _actionDock;
+        [SerializeField] private Slider _cleanupProgress;
+        private int _dockStamp = -1;
+        private float _dockWidth = -1;
         [SerializeField] private GameObject _sceneMenu;
         [SerializeField] private UiText _sceneMenuText, _sceneNotice;
         [SerializeField] private Button _sceneResume, _sceneReturn;
@@ -54,6 +59,8 @@ namespace HomelessPetHelper.Game.Approach
         private bool _paused, _backgrounded, _hasFocus = true, _dog;
         private string _feedbackKey;
         private float _noticeUntil;
+        public string FieldInstruction => _text.Get((SceneMode && _scene.Layout.IllustratedInterior
+            ? "treehouse.instruction." : "field.instruction.") + _session.Template.Mode);
         public ApproachSession Session => _session;
         public event Action CheckpointRequested;
         public ApproachBoardView Board => SceneMode ? _sceneBoard : _board;
@@ -109,12 +116,20 @@ namespace HomelessPetHelper.Game.Approach
             if (_guide != null && _guide.ReportSucceeded(action)) Board.CancelContact();
         }
 
-        public void ConfigureField(OutingFieldLayout layout, Sprite background, bool dog, ApproachSession opening)
+        public void ConfigureField(OutingFieldLayout layout, Sprite background, bool dog, ApproachSession opening,
+            SceneSpritePalette props = null, OutingArtwork artwork = null)
         {
             if (gameObject.activeInHierarchy) throw new InvalidOperationException("Configure a closed approach view.");
-            _scene.Configure(layout, background, dog, opening);
+            _scene.Configure(layout, background, dog, opening, props: props, artwork: artwork);
             _board.gameObject.SetActive(layout == null);
             _sceneChrome.Apply(layout != null);
+            _dockStamp = -1;
+            if (_cleanupProgress != null) _cleanupProgress.gameObject.SetActive(false);
+            if (layout == null && _actionDock != null)
+            {
+                _actionDock.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 336);
+                _actionDock.anchoredPosition = new Vector2(0, 216);
+            }
         }
 
         public void Bind(ApproachSession session, TextAsset text, bool dog, Action completed,
@@ -136,7 +151,8 @@ namespace HomelessPetHelper.Game.Approach
             _paused = _backgrounded = false;
             _hasFocus = true;
             _renderedVersion = -1;
-            _feedbackKey = "ready";
+            _feedbackKey = SceneMode && _scene.Layout.IllustratedInterior && !session.IsAnimalRevealed &&
+                session.Template.Mode == ApproachMode.Cleanup ? "treehouse.clue" : "ready";
             _noticeUntil = 0;
         }
 
@@ -214,7 +230,7 @@ namespace HomelessPetHelper.Game.Approach
         private void Update()
         {
             if (_session == null) return;
-            if (SceneMode) ShowNotice();
+            if (SceneMode) { ShowNotice(); RefreshSceneDock(); }
             if (_session.IsSuspended) Board.CancelContact();
             AdvanceContact(Math.Min(Time.deltaTime, _session.MaxStepSeconds));
             if (_session.Version != _renderedVersion) Render();
@@ -362,6 +378,8 @@ namespace HomelessPetHelper.Game.Approach
             _feedbackKey = key;
             if (_text == null) return;
             string visibleKey = _session.IsSuspended ? "paused" : _session.IsComplete ? "opened" : key;
+            if (SceneMode && _scene.Layout.IllustratedInterior && visibleKey == "opened")
+                visibleKey = _session.Template.Mode == ApproachMode.Cleanup ? "treehouse.found" : "opened";
             string caption = _text.Get(visibleKey);
             if (_feedback.text != caption) _feedback.text = caption;
             if (SceneMode && _sceneNotice.text != caption)
@@ -377,7 +395,8 @@ namespace HomelessPetHelper.Game.Approach
             if (_session == null || _text == null) return;
             _renderedVersion = _session.Version;
             bool puzzle = _session.Template.Mode == ApproachMode.Puzzle, enabled = CanAct;
-            _title.text = _text.Get("title." + _session.Template.Mode);
+            _title.text = _text.Get(SceneMode && _scene.Layout.IllustratedInterior && puzzle
+                ? "treehouse.title.Puzzle" : "title." + _session.Template.Mode);
             _instruction.text = _text.Get("instruction." + _session.Template.Mode);
             _seed.text = _text.Get("phase");
             _summary.text = _text.Get("summary", _text.Get(_dog ? "animal.dog" : "animal.cat"),
@@ -408,9 +427,13 @@ namespace HomelessPetHelper.Game.Approach
             _scene.Refresh(_session);
             _move.gameObject.SetActive(false);
             _bridge.gameObject.SetActive(false);
-            foreach (var tool in new[] { _litter, _weeds, _mud })
-                tool.gameObject.SetActive(_session.Template.Mode == ApproachMode.Cleanup &&
-                    !_session.IsComplete && !_session.IsSuspended);
+            bool cleanup = _session.Template.Mode == ApproachMode.Cleanup && !_session.IsSuspended &&
+                (!_session.IsComplete || _scene.Layout.AllowsOptionalCleanup);
+            bool indoor = _scene.Layout.IllustratedInterior;
+            _litter.gameObject.SetActive(cleanup);
+            _weeds.gameObject.SetActive(cleanup && !indoor);
+            _mud.gameObject.SetActive(cleanup && !indoor);
+            if (cleanup && indoor) _litter.Show(_text.Get("treehouse.tool"), false);
             _continue.gameObject.SetActive(_session.IsComplete && !_session.IsSuspended);
             _return.gameObject.SetActive(false);
             if (_overlay == null) Label(_pause, "field.menu", !_session.IsClosed);
@@ -419,14 +442,58 @@ namespace HomelessPetHelper.Game.Approach
                 _pause.Show(_overlay.PauseCaption, !_session.IsClosed);
                 _objectives.GetComponentInChildren<UiText>().text = _overlay.ObjectivesCaption;
             }
-            _sceneMenuText.text = _title.text + "\n\n" + _text.Get("field.instruction." + _session.Template.Mode) +
+            _sceneMenuText.text = _title.text + "\n\n" + FieldInstruction +
                 "\n\n" + _summary.text;
             _sceneResume.GetComponentInChildren<UiText>().text = _text.Get("resume");
             _sceneReturn.GetComponentInChildren<UiText>().text = _text.Get("return");
             _sceneResume.interactable = _sceneReturn.interactable = !_backgrounded && _hasFocus;
-            _instruction.text = _text.Get("field.instruction." + _session.Template.Mode);
+            _instruction.text = FieldInstruction;
             _seed.text = string.Empty;
+            RefreshCleanupProgress();
+            RefreshSceneDock();
             ShowNotice();
+        }
+
+        private void RefreshCleanupProgress()
+        {
+            if (_cleanupProgress == null) return;
+            bool visible = _session.Template.Mode == ApproachMode.Cleanup && !_session.IsSuspended;
+            _cleanupProgress.gameObject.SetActive(visible);
+            if (!visible) return;
+            double total = 0, remaining = 0;
+            for (int i = 0; i < _session.Template.Debris.Count; i++)
+            {
+                total += _session.Template.Debris[i].WorkSeconds;
+                remaining += _session.RemainingWork(i);
+            }
+            _cleanupProgress.SetValueWithoutNotify(total > 0 ? (float)(1 - remaining / total) : 1);
+        }
+
+        private void RefreshSceneDock()
+        {
+            if (_actionDock == null || _layoutMetrics == null) return;
+            int stamp = 0;
+            for (int i = 0; i < _actionDock.childCount; i++)
+                if (_actionDock.GetChild(i).gameObject.activeSelf) stamp |= 1 << i;
+            if (_cleanupProgress != null && _cleanupProgress.gameObject.activeSelf) stamp |= 1 << 16;
+            if (stamp == _dockStamp && Mathf.Approximately(_dockWidth, _actionDock.rect.width)) return;
+            _dockStamp = stamp; _dockWidth = _actionDock.rect.width;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(_actionDock);
+            float height = LayoutUtility.GetPreferredHeight(_actionDock);
+            _actionDock.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            _actionDock.anchoredPosition = new Vector2(0, _layoutMetrics.margin + height / 2);
+            float top = _layoutMetrics.margin + height + _layoutMetrics.gap;
+            if (_cleanupProgress != null)
+            {
+                var bar = (RectTransform)_cleanupProgress.transform;
+                bar.anchoredPosition = new Vector2(0, top + bar.rect.height / 2);
+                if (_cleanupProgress.gameObject.activeSelf) top += bar.rect.height + _layoutMetrics.innerGap;
+            }
+            var notice = _sceneNotice.rectTransform;
+            notice.anchorMin = new Vector2(.12f, 0);
+            notice.anchorMax = new Vector2(.88f, 0);
+            notice.sizeDelta = new Vector2(0, _layoutMetrics.captionHeight);
+            notice.anchoredPosition = new Vector2(0, top + notice.rect.height / 2);
         }
 
         private void ShowNotice() => _sceneNotice.gameObject.SetActive(SceneMode && _session != null &&

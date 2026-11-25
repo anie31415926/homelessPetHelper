@@ -11,11 +11,13 @@ namespace HomelessPetHelper.Game.Field
         public IReadOnlyList<int> Boxes { get; }
         public IReadOnlyList<double> Remaining { get; }
         public int Bridge { get; }
+        public bool AnimalRevealed { get; }
 
         public FieldSceneSnapshot(ApproachSession session)
         {
             if (session == null || session.IsClosed) throw new ArgumentException("Closed field session.");
             Template = session.Template;
+            AnimalRevealed = session.IsAnimalRevealed;
             var boxes = new List<int>();
             for (int cell = 0; cell < Template.CellCount; cell++)
                 if (session.HasBox(cell)) boxes.Add(cell);

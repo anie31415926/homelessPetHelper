@@ -3,6 +3,7 @@ using HomelessPetHelper.Modules.Animals;
 using HomelessPetHelper.Modules.Animals.UI;
 using HomelessPetHelper.Modules.Approach;
 using HomelessPetHelper.Framework.UI.Motion;
+using HomelessPetHelper.Framework.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +13,7 @@ namespace HomelessPetHelper.Game.Field
     public sealed class OutingFieldView : MonoBehaviour
     {
         [SerializeField] private RectTransform _frame, _grid;
-        [SerializeField] private Image _background, _animal;
+        [SerializeField] private Image _background, _animal, _foreground;
         [SerializeField] private AnimalCoatView _coat;
         [SerializeField] private FieldPetMotion _petMotion;
         public void ShowAnimal(AnimalSnapshot snapshot)
@@ -33,7 +34,7 @@ namespace HomelessPetHelper.Game.Field
         { if (_motion != null) _motion.SetScenePaused(paused); }
 
         public void Configure(OutingFieldLayout layout, Sprite background, bool dog, ApproachSession opening,
-            FieldSceneSnapshot snapshot = null)
+            FieldSceneSnapshot snapshot = null, SceneSpritePalette props = null, OutingArtwork artwork = null)
         {
             Layout = layout;
             SetPresentationPaused(false);
@@ -47,6 +48,7 @@ namespace HomelessPetHelper.Game.Field
             _background.GetComponent<AspectRatioFitter>().aspectRatio =
                 background.rect.width / background.rect.height;
             ConfigureFrame(layout);
+            ConfigureForeground(layout.IllustratedInterior ? artwork : null);
             _animal.sprite = dog ? _dog : _cat;
             _animal.preserveAspect = true;
             var grid = layout.Grid;
@@ -60,16 +62,57 @@ namespace HomelessPetHelper.Game.Field
             _animal.rectTransform.anchorMax = new Vector2((point.x + animalWidth / 2) / layout.Width,
                 1 - (point.y - animalWidth) / layout.Height);
             _animal.rectTransform.pivot = new Vector2(.5f, .15f);
+            _animal.rectTransform.localRotation = Quaternion.identity;
+            _animal.rectTransform.localScale = Vector3.one;
             _animal.rectTransform.anchoredPosition = Vector2.zero;
             _animal.rectTransform.offsetMin = _animal.rectTransform.offsetMax = Vector2.zero;
-            _terrain.Configure(layout);
+            _terrain.Configure(layout, props);
             if (snapshot != null) Show(snapshot);
             else if (opening != null) Refresh(opening);
+        }
+
+        private void ConfigureForeground(OutingArtwork artwork)
+        {
+            if (_foreground == null) return;
+            _foreground.sprite = artwork?.Foreground;
+            _foreground.enabled = _foreground.sprite != null;
+            if (!_foreground.enabled) return;
+            var rect = _foreground.rectTransform;
+            rect.anchorMin = artwork.ForegroundBounds.min;
+            rect.anchorMax = artwork.ForegroundBounds.max;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+        }
+
+        private readonly Vector3[] _backgroundCorners = new Vector3[4];
+
+        private void OnEnable() => AlignIllustratedFrame();
+
+        private void LateUpdate() => AlignIllustratedFrame();
+
+        private void AlignIllustratedFrame()
+        {
+            if (Layout?.IllustratedInterior != true) return;
+            // The cover image can crop differently than the safe area used by the controls.
+            // Project the baked room and the playable floor through the same rectangle.
+            var parent = (RectTransform)_frame.parent;
+            _background.rectTransform.GetWorldCorners(_backgroundCorners);
+            var min = (Vector2)parent.InverseTransformPoint(_backgroundCorners[0]) - parent.rect.min;
+            var max = (Vector2)parent.InverseTransformPoint(_backgroundCorners[2]) - parent.rect.max;
+            if ((_frame.offsetMin - min).sqrMagnitude > .01f) _frame.offsetMin = min;
+            if ((_frame.offsetMax - max).sqrMagnitude > .01f) _frame.offsetMax = max;
         }
 
         private void ConfigureFrame(OutingFieldLayout layout)
         {
             var fitter = _frame.GetComponent<AspectRatioFitter>();
+            if (layout.IllustratedInterior)
+            {
+                fitter.enabled = false;
+                _frame.anchorMin = Vector2.zero;
+                _frame.anchorMax = Vector2.one;
+                AlignIllustratedFrame();
+                return;
+            }
             fitter.enabled = !_fitPlayableArea;
             if (!_fitPlayableArea) { fitter.aspectRatio = layout.Width / layout.Height; return; }
             // Presentation uses the playable bounds, while model coordinates and travel times stay intact.
@@ -91,6 +134,8 @@ namespace HomelessPetHelper.Game.Field
         private void Show(FieldSceneSnapshot snapshot)
         {
             Snapshot = snapshot;
+            if (_petMotion != null) _petMotion.SetVisible(snapshot.AnimalRevealed);
+            else _animal.enabled = snapshot.AnimalRevealed;
             _terrain.Show(snapshot);
         }
     }

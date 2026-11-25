@@ -1,0 +1,620 @@
+{
+  "cutouts": [
+    {
+      "id": "books",
+      "source": "props/master.png",
+      "sha256": "fe980b760a040b8d283ecb6df1e0e256547b293058a9f04877e0282d94ffe264",
+      "cellLTRB": [
+        0,
+        0,
+        384,
+        384
+      ],
+      "alphaBoundsLTRB": [
+        86,
+        91,
+        332,
+        317
+      ],
+      "output": "props/books.png",
+      "size": [
+        124,
+        115
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "stool",
+      "source": "props/master.png",
+      "sha256": "fe980b760a040b8d283ecb6df1e0e256547b293058a9f04877e0282d94ffe264",
+      "cellLTRB": [
+        384,
+        0,
+        768,
+        384
+      ],
+      "alphaBoundsLTRB": [
+        69,
+        82,
+        296,
+        327
+      ],
+      "output": "props/stool.png",
+      "size": [
+        115,
+        124
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "blanket-basket",
+      "source": "props/master.png",
+      "sha256": "fe980b760a040b8d283ecb6df1e0e256547b293058a9f04877e0282d94ffe264",
+      "cellLTRB": [
+        0,
+        384,
+        384,
+        768
+      ],
+      "alphaBoundsLTRB": [
+        53,
+        58,
+        357,
+        265
+      ],
+      "output": "props/blanket-basket.png",
+      "size": [
+        124,
+        87
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "scrolls",
+      "source": "props/master.png",
+      "sha256": "fe980b760a040b8d283ecb6df1e0e256547b293058a9f04877e0282d94ffe264",
+      "cellLTRB": [
+        384,
+        384,
+        768,
+        768
+      ],
+      "alphaBoundsLTRB": [
+        54,
+        81,
+        322,
+        286
+      ],
+      "output": "props/scrolls.png",
+      "size": [
+        124,
+        97
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "fish",
+      "source": "units-clean/master.png",
+      "sha256": "b340814d1b569f653a288353089a9523143ae911b3257244c3818315a4c07402",
+      "cellLTRB": [
+        0,
+        0,
+        384,
+        384
+      ],
+      "alphaBoundsLTRB": [
+        60,
+        100,
+        334,
+        268
+      ],
+      "output": "units-clean/fish.png",
+      "size": [
+        124,
+        79
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "yarn",
+      "source": "units-clean/master.png",
+      "sha256": "b340814d1b569f653a288353089a9523143ae911b3257244c3818315a4c07402",
+      "cellLTRB": [
+        384,
+        0,
+        768,
+        384
+      ],
+      "alphaBoundsLTRB": [
+        65,
+        76,
+        326,
+        298
+      ],
+      "output": "units-clean/yarn.png",
+      "size": [
+        124,
+        107
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "feather",
+      "source": "units-clean/master.png",
+      "sha256": "b340814d1b569f653a288353089a9523143ae911b3257244c3818315a4c07402",
+      "cellLTRB": [
+        0,
+        384,
+        384,
+        768
+      ],
+      "alphaBoundsLTRB": [
+        74,
+        29,
+        337,
+        253
+      ],
+      "output": "units-clean/feather.png",
+      "size": [
+        124,
+        107
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "heavy-cart",
+      "source": "units-clean/master.png",
+      "sha256": "b340814d1b569f653a288353089a9523143ae911b3257244c3818315a4c07402",
+      "cellLTRB": [
+        384,
+        384,
+        768,
+        768
+      ],
+      "alphaBoundsLTRB": [
+        15,
+        23,
+        354,
+        282
+      ],
+      "output": "units-clean/heavy-cart.png",
+      "size": [
+        124,
+        97
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "clip",
+      "source": "support/master.png",
+      "sha256": "0baa3425d8078e768b12bccf3aa3be7258b96cd246771c6243c80bada04e1d04",
+      "cellLTRB": [
+        0,
+        0,
+        384,
+        357
+      ],
+      "alphaBoundsLTRB": [
+        92,
+        60,
+        296,
+        295
+      ],
+      "output": "support/clip.png",
+      "size": [
+        109,
+        124
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "scarf",
+      "source": "support/master.png",
+      "sha256": "0baa3425d8078e768b12bccf3aa3be7258b96cd246771c6243c80bada04e1d04",
+      "cellLTRB": [
+        384,
+        0,
+        768,
+        357
+      ],
+      "alphaBoundsLTRB": [
+        17,
+        55,
+        321,
+        342
+      ],
+      "output": "support/scarf.png",
+      "size": [
+        124,
+        118
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "tower-paper",
+      "source": "support/master.png",
+      "sha256": "0baa3425d8078e768b12bccf3aa3be7258b96cd246771c6243c80bada04e1d04",
+      "cellLTRB": [
+        0,
+        357,
+        384,
+        768
+      ],
+      "alphaBoundsLTRB": [
+        44,
+        19,
+        332,
+        349
+      ],
+      "output": "support/tower-paper.png",
+      "size": [
+        109,
+        124
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "tower-thread",
+      "source": "support/master.png",
+      "sha256": "0baa3425d8078e768b12bccf3aa3be7258b96cd246771c6243c80bada04e1d04",
+      "cellLTRB": [
+        384,
+        357,
+        768,
+        768
+      ],
+      "alphaBoundsLTRB": [
+        31,
+        64,
+        340,
+        344
+      ],
+      "output": "support/tower-thread.png",
+      "size": [
+        124,
+        113
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "tower-scratch",
+      "source": "mechanisms/master.png",
+      "sha256": "5aa4fde2b89a612bcfbf0ee638adfe8cad75e695b5e204c1ac23003daf6bdff1",
+      "cellLTRB": [
+        0,
+        0,
+        414,
+        384
+      ],
+      "alphaBoundsLTRB": [
+        25,
+        69,
+        389,
+        348
+      ],
+      "output": "mechanisms/tower-scratch.png",
+      "size": [
+        124,
+        97
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "yarn-lion",
+      "source": "mechanisms/master.png",
+      "sha256": "5aa4fde2b89a612bcfbf0ee638adfe8cad75e695b5e204c1ac23003daf6bdff1",
+      "cellLTRB": [
+        414,
+        0,
+        768,
+        384
+      ],
+      "alphaBoundsLTRB": [
+        28,
+        75,
+        284,
+        320
+      ],
+      "output": "mechanisms/yarn-lion.png",
+      "size": [
+        124,
+        119
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "fish-bundle",
+      "source": "mechanisms/master.png",
+      "sha256": "5aa4fde2b89a612bcfbf0ee638adfe8cad75e695b5e204c1ac23003daf6bdff1",
+      "cellLTRB": [
+        0,
+        384,
+        384,
+        768
+      ],
+      "alphaBoundsLTRB": [
+        49,
+        55,
+        351,
+        235
+      ],
+      "output": "mechanisms/fish-bundle.png",
+      "size": [
+        124,
+        77
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "id": "feather-wheel",
+      "source": "mechanisms/master.png",
+      "sha256": "5aa4fde2b89a612bcfbf0ee638adfe8cad75e695b5e204c1ac23003daf6bdff1",
+      "cellLTRB": [
+        384,
+        384,
+        768,
+        768
+      ],
+      "alphaBoundsLTRB": [
+        62,
+        17,
+        299,
+        260
+      ],
+      "output": "mechanisms/feather-wheel.png",
+      "size": [
+        121,
+        124
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    }
+  ],
+  "atlasRectsXYWHBottomLeft": {
+    "books": [
+      2,
+      391,
+      124,
+      115
+    ],
+    "stool": [
+      134,
+      386,
+      115,
+      124
+    ],
+    "blanket-basket": [
+      258,
+      405,
+      124,
+      87
+    ],
+    "scrolls": [
+      386,
+      400,
+      124,
+      97
+    ],
+    "fish": [
+      2,
+      281,
+      124,
+      79
+    ],
+    "yarn": [
+      130,
+      267,
+      124,
+      107
+    ],
+    "feather": [
+      258,
+      267,
+      124,
+      107
+    ],
+    "heavy-cart": [
+      386,
+      272,
+      124,
+      97
+    ],
+    "clip": [
+      9,
+      130,
+      109,
+      124
+    ],
+    "scarf": [
+      130,
+      133,
+      124,
+      118
+    ],
+    "tower-paper": [
+      265,
+      130,
+      109,
+      124
+    ],
+    "tower-thread": [
+      386,
+      136,
+      124,
+      113
+    ],
+    "tower-scratch": [
+      2,
+      16,
+      124,
+      97
+    ],
+    "yarn-lion": [
+      130,
+      5,
+      124,
+      119
+    ],
+    "fish-bundle": [
+      258,
+      26,
+      124,
+      77
+    ],
+    "feather-wheel": [
+      387,
+      2,
+      121,
+      124
+    ]
+  },
+  "preview": {
+    "cleanup": [
+      [
+        "blanket-basket",
+        322,
+        463,
+        134
+      ],
+      [
+        "books",
+        157,
+        578,
+        77
+      ],
+      [
+        "stool",
+        474,
+        641,
+        86
+      ],
+      [
+        "books",
+        330,
+        722,
+        74
+      ],
+      [
+        "scrolls",
+        215,
+        863,
+        87
+      ],
+      [
+        "scrolls",
+        464,
+        809,
+        78
+      ],
+      [
+        "books",
+        473,
+        520,
+        71
+      ]
+    ],
+    "battle": [
+      [
+        "books",
+        528,
+        778,
+        64
+      ],
+      [
+        "scrolls",
+        97,
+        760,
+        64
+      ],
+      [
+        "fish",
+        155,
+        754,
+        107
+      ],
+      [
+        "yarn",
+        314,
+        815,
+        102
+      ],
+      [
+        "feather",
+        474,
+        863,
+        105
+      ],
+      [
+        "heavy-cart",
+        318,
+        979,
+        148
+      ],
+      [
+        "tower-paper",
+        242,
+        586,
+        111
+      ],
+      [
+        "tower-thread",
+        383,
+        662,
+        109
+      ],
+      [
+        "tower-scratch",
+        500,
+        540,
+        100
+      ]
+    ]
+  }
+}

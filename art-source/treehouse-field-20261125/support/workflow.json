@@ -1,0 +1,117 @@
+{
+  "source": "master.png",
+  "localReference": "treehouse-support-reference.png",
+  "size": [
+    768,
+    768
+  ],
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "treehouse-support-reference.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Create exactly four NEW cute hand-painted chibi mobile game sprites in the same gouache watercolor rendering as the attached style example. All on a pure flat white background, wide white gutters and four quadrants, no ground or shadows. Broad 55-degree downward three-quarter game camera. TOP LEFT: mint wooden spring clip, round chunky jaws holding a small lavender button, punchy green silhouette. TOP RIGHT: rolled coral and cream knitted scarf with a generous broad loop and short fringe, rounded warm support item. BOTTOM LEFT: a stout treehouse defense mechanism, pale warm orange cardboard pop-up box with a rounded upright hinged flap and a blue paper ball, apparent wide anchored base. BOTTOM RIGHT: a stout treehouse defense mechanism, low dark sage wooden thread frame with two rounded upright posts and a plum ball of yarn suspended between them, apparent wide anchored base. Strong distinct clean silhouettes readable on a small phone, no text, letters, dirt, signatures, logo, faces, limbs, platforms, speckles, or extra pieces.",
+        "negative_prompt": "watermark, signature, caption, lettering, logo, UI, noisy details, photorealism, heavy black line, glossy plastic, ground texture, colored background, cropped cutout, floorboards, wooden discs, backing floor, shadows",
+        "resolution": 0,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112504,
+        "steps": 26,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "treehouse-field/support"
+      }
+    }
+  }
+}

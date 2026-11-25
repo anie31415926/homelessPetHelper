@@ -24,7 +24,7 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(AssetDatabase.GetAssetPath(terrain.sprite),
                 Is.EqualTo(ArtFolder + "T_CityMap_Neighborhood.jpg"));
             Assert.That(terrain.sprite.rect.size, Is.EqualTo(new Vector2(673, 1024)));
-            Assert.That(terrain.rectTransform.childCount, Is.EqualTo(8));
+            Assert.That(terrain.rectTransform.childCount, Is.EqualTo(9));
             var landmarks = terrain.transform.Find("Landmarks");
             Assert.That(landmarks, Is.Not.Null);
             Assert.That(landmarks.GetSiblingIndex(), Is.Zero, "Artwork must render below the point labels.");

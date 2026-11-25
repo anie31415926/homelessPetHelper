@@ -1,5 +1,11 @@
 {
   "entries": [
+    { "key": "treehouse.title.Puzzle", "value": "挪箱让路" },
+    { "key": "treehouse.instruction.Puzzle", "value": "拖动木箱，让出楼梯口。点撤回可以重来。" },
+    { "key": "treehouse.instruction.Cleanup", "value": "从门边开始，按住杂物清理，沿楼梯找小猫。" },
+    { "key": "treehouse.clue", "value": "楼上传来小猫的叫声。" },
+    { "key": "treehouse.tool", "value": "清理杂物" },
+    { "key": "treehouse.found", "value": "找到小猫了，可以开始救助。" },
     {
       "key": "title.Puzzle",
       "value": "挪箱搭桥 · 开路"

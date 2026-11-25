@@ -24,15 +24,24 @@
     { "id": "market", "nameKey": "market", "detailKey": "market.detail", "regionId": "nearby",
       "openByDefault": true, "sceneTemplateIds": ["market"] },
     { "id": "riverside", "nameKey": "riverside", "detailKey": "riverside.detail", "regionId": "nearby",
-      "openByDefault": true, "sceneTemplateIds": ["riverside"] }
+      "openByDefault": true, "sceneTemplateIds": ["riverside"] },
+    { "id": "treehouse", "nameKey": "treehouse", "detailKey": "treehouse.detail", "regionId": "nearby",
+      "openByDefault": true, "sceneTemplateIds": ["treehouse"] }
   ],
   "requestTemplates": [
     { "id": "ordinary", "textKey": "parking.rescue", "animalDefinitionId": "cat.shy", "allowedPointIds": ["parking"] },
     { "id": "ordinary-dog", "textKey": "yard.rescue", "animalDefinitionId": "dog", "allowedPointIds": ["yard"] },
+    { "id": "treehouse-kitten", "textKey": "treehouse.rescue", "animalDefinitionId": "cat.shy",
+      "allowedPointIds": ["treehouse"] },
     { "id": "reunion", "textKey": "porch.reunion", "animalDefinitionId": "dog", "allowedPointIds": ["porch"] }
   ],
   "rescueEncounters": [
     { "templateId": "ordinary", "animalDefinitionId": "cat.shy", "encounterId": "cat", "dogArtwork": false,
+      "knownHealthy": true, "dirtiness": 65, "looseFur": 50, "rescueProfile": "calm", "isHungry": true,
+      "acceptsTouch": true, "acceptsWash": true, "acceptsGroom": true, "washMinutes": 20, "groomMinutes": 12,
+      "initialDisposition": { "emotion": 0, "stress": 0, "behavior": 0 },
+      "rescuedDisposition": { "emotion": 2, "stress": 0, "behavior": 9 } },
+    { "templateId": "treehouse-kitten", "animalDefinitionId": "cat.shy", "encounterId": "cat", "dogArtwork": false,
       "knownHealthy": true, "dirtiness": 65, "looseFur": 50, "rescueProfile": "calm", "isHungry": true,
       "acceptsTouch": true, "acceptsWash": true, "acceptsGroom": true, "washMinutes": 20, "groomMinutes": 12,
       "initialDisposition": { "emotion": 0, "stress": 0, "behavior": 0 },
@@ -52,12 +61,14 @@
     "lifetimeMinutes": 120,
     "candidates": [
       { "templateId": "ordinary", "pointId": "parking", "templateVersion": 1 },
-      { "templateId": "ordinary-dog", "pointId": "yard", "templateVersion": 1 }
+      { "templateId": "ordinary-dog", "pointId": "yard", "templateVersion": 1 },
+      { "templateId": "treehouse-kitten", "pointId": "treehouse", "templateVersion": 1 }
     ]
   },
   "initialRequests": [
     { "templateId": "ordinary", "pointId": "parking", "templateVersion": 1 },
     { "templateId": "ordinary-dog", "pointId": "yard", "templateVersion": 1 },
+    { "templateId": "treehouse-kitten", "pointId": "treehouse", "templateVersion": 1 },
     { "templateId": "reunion", "pointId": "porch", "templateVersion": 1, "hasDirectReception": true,
       "reunion": { "ownerId": "owner", "receivingArrangementId": "safe-receiving" } }
   ]

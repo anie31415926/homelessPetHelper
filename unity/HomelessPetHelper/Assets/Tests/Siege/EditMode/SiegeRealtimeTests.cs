@@ -154,7 +154,7 @@ namespace HomelessPetHelper.Tests.Siege.EditMode
                         battle.Catalog.Unit(item.DefinitionId).Cost <= state.Energy);
                     if (card != null)
                     {
-                        var lane = battle.Catalog.Lanes[deployed % 3];
+                        var lane = battle.Catalog.Lanes[deployed % battle.Catalog.Lanes.Count];
                         var point = lane.PointAt(lane.Length * .2);
                         if (!SiegeDeployment.CanDeploy(battle.Catalog, point)) point = lane.PointAt(0);
                         if (battle.TryOrder(new SiegeOrder { SessionId = state.SessionId, Turn = state.Turn,

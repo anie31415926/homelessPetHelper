@@ -1,0 +1,174 @@
+{
+  "prompt": [
+    5,
+    "244c4dba-a763-4e1a-9693-43c477b79ca4",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "treehouse-mechanisms-reference.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "Four NEW chibi toy combat sprites in cozy hand-painted gouache watercolor, same 55-degree downward three-quarter game camera as the style reference. Exactly four distinct objects on solid white, one entirely within each quadrant, wide empty gutters, no cast shadows. TOP LEFT: sturdy short tilted ochre scratching post on a thick flat honey wooden base, a large rounded pink paw cushion at the end. TOP RIGHT: a round warm rose lion-shaped yarn toy, fluffy circular yarn mane and one simple cute cream stitched lion face. BOTTOM LEFT: three stubby orange dried fish toys tied with one muted coral ribbon, a silhouette noticeably wider than a single fish. BOTTOM RIGHT: stout teal feather pinwheel made of three round feather lobes and a small golden central button. Gently rounded chunky shapes, simple clean edges, read at 40 pixels. No clutter, scenery, people, living animals, writings, letters, logos or signatures.",
+          "negative_prompt": "watermark, signature, caption, lettering, logo, UI, noisy details, photorealism, heavy black line, glossy plastic, ground texture, colored background, cropped cutout, floorboards, wooden discs, backing floor, shadows",
+          "resolution": 0,
+          "images.image_1": [
+            "4",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "ModelSamplingAuraFlow",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "shift": 3.1
+        }
+      },
+      "7": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "6",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 2026112505,
+          "steps": 26,
+          "cfg": 4.0,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1.0
+        }
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "7",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "8",
+            0
+          ],
+          "filename_prefix": "treehouse-field/mechanisms"
+        }
+      }
+    },
+    {
+      "client_id": "treehouse-field-20261125",
+      "create_time": 1795590943977
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "mechanisms_00001_.png",
+          "subfolder": "treehouse-field",
+          "type": "output"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "244c4dba-a763-4e1a-9693-43c477b79ca4",
+          "timestamp": 1795590943979
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3",
+            "6"
+          ],
+          "prompt_id": "244c4dba-a763-4e1a-9693-43c477b79ca4",
+          "timestamp": 1795590943982
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "244c4dba-a763-4e1a-9693-43c477b79ca4",
+          "timestamp": 1795590980060
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

@@ -9,7 +9,7 @@ using HomelessPetHelper.Framework.UI.Motion;
 namespace HomelessPetHelper.Modules.Siege.UI
 {
     public sealed class SiegeChoiceCell : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler,
-        ICancelHandler
+        ICancelHandler, IPointerDownHandler, IPointerUpHandler
     {
         [SerializeField]
         private Button _button;
@@ -24,6 +24,11 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private Action<int, Vector2> _dragged, _dropped;
         private int? _pointer;
         private Action _cancelled;
+        private Action<int> _inspect;
+        private int? _pressPointer;
+        private float _pressAt;
+        private bool _compact, _suppressClick;
+        private const float InspectHoldSeconds = .5f;
         [SerializeField] private Color _normal = new Color32(242, 243, 244, 255);
         [SerializeField] private Color _selectedColor = new Color32(173, 225, 207, 255);
         [SerializeField] private UiMotionFeedback _motion;
@@ -42,9 +47,52 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _id = 0;
             CancelDrag();
             _dragged = _dropped = null;
+            _inspect = null; _pressPointer = null; _suppressClick = false;
         }
 
-        private void Select() => _selected?.Invoke(_id);
+        private void Select()
+        {
+            if (!_suppressClick) _selected?.Invoke(_id);
+            _suppressClick = false;
+        }
+
+        public void SetCompact(Action<int> inspect)
+        {
+            _inspect = inspect;
+            if (_compact || inspect == null) return;
+            _compact = true;
+            Place(_art.rectTransform, .055f, .12f, .32f, .88f);
+            Place(_label.rectTransform, .34f, .45f, .96f, .9f);
+            Place((RectTransform)_costIcon.transform, .44f, .11f, .59f, .43f);
+            Place(_cost.rectTransform, .61f, .11f, .94f, .43f);
+            _cost.alignment = TextAnchor.MiddleLeft;
+        }
+
+        private static void Place(RectTransform rect, float left, float bottom, float right, float top)
+        {
+            rect.anchorMin = new Vector2(left, bottom);
+            rect.anchorMax = new Vector2(right, top);
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+        }
+
+        public void OnPointerDown(PointerEventData data)
+        {
+            _suppressClick = false;
+            if (_inspect == null || !_button.IsInteractable() || data.button != PointerEventData.InputButton.Left)
+                return;
+            _pressPointer = data.pointerId;
+            _pressAt = Time.unscaledTime;
+        }
+
+        public void OnPointerUp(PointerEventData data)
+        {
+            if (_pressPointer != data.pointerId) return;
+            _pressPointer = null;
+            if (Time.unscaledTime - _pressAt < InspectHoldSeconds || !_button.IsInteractable()) return;
+            _suppressClick = true;
+            data.eligibleForClick = false;
+            _inspect?.Invoke(_id);
+        }
 
         public void SetArt(string visual)
         {
@@ -57,6 +105,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         { _dragged = dragged; _dropped = dropped; _cancelled = cancelled; }
         public void CancelDrag()
         {
+            _pressPointer = null;
             if (!_pointer.HasValue) return;
             _pointer = null; _cancelled?.Invoke();
         }
@@ -64,6 +113,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             if (_pointer.HasValue || !_button.IsInteractable() || _dragged == null ||
                 data.button != PointerEventData.InputButton.Left) return;
+            _pressPointer = null;
             _pointer = data.pointerId;
             data.eligibleForClick = false;
             _dragged?.Invoke(_id, data.position);
@@ -91,7 +141,12 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (_availability != null)
             {
                 _availability.text = affordable ? planned ?? string.Empty : unavailable;
-                _availability.gameObject.SetActive(!affordable || !string.IsNullOrEmpty(planned));
+                _availability.gameObject.SetActive(!_compact && (!affordable || !string.IsNullOrEmpty(planned)));
+                if (_compact)
+                {
+                    // Keep the price/name readable; mute the shared paper surface.
+                    if (!affordable) _button.image.color = new Color32(207, 201, 185, 255);
+                }
             }
         }
 

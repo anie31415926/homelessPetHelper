@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261125-实时救助手牌与头顶进度-01a1f73e.md",
+  "sessionId": "01a1f73e-aef3-7dc0-bc1a-9f850afd1d31",
+  "phase": "scope-change",
+  "readAt": "2026-11-25T09:46:57.463Z",
+  "writePaths": [
+    "docs/协作任务/20261125-实时救助手牌与头顶进度-01a1f73e.md",
+    "docs/协作执行记录/20261125-实时救助手牌与头顶进度-01a1f73e/",
+    "docs/精灵树屋关卡设计.md",
+    "test-results/forest-edge-screenshots/",
+    "test-results/treehouse-compact-ui/",
+    "test-results/unity/PlayMode-isolated-realtime-compact-dock.log",
+    "test-results/unity/PlayMode-isolated-realtime-compact-dock.xml",
+    "test-results/unity/PlayMode-isolated-realtime-compact-final.log",
+    "test-results/unity/PlayMode-isolated-realtime-compact-final.xml",
+    "test-results/unity/PlayMode-isolated-realtime-compact-verified-ProjectSettings.before-tests.asset",
+    "test-results/unity/PlayMode-isolated-realtime-compact-verified.log",
+    "test-results/unity/PlayMode-isolated-realtime-compact-verified.xml",
+    "test-results/unity/isolated-PlayMode-2f6ffbc74cfe4f508a7a3c215140e326/",
+    "test-results/unity/isolated-PlayMode-30e91c1a1ea14203ac83d5047d03114d/",
+    "test-results/unity/isolated-PlayMode-7bb63d0b7ae94009808519e120a6deda/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_Approach.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_SiegeTrial.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Framework/UI/UiLayoutMetrics.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Approach/ApproachPanelView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeBattlefield.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeChoiceCell.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeFieldView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeHandLayout.cs",
+    "unity/HomelessPetHelper/Assets/Settings/UI/LayoutMetrics.asset",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/ForestEdgeIntegrationTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/RealtimeSiegePlayTests.cs"
+  ],
+  "contextDigest": "19efa5de49075841257589f31dc6413c3ab79bc24b0a41090f8578d9c6c76f9c",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261125-实时救助手牌与头顶进度-01a1f73e.md",
+      "sha256": "27cd308742a125c6c1ea73706ee9205f37dbcbd66359b204b67b518890ec81be"
+    },
+    {
+      "path": "docs/协作任务/20261125-护理真动物与贴图特效-01a20cd2.md",
+      "sha256": "9533fe5d5fae88c7baf16055b1814b9c4b88bc62a4c971bf00ad21be2b4852fb"
+    },
+    {
+      "path": "docs/协作任务/20261125-柴犬中英文站姿对照-01a2076c.md",
+      "sha256": "ed2a6e9c3298a9361e0188f8dbce871ae0fcf7187226a54a1c808fef8dd42134"
+    },
+    {
+      "path": "docs/协作任务/20261125-社区援助金首版-01a1f74d.md",
+      "sha256": "5eb947c95b0d15538448e9a218df66abf945f8baa2fef4a969ca19803e03b8fc"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "18be29799fff69955a919d60116e703d0fabd2d2871f7b35c76ca2ff0e992a03"
+    }
+  ]
+}

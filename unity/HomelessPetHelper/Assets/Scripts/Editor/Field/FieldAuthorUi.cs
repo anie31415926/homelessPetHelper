@@ -77,8 +77,12 @@ namespace HomelessPetHelper.Editor.Field
             grid = Rect("OpeningGrid", frame);
             animal = Surface(Rect("Animal", frame), Color.white);
             animal.preserveAspect = true;
+            var foreground = Surface(Rect("RoomForeground", frame), Color.white);
+            foreground.enabled = false;
+            foreground.raycastTarget = false;
             var scene = owner.AddComponent<OutingFieldView>();
             Bind(scene, "_frame", frame); Bind(scene, "_grid", grid); Bind(scene, "_background", background);
+            Bind(scene, "_foreground", foreground);
             Bind(scene, "_animal", animal); Bind(scene, "_terrain", terrain); Bind(scene, "_sceneRoot",
                 area.gameObject);
             Bind(scene, "_cat", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Outing/T_Outing_CatNatural.png"));

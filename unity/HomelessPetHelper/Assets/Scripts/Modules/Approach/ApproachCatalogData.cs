@@ -19,6 +19,8 @@ namespace HomelessPetHelper.Modules.Approach
             public string[] rows;
             public int entrance;
             public int animal;
+            public int[] passage;
+            public bool concealAnimal;
             public int[] bridgeCells;
             public int[] boxes;
             public Debris[] debris;

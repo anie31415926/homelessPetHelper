@@ -16,6 +16,8 @@ namespace HomelessPetHelper.Game.Field
         [SerializeField] private SceneSpritePalette _spritePalette;
         [SerializeField] private MotionScope _motion;
         public override Texture mainTexture => _spritePalette == null ? base.mainTexture : _spritePalette.Texture;
+        private SceneSpritePalette _defaultPalette;
+        private bool _paletteCaptured;
         private OutingFieldLayout _layout;
         private FieldSceneSnapshot _snapshot;
         private struct Effect
@@ -38,8 +40,11 @@ namespace HomelessPetHelper.Game.Field
             _lastTime = -1;
         }
 
-        public void Configure(OutingFieldLayout layout)
+        public void Configure(OutingFieldLayout layout, SceneSpritePalette props = null)
         {
+            if (!_paletteCaptured) { _defaultPalette = _spritePalette; _paletteCaptured = true; }
+            _spritePalette = props != null ? props : _defaultPalette;
+            SetMaterialDirty();
             _layout = layout;
             _snapshot = null;
             System.Array.Clear(_effects, 0, _effects.Length);
@@ -83,7 +88,7 @@ namespace HomelessPetHelper.Game.Field
             {
                 if (next.Remaining[index] >= _snapshot.Remaining[index] || next.Remaining[index] > 0) continue;
                 var debris = next.Template.Debris[index];
-                AddEffect(debris.Cell, DebrisVisual(debris.Tool), MotionCue.Clear);
+                AddEffect(debris.Cell, DebrisVisual(debris.Cell, debris.Tool), MotionCue.Clear);
             }
             foreach (int cell in next.Boxes)
                 if (!_snapshot.Boxes.Contains(cell)) AddEffect(cell, "box", MotionCue.Place);
@@ -133,8 +138,8 @@ namespace HomelessPetHelper.Game.Field
                 DrawSprite(mesh, effect.Visual, Local(_layout.CellPoint(effect.Cell)), size * 1.02f, pose);
             }
         }
-        private static string DebrisVisual(ApproachTool tool) => tool == ApproachTool.Weeds ? "weeds"
-            : tool == ApproachTool.Mud ? "mud" : "debris";
+        private string DebrisVisual(int cell, ApproachTool tool) => _layout.PropAt(cell,
+            tool == ApproachTool.Weeds ? "weeds" : tool == ApproachTool.Mud ? "mud" : "debris");
         private Vector2 Local(Vector2 point) => new Vector2(
             rectTransform.rect.xMin + point.x / _layout.Width * rectTransform.rect.width,
             rectTransform.rect.yMax - point.y / _layout.Height * rectTransform.rect.height);
@@ -208,9 +213,12 @@ namespace HomelessPetHelper.Game.Field
             {
                 var point = Local(_layout.CellPoint(cell));
                 char terrain = template.Terrain(cell);
-                if (terrain == '#') DrawHedgeSprites(mesh, point, size, cell);
-                else if (terrain == '~') DrawSprite(mesh, "water", point, size, Ambient(MotionCue.Water, cell));
-                else if (cell % 2 == 0) DrawSprite(mesh, "stones", point, size * .22f);
+                if (!_layout.IllustratedInterior)
+                {
+                    if (terrain == '#') DrawHedgeSprites(mesh, point, size, cell);
+                    else if (terrain == '~') DrawSprite(mesh, "water", point, size, Ambient(MotionCue.Water, cell));
+                    else if (cell % 2 == 0) DrawSprite(mesh, "stones", point, size * .22f);
+                }
                 if (_snapshot.Bridge == cell) DrawSprite(mesh, "bridge", point, size * .96f, Placement(cell));
                 if (_snapshot.Boxes.Contains(cell)) DrawSprite(mesh, "box", point, size * 1.02f, Placement(cell));
             }
@@ -220,7 +228,10 @@ namespace HomelessPetHelper.Game.Field
                 var debris = template.Debris[index];
                 var pose = debris.Tool == ApproachTool.Weeds ? Ambient(MotionCue.Foliage, debris.Cell) :
                     MotionPose.Identity;
-                DrawSprite(mesh, DebrisVisual(debris.Tool), Local(_layout.CellPoint(debris.Cell)), size * 1.02f, pose);
+                float emphasis = !_layout.IllustratedInterior ? 1.02f :
+                    debris.Cell == template.Animal ? 1.3f : .85f;
+                DrawSprite(mesh, DebrisVisual(debris.Cell, debris.Tool), Local(_layout.CellPoint(debris.Cell)),
+                    size * emphasis, pose);
             }
             DrawEffects(mesh, size);
         }

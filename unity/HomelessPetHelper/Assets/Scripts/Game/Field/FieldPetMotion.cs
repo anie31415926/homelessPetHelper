@@ -24,7 +24,7 @@ namespace HomelessPetHelper.Game.Field
         private PetMotionPlayer _player;
         private Camera _camera;
         private RenderTexture _target;
-        private bool _cat;
+        private bool _cat, _visible = true;
         private float _renderedSeconds = -1;
         private static readonly ProfilerMarker RenderMarker = new ProfilerMarker("Field.AnimalMotion");
 
@@ -44,19 +44,26 @@ namespace HomelessPetHelper.Game.Field
             _motionCoat.Show(snapshot);
         }
 
+        public void SetVisible(bool visible)
+        {
+            if (_visible == visible) return;
+            _visible = visible;
+            RefreshVisibility();
+        }
+
         private void OnEnable() => RefreshVisibility();
 
         private void RefreshVisibility()
         {
-            _still.enabled = !_cat;
-            _stillCoat.enabled = !_cat;
-            _surface.gameObject.SetActive(_cat);
+            _still.enabled = _visible && !_cat;
+            _stillCoat.enabled = _visible && !_cat;
+            _surface.gameObject.SetActive(_visible && _cat);
         }
 
         private void LateUpdate()
         {
             using var sample = RenderMarker.Auto();
-            if (!_cat) return;
+            if (!_visible || !_cat) return;
             Rect rect = _surface.rectTransform.rect;
             if (rect.width <= 0 || rect.height <= 0) return;
             if (_player == null) CreateRenderer();

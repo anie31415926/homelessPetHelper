@@ -16,6 +16,12 @@ namespace HomelessPetHelper.Modules.Siege
         private readonly SiegeTowerTypeDefinition _legacyTower;
         public double Width { get; }
         public double Height { get; }
+        public bool HasDeploymentZone { get; }
+        public SiegePoint DeploymentMin { get; }
+        public SiegePoint DeploymentMax { get; }
+        private readonly bool[] _defenseCells;
+        internal int InitialDefenseCell { get; } = -1;
+        internal bool AllowsDefenseCell(int cell) => _defenseCells == null || _defenseCells[cell];
 
         public SiegeCatalog(SiegeCatalogData data)
         {
@@ -146,6 +152,27 @@ namespace HomelessPetHelper.Modules.Siege
             Width = data.map.width;
             Height = data.map.height;
             Require(Finite(Width) && Finite(Height) && Width > 0 && Height > 0, "map bounds");
+            if (data.map.customDeployment)
+            {
+                var min = data.map.deploymentMin; var max = data.map.deploymentMax;
+                Require(min != null && max != null && min.x >= 0 && min.y >= 0 && max.x <= Width &&
+                    max.y <= Height && min.x < max.x && min.y < max.y, "deployment bounds");
+                HasDeploymentZone = true;
+                DeploymentMin = new SiegePoint(min.x, min.y);
+                DeploymentMax = new SiegePoint(max.x, max.y);
+            }
+            if (data.map.defenseCells != null && data.map.defenseCells.Length > 0)
+            {
+                _defenseCells = new bool[Rules.DefenseGridSize * Rules.DefenseGridSize];
+                foreach (int cell in data.map.defenseCells)
+                {
+                    Require(cell >= 0 && cell < _defenseCells.Length && !_defenseCells[cell], "defense cell");
+                    _defenseCells[cell] = true;
+                }
+                InitialDefenseCell = data.map.initialDefenseCell;
+                Require(InitialDefenseCell >= 0 && InitialDefenseCell < _defenseCells.Length &&
+                    _defenseCells[InitialDefenseCell], "initial defense cell");
+            }
             Unique(data.map.lanes?.Select(x => x?.id), "lanes");
             Lanes = Array.AsReadOnly(data.map.lanes.Select(x => new SiegeLane(x, Width, Height)).ToArray());
             Require(Lanes.Any(x => x.Open), "open lane");

@@ -20,6 +20,9 @@ MonoBehaviour:
   cardHeight: 384
   fieldCardHeight: 312
   fieldHeaderHeight: 240
+  realtimeCardHeight: 168
+  realtimeResourceHeight: 96
+  realtimeStatusHeight: 96
   guideMaxWidth: 840
   actionWidth: 192
   actionHeight: 168

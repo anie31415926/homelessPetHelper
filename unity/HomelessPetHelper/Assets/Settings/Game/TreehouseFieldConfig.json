@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "pointId": "treehouse",
+  "layoutId": "treehouse.stairs",
+  "width": 360,
+  "height": 648,
+  "animalWidth": 39,
+  "catWidth": 30,
+  "grid": {
+    "x": 23.0,
+    "y": 224,
+    "width": 275.625,
+    "height": 326
+  },
+  "stagedRoutes": true,
+  "battleGoalCell": 50,
+  "revisitMinutes": 120,
+  "refillCells": [
+    51,
+    41
+  ],
+  "approach": {
+    "schemaVersion": 1,
+    "undoLimit": 40,
+    "maxStepSeconds": 0.05,
+    "templates": [
+      {
+        "id": "field.treehouse.puzzle",
+        "mode": 0,
+        "rows": [
+          "##.....",
+          "#######",
+          "#######",
+          "#######",
+          "#######",
+          "####...",
+          "###....",
+          "#......",
+          "#......",
+          "##....#",
+          "#######"
+        ],
+        "entrance": 66,
+        "animal": 5,
+        "passage": [
+          50,
+          2
+        ],
+        "concealAnimal": true,
+        "bridgeCells": [],
+        "boxes": [
+          57,
+          59
+        ],
+        "debris": []
+      },
+      {
+        "id": "field.treehouse.cleanup",
+        "mode": 1,
+        "rows": [
+          "##.....",
+          "#######",
+          "#######",
+          "#######",
+          "#######",
+          "####...",
+          "###....",
+          "#......",
+          "#..#...",
+          "##....#",
+          "#######"
+        ],
+        "entrance": 66,
+        "animal": 5,
+        "passage": [
+          50,
+          2
+        ],
+        "concealAnimal": true,
+        "bridgeCells": [],
+        "boxes": [],
+        "debris": [
+          {
+            "cell": 65,
+            "tool": 2,
+            "workSeconds": 0.45
+          },
+          {
+            "cell": 57,
+            "tool": 2,
+            "workSeconds": 0.65
+          },
+          {
+            "cell": 50,
+            "tool": 2,
+            "workSeconds": 0.75
+          },
+          {
+            "cell": 3,
+            "tool": 2,
+            "workSeconds": 0.5
+          },
+          {
+            "cell": 5,
+            "tool": 2,
+            "workSeconds": 0.85
+          },
+          {
+            "cell": 51,
+            "tool": 2,
+            "workSeconds": 0.5
+          },
+          {
+            "cell": 41,
+            "tool": 2,
+            "workSeconds": 0.45
+          }
+        ]
+      }
+    ]
+  },
+  "routes": [
+    {
+      "laneId": "top",
+      "nameKey": "field.lane.treehouse.direct",
+      "portalCell": 65,
+      "cells": [
+        66,
+        65,
+        58,
+        57,
+        50
+      ]
+    },
+    {
+      "laneId": "mid",
+      "nameKey": "field.lane.treehouse.detour",
+      "portalCell": 67,
+      "cells": [
+        66,
+        67,
+        68,
+        61,
+        60,
+        53,
+        52,
+        51,
+        50
+      ],
+      "optional": true
+    }
+  ],
+  "illustratedInterior": true,
+  "propVisuals": [
+    {
+      "cell": 65,
+      "sprite": "scrolls"
+    },
+    {
+      "cell": 57,
+      "sprite": "books"
+    },
+    {
+      "cell": 50,
+      "sprite": "stool"
+    },
+    {
+      "cell": 3,
+      "sprite": "books"
+    },
+    {
+      "cell": 5,
+      "sprite": "blanket-basket"
+    },
+    {
+      "cell": 51,
+      "sprite": "books"
+    },
+    {
+      "cell": 41,
+      "sprite": "scrolls"
+    }
+  ],
+  "deployment": {
+    "x": 103,
+    "y": 485,
+    "width": 152,
+    "height": 33
+  },
+  "defenseGridSize": 12,
+  "initialDefenseCell": 110,
+  "initialTower": "scratch",
+  "initialTowerRange": 40,
+  "introduceWithCleanup": true,
+  "initialTowerEncounter": "cat"
+}

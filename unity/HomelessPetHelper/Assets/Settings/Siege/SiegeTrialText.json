@@ -925,6 +925,14 @@
       "value": "继续"
     },
     {
+      "key": "field.lane.treehouse.direct",
+      "value": "楼梯近路"
+    },
+    {
+      "key": "field.lane.treehouse.detour",
+      "value": "右侧绕路"
+    },
+    {
       "key": "field.lane.top",
       "value": "左侧花径"
     },
@@ -939,6 +947,10 @@
     {
       "key": "field.menu",
       "value": "玩法 / 暂停"
+    },
+    {
+      "key": "field.treehouse.time",
+      "value": "{0:0}秒"
     },
     {
       "key": "field.compactStatus",

@@ -1,0 +1,117 @@
+{
+  "source": "master.png",
+  "localReference": "treehouse-units-clean-reference.png",
+  "size": [
+    768,
+    768
+  ],
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "treehouse-units-clean-reference.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Production edit of this four-object 2x2 sprite sheet. Completely DELETE all four brown wooden discs, patches, ground shadows and floorboards beneath the toys. Replace the wooden surfaces with perfectly pure solid white. Retain all four toys in their original quadrants and the same colors: orange fish, pink yarn ball, mint feather, lilac and cream cart. Preserve their entire shapes including underside and all visible wheels. Each toy is an isolated floating cutout in featureless uniform white space; leave no wooden pixels under, beside, or behind any of the toys, including between the wheels. No platforms, no cast shadows, no gray shadows, no wood grain anywhere, no labels. Keep the Q-shaped rounded silhouettes.",
+        "negative_prompt": "watermark, signature, caption, lettering, logo, UI, noisy details, photorealism, heavy black line, glossy plastic, ground texture, colored background, cropped cutout, floorboards, wooden discs, backing floor, shadows",
+        "resolution": 0,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112506,
+        "steps": 28,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "treehouse-field/units-clean"
+      }
+    }
+  }
+}

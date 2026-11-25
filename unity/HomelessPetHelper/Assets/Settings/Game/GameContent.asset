@@ -35,6 +35,16 @@ MonoBehaviour:
     _background: {fileID: 21300000, guid: 78b9a92126b15234685d9893b15f3889, type: 3}
   - _pointId: riverside
     _background: {fileID: 21300000, guid: 12e944dea5dbf63468498840b9cf0e43, type: 3}
+  - _pointId: treehouse
+    _background: {fileID: 21300000, guid: 2be2c203e1bf4a619597915115764a1c, type: 3}
+    _props: {fileID: 11400000, guid: 295e2cb564734aaf839d146719cc87f3, type: 2}
+    _foreground: {fileID: 21300000, guid: b233f9f6997040909fbeb73f7da8fd2c, type: 3}
+    _foregroundBounds:
+      serializedVersion: 2
+      x: 0.506250000
+      y: 0.607638889
+      width: 0.456250000
+      height: 0.121527778
   _audioCatalog: {fileID: 11400000, guid: 5fd1ad538b69f1a43bd873dc1869aefc, type: 2}
   _musicCatalog: {fileID: 11400000, guid: c67eb99d2a5382c4eb73e5d30097f5e6, type: 2}
   _approachConfig: {fileID: 4900000, guid: c8cef9e46b1c410ba43e6bdf20753876, type: 3}
@@ -44,5 +54,6 @@ MonoBehaviour:
   - {fileID: 4900000, guid: be8360c758634d28bfceb6a21fde9c0c, type: 3}
   - {fileID: 4900000, guid: 27d8d728829047aca08a304bf24c1263, type: 3}
   - {fileID: 4900000, guid: 2bf206d297f6439384220c52e4fd2589, type: 3}
+  - {fileID: 4900000, guid: f07d1acfab784669b1e4c46fb37f0d13, type: 3}
   _levelUiText: {fileID: 4900000, guid: f1dc85fc5fd94e3a9aa5cac0a4944d60, type: 3}
   _levelGuidance: {fileID: 4900000, guid: 1f7d9d879dc449988548e2de06960542, type: 3}

@@ -1,0 +1,117 @@
+{
+  "source": "master.png",
+  "localReference": "treehouse-units-reference.png",
+  "size": [
+    768,
+    768
+  ],
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "treehouse-units-reference.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Redesign these three existing toy combat units as a bold mobile game sprite sheet. Polished cute chibi collectible toy props, hand-painted watercolor with matte material and soft rounded shapes, strongly distinct silhouettes and colors readable at 40px. Exactly one object per quadrant, pure solid white background, wide white gutters, no cast shadows, no frame. Each object appears from elevated three-quarter view at its natural horizontal ground orientation, aligned to the same floor plane. TOP LEFT: chunky orange dried fish toy, large rounded body, little fan tail, tiny stitched dark eye. TOP RIGHT: round rose pink yarn ball, large overlapping yarn curves and just one short loose end. BOTTOM LEFT: wide mint teal feather toy, puffy round feather lobes and a short pale gold handle, slight diagonal, simplified rounded silhouette. BOTTOM RIGHT: one heavyweight handcrafted low wooden rescue cart with very wide rounded cream base, muted lilac hood and two oversized plum wheels. Make all objects feel stout, wide, cuddly and weighty, fill their cells evenly, entirely in frame. Clear color separation so units stand out strongly on honey-brown wooden floor. No people, animals, faces on yarn or cart, typography, signatures or logos. Outside each cutout only pure flat white.",
+        "negative_prompt": "watermark, signature, caption, lettering, logo, UI, noisy details, photorealism, heavy black line, glossy plastic, ground texture, colored background, cropped cutout, shadows",
+        "resolution": 0,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112503,
+        "steps": 26,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "treehouse-field/units"
+      }
+    }
+  }
+}

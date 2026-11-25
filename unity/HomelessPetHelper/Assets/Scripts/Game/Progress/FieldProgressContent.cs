@@ -72,13 +72,14 @@ namespace HomelessPetHelper.Game.Progress
         internal ApproachCatalog Opening(string pointId, string layoutId) =>
             Layout(pointId, layoutId)?.Opening ?? _fallback;
 
-        internal SiegeCatalog Battle(string pointId, string layoutId)
+        internal SiegeCatalog Battle(string pointId, string layoutId, ApproachSession opening)
         {
+            var field = Layout(pointId, layoutId);
+            if (field?.AllowsOptionalCleanup == true) return _content.CreateFieldSiegeCatalog(field, opening);
             string key = pointId + ":" + layoutId;
             if (!_battles.TryGetValue(key, out var catalog))
             {
-                var layout = Layout(pointId, layoutId);
-                catalog = layout == null ? _content.CreateSiegeCatalog() : _content.CreateFieldSiegeCatalog(layout);
+                catalog = field == null ? _content.CreateSiegeCatalog() : _content.CreateFieldSiegeCatalog(field);
                 _battles.Add(key, catalog);
             }
             return catalog;

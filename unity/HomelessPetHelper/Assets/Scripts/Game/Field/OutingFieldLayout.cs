@@ -20,6 +20,15 @@ namespace HomelessPetHelper.Game.Field
             public GridData grid;
             public ApproachCatalogData approach;
             public Route[] routes;
+            public bool stagedRoutes, illustratedInterior, introduceWithCleanup;
+            public PropVisual[] propVisuals;
+            public int battleGoalCell;
+            public GridData deployment;
+            public int defenseGridSize, initialDefenseCell;
+            public string initialTower, initialTowerEncounter;
+            public float initialTowerRange;
+            public int revisitMinutes;
+            public int[] refillCells;
         }
 
         [Serializable]
@@ -34,9 +43,14 @@ namespace HomelessPetHelper.Game.Field
             public string laneId, nameKey;
             public int portalCell;
             public int[] cells;
+            public bool optional;
         }
 
+        [Serializable]
+        public sealed class PropVisual { public int cell; public string sprite; }
+
         private readonly Data _data;
+        private readonly Dictionary<int, string> _props = new Dictionary<int, string>();
         public ApproachCatalog Opening { get; }
         public string PointId => _data.pointId;
         public bool Introductory => _data.introductory;
@@ -51,6 +65,12 @@ namespace HomelessPetHelper.Game.Field
         public float AnimalWidthFor(bool dog) => dog ? _data.animalWidth : _data.catWidth;
         public Rect Grid => new Rect(_data.grid.x, _data.grid.y, _data.grid.width, _data.grid.height);
         public int LaneCount => _data.routes.Length;
+        public bool AllowsOptionalCleanup => _data.stagedRoutes;
+        public bool IntroduceWithCleanup => _data.introduceWithCleanup;
+        public bool IllustratedInterior => _data.illustratedInterior;
+        public string PropAt(int cell, string fallback) => _props.TryGetValue(cell, out string key) ? key : fallback;
+        public int RevisitMinutes => _data.revisitMinutes;
+        public bool CanRefill(int cell) => _data.refillCells != null && Array.IndexOf(_data.refillCells, cell) >= 0;
 
         public OutingFieldLayout(TextAsset source)
         {
@@ -64,12 +84,14 @@ namespace HomelessPetHelper.Game.Field
                     !Positive(_data.grid.height) ||
                 !Finite(_data.grid.x) || !Finite(_data.grid.y) || _data.grid.x < 0 || _data.grid.y < 0 ||
                     Grid.xMax > Width || Grid.yMax > Height ||
-                _data.routes == null || _data.routes.Length != 3)
+                _data.routes == null || (!_data.stagedRoutes && _data.routes.Length != 3) ||
+                (_data.stagedRoutes && (_data.routes.Length == 0 || _data.routes.Length > 3)))
                 throw new ArgumentException("Invalid outing field frame.");
-            if (_data.routes.Any(route => route == null || route.cells == null))
+            if (_data.routes.Any(route => route == null || route.cells == null ||
+                (!_data.stagedRoutes && route.optional)) || _data.routes.All(route => route.optional))
                 throw new ArgumentException("Missing field route cells.");
             Opening = new ApproachCatalog(_data.approach,
-                _data.routes.SelectMany(route => route.cells).Distinct().ToArray());
+                _data.routes.Where(route => !route.optional).SelectMany(route => route.cells).Distinct().ToArray());
             LayoutId = string.IsNullOrEmpty(_data.layoutId) ? PointId : _data.layoutId;
             if (string.IsNullOrWhiteSpace(LayoutId) || LayoutId != LayoutId.Trim() ||
                 PointId != PointId.Trim()) throw new ArgumentException("Invalid field identity.");
@@ -88,6 +110,17 @@ namespace HomelessPetHelper.Game.Field
                     throw new ArgumentException("Invalid field route.");
                 ValidateRoute(route);
             }
+            var cleanup = Opening.Get(ApproachMode.Cleanup);
+            foreach (var prop in _data.propVisuals ?? Array.Empty<PropVisual>())
+                if (prop == null || string.IsNullOrWhiteSpace(prop.sprite) ||
+                    !cleanup.Debris.Any(debris => debris.Cell == prop.cell) || !_props.TryAdd(prop.cell, prop.sprite))
+                    throw new ArgumentException("Invalid field prop visual.");
+            if (_data.revisitMinutes < 0 || _data.revisitMinutes > 0 &&
+                (_data.refillCells == null || _data.refillCells.Length == 0 ||
+                 _data.refillCells.Distinct().Count() != _data.refillCells.Length ||
+                 _data.refillCells.Any(cell => cell == cleanup.Animal || cleanup.RequiredClearCells.Contains(cell) ||
+                    cleanup.PassageDestination(cell) >= 0 || !cleanup.Debris.Any(debris => debris.Cell == cell))))
+                throw new ArgumentException("Invalid field revisit debris.");
         }
 
         private static bool Finite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
@@ -106,7 +139,8 @@ namespace HomelessPetHelper.Game.Field
         private void ValidateRoute(Route route)
         {
             var reference = Opening.Get(ApproachMode.Cleanup);
-            if (route.cells[0] != reference.Entrance || route.cells[route.cells.Length - 1] != reference.Animal)
+            if (route.cells[0] != reference.Entrance || route.cells[route.cells.Length - 1] !=
+                (_data.stagedRoutes ? _data.battleGoalCell : reference.Animal))
                 throw new ArgumentException("Field routes must share the opening endpoints.");
             var visited = new HashSet<int>();
             var puzzle = Opening.Get(ApproachMode.Puzzle);
@@ -128,13 +162,38 @@ namespace HomelessPetHelper.Game.Field
                 throw new ArgumentException("Opening variants move the field endpoints.");
         }
 
-        public SiegeCatalog CreateBattleCatalog(TextAsset source)
+        private TextAsset _lastBattleSource;
+        private SiegeCatalog _lastBattle;
+        private bool[] _lastFloor;
+
+        private bool FloorMatches(ApproachSession opening)
+        {
+            if (opening == null || _lastFloor == null) return opening == null && _lastFloor == null;
+            for (int cell = 0; cell < _lastFloor.Length; cell++)
+                if (_lastFloor[cell] != opening.IsPassable(cell)) return false;
+            return true;
+        }
+
+        public SiegeCatalog CreateBattleCatalog(TextAsset source, ApproachSession opening = null)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-            // Derive a fresh catalog; never mutate generated content or its shared instances.
+            if (_data.stagedRoutes)
+            {
+                if (opening != null) ValidateBattleClear(opening);
+                if (_lastBattleSource == source && _lastBattle != null && FloorMatches(opening)) return _lastBattle;
+            }
+            // Never mutate generated content or its shared instances.
             var data = JsonUtility.FromJson<SiegeCatalogData>(source.text);
             data.map.width = Width;
             data.map.height = Height;
+            if (_data.stagedRoutes)
+            {
+                data.map.lanes = _data.routes.Select(route => data.map.lanes.Single(lane => lane.id == route.laneId))
+                    .ToArray();
+                data.map.pads = data.map.pads.Where(pad => data.map.lanes.Any(lane => lane.id == pad.laneId))
+                    .ToArray();
+                if (_data.defenseGridSize > 0) ConfigureBattleFloor(data, opening);
+            }
             if (data.map.lanes.Length != LaneCount) throw new ArgumentException("Field lane count mismatch.");
             for (int i = 0; i < LaneCount; i++)
                 if (data.map.lanes[i].id != _data.routes[i].laneId)
@@ -144,19 +203,63 @@ namespace HomelessPetHelper.Game.Field
                 var route = _data.routes.SingleOrDefault(item => item.laneId == lane.id);
                 if (route == null) throw new ArgumentException("Field lane ID mismatch.");
                 lane.nameKey = route.nameKey;
+                if (_data.stagedRoutes) lane.open = !route.optional ||
+                    (opening == null || IsClear(route, opening));
                 lane.points = route.cells.Select(cell =>
                 {
                     var point = CellPoint(cell);
                     return new SiegeCatalogData.PointDto { x = point.x, y = point.y };
                 }).ToArray();
             }
-            Vector2 animal = CellPoint(Opening.Get(ApproachMode.Cleanup).Animal);
+            Vector2 animal = CellPoint(_data.stagedRoutes ? _data.battleGoalCell :
+                Opening.Get(ApproachMode.Cleanup).Animal);
             foreach (var encounter in data.encounters)
             {
                 encounter.holdOriginX = encounter.carryOriginX = animal.x;
                 encounter.holdOriginY = encounter.carryOriginY = animal.y;
             }
-            return new SiegeCatalog(data);
+            var catalog = new SiegeCatalog(data);
+            if (_data.stagedRoutes)
+            {
+                _lastBattle = catalog;
+                _lastBattleSource = source;
+                _lastFloor = opening == null ? null : Enumerable.Range(0, CellCount).Select(opening.IsPassable).ToArray();
+            }
+            return catalog;
+        }
+
+        private void ConfigureBattleFloor(SiegeCatalogData data, ApproachSession opening)
+        {
+            var deployment = _data.deployment;
+            data.map.customDeployment = true;
+            data.map.deploymentMin = new SiegeCatalogData.PointDto { x = deployment.x, y = deployment.y };
+            data.map.deploymentMax = new SiegeCatalogData.PointDto
+                { x = deployment.x + deployment.width, y = deployment.y + deployment.height };
+            int size = _data.defenseGridSize;
+            data.rules.defenseGridSize = size;
+            var cells = new List<int> { _data.initialDefenseCell };
+            var template = Opening.Get(ApproachMode.Cleanup);
+            var grid = Grid;
+            for (int index = 0; index < size * size; index++)
+            {
+                if (index == _data.initialDefenseCell) continue;
+                float x = (index % size + .5f) * Width / size;
+                float y = (index / size + .5f) * Height / size;
+                if (y < CellPoint(_data.battleGoalCell).y - 1.5f * grid.height / Rows ||
+                    !grid.Contains(new Vector2(x, y))) continue;
+                int cell = (int)((y - grid.y) / grid.height * Rows) * Columns +
+                    (int)((x - grid.x) / grid.width * Columns);
+                if (cell != _data.battleGoalCell && template.Terrain(cell) == '.' &&
+                    (opening == null || opening.IsPassable(cell))) cells.Add(index);
+            }
+            data.map.defenseCells = cells.ToArray();
+            data.map.initialDefenseCell = _data.initialDefenseCell;
+            foreach (var pad in data.map.pads) pad.initial = false;
+            data.map.pads.First(pad => pad.laneId == _data.routes[0].laneId).initial = true;
+            var tower = data.towerTypes.Single(item => item.id == _data.initialTower);
+            tower.range = _data.initialTowerRange;
+            var encounter = data.encounters.Single(item => item.id == _data.initialTowerEncounter);
+            encounter.initialTowerIds = new[] { tower.id };
         }
 
         public void ValidateBattleClear(ApproachSession session)
@@ -165,14 +268,11 @@ namespace HomelessPetHelper.Game.Field
                 !ReferenceEquals(session.Template, Opening.Get(session.Template.Mode)))
                 throw new InvalidOperationException("Opening is not the active completed field template.");
             foreach (var route in _data.routes)
-                foreach (int cell in route.cells)
-                {
-                    int debris = session.DebrisAt(cell);
-                    bool blocked = session.Template.Terrain(cell) == '#' || session.HasBox(cell) ||
-                        (session.Template.Terrain(cell) == '~' && session.BridgeCell != cell) ||
-                        (debris >= 0 && session.Template.Debris[debris].Tool != ApproachTool.Mud);
-                    if (blocked) throw new InvalidOperationException("Completed opening still blocks a battle route.");
-                }
+                if (!route.optional && !IsClear(route, session))
+                    throw new InvalidOperationException("Completed opening still blocks a required battle route.");
         }
+
+        private static bool IsClear(Route route, ApproachSession session) =>
+            route.cells.All(session.IsPassable);
     }
 }

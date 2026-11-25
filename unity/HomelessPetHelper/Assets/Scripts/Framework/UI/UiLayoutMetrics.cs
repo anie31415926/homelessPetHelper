@@ -14,6 +14,9 @@ namespace HomelessPetHelper.Framework.UI
         [Min(1)] public float cardHeight = 384;
         [Min(1)] public float fieldCardHeight = 312;
         [Min(1)] public float fieldHeaderHeight = 240;
+        [Min(1)] public float realtimeCardHeight = 168;
+        [Min(1)] public float realtimeResourceHeight = 96;
+        [Min(1)] public float realtimeStatusHeight = 96;
         [Min(1)] public float guideMaxWidth = 840;
         [Min(1)] public float actionWidth = 192;
         [Min(1)] public float actionHeight = 168;

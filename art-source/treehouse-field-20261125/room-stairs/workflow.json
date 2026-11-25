@@ -1,0 +1,117 @@
+{
+  "source": "游戏界面地图图标设计 (29).png",
+  "localReference": "treehouse-room-stairs-reference.png",
+  "size": [
+    640,
+    1152
+  ],
+  "prompt": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "treehouse-room-stairs-reference.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "Paint a NEW portrait cozy elf treehouse interior for a mobile game, as a hand painted watercolor picture-book set viewed from the open lower doorway, looking slightly down. This is ONE real room built inside a giant hollow tree with TWO clearly connected levels, not a landscape, not a cutaway exterior. Use the style reference for the warm honey wood, round windows, vines, flower details and curved beams, and design a fresh composition. The defining feature is a fully visible wooden staircase on the LEFT half running diagonally from the back-left edge of the ground floor up to a small built-in wooden mezzanine in the upper third. Show the entire continuous staircase, its wide individual closed treads, one handrail, the bottom step seated on the same lower floor and the top stair flush with the upper deck. Upper deck has floorboards, balcony rail on the outside edge and an open stair landing. A believable timber beam supports it. No other staircases or ladders. On the right a large round window and softly lit organic timber walls. The lower half is a broad irregular room entrance and unoccupied warm low contrast wooden floor, naturally laid staggered planks across the room, NO marked game routes or repeated floor lanes. Keep the main floor clear enough to place removable furniture and units later. Cozy handcrafted matte watercolor and gouache for a family mobile game. Simplified forms, soft colored edges and warm textured wood, natural lighting. Built-in rear shelving only, no furniture, rugs, baskets, books, humans, animals, labels, signatures, watermarks or letters.",
+        "negative_prompt": "watermark, signature, caption, lettering, logo, UI, noisy details, photorealism, heavy black line, glossy plastic, broken or floating steps, watermarks, floor lane markings, rugs",
+        "resolution": 0,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112521,
+        "steps": 30,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "treehouse-field/room-stairs"
+      }
+    }
+  }
+}

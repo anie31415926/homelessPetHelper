@@ -185,6 +185,10 @@ namespace HomelessPetHelper.Modules.Siege
             public double width, height;
             public LaneDto[] lanes;
             public PadDto[] pads;
+            public bool customDeployment;
+            public PointDto deploymentMin, deploymentMax;
+            public int[] defenseCells;
+            public int initialDefenseCell;
         }
         [Serializable]
         public sealed class LaneDto

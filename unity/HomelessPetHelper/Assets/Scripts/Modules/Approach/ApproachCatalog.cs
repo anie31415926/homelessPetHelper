@@ -63,6 +63,14 @@ namespace HomelessPetHelper.Modules.Approach
                 template.rows[cell / columns][cell % columns] == '.';
             if (!Ground(template.entrance) || !Ground(template.animal) || template.entrance == template.animal)
                 throw new ArgumentException("Invalid approach endpoints.");
+            if (template.passage != null && template.passage.Length != 0 &&
+                (template.passage.Length != 2 || !Ground(template.passage[0]) ||
+                 !Ground(template.passage[1]) || template.passage[0] == template.passage[1]))
+                throw new ArgumentException("Invalid passage endpoints.");
+            if (template.concealAnimal && template.mode == ApproachMode.Cleanup &&
+                !Array.Exists(template.debris, item => item != null && item.cell == template.animal &&
+                    item.tool != ApproachTool.Mud))
+                throw new ArgumentException("Concealed animal must have a removable cover.");
             var occupied = new HashSet<int>();
             foreach (int cell in template.boxes)
                 if (!Ground(cell) || cell == template.entrance || cell == template.animal || !occupied.Add(cell))
@@ -78,7 +86,7 @@ namespace HomelessPetHelper.Modules.Approach
                     template.rows[cell / columns][cell % columns] != '~')
                     throw new ArgumentException("Invalid bridge site.");
             if (template.mode == ApproachMode.Puzzle ?
-                template.debris.Length != 0 || template.boxes.Length == 0 || bridges.Count == 0 :
+                template.debris.Length != 0 || template.boxes.Length == 0 :
                 template.boxes.Length != 0 || bridges.Count != 0 || template.debris.Length == 0)
                 throw new ArgumentException("Content does not match approach mode.");
         }

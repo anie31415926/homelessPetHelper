@@ -45,13 +45,13 @@ namespace HomelessPetHelper.Tests.EditMode
                 Assert.That(session.Requests.TryTransition(initial.RequestId, RequestSignal.HelpedElsewhere, out _),
                     Is.True);
                 AdvanceDispatchTime(progress, waitMinutes - 1);
-                Assert.That(session.Requests.Requests.Count, Is.EqualTo(3));
+                Assert.That(session.Requests.Requests.Count, Is.EqualTo(4));
                 if (capacity == 0)
                 {
                     Assert.That(session.Station.TryExpandTemporaryCapacity(session.StationSessionId, 1, out _),
                         Is.True);
                     Assert.That(progress.TryCheckpoint(), Is.True);
-                    Assert.That(session.Requests.Requests.Count, Is.EqualTo(3), "Expansion must not send a notice.");
+                    Assert.That(session.Requests.Requests.Count, Is.EqualTo(4), "Expansion must not send a notice.");
                 }
                 AdvanceDispatchTime(progress, 1);
                 noticeId = session.Requests.Requests.Last().RequestId;
@@ -61,7 +61,7 @@ namespace HomelessPetHelper.Tests.EditMode
 
             using var restored = OpenDispatch(storage, capacity);
             Assert.That(restored.TryCheckpoint(), Is.True, restored.PersistenceError?.ToString());
-            Assert.That(restored.Session.Requests.Requests.Count, Is.EqualTo(4));
+            Assert.That(restored.Session.Requests.Requests.Count, Is.EqualTo(5));
             Assert.That(restored.Session.Map.TrySelectPoint("parking", out var same, out _), Is.True);
             Assert.That(same.RequestId, Is.EqualTo(noticeId));
         }
@@ -81,7 +81,7 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(blocked, Is.EqualTo(OutingFailure.CapacityNotAvailable));
             Assert.That(session.Station.TryExpandTemporaryCapacity(session.StationSessionId, 5, out _), Is.True);
             Assert.That(progress.TryCheckpoint(), Is.True);
-            Assert.That(session.Requests.Requests.Count, Is.EqualTo(4));
+            Assert.That(session.Requests.Requests.Count, Is.EqualTo(5));
 
             AdvanceDispatchTime(progress, 120);
             Assert.That(notice.State, Is.EqualTo(RequestState.HelpedElsewhere));
@@ -220,14 +220,14 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [Test]
-        public void ContentMapsTwoOrdinaryAnimalsAndKeepsOwnerReunionSeparate()
+        public void ContentMapsOrdinaryAnimalsAndKeepsOwnerReunionSeparate()
         {
             _content.Validate();
             var requests = _config.CreateRequestPool().Requests;
             var ordinary = requests.Where(request => request.ReunionPlan == null).ToArray();
-            Assert.That(ordinary.Length, Is.EqualTo(2));
+            Assert.That(ordinary.Length, Is.EqualTo(3));
             Assert.That(ordinary.Select(request => _config.GetRescue(request.TemplateId).EncounterId),
-                Is.EquivalentTo(new[] { "cat", "dog" }));
+                Is.EquivalentTo(new[] { "cat", "cat", "dog" }));
             Assert.That(requests.Single(request => request.ReunionPlan != null).TemplateId, Is.EqualTo("reunion"));
             var badSource = new TextAsset(AssetDatabase.LoadAssetAtPath<TextAsset>(
                 "Assets/Settings/Game/CityMapConfig.json").text.Replace(

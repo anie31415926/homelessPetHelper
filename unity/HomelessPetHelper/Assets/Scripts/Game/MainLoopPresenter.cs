@@ -281,7 +281,8 @@ namespace HomelessPetHelper.Game
             if (!restored)
             {
                 opening = Progress.Fields.Begin(Session, SelectField(outing.SelectedPointId, outing.Seed));
-                if (!opening.IsComplete && !Session.TryStartOpeningRoute(opening, out var failure))
+                if ((!opening.IsComplete || Progress.Fields.Layout?.AllowsOptionalCleanup == true) &&
+                    !Session.TryStartOpeningRoute(opening, out var failure))
                 {
                     opening.Dispose();
                     _mapPresenter.ShowFeedback(_text.Get("loop.failure." + failure));
@@ -294,13 +295,14 @@ namespace HomelessPetHelper.Game
             _mapPresenter?.Dispose();
             _mapPresenter = null;
             _map.gameObject.SetActive(false);
-            _approach.SetLocationBackground(_content.GetOutingBackground(outing.SelectedPointId));
-            _approach.ConfigureField(_activeField, _content.GetOutingBackground(outing.SelectedPointId),
-                encounter.DogArtwork, opening);
+            var artwork = _content.GetOutingArtwork(outing.SelectedPointId);
+            _approach.SetLocationBackground(artwork.Background);
+            _approach.ConfigureField(_activeField, artwork.Background, encounter.DogArtwork, opening,
+                artwork.Props, artwork);
             _approach.Bind(opening, _content.ApproachText, encounter.DogArtwork, EnterSiege,
                 ReturnFromApproach, SetFieldSuspended);
             _approach.FieldScene.ShowAnimal(_outingAnimal.Current);
-            if (opening.IsComplete)
+            if (opening.IsComplete && (Session.Activity != null || _activeField?.AllowsOptionalCleanup != true))
             {
                 EnterSiege();
                 opening.Dispose();
@@ -323,8 +325,7 @@ namespace HomelessPetHelper.Game
         {
             var opening = _approach.Session;
             return _uiText.Get("objectives.opening", _uiText.Get(opening.IsComplete ? "objective.done" :
-                "objective.pending"), new OptionPreviewText(_content.ApproachText)
-                    .Get("field.instruction." + opening.Template.Mode));
+                "objective.pending"), _approach.FieldInstruction);
         }
 
         private string DescribeRescueObjectives()
@@ -389,7 +390,7 @@ namespace HomelessPetHelper.Game
             {
                 activity = new SiegeRescueActivity(outing.SessionId, Progress.Fields.Seed,
                     _activeField == null ? _content.CreateSiegeCatalog() :
-                        _content.CreateFieldSiegeCatalog(_activeField), encounter, _outingAnimal);
+                        _content.CreateFieldSiegeCatalog(_activeField, _approach.Session), encounter, _outingAnimal);
                 bool entered = Session.OpeningRoute == null
                     ? Session.TryEnterRouteFreeRescue(activity, out var failure)
                     : Session.TryEnterRescueAfterOpening(activity, out failure);
@@ -407,9 +408,10 @@ namespace HomelessPetHelper.Game
             ApplyPlaySettings(_playSettings.PauseAtDecision);
             _approach.gameObject.SetActive(false);
             _approach.Unbind();
-            _siege.SetLocationBackground(_content.GetOutingBackground(outing.SelectedPointId));
-            _battleScene.Configure(_activeField, _content.GetOutingBackground(outing.SelectedPointId),
-                encounter.DogArtwork, null, fieldSnapshot);
+            var artwork = _content.GetOutingArtwork(outing.SelectedPointId);
+            _siege.SetLocationBackground(artwork.Background);
+            _battleScene.Configure(_activeField, artwork.Background, encounter.DogArtwork, null, fieldSnapshot,
+                artwork.Props, artwork);
             _battleScene.ShowAnimal(_outingAnimal.Current);
             _siege.Battlefield.ShowAnimal(_outingAnimal.Current);
             _petMotion.ShowAnimal(_outingAnimal.Current);
@@ -417,7 +419,8 @@ namespace HomelessPetHelper.Game
             if (_activeField != null)
             {
                 _siege.Scene.Configure(_battleScene.Animal.sprite, _activeField.AnimalWidthFor(encounter.DogArtwork),
-                    Enumerable.Range(0, _activeField.LaneCount).Select(_activeField.Portal).ToArray());
+                    Enumerable.Range(0, _activeField.LaneCount).Select(_activeField.Portal).ToArray(),
+                    _activeField.IllustratedInterior, artwork.Props);
                 _siege.Scene.SetPresentationAudio(PlayBattleEffect);
             }
             _siege.BindEncounter(activity.Battle, _content.SiegeText, ConfirmRescue, ReturnFromSiege,
