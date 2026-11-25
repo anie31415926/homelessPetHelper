@@ -1,0 +1,212 @@
+{
+  "prompt": [
+    6,
+    "0b78af5f-c05d-4e65-8e49-254285222065",
+    {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "flux1-dev-kontext_fp8_scaled.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "DualCLIPLoader",
+        "inputs": {
+          "clip_name1": "t5xxl_fp16.safetensors",
+          "clip_name2": "clip_l.safetensors",
+          "type": "flux"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "ae.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "reference.png"
+        }
+      },
+      "5": {
+        "class_type": "VAEEncode",
+        "inputs": {
+          "pixels": [
+            "4",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "text": "Four NEW chibi toy props for a cozy mobile game, FLAT 2D hand-painted watercolor storybook illustration, visible soft paper grain, watercolor wash edges and thin warm brown outlines, matte flat colors, absolutely no 3D render, no plastic shine, no gradients, no drop shadow, no floor, no frame, pure solid white background. Exactly four objects, each fully inside its own quadrant with wide white margins, centered, nothing crossing the middle. Slightly elevated 55-degree downward three-quarter view, fronts facing the viewer. TOP LEFT: a chunky cream dog bone toy with two thick rounded knobs at each end and one soft coral stitched seam. TOP RIGHT: a flat mint-teal flying disc with a thick rounded rim, tilted slightly so the saucer shape reads clearly. BOTTOM LEFT: a knotted rope toy, three thick cream loops tied into one knot with short tan ends. BOTTOM RIGHT: a heavy bone windmill toy, three cream bones arranged like a pinwheel around a small golden center button. No people, animals, faces, text, letters, logos, signatures or watermark."
+        }
+      },
+      "7": {
+        "class_type": "ReferenceLatent",
+        "inputs": {
+          "conditioning": [
+            "6",
+            0
+          ],
+          "latent": [
+            "5",
+            0
+          ]
+        }
+      },
+      "8": {
+        "class_type": "FluxGuidance",
+        "inputs": {
+          "conditioning": [
+            "7",
+            0
+          ],
+          "guidance": 3.2
+        }
+      },
+      "9": {
+        "class_type": "ConditioningZeroOut",
+        "inputs": {
+          "conditioning": [
+            "6",
+            0
+          ]
+        }
+      },
+      "10": {
+        "class_type": "EmptySD3LatentImage",
+        "inputs": {
+          "width": 768,
+          "height": 768,
+          "batch_size": 1
+        }
+      },
+      "11": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "positive": [
+            "8",
+            0
+          ],
+          "negative": [
+            "9",
+            0
+          ],
+          "latent_image": [
+            "10",
+            0
+          ],
+          "seed": 2026112601,
+          "steps": 32,
+          "cfg": 1.0,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1.0
+        }
+      },
+      "12": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "11",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "13": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "12",
+            0
+          ],
+          "filename_prefix": "siege-codex/kcx"
+        }
+      }
+    },
+    {
+      "client_id": "siege-codex-kontext",
+      "create_time": 1795628332637
+    },
+    [
+      "13"
+    ]
+  ],
+  "outputs": {
+    "13": {
+      "images": [
+        {
+          "filename": "kcx_00002_.png",
+          "subfolder": "siege-codex",
+          "type": "output",
+          "metadata": {
+            "kind": "image",
+            "width": 768,
+            "height": 768
+          },
+          "id": "07abab89-04c7-41f9-816a-e4a953969268"
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "0b78af5f-c05d-4e65-8e49-254285222065",
+          "timestamp": 1795628332638
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "3"
+          ],
+          "prompt_id": "0b78af5f-c05d-4e65-8e49-254285222065",
+          "timestamp": 1795628332645
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "0b78af5f-c05d-4e65-8e49-254285222065",
+          "timestamp": 1795628367718
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "13": {
+      "node_id": "13",
+      "display_node": "13",
+      "parent_node": null,
+      "real_node_id": "13"
+    }
+  }
+}
