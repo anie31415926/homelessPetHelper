@@ -19,6 +19,7 @@ namespace HomelessPetHelper.Modules.Outing.UI
         [SerializeField] private CityMapPointBinding[] _pointBindings;
         [SerializeField] private Sprite _pointPaper;
         [SerializeField] private Sprite _selectedPointPaper;
+        [SerializeField] private Sprite _stationIcon;
         [SerializeField] private Button _primary;
         [SerializeField] private Text _primaryLabel;
         [SerializeField] private Button _cancel;
@@ -40,18 +41,26 @@ namespace HomelessPetHelper.Modules.Outing.UI
         private bool _listening;
         private bool _focused = true;
         private bool _applicationPaused;
-        private enum PopupKind { Place }
+        private enum PopupKind { Place, Station }
         private readonly PopupStack<PopupKind> _popups = new PopupStack<PopupKind>();
         private bool _selecting = true;
         private bool _inputPaused;
         private string _focusedPointId;
         private bool _resetDetails;
+        private Button _secondary, _tertiary, _stationStatus;
+        private Text _secondaryLabel, _tertiaryLabel, _stationStatusLabel;
+        private Image _detailIcon;
+        private bool _showStationStatus;
 
         public bool IsSuspended => !_focused || _applicationPaused;
         public bool IsDetailsOpen => _popups.Top.HasValue;
+        public bool IsStationOpen => _popups.Top == PopupKind.Station;
 
         public event Action<string> PlaceSelected;
         public event Action PrimaryClicked;
+        public event Action SecondaryClicked;
+        public event Action TertiaryClicked;
+        public event Action StationOpened;
         public event Action CancelClicked;
         public event Action<bool> PauseChanged;
 
@@ -139,7 +148,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
             bool locked = state == PointDisplayState.Locked;
             bool marked = selected && !locked;
             point.Render(label, stateLabel, interactable && !locked, marked ? _selectedPointPaper : _pointPaper,
-                _fog != null && locked);
+                _selectedPointPaper,
+                _fog != null && locked, state == PointDisplayState.HasHelpRequest);
             if (_atmosphere != null && pointId == "market") _atmosphere.SetFlowerLocked(locked);
             if (marked && _focusedPointId != pointId)
             {
@@ -153,6 +163,7 @@ namespace HomelessPetHelper.Modules.Outing.UI
         {
             if (_heading.text != heading || _details.text != details) _resetDetails = true;
             _status.text = status;
+            _status.gameObject.SetActive(!string.IsNullOrWhiteSpace(status));
             _heading.text = heading;
             _details.text = details;
             _departure.text = departure;
@@ -182,9 +193,98 @@ namespace HomelessPetHelper.Modules.Outing.UI
             RefreshPopup();
         }
 
+        public void RenderExtraActions(string secondary, string tertiary, string station, bool enabled, bool canSelect)
+        {
+            if (_secondary == null)
+            {
+                _secondary = CopyAction("Explore", _primary.transform.parent, out _secondaryLabel,
+                    () => SecondaryClicked?.Invoke());
+                _tertiary = CopyAction("Puzzle", _primary.transform.parent, out _tertiaryLabel,
+                    () => TertiaryClicked?.Invoke());
+                _stationStatus = CopyAction("StationStatus", _cancel.transform.parent, out _stationStatusLabel,
+                    OpenStation);
+                _stationStatus.transform.SetSiblingIndex(_cancel.transform.GetSiblingIndex() + 1);
+                var stationRect = (RectTransform)_stationStatus.transform;
+                var returnRect = (RectTransform)_cancel.transform;
+                stationRect.anchorMin = stationRect.anchorMax = Vector2.right;
+                stationRect.pivot = new Vector2(1 - returnRect.pivot.x, returnRect.pivot.y);
+                stationRect.anchoredPosition = new Vector2(-returnRect.anchoredPosition.x, returnRect.anchoredPosition.y);
+                stationRect.sizeDelta = new Vector2(returnRect.sizeDelta.x + 48, returnRect.sizeDelta.y);
+                _secondary.transform.SetAsFirstSibling();
+                _tertiary.transform.SetSiblingIndex(1);
+            }
+            SetAction(_secondary, _secondaryLabel, secondary, enabled);
+            SetAction(_tertiary, _tertiaryLabel, tertiary, enabled);
+            _showStationStatus = canSelect;
+            _stationStatusLabel.text = station;
+            RefreshPopup();
+        }
+
+        public void RenderDetailIcon(string pointId)
+        {
+            Sprite icon = pointId != null && _points.TryGetValue(pointId, out var point)
+                ? point.DetailArt : _stationIcon;
+            if (_detailIcon == null && icon != null)
+            {
+                var parent = _details.transform.parent;
+                int index = _details.transform.GetSiblingIndex();
+                var row = new GameObject("DetailIllustrationRow", typeof(RectTransform), typeof(HorizontalLayoutGroup));
+                row.transform.SetParent(parent, false);
+                row.transform.SetSiblingIndex(index);
+                var layout = row.GetComponent<HorizontalLayoutGroup>();
+                layout.spacing = 24;
+                layout.childAlignment = TextAnchor.MiddleLeft;
+                layout.childControlWidth = layout.childControlHeight = true;
+                layout.childForceExpandWidth = layout.childForceExpandHeight = false;
+                var iconObject = new GameObject("DetailIllustration", typeof(RectTransform), typeof(Image),
+                    typeof(LayoutElement));
+                iconObject.transform.SetParent(row.transform, false);
+                _detailIcon = iconObject.GetComponent<Image>();
+                _detailIcon.raycastTarget = false;
+                _detailIcon.preserveAspect = true;
+                var size = iconObject.GetComponent<LayoutElement>();
+                size.preferredWidth = size.preferredHeight = 108;
+                _details.transform.SetParent(row.transform, false);
+                var textSize = _details.GetComponent<LayoutElement>() ?? _details.gameObject.AddComponent<LayoutElement>();
+                textSize.flexibleWidth = 1;
+            }
+            if (_detailIcon == null) return;
+            _detailIcon.sprite = icon;
+            _detailIcon.gameObject.SetActive(icon != null);
+        }
+
+        private Button CopyAction(string actionName, Transform parent, out Text label, UnityAction clicked)
+        {
+            var button = Instantiate(_primary, parent, false);
+            button.name = actionName;
+            button.onClick = new Button.ButtonClickedEvent();
+            button.onClick.AddListener(() =>
+            {
+                if (isActiveAndEnabled && button.isActiveAndEnabled && button.IsInteractable()) clicked();
+            });
+            label = button.GetComponentInChildren<Text>(true);
+            label.name = actionName + "Label";
+            return button;
+        }
+
+        private static void SetAction(Button button, Text label, string title, bool enabled)
+        {
+            label.text = title ?? string.Empty;
+            button.gameObject.SetActive(!string.IsNullOrEmpty(title));
+            button.interactable = enabled;
+        }
+
+        private void OpenStation()
+        {
+            if (_inputPaused || !_selecting || IsDetailsOpen || !_popups.TryOpen(PopupKind.Station)) return;
+            StationOpened?.Invoke();
+            _resetDetails = true;
+            RefreshPopup();
+        }
+
         public void CloseDetails()
         {
-            _popups.TryClose(PopupKind.Place);
+            if (_popups.Top is PopupKind kind) _popups.TryClose(kind);
             RefreshPopup();
         }
 
@@ -195,6 +295,11 @@ namespace HomelessPetHelper.Modules.Outing.UI
             _detailsRoot.SetActive(IsDetailsOpen);
             _backdrop.gameObject.SetActive(IsDetailsOpen);
             _cancel.gameObject.SetActive(!IsDetailsOpen);
+            if (_stationStatus != null)
+            {
+                _stationStatus.gameObject.SetActive(_showStationStatus && !IsDetailsOpen);
+                _stationStatus.interactable = !_inputPaused;
+            }
             _mapScroll.enabled = !_inputPaused && !IsDetailsOpen;
         }
 
@@ -202,6 +307,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
         {
             if (Input.GetKeyDown(KeyCode.Escape)) OnCancel();
             if (!IsSuspended && _dayNight != null) _dayNight.Advance(Time.unscaledDeltaTime);
+            if (!IsSuspended && !IsDetailsOpen)
+                foreach (var point in _pointBindings) point.AdvanceBadge(Time.unscaledDeltaTime);
             if (_selecting && !_inputPaused && !IsSuspended && !IsDetailsOpen)
             {
                 float elapsed = Time.unscaledDeltaTime;

@@ -3,7 +3,10 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using HomelessPetHelper.Framework.UI;
+using HomelessPetHelper.Framework.Persistence;
 using HomelessPetHelper.Game;
+using HomelessPetHelper.Game.Approach;
+using HomelessPetHelper.Modules.Approach;
 using HomelessPetHelper.Modules.Outing;
 using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Rescue.UI;
@@ -28,13 +31,13 @@ namespace HomelessPetHelper.Tests.PlayMode
         [TearDown] public void TearDown() => _storage.Dispose();
 
         [UnityTest]
-        public IEnumerator BrowseShowsOnlyMapNamesAndBottomLeftBackAndModalBlocksUnderlyingInput()
+        public IEnumerator BrowseShowsHelpAndStationStatusAndModalBlocksUnderlyingInput()
         {
             yield return Load();
             Assert.That(_view.IsDetailsOpen, Is.False);
             Assert.That(_view.GetComponentsInChildren<Button>().Where(button =>
                 button.transform.parent.name != "MapArt").Select(button => button.name),
-                Is.EqualTo(new[] { "Cancel" }));
+                Is.EquivalentTo(new[] { "Cancel", "StationStatus" }));
             var back = Button("Cancel");
             var backRect = (RectTransform)back.transform;
             var backPointer = new PointerEventData(EventSystem.current)
@@ -46,11 +49,18 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Is.SameAs(back.gameObject));
             Assert.That(_view.GetComponentsInChildren<Text>().Where(label =>
                 !string.IsNullOrWhiteSpace(label.text) && label.GetComponentInParent<ToastView>() == null).All(label =>
-                label.transform.IsChildOf(Map().content)), Is.True,
+                label.transform.IsChildOf(Map().content) || label.transform.IsChildOf(Button("StationStatus").transform)), Is.True,
                 "Only map labels may remain: " + string.Join(",", _view.GetComponentsInChildren<Text>()
                     .Where(label => !string.IsNullOrWhiteSpace(label.text) &&
                         label.GetComponentInParent<ToastView>() == null &&
                         !label.transform.IsChildOf(Map().content)).Select(label => label.name + "=" + label.text)));
+            Assert.That(Button("Parking").GetComponentsInChildren<Text>().Any(label =>
+                label.text == "求助" && !label.raycastTarget), Is.True);
+            Button("StationStatus").onClick.Invoke();
+            Assert.That(_view.IsStationOpen, Is.True);
+            Assert.That(Label("Details").text, Does.Contain("在站动物"));
+            Button("Primary").onClick.Invoke();
+            Assert.That(_view.IsDetailsOpen, Is.False);
             int departures = 0;
             _view.PrimaryClicked += () => departures++;
             Button("Primary").onClick.Invoke();
@@ -132,13 +142,13 @@ namespace HomelessPetHelper.Tests.PlayMode
                     Save(camera, insetTarget, "map-insets");
                     Button("Porch").onClick.Invoke(); yield return Settle();
                     AssertPopup(inset);
-                    Assert.That(Button("Primary").IsInteractable(), Is.False);
-                    Assert.That(Label("Feedback").text, Does.Contain("暂未开放"));
+                    Assert.That(Button("Primary").IsInteractable(), Is.True);
+                    Assert.That(Label("PrimaryLabel").text, Is.EqualTo("去探索"));
                     AssertInside((RectTransform)Button("ClosePlace").transform, inset);
                     var backdrop = (RectTransform)Button("MapModalBackdrop").transform;
                     Assert.That(backdrop.rect.size, Is.EqualTo(((RectTransform)canvas.transform).rect.size));
                     Save(camera, insetTarget, "place-unavailable-insets");
-                    _view.CloseDetails(); _view.ShowNotice(Label("Feedback").text);
+                    _view.CloseDetails(); _view.ShowNotice("仍可探索");
                     yield return null;
                     var toast = _view.GetComponentInChildren<ToastView>();
                     Assert.That(toast.IsShowing, Is.True);
@@ -150,6 +160,91 @@ namespace HomelessPetHelper.Tests.PlayMode
             }
             finally { canvas.renderMode = RenderMode.ScreenSpaceOverlay; Object.Destroy(camera.gameObject); }
             LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator VisitWithoutRequestCanReturnWithoutStartingAnyActivity()
+        {
+            yield return Load();
+            var session = Object.FindObjectOfType<MainGameRoot>().Presenter.Session;
+            Button("Park").onClick.Invoke();
+            Assert.That(Label("PrimaryLabel").text, Is.EqualTo("去探索"));
+            Button("Primary").onClick.Invoke();
+            float deadline = Time.realtimeSinceStartup + 7;
+            while (Time.realtimeSinceStartup < deadline &&
+                (!Label("Heading").text.StartsWith("已抵达") || !Button("Primary").IsInteractable())) yield return null;
+            Assert.That(Label("Heading").text, Does.StartWith("已抵达"));
+            Assert.That(Button("Explore").isActiveAndEnabled || Button("Puzzle").isActiveAndEnabled, Is.False);
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero);
+            Button("Primary").onClick.Invoke();
+            Assert.That(session.Outing.LastSummary.ElapsedMinutes, Is.EqualTo(5));
+            Assert.That(session.Station.Animals, Is.Empty);
+        }
+
+        [UnityTest]
+        public IEnumerator VisitAtAnActiveRequestPlaysBothActivitiesAndRevisitsSavedBoards()
+        {
+            _storage.Dispose();
+            var saves = new MemorySaveStorage();
+            _storage = new MainSceneStorageScope(() => saves);
+            yield return Load();
+            var root = Object.FindObjectOfType<MainGameRoot>();
+            var session = root.Presenter.Session;
+            var request = session.Requests.Requests.First(item => item.PointId == "parking");
+            var requestState = request.State;
+            Button("Parking").onClick.Invoke();
+            Button("Explore").onClick.Invoke();
+            yield return WaitForArrival();
+            Assert.That(session.Outing.Session.AcceptedRequestId, Is.EqualTo(System.Guid.Empty));
+            Assert.That(request.State, Is.EqualTo(requestState));
+
+            Button("Explore").onClick.Invoke();
+            var field = Object.FindObjectOfType<ApproachPanelView>();
+            Assert.That(field.Session.Template.Mode, Is.EqualTo(ApproachMode.Cleanup));
+            int index = Enumerable.Range(0, field.Session.Template.Debris.Count)
+                .First(item => field.Session.CanReachDebris(item));
+            var debris = field.Session.Template.Debris[index];
+            Assert.That(field.Session.TryClean(debris.Cell, debris.Tool, .025, out var failure), Is.True,
+                failure.ToString());
+            double remaining = field.Session.CaptureCheckpoint().RemainingWork[index];
+            field.SendMessage("Pause"); field.SendMessage("Return");
+
+            Button("Puzzle").onClick.Invoke();
+            field = Object.FindObjectOfType<ApproachPanelView>();
+            int bridge = field.Session.Template.BridgeCells[0];
+            Assert.That(field.Session.TryPlaceBridge(bridge, out _), Is.True);
+            field.SendMessage("Pause"); field.SendMessage("Return");
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero);
+            Button("Primary").onClick.Invoke();
+            Assert.That(session.Outing.LastSummary.ElapsedMinutes, Is.EqualTo(25));
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(25));
+            Assert.That(root.Presenter.Progress.CanContinue, Is.True);
+
+            yield return Load();
+            session = Object.FindObjectOfType<MainGameRoot>().Presenter.Session;
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(25));
+            Button("Parking").onClick.Invoke();
+            (Button("Explore").isActiveAndEnabled ? Button("Explore") : Button("Primary")).onClick.Invoke();
+            yield return WaitForArrival();
+            Button("Explore").onClick.Invoke();
+            field = Object.FindObjectOfType<ApproachPanelView>();
+            Assert.That(field.Session.CaptureCheckpoint().RemainingWork[index], Is.EqualTo(remaining));
+            field.SendMessage("Pause"); field.SendMessage("Return");
+            Button("Puzzle").onClick.Invoke();
+            field = Object.FindObjectOfType<ApproachPanelView>();
+            Assert.That(field.Session.CaptureCheckpoint().BridgeCell, Is.EqualTo(bridge));
+            field.SendMessage("Pause"); field.SendMessage("Return");
+            Button("Primary").onClick.Invoke();
+            Assert.That(session.Outing.LastSummary.ElapsedMinutes, Is.EqualTo(5));
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        private IEnumerator WaitForArrival()
+        {
+            float deadline = Time.realtimeSinceStartup + 7;
+            while (Time.realtimeSinceStartup < deadline &&
+                (!Button("Puzzle").isActiveAndEnabled || !Button("Puzzle").IsInteractable())) yield return null;
+            Assert.That(Button("Puzzle").isActiveAndEnabled && Button("Puzzle").IsInteractable(), Is.True);
         }
 
         [UnityTest]

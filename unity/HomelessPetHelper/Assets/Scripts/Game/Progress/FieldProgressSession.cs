@@ -40,6 +40,44 @@ namespace HomelessPetHelper.Game.Progress
         internal static WorldFieldData Empty() => new WorldFieldData
             { Encounters = Array.Empty<EncounterData>(), Locations = Array.Empty<LocationData>() };
 
+        internal OutingFieldLayout ExplorationLayout(string pointId, OutingFieldLayout fallback)
+        {
+            string savedLayout = _data.Exploration?.FirstOrDefault(item => item.PointId == pointId)?.LayoutId ??
+                _data.Locations.SingleOrDefault(item => item.PointId == pointId)?.LayoutId;
+            return savedLayout == null ? fallback : _content.Layout(pointId, savedLayout);
+        }
+
+        internal bool HasExplorationActivities(string pointId) => _content.HasPlayableLocation(pointId);
+
+        internal ApproachSession CreateExplorationOpening(OutingSession outing, OutingFieldLayout layout,
+            ApproachMode mode, OpeningData pending)
+        {
+            var opening = new ApproachSession(outing.SessionId, outing.Seed, layout.Opening.Get(mode), layout.Opening);
+            var location = _data.Locations.SingleOrDefault(item => item.PointId == layout.PointId &&
+                item.LayoutId == layout.LayoutId && item.Mode == (int)mode);
+            var state = pending ?? FindExploration(layout, mode)?.Opening ?? location?.Opening;
+            if (state != null) opening.RestoreCheckpoint(FieldCheckpointCodec.Restore(state));
+            return opening;
+        }
+
+        internal void SaveExplorationOpening(OutingFieldLayout layout, ApproachMode mode, OpeningData state)
+        {
+            _data.Exploration = (_data.Exploration ?? Array.Empty<ExplorationData>())
+                .Where(item => item.PointId != layout.PointId || item.Mode != (int)mode)
+                .Append(new ExplorationData
+                {
+                    PointId = layout.PointId, LayoutId = layout.LayoutId,
+                    ContentVersion = _content.Version(layout.PointId, layout.LayoutId),
+                    TemplateId = layout.Opening.Get(mode).Id, Mode = (int)mode, Opening = state
+                }).ToArray();
+        }
+
+        private ExplorationData FindExploration(OutingFieldLayout layout, ApproachMode mode) =>
+            layout == null ? null : _data.Exploration?.SingleOrDefault(item => item.PointId == layout.PointId &&
+                item.LayoutId == layout.LayoutId &&
+                _content.IsCompatibleVersion(layout.PointId, layout.LayoutId, item.ContentVersion) &&
+                item.Mode == (int)mode && item.TemplateId == layout.Opening.Get(mode).Id);
+
         internal ApproachSession Begin(GameLoopSession session, OutingFieldLayout suggested, bool restoring = false)
         {
             var outing = session.Outing.Session;
@@ -48,7 +86,8 @@ namespace HomelessPetHelper.Game.Progress
             _encounter = _data.Encounters.SingleOrDefault(item => item.RequestId == requestId);
             if (_encounter == null)
             {
-                string layoutId = location == null ? suggested?.LayoutId : location.LayoutId;
+                string layoutId = location == null ? ExplorationLayout(outing.SelectedPointId, suggested)?.LayoutId :
+                    location.LayoutId;
                 var catalog = _content.Opening(outing.SelectedPointId, layoutId);
                 var layout = _content.Layout(outing.SelectedPointId, layoutId);
                 // The full cleaning room introduces the stairs. A new request can unlock the crate version.
@@ -69,8 +108,7 @@ namespace HomelessPetHelper.Game.Progress
                         _config.TimePolicy),
                     Mode = fresh ? (int)initial.Template.Mode : location.Mode,
                     TemplateId = fresh ? initial.Template.Id : location.TemplateId,
-                    Opening = fresh ? FieldCheckpointCodec.Capture(initial) :
-                        CopyForNewEncounter(location.Opening),
+                    Opening = fresh ? FieldCheckpointCodec.Capture(initial) : CopyForNewEncounter(location.Opening),
                     Animal = MainResidentCodec.CaptureAnimal(
                         _config.GetRescue(request.TemplateId).CreateIndividual().Current)
                 };
@@ -87,6 +125,9 @@ namespace HomelessPetHelper.Game.Progress
             }
             if (!restoring && location != null)
                 RestoreClutter(location, session.Clock.Current.ElapsedMinutes);
+            if (!restoring && FindExploration(_content.Layout(_encounter.PointId, _encounter.LayoutId),
+                (ApproachMode)_encounter.Mode) is ExplorationData explored)
+                _encounter.Opening = CopyForNewEncounter(explored.Opening);
             Animal = MainResidentCodec.RestoreAnimal(_encounter.Animal);
             _opening = CreateOpening(_encounter, outing.SessionId);
             _activity = null;
@@ -154,6 +195,9 @@ namespace HomelessPetHelper.Game.Progress
             _data.Active.OpenedRoute = session.Outing.Session.HasOpenedRoute;
             if (_opening != null && !_opening.IsClosed)
                 _encounter.Opening = FieldCheckpointCodec.Capture(_opening);
+            var mode = (ApproachMode)_encounter.Mode;
+            if (FindExploration(Layout, mode) != null)
+                SaveExplorationOpening(Layout, mode, CopyForNewEncounter(_encounter.Opening));
             _encounter.Animal = MainResidentCodec.CaptureAnimal(Animal.Current);
             if (_activity != null)
             {

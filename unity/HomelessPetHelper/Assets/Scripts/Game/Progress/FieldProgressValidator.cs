@@ -19,8 +19,21 @@ namespace HomelessPetHelper.Game.Progress
                 data.Encounters.Length > staged.Requests.Requests.Count ||
                 data.Locations.Length > config.Definition.Points.Count)
                 throw new ArgumentException("Invalid saved world field header.");
-            if (data.Encounters.Length == 0 && data.Locations.Length == 0 && data.Active == null) return;
+            var exploration = data.Exploration ?? Array.Empty<ExplorationData>();
+            if (exploration.Length > config.Definition.Points.Count * 2)
+                throw new ArgumentException("Invalid saved exploration count.");
+            if (data.Encounters.Length == 0 && data.Locations.Length == 0 && data.Active == null &&
+                exploration.Length == 0) return;
             if (content == null) throw new ArgumentException("Saved fields require authored content bindings.");
+            var activities = new HashSet<(string, int)>();
+            foreach (var visit in exploration)
+            {
+                if (visit == null || !config.Definition.TryGetPoint(visit.PointId, out _) ||
+                    string.IsNullOrEmpty(visit.LayoutId) || !activities.Add((visit.PointId, visit.Mode)))
+                    throw new ArgumentException("Invalid saved exploration identity.");
+                ValidateOpening(content, visit.PointId, visit.LayoutId, visit.ContentVersion,
+                    visit.TemplateId, visit.Mode, visit.Opening);
+            }
             var requestIds = new HashSet<Guid>();
             var animalIds = new HashSet<Guid>();
             foreach (var encounter in data.Encounters)

@@ -187,14 +187,13 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(Button(_map, "Primary").IsInteractable(), Is.True);
             Click(_map, "Parking");
             string detail = _map.GetComponentsInChildren<Text>(true).Single(text => text.name == "Details").text;
-            Assert.That(detail, Is.EqualTo(mapCopy.Get("detail.noRequest", mapCopy.Get("parking.detail"))));
+            Assert.That(detail, Does.StartWith(mapCopy.Get("parking.detail")));
             Assert.That(detail, Does.Not.Contain(mapCopy.Get("parking.rescue")));
             Assert.That(Button(_map, "Parking").GetComponentsInChildren<Text>(true)
                 .Single(text => text.name == "State").text, Is.EqualTo(mapCopy.Get("point.NoRequest")));
-            Assert.That(Button(_map, "Primary").IsInteractable(), Is.False);
-            Assert.That(_map.GetComponentsInChildren<Text>(true).Single(text => text.name == "Feedback").text,
-                Is.EqualTo(mapCopy.Get("unavailable.exploration")));
-            Button(_map, "Primary").onClick.Invoke();
+            Assert.That(Button(_map, "Primary").IsInteractable(), Is.True);
+            Assert.That(_map.GetComponentsInChildren<Text>(true).Single(text => text.name == "PrimaryLabel").text,
+                Is.EqualTo(mapCopy.Get("visit.go")));
             Assert.That(_root.Presenter.Session.Outing.Session.HasDeparted, Is.False);
             Click(_map, "Yard");
             Click(_map, "Primary"); MainApproachDriver.Complete();

@@ -57,10 +57,12 @@ namespace HomelessPetHelper.Game.Approach
         private ApproachTool _tool;
         private int _selectedBox = -1, _renderedVersion = -1;
         private bool _paused, _backgrounded, _hasFocus = true, _dog;
+        private bool _exploring;
         private string _feedbackKey;
         private float _noticeUntil;
-        public string FieldInstruction => _text.Get((SceneMode && _scene.Layout.IllustratedInterior
-            ? "treehouse.instruction." : "field.instruction.") + _session.Template.Mode);
+        public string FieldInstruction => _text.Get((_exploring ? "explore.instruction." :
+            SceneMode && _scene.Layout.IllustratedInterior ? "treehouse.instruction." :
+            "field.instruction.") + _session.Template.Mode);
         public ApproachSession Session => _session;
         public event Action CheckpointRequested;
         public ApproachBoardView Board => SceneMode ? _sceneBoard : _board;
@@ -117,10 +119,11 @@ namespace HomelessPetHelper.Game.Approach
         }
 
         public void ConfigureField(OutingFieldLayout layout, Sprite background, bool dog, ApproachSession opening,
-            SceneSpritePalette props = null, OutingArtwork artwork = null)
+            SceneSpritePalette props = null, OutingArtwork artwork = null, bool exploring = false)
         {
             if (gameObject.activeInHierarchy) throw new InvalidOperationException("Configure a closed approach view.");
-            _scene.Configure(layout, background, dog, opening, props: props, artwork: artwork);
+            _scene.Configure(layout, background, dog, opening, props: props, artwork: artwork,
+                showAnimal: !exploring);
             _board.gameObject.SetActive(layout == null);
             _sceneChrome.Apply(layout != null);
             _dockStamp = -1;
@@ -133,7 +136,7 @@ namespace HomelessPetHelper.Game.Approach
         }
 
         public void Bind(ApproachSession session, TextAsset text, bool dog, Action completed,
-            Action returnRequested, Action<bool> suspensionChanged)
+            Action returnRequested, Action<bool> suspensionChanged, bool exploring = false)
         {
             if (gameObject.activeInHierarchy) throw new InvalidOperationException("Bind a closed approach panel.");
             Unbind();
@@ -144,6 +147,7 @@ namespace HomelessPetHelper.Game.Approach
             if (Board.CellCount != session.Template.CellCount)
                 throw new InvalidOperationException("Approach board/prefab version mismatch.");
             _dog = dog;
+            _exploring = exploring;
             _completed = completed ?? throw new ArgumentNullException(nameof(completed));
             _returnRequested = returnRequested ?? throw new ArgumentNullException(nameof(returnRequested));
             _suspensionChanged = suspensionChanged ?? throw new ArgumentNullException(nameof(suspensionChanged));
@@ -151,7 +155,7 @@ namespace HomelessPetHelper.Game.Approach
             _paused = _backgrounded = false;
             _hasFocus = true;
             _renderedVersion = -1;
-            _feedbackKey = SceneMode && _scene.Layout.IllustratedInterior && !session.IsAnimalRevealed &&
+            _feedbackKey = !_exploring && SceneMode && _scene.Layout.IllustratedInterior && !session.IsAnimalRevealed &&
                 session.Template.Mode == ApproachMode.Cleanup ? "treehouse.clue" : "ready";
             _noticeUntil = 0;
         }
@@ -378,7 +382,7 @@ namespace HomelessPetHelper.Game.Approach
             _feedbackKey = key;
             if (_text == null) return;
             string visibleKey = _session.IsSuspended ? "paused" : _session.IsComplete ? "opened" : key;
-            if (SceneMode && _scene.Layout.IllustratedInterior && visibleKey == "opened")
+            if (!_exploring && SceneMode && _scene.Layout.IllustratedInterior && visibleKey == "opened")
                 visibleKey = _session.Template.Mode == ApproachMode.Cleanup ? "treehouse.found" : "opened";
             string caption = _text.Get(visibleKey);
             if (_feedback.text != caption) _feedback.text = caption;
@@ -399,8 +403,8 @@ namespace HomelessPetHelper.Game.Approach
                 ? "treehouse.title.Puzzle" : "title." + _session.Template.Mode);
             _instruction.text = _text.Get("instruction." + _session.Template.Mode);
             _seed.text = _text.Get("phase");
-            _summary.text = _text.Get("summary", _text.Get(_dog ? "animal.dog" : "animal.cat"),
-                _text.Get(_session.IsComplete ? "route.ready" : "route.blocked"));
+            string route = _text.Get(_session.IsComplete ? "route.ready" : "route.blocked");
+            _summary.text = _exploring ? route : _text.Get("summary", _text.Get(_dog ? "animal.dog" : "animal.cat"), route);
             SetFeedback(_feedbackKey);
             foreach (var label in new[] { _title, _instruction, _summary, _feedback, _seed })
                 label.gameObject.SetActive(!SceneMode);
@@ -414,8 +418,9 @@ namespace HomelessPetHelper.Game.Approach
             RenderTool(_mud, ApproachTool.Mud, !puzzle, enabled);
             _undo.gameObject.SetActive(puzzle);
             Label(_undo, "undo", enabled && _session.CanUndo && Allows("approach.undo"));
-            Label(_continue, "continue", enabled && _session.IsComplete && Allows("approach.continue"));
-            Label(_return, "return", enabled);
+            Label(_continue, _exploring ? "explore.back" : "continue",
+                enabled && _session.IsComplete && Allows("approach.continue"));
+            Label(_return, _exploring ? "explore.back" : "return", enabled);
             Label(_pause, _session.IsSuspended ? "resume" : "pause", !_session.IsClosed);
             for (int cell = 0; cell < Board.CellCount; cell++) RenderCell(cell);
             if (SceneMode) RenderScene();
@@ -445,7 +450,7 @@ namespace HomelessPetHelper.Game.Approach
             _sceneMenuText.text = _title.text + "\n\n" + FieldInstruction +
                 "\n\n" + _summary.text;
             _sceneResume.GetComponentInChildren<UiText>().text = _text.Get("resume");
-            _sceneReturn.GetComponentInChildren<UiText>().text = _text.Get("return");
+            _sceneReturn.GetComponentInChildren<UiText>().text = _text.Get(_exploring ? "explore.back" : "return");
             _sceneResume.interactable = _sceneReturn.interactable = !_backgrounded && _hasFocus;
             _instruction.text = FieldInstruction;
             _seed.text = string.Empty;
@@ -532,7 +537,7 @@ namespace HomelessPetHelper.Game.Approach
                 string.Empty;
             int percent = -1;
             if (_session.BridgeCell == cell) { color = _bridgeColor; caption = _text.Get("cell.bridge"); }
-            if (cell == _session.Template.Animal) caption = _text.Get(_dog ? "animal.dog" : "animal.cat");
+            if (!_exploring && cell == _session.Template.Animal) caption = _text.Get(_dog ? "animal.dog" : "animal.cat");
             if (cell == _session.Template.Entrance) caption = _text.Get("cell.entrance");
             if (_session.HasBox(cell)) { color = _boxColor; caption = _text.Get("cell.box"); }
             int debris = _session.DebrisAt(cell);
@@ -542,7 +547,7 @@ namespace HomelessPetHelper.Game.Approach
                 color = item.Tool == ApproachTool.Litter ? _litterColor :
                     item.Tool == ApproachTool.Weeds ? _weedsColor : _mudColor;
                 string kind = _text.Get("cell." + item.Tool);
-                caption = cell == _session.Template.Animal ? _text.Get("cell.covered", caption, kind) : kind;
+                caption = !_exploring && cell == _session.Template.Animal ? _text.Get("cell.covered", caption, kind) : kind;
                 percent = (int)Math.Ceiling(100 * _session.RemainingWork(debris) / item.WorkSeconds);
             }
             if (cell == _selectedBox) color = _selectedColor;

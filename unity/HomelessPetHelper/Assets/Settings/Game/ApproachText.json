@@ -1,5 +1,8 @@
 {
   "entries": [
+    { "key": "explore.back", "value": "返回地点" },
+    { "key": "explore.instruction.Cleanup", "value": "选择工具，按住清理路上的障碍。" },
+    { "key": "explore.instruction.Puzzle", "value": "移动木箱，必要时放下木板，打通道路。" },
     { "key": "treehouse.title.Puzzle", "value": "挪箱让路" },
     { "key": "treehouse.instruction.Puzzle", "value": "拖动木箱，让出楼梯口。点撤回可以重来。" },
     { "key": "treehouse.instruction.Cleanup", "value": "从门边开始，按住杂物清理，沿楼梯找小猫。" },

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using HomelessPetHelper.Modules.Approach;
 using HomelessPetHelper.Bootstrap;
 using HomelessPetHelper.Game.Text;
 using HomelessPetHelper.Modules.Outing;
@@ -33,12 +34,25 @@ namespace HomelessPetHelper.Game.CityMap
         private string _externalFeedback;
         private bool _disposed;
         private bool _travelling;
+        private bool _primaryExplores;
         private readonly Func<string, Func<bool>, Action<bool>, bool> _beginTravel;
+        private readonly Func<ApproachMode, string> _describeActivity;
+        private readonly Action<ApproachMode> _startActivity;
+        private readonly Func<string, bool> _hasActivities;
+        private readonly Func<bool> _returnExploration;
 
         public CityMapPresenter(CityMapView view, TextAsset text, CityMapPreviewConfig config,
             GameLoopSession loop = null, Action departed = null, Action returned = null,
             Func<MapDeparturePlan, string> departureRestriction = null, bool hasOpeningRoute = false,
             Func<string, Func<bool>, Action<bool>, bool> beginTravel = null)
+            : this(view, text, config, loop, departed, returned, departureRestriction, hasOpeningRoute,
+                beginTravel, null, null, null, null) { }
+
+        internal CityMapPresenter(CityMapView view, TextAsset text, CityMapPreviewConfig config,
+            GameLoopSession loop, Action departed, Action returned, Func<MapDeparturePlan, string> departureRestriction,
+            bool hasOpeningRoute, Func<string, Func<bool>, Action<bool>, bool> beginTravel,
+            Func<ApproachMode, string> describeActivity, Action<ApproachMode> startActivity,
+            Func<bool> returnExploration, Func<string, bool> hasActivities)
         {
             if (view == null) throw new ArgumentNullException(nameof(view));
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -49,6 +63,10 @@ namespace HomelessPetHelper.Game.CityMap
             _departureRestriction = departureRestriction;
             _hasOpeningRoute = hasOpeningRoute;
             _beginTravel = beginTravel;
+            _describeActivity = describeActivity;
+            _startActivity = startActivity;
+            _returnExploration = returnExploration;
+            _hasActivities = hasActivities;
             _text = new OptionPreviewText(text);
             _config.ValidateText(_text);
             _view.ValidateDefinition(config.Definition.BackgroundId,
@@ -78,6 +96,9 @@ namespace HomelessPetHelper.Game.CityMap
             }
             _view.PlaceSelected += Select;
             _view.PrimaryClicked += Act;
+            _view.SecondaryClicked += ExploreOrClean;
+            _view.TertiaryClicked += SolvePuzzle;
+            _view.StationOpened += Refresh;
             _view.CancelClicked += Cancel;
             _view.PauseChanged += Pause;
             Pause(_view.IsSuspended);
@@ -89,6 +110,9 @@ namespace HomelessPetHelper.Game.CityMap
             _disposed = true;
             _view.PlaceSelected -= Select;
             _view.PrimaryClicked -= Act;
+            _view.SecondaryClicked -= ExploreOrClean;
+            _view.TertiaryClicked -= SolvePuzzle;
+            _view.StationOpened -= Refresh;
             _view.CancelClicked -= Cancel;
             _view.PauseChanged -= Pause;
         }
@@ -138,6 +162,34 @@ namespace HomelessPetHelper.Game.CityMap
         private void Act()
         {
             if (_disposed || _paused || _travelling) return;
+            if (_view.IsStationOpen) { _view.CloseDetails(); return; }
+            var session = _outing.Session;
+            if (session.Stage == OutingStage.Departed && session.DeparturePlan?.EntryKind == MapEntryKind.Exploration &&
+                _returnExploration != null)
+            {
+                _returnExploration();
+                return;
+            }
+            Act(session.Stage == OutingStage.MapSelecting && _primaryExplores);
+        }
+
+        private void ExploreOrClean()
+        {
+            if (_disposed || _paused || _travelling || _view.IsStationOpen) return;
+            if (_outing.Session.Stage == OutingStage.MapSelecting) Act(true);
+            else _startActivity?.Invoke(ApproachMode.Cleanup);
+        }
+
+        private void SolvePuzzle()
+        {
+            if (!_disposed && !_paused && !_travelling) _startActivity?.Invoke(ApproachMode.Puzzle);
+        }
+
+        internal void RefreshArrival() => Refresh();
+
+        private void Act(bool exploration)
+        {
+            if (_disposed || _paused || _travelling) return;
             _externalFeedback = null;
             var session = _outing.Session;
             if (session.IsSettled)
@@ -147,7 +199,7 @@ namespace HomelessPetHelper.Game.CityMap
             }
 
             // Recheck at command time: the rendered button is not the authority for capacity or requests.
-            if (session.Stage == OutingStage.MapSelecting && !CanDepart(_selection, out _, out _))
+            if (session.Stage == OutingStage.MapSelecting && !CanDepart(_selection, exploration, out _, out _))
             {
                 Refresh();
                 return;
@@ -156,19 +208,19 @@ namespace HomelessPetHelper.Game.CityMap
             if (session.Stage == OutingStage.MapSelecting && _beginTravel != null)
             {
                 string pointId = _selection;
-                CanDepart(pointId, out var plan, out _);
+                CanDepart(pointId, exploration, out var plan, out _);
                 Guid sessionId = session.SessionId, requestId = plan.RequestId;
                 _travelling = true;
                 Refresh();
                 bool accepted = _beginTravel(pointId,
-                    () => CommitDeparture(sessionId, pointId, requestId),
+                    () => CommitDeparture(sessionId, pointId, requestId, exploration),
                     _ => { if (!_disposed) { _travelling = false; Refresh(); } });
                 if (!accepted) { _travelling = false; Refresh(); }
                 return;
             }
 
             bool success = session.Stage == OutingStage.MapSelecting ?
-                _outing.TrySelectAndDepart(session.SessionId, _selection, out var failure) :
+                Depart(session.SessionId, _selection, exploration, out var failure) :
                 _outing.TryEndUnresolved(session.SessionId, out _, out failure);
             _feedbackKey = success ? "ready" :
                 failure == OutingAssemblyFailure.StationFull ? "full" : "failure";
@@ -180,14 +232,18 @@ namespace HomelessPetHelper.Game.CityMap
             }
         }
 
-        private bool CommitDeparture(Guid sessionId, string pointId, Guid requestId)
+        private bool Depart(Guid sessionId, string pointId, bool exploration, out OutingAssemblyFailure failure) =>
+            exploration ? _outing.TryVisitLocation(sessionId, pointId, out failure) :
+                _outing.TrySelectAndDepart(sessionId, pointId, out failure);
+
+        private bool CommitDeparture(Guid sessionId, string pointId, Guid requestId, bool exploration)
         {
             if (_disposed || _paused || !_view.isActiveAndEnabled ||
                 _outing.Session.SessionId != sessionId ||
                 _outing.Session.Stage != OutingStage.MapSelecting ||
-                !CanDepart(pointId, out var plan, out _) || plan.RequestId != requestId)
+                !CanDepart(pointId, exploration, out var plan, out _) || plan.RequestId != requestId)
                 return false;
-            bool success = _outing.TrySelectAndDepart(sessionId, pointId, out var failure);
+            bool success = Depart(sessionId, pointId, exploration, out var failure);
             _feedbackKey = success ? "ready" :
                 failure == OutingAssemblyFailure.StationFull ? "full" : "failure";
             if (success) _departed?.Invoke();
@@ -235,24 +291,77 @@ namespace HomelessPetHelper.Game.CityMap
                 _text.Get(session.AcceptedRequestId == Guid.Empty ? "arrived.exploring" : "arrived.detail");
             string command = selecting ? "depart" : session.IsSettled ? "reopen" : "return";
             bool canDepart = CanDepart(_selection, out MapDeparturePlan plan, out string restriction);
+            bool openExploration = _returnExploration != null;
+            bool canExplore = openExploration && CanDepart(_selection, true, out _, out _);
+            bool arrivedExploration = !selecting && !session.IsSettled && openExploration &&
+                session.DeparturePlan?.EntryKind == MapEntryKind.Exploration;
             string feedback = selecting && !canDepart ? restriction :
                 _externalFeedback ?? (_feedbackKey == "ready" ? string.Empty : _text.Get(_feedbackKey));
             WorldTimeSnapshot time = _clock.Current;
             _view.RenderTimeOfDay(time.MinuteOfDay, time.MinutesPerDay);
+            if (openExploration)
+            {
+                RenderExploration(currentPoint, selecting, canDepart, canExplore, arrivedExploration, plan, time);
+                RenderPoints(snapshot, selecting);
+                return;
+            }
             _view.Render(_text.Get("status", _station.AvailableTemporaryPlaces, time.ElapsedMinutes),
                 heading, details, selecting ? GetDeparturePreview(plan) : string.Empty,
                 _paused ? _text.Get("paused") : feedback, _text.Get(command),
                 selecting, _paused || _travelling, !selecting || canDepart);
+            RenderPoints(snapshot, selecting);
+        }
+
+        private void RenderPoints(MapViewSnapshot snapshot, bool selecting)
+        {
             foreach (MapPointView point in snapshot.Points)
                 _view.RenderPoint(point.PointId, _text.Get(point.DisplayNameKey),
                     _text.Get("point." + point.DisplayState), point.DisplayState, point.PointId == _selection,
                     selecting && !_paused && !_travelling && point.DisplayState != PointDisplayState.Locked);
         }
 
-        private string GetDetails(MapPointView point)
+        private void RenderExploration(MapPointView point, bool selecting, bool canRescue, bool canExplore,
+            bool arrived, MapDeparturePlan rescue, WorldTimeSnapshot time)
         {
+            string pointName = point == null ? string.Empty : _text.Get(point.DisplayNameKey);
+            bool station = _view.IsStationOpen;
+            string cleanup = arrived ? _describeActivity?.Invoke(ApproachMode.Cleanup) : null;
+            string puzzle = arrived ? _describeActivity?.Invoke(ApproachMode.Puzzle) : null;
+            _config.TimePolicy.TryGetDuration(OutingReturnProgress.Exploring, out long visit, out _);
+            string details = station ? _text.Get("station.counts",
+                    _station.TemporaryCapacity - _station.AvailableTemporaryPlaces, _station.AvailableTemporaryPlaces) :
+                GetDetails(point, compact: true);
+            if (arrived && cleanup == null && puzzle == null) details += "\n" + _text.Get("visit.quiet");
+            if (selecting && !station && point != null && _hasActivities?.Invoke(point.PointId) == true)
+                details += "\n" + _text.Get("visit.activities");
+            string departure = !station && selecting && canExplore ? _text.Get("visit.cost", visit) : string.Empty;
+            if (!station && selecting && canRescue && rescue?.EntryKind == MapEntryKind.HelpRequest)
+            {
+                _config.TimePolicy.TryGetDuration(OutingReturnProgress.HandingOver, _hasOpeningRoute,
+                    out long rescueMinutes, out _);
+                departure += "\n" + _text.Get("visit.rescueCost", rescueMinutes);
+            }
+            else if (!station && selecting && canExplore && point?.DisplayState == PointDisplayState.HasHelpRequest &&
+                _station.IsFull) departure += "\n" + _text.Get("visit.rescueFull");
+            bool blocked = _paused || _travelling;
+            _primaryExplores = selecting && !station && !canRescue && canExplore;
+            string feedback = !selecting ? _externalFeedback ??
+                (_feedbackKey != "ready" ? _text.Get(_feedbackKey) : string.Empty) : string.Empty;
+            _view.Render(station ? _text.Get("visit.time", time.ElapsedMinutes) : string.Empty,
+                station ? _text.Get("shelter") : arrived ? _text.Get("arrived", pointName) : pointName,
+                details, departure, _paused ? _text.Get("paused") : feedback,
+                _text.Get(station ? "visit.close" : arrived ? "return" : canRescue ? "visit.rescue" : "visit.go"),
+                selecting, blocked, station || arrived || canRescue || canExplore);
+            _view.RenderExtraActions(station ? null : selecting && canExplore && canRescue ? _text.Get("visit.go") : cleanup,
+                station ? null : puzzle, _text.Get("visit.station"), !blocked, selecting);
+            _view.RenderDetailIcon(station ? null : point?.PointId);
+        }
+
+        private string GetDetails(MapPointView point, bool compact = false)
+        {
+            if (point == null) return string.Empty;
             string place = _text.Get(_config.GetDetailKey(point.PointId));
-            return point.RequestTextKey == null ? _text.Get("detail.noRequest", place) :
+            return point.RequestTextKey == null ? (compact ? place : _text.Get("detail.noRequest", place)) :
                 _text.Get("detail.request", place, _text.Get(point.RequestTextKey));
         }
 
@@ -266,6 +375,13 @@ namespace HomelessPetHelper.Game.CityMap
             }
             restriction = _departureRestriction?.Invoke(plan);
             return string.IsNullOrEmpty(restriction);
+        }
+
+        private bool CanDepart(string pointId, bool exploration, out MapDeparturePlan plan, out string restriction)
+        {
+            if (!exploration) return CanDepart(pointId, out plan, out restriction);
+            restriction = null;
+            return _rules.TryPlanLocationVisit(pointId, out plan, out _);
         }
 
         private string GetDeparturePreview(MapDeparturePlan plan)

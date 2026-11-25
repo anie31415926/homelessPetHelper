@@ -32,6 +32,7 @@ namespace HomelessPetHelper.Game.Field
         public RectTransform Frame => _frame;
         public Image Animal => _animal;
         public FieldSceneSnapshot Snapshot { get; private set; }
+        private bool _showAnimal;
         public void SetPresentationPaused(bool paused)
         { if (_motion != null) _motion.SetScenePaused(paused); }
 
@@ -43,9 +44,11 @@ namespace HomelessPetHelper.Game.Field
         }
 
         public void Configure(OutingFieldLayout layout, Sprite background, bool dog, ApproachSession opening,
-            FieldSceneSnapshot snapshot = null, SceneSpritePalette props = null, OutingArtwork artwork = null)
+            FieldSceneSnapshot snapshot = null, SceneSpritePalette props = null, OutingArtwork artwork = null,
+            bool showAnimal = true)
         {
             Layout = layout;
+            _showAnimal = showAnimal;
             SetPresentationPaused(false);
             SetWeather(default);
             if (_petMotion != null) _petMotion.Configure(layout != null && !dog);
@@ -144,8 +147,8 @@ namespace HomelessPetHelper.Game.Field
         private void Show(FieldSceneSnapshot snapshot)
         {
             Snapshot = snapshot;
-            if (_petMotion != null) _petMotion.SetVisible(snapshot.AnimalRevealed);
-            else _animal.enabled = snapshot.AnimalRevealed;
+            if (_petMotion != null) _petMotion.SetVisible(_showAnimal && snapshot.AnimalRevealed);
+            else _animal.enabled = _showAnimal && snapshot.AnimalRevealed;
             _terrain.Show(snapshot);
         }
     }

@@ -81,6 +81,21 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [Test]
+        public void ExplorationCanSettleTwoPlayedActivitiesWithoutClaimingTheRequest()
+        {
+            var fixture = new Fixture(0);
+            Guid outingId = fixture.Begin();
+            Assert.That(fixture.Coordinator.TryVisitLocation(outingId, "parking", out _), Is.True);
+            Assert.That(fixture.Coordinator.TryEndUnresolved(outingId, out _, out _, 3), Is.False);
+            Assert.That(fixture.Clock.Current.ElapsedMinutes, Is.Zero);
+            Assert.That(fixture.Coordinator.TryEndUnresolved(outingId, out var summary, out _, 2), Is.True);
+            Assert.That(summary.ElapsedMinutes, Is.EqualTo(25));
+            Assert.That(fixture.Coordinator.TryEndUnresolved(outingId, out _, out _, 2), Is.False);
+            Assert.That(fixture.Clock.Current.ElapsedMinutes, Is.EqualTo(25));
+            Assert.That(fixture.Request.State, Is.EqualTo(RequestState.Available));
+        }
+
+        [Test]
         public void InvalidLocationVisitDoesNotDepartOrAdvanceTime()
         {
             var fixture = new Fixture(0);

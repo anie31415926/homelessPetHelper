@@ -8,8 +8,19 @@ namespace HomelessPetHelper.Game.Progress
     {
         [Preserve, JsonProperty(Required = Required.Always)] public EncounterData[] Encounters;
         [Preserve, JsonProperty(Required = Required.Always)] public LocationData[] Locations;
+        [Preserve, JsonProperty(Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+        public ExplorationData[] Exploration;
         [Preserve, JsonProperty(Required = Required.AllowNull)] public ActiveOutingData Active;
         [Preserve] public WorldFieldData() { }
+    }
+
+    [Preserve, JsonObject(MemberSerialization.OptIn)]
+    internal sealed class ExplorationData
+    {
+        [Preserve, JsonProperty(Required = Required.Always)] public string PointId, LayoutId, ContentVersion, TemplateId;
+        [Preserve, JsonProperty(Required = Required.Always)] public int Mode;
+        [Preserve, JsonProperty(Required = Required.Always)] public OpeningData Opening;
+        [Preserve] public ExplorationData() { }
     }
 
     [Preserve, JsonObject(MemberSerialization.OptIn)]

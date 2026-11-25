@@ -2,6 +2,7 @@ using HomelessPetHelper.Modules.Animals;
 using System;
 using HomelessPetHelper.Game.CityMap.Travel;
 using System.Linq;
+using System.Collections.Generic;
 using HomelessPetHelper.Bootstrap;
 using HomelessPetHelper.Framework.Audio;
 using HomelessPetHelper.Game.CityMap;
@@ -14,6 +15,7 @@ using HomelessPetHelper.Framework.Persistence;
 using HomelessPetHelper.Game.Station;
 using HomelessPetHelper.Game.Text;
 using HomelessPetHelper.Modules.Outing;
+using HomelessPetHelper.Modules.Approach;
 using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Siege.UI;
 using HomelessPetHelper.Modules.Station;
@@ -29,6 +31,11 @@ namespace HomelessPetHelper.Game
         private readonly OutingWeatherGraphic _mapWeather;
         public OutingWeather WorldWeather { get; private set; } = OutingWeather.InitialWorld;
         private OutingWeather? _outingWeather;
+        private OutingFieldLayout _explorationLayout;
+        private ApproachSession _explorationOpening;
+        private OpeningData _explorationBaseline;
+        private readonly Dictionary<ApproachMode, OpeningData> _explorationChanges =
+            new Dictionary<ApproachMode, OpeningData>();
         private readonly SiegeTrialView _siege;
         private readonly ApproachPanelView _approach;
         private readonly GameContent _content;
@@ -152,6 +159,7 @@ namespace HomelessPetHelper.Game
         /// <summary>Coalesces continuous work; discrete actions and lifecycle boundaries call this directly.</summary>
         public void FlushFieldProgress()
         {
+            if (_explorationOpening != null) { CaptureExploration(); return; }
             if (_disposed || !Progress.CanContinue || !Progress.Fields.HasActive || _restoringProgress) return;
             var opening = Progress.Fields.Opening;
             int version = opening?.Version ?? -1, revision = _activity?.Battle.Revision ?? -1;
@@ -163,6 +171,7 @@ namespace HomelessPetHelper.Game
         {
             _fieldSuspendedRequested = suspended;
             Session.SetSuspended(suspended || _returnTravelling || !Progress.CanContinue);
+            _explorationOpening?.SetSuspended(suspended || !Progress.CanContinue);
             if (suspended) FlushFieldProgress();
         }
 
@@ -201,7 +210,9 @@ namespace HomelessPetHelper.Game
             Session.SetSuspended(false);
             _mapPresenter = new CityMapPresenter(_map, _content.MapText, _config, Session,
                 EnterApproach, () => ShowStation(false), GetDepartureRestriction,
-                hasOpeningRoute: true, beginTravel: BeginMapDeparture);
+                hasOpeningRoute: true, beginTravel: BeginMapDeparture,
+                describeActivity: DescribeExplorationActivity, startActivity: StartExplorationActivity,
+                returnExploration: ReturnExploration, hasActivities: Progress.Fields.HasExplorationActivities);
             _mapPresenter.ShowFeedback(_text.Get("save.outingBoundary"));
             if (noticePoint != null) _mapPresenter.Select(noticePoint);
         }
@@ -305,6 +316,14 @@ namespace HomelessPetHelper.Game
         private void EnterApproach()
         {
             var outing = Session.Outing.Session;
+            if (outing.DeparturePlan.EntryKind == MapEntryKind.Exploration)
+            {
+                _explorationLayout = Progress.Fields.ExplorationLayout(outing.SelectedPointId,
+                    _fields.Get(outing.SelectedPointId, 0));
+                _outingWeather = WorldWeather;
+                _mapPresenter.RefreshArrival();
+                return;
+            }
             if (outing.DeparturePlan.EntryKind != MapEntryKind.HelpRequest ||
                 !Session.Requests.TryGet(outing.AcceptedRequestId, out var request)) return;
             var encounter = _config.GetRescue(request.TemplateId);
@@ -356,6 +375,75 @@ namespace HomelessPetHelper.Game
                         _approach.PauseTarget, _approach.ObjectivesTarget),
                     _audioSession, _guidance, _uiText, _playSettings);
             }
+        }
+
+        private string DescribeExplorationActivity(ApproachMode mode)
+        {
+            if (_explorationLayout == null) return null;
+            using var opening = CreateExplorationOpening(mode);
+            _config.TimePolicy.TryGetDuration(OutingReturnProgress.Exploring, out long visit, out _);
+            _config.TimePolicy.TryGetDuration(OutingReturnProgress.OpeningRoute, out long openingTotal, out _);
+            return _mapText.Get(opening.IsComplete ? "visit." + mode + ".done" :
+                _explorationChanges.ContainsKey(mode) ? "visit." + mode + ".resume" : "visit." + mode,
+                openingTotal - visit);
+        }
+
+        private ApproachSession CreateExplorationOpening(ApproachMode mode)
+        {
+            _explorationChanges.TryGetValue(mode, out var pending);
+            return Progress.Fields.CreateExplorationOpening(Session.Outing.Session, _explorationLayout, mode, pending);
+        }
+
+        private void StartExplorationActivity(ApproachMode mode)
+        {
+            if (_explorationLayout == null || _explorationOpening != null || !Progress.CanContinue) return;
+            _explorationOpening = CreateExplorationOpening(mode);
+            _explorationBaseline = FieldCheckpointCodec.Capture(_explorationOpening);
+            var artwork = _content.GetOutingArtwork(_explorationLayout.PointId);
+            _map.gameObject.SetActive(false);
+            _approach.SetLocationBackground(artwork.Background);
+            _approach.ConfigureField(_explorationLayout, artwork.Background, false, _explorationOpening,
+                artwork.Props, artwork, exploring: true);
+            _approach.FieldScene.SetWeather(_outingWeather ?? WorldWeather);
+            _approach.Bind(_explorationOpening, _content.ApproachText, false, CloseExplorationActivity,
+                CloseExplorationActivity, SetFieldSuspended, exploring: true);
+            _approach.gameObject.SetActive(true);
+        }
+
+        private void CaptureExploration()
+        {
+            var state = FieldCheckpointCodec.Capture(_explorationOpening);
+            if (state.Bridge != _explorationBaseline.Bridge || !state.Boxes.SequenceEqual(_explorationBaseline.Boxes) ||
+                !state.Remaining.SequenceEqual(_explorationBaseline.Remaining) ||
+                state.Undo.Length != _explorationBaseline.Undo.Length ||
+                _explorationChanges.ContainsKey(_explorationOpening.Template.Mode))
+                _explorationChanges[_explorationOpening.Template.Mode] = state;
+        }
+
+        private void CloseExplorationActivity()
+        {
+            CaptureExploration();
+            _approach.gameObject.SetActive(false);
+            _approach.Unbind();
+            _explorationOpening.Dispose();
+            _explorationOpening = null;
+            _fieldSuspendedRequested = false;
+            Session.SetSuspended(false);
+            _map.gameObject.SetActive(true);
+            _mapPresenter.RefreshArrival();
+        }
+
+        private bool ReturnExploration()
+        {
+            if (!Session.TryReturnUnresolved(out var failure, _explorationChanges.Count))
+            {
+                _mapPresenter.ShowFeedback(_text.Get("loop.failure." + failure));
+                return false;
+            }
+            foreach (var activity in _explorationChanges)
+                Progress.Fields.SaveExplorationOpening(_explorationLayout, activity.Key, activity.Value);
+            ShowStation(false);
+            return true;
         }
 
         private string DescribeOpeningObjectives()
@@ -550,6 +638,8 @@ namespace HomelessPetHelper.Game
 
         private void ShowStation(bool arrival)
         {
+            _explorationChanges.Clear();
+            _explorationLayout = null;
             Progress.Fields.EndOuting();
             _outingWeather = null;
             CloseOverlays();
@@ -573,6 +663,7 @@ namespace HomelessPetHelper.Game
 
         public void Dispose()
         {
+            _explorationOpening?.Dispose();
             if (_disposed) return;
             _disposed = true;
             _travel?.Cancel();

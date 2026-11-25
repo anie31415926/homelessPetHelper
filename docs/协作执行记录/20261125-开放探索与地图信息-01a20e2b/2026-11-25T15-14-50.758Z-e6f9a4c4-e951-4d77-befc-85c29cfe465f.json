@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261125-开放探索与地图信息-01a20e2b.md",
+  "sessionId": "01a20e2b-b3e5-7d91-97ca-ee833a285dd8",
+  "phase": "delivery",
+  "readAt": "2026-11-25T15:14:50.758Z",
+  "writePaths": [
+    "docs/协作任务/20261125-开放探索与地图信息-01a20e2b.md",
+    "docs/协作执行记录/20261125-开放探索与地图信息-01a20e2b/",
+    "docs/开放探索与地图信息.md",
+    "test-results/open-exploration-main-20261125/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_CityMap.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Bootstrap/GameLoopSession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Bootstrap/OutingCoordinator.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Bootstrap/UnresolvedOutingSettlement.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Approach/ApproachPanelView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/CityMapPresenter.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Field/OutingFieldView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainLoopPresenter.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/FieldProgressSession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/FieldProgressValidator.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/WorldFieldData.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Outing/UI/CityMapPointBinding.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Outing/UI/CityMapView.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/ApproachText.json",
+    "unity/HomelessPetHelper/Assets/Settings/Game/CityMapText.json",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/OutingReturnIntegrationTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/CityMapUiRefinementTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/MainContinuityPlayTests.cs"
+  ],
+  "contextDigest": "36ab504feadb140dce2db068dd01b5bc1152ea086965738c9be6188aefd0b128",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261125-开放探索与地图信息-01a20e2b.md",
+      "sha256": "c308e2798516a400d97387d6fdd088413112ff47e507b5f9c070d9f5bd0c02fa"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "a1d2545d66a44b3da06f05b408cc04bad766278aa99e7fc27fb33e509aeb56f7"
+    }
+  ]
+}

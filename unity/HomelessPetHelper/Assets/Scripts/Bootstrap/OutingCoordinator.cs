@@ -268,12 +268,13 @@ namespace HomelessPetHelper.Bootstrap
             return true;
         }
 
-        public bool TryEndUnresolved(Guid sessionId, out OutingSummary summary, out OutingAssemblyFailure failure)
+        public bool TryEndUnresolved(Guid sessionId, out OutingSummary summary, out OutingAssemblyFailure failure,
+            int explorationActivities = 0)
         {
             summary = null;
             if (!TryRequireActiveSession(sessionId, out failure)) return false;
             if (!UnresolvedOutingSettlement.TryEnd(_session, _flow, _requestPool, _clock, _timePolicy,
-                out summary, out failure)) return false;
+                out summary, out failure, explorationActivities)) return false;
             _lastSummary = summary;
             return true;
         }

@@ -199,7 +199,7 @@ namespace HomelessPetHelper.Bootstrap
             return true;
         }
 
-        public bool TryReturnUnresolved(out OutingAssemblyFailure failure)
+        public bool TryReturnUnresolved(out OutingAssemblyFailure failure, int explorationActivities = 0)
         {
             if (!RequireOpen(out failure)) return false;
             if (Outing.Session == null)
@@ -207,7 +207,8 @@ namespace HomelessPetHelper.Bootstrap
                 failure = OutingAssemblyFailure.NoActiveSession;
                 return false;
             }
-            if (!Outing.TryEndUnresolved(Outing.Session.SessionId, out _, out failure)) return false;
+            if (!Outing.TryEndUnresolved(Outing.Session.SessionId, out _, out failure, explorationActivities))
+                return false;
             Activity?.Dispose();
             Activity = null;
             OpeningRoute?.Dispose();

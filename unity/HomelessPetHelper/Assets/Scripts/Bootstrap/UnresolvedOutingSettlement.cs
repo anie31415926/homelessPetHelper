@@ -10,7 +10,7 @@ namespace HomelessPetHelper.Bootstrap
     {
         internal static bool TryEnd(OutingSession session, RescueFlow flow, RequestPoolState pool,
             ActionWorldClock clock, OutingTimePolicy policy, out OutingSummary summary,
-            out OutingAssemblyFailure failure)
+            out OutingAssemblyFailure failure, int explorationActivities = 0)
         {
             summary = null;
             failure = OutingAssemblyFailure.None;
@@ -33,6 +33,24 @@ namespace HomelessPetHelper.Bootstrap
             {
                 failure = OutingAssemblyFailure.DurationPolicyRequired;
                 return false;
+            }
+
+            if (explorationActivities != 0)
+            {
+                if (explorationActivities < 0 || explorationActivities > 2 ||
+                    session.DeparturePlan?.EntryKind != MapEntryKind.Exploration ||
+                    session.Progress != OutingReturnProgress.Exploring)
+                {
+                    failure = OutingAssemblyFailure.WrongStage;
+                    return false;
+                }
+                if (!policy.TryGetDuration(OutingReturnProgress.OpeningRoute, out long openingTotal, out _) ||
+                    openingTotal - minutes > (long.MaxValue - minutes) / explorationActivities)
+                {
+                    failure = OutingAssemblyFailure.TimeRejected;
+                    return false;
+                }
+                minutes += (openingTotal - minutes) * explorationActivities;
             }
 
             var expected = new WorldTimeVersion(session.TimeMark.TimeSessionId, session.TimeMark.EnteredMinutes);
