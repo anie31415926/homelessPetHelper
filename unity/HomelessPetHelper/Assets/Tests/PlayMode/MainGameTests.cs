@@ -109,8 +109,17 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(session.Flow.Stage, Is.EqualTo(RescueStage.Rescued));
             Assert.That(activity.IsRescueComplete, Is.True);
             yield return Capture(_siege, "won");
-            Button staleReturn = FindButton(_siege, "Retry");
-            Click(_siege, "Retry");
+            Assert.That(_root.Presenter.Overlays.Top, Is.EqualTo(Game.UI.LevelPopupKind.RescueResult));
+            var result = _siege.GetComponentsInChildren<RectTransform>().Single(item =>
+                item.name == "ConfirmationPage");
+            Assert.That(result.GetComponentsInChildren<Text>().Select(item => item.text),
+                Does.Contain("救助成功").And.Contain("它愿意靠近你了，可以安全回站。").And.Contain("回救助站"));
+            Assert.That(result.GetComponentsInChildren<Button>().Select(item => item.name),
+                Is.EqualTo(new[] { "OverlayConfirm" }));
+            Assert.That(_siege.GetComponentsInChildren<Button>().Any(item => item.name == "FieldSubmit" ||
+                item.name == "Retry"), Is.False, "Return must only be offered in the result popup.");
+            Button staleReturn = FindButton(_siege, "Confirm");
+            Click(_siege, "Confirm");
             Assert.That(session.Station.Animals.Count, Is.EqualTo(1));
             var arrival = session.Station.Animals[0];
             Assert.That(arrival.MatchesCurrentIndividual(activity.Individual), Is.True);
@@ -196,12 +205,12 @@ namespace HomelessPetHelper.Tests.PlayMode
             _siege.SendMessage("OnApplicationFocus", false);
             Assert.That(_root.Presenter.Session.Flow.IsSuspended, Is.True);
             _siege.SendMessage("OnApplicationFocus", true);
-            Click(_siege, "Pause");
+            _root.Presenter.Overlays.Back();
+            Assert.That(_root.Presenter.Overlays.Top, Is.EqualTo(Game.UI.LevelPopupKind.RescueResult));
             Assert.That(_root.Presenter.Session.Flow.IsSuspended, Is.False);
             var individual = activity.Individual.Current;
             _root.Presenter.Session.Station.SetSuspended(true);
-            // Refuse at the business boundary. A popup confirmation deliberately resumes the whole
-            // session before transport, so a UI-owned pause cannot simulate an independent rejection.
+            // Refuse independently at the station boundary; actual travel manages its own suspension.
             var condition = new Modules.Station.AnimalIntakeCondition(
                 Modules.Station.StationHealthAssessment.Unchecked, individual.Coat.Dirtiness,
                 individual.Health.Problems.Select(problem => problem.InstanceId).ToArray());
@@ -210,7 +219,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(activity.Individual.Current, Is.SameAs(individual));
             Assert.That(_root.Presenter.Session.Clock.Current.ElapsedMinutes, Is.Zero);
             _root.Presenter.Session.Station.SetSuspended(false);
-            Click(_siege, "Retry");
+            Click(_siege, "Confirm");
             Assert.That(_root.Presenter.Session.Station.Animals.Count, Is.EqualTo(1));
         }
 

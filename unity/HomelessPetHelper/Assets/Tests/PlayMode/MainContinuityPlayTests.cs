@@ -260,6 +260,8 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(FeedbackContains("栗子"), Is.True);
             Click(_station, "SummaryRename");
             var nameField = _station.GetComponentInChildren<InputField>();
+            yield return null;
+            Assert.That(nameField.isFocused, Is.True, "Rename should focus its visible input.");
             Assert.That(nameField.text, Is.EqualTo("栗子"));
             nameField.text = "<abc>";
             Click(_station, "OverlayConfirm");
@@ -270,6 +272,10 @@ namespace HomelessPetHelper.Tests.PlayMode
             Click(_station, "OverlayConfirm");
             Assert.That(FeedbackContains("雪团芝麻麦芽芋圆"), Is.True);
             Click(_station, "Enter"); Click(_station, "Animal0");
+            var portrait = _station.Surface.GetComponentsInChildren<Image>().Single(image =>
+                image.sprite != null && image.sprite.name == "T_Pet_original");
+            Assert.That(portrait.isActiveAndEnabled, Is.True, "The selected rescue belongs inside its detail popup.");
+            Assert.That(portrait.raycastTarget, Is.False, "Viewing the animal is not a care stroke.");
             yield return layout.CaptureAndAssert(_station, "name-detail-long");
             Click(_station, "DetailRename");
             _station.GetComponentInChildren<InputField>().text = "柚子";
@@ -423,7 +429,8 @@ namespace HomelessPetHelper.Tests.PlayMode
                 yield return null;
             }
             yield return null;
-            Assert.That(activity.IsRescueComplete, Is.True, activity.Battle.Snapshot.EncounterId + ": " +
+            Assert.That(activity.Battle.Phase, Is.EqualTo(SiegeState.BattlePhase.Won),
+                activity.Battle.Snapshot.EncounterId + ": " +
                 activity.Battle.Phase + ", progress=" + activity.Battle.Snapshot.Progress);
         }
 

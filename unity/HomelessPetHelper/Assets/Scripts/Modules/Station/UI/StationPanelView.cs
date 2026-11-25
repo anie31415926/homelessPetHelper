@@ -133,7 +133,7 @@ namespace HomelessPetHelper.Modules.Station.UI
             _surface.SetCleaning(false);
             _summary.SetActive(summary && !_overlaySuspended);
             _overview.SetActive(_chrome != null || (!summary && !detail));
-            if (_scene != null) _scene.SetPresentationVisible(!summary && !caring);
+            if (_scene != null) _scene.SetPresentationVisible(!summary && !detail);
             _detail.SetActive(!summary && detail);
             if (_chrome != null) _chrome.SetPage(summary, detail, caring);
         }

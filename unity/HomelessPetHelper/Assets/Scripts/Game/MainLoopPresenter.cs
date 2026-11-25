@@ -18,6 +18,7 @@ using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Siege.UI;
 using HomelessPetHelper.Modules.Station;
 using HomelessPetHelper.Modules.Station.UI;
+using UnityEngine;
 
 namespace HomelessPetHelper.Game
 {
@@ -480,7 +481,11 @@ namespace HomelessPetHelper.Game
 
         private void ConfirmRescue()
         {
-            if (Session.Flow.Stage == Modules.Rescue.RescueStage.Rescued) return;
+            if (Session.Flow.Stage == Modules.Rescue.RescueStage.Rescued)
+            {
+                ShowRescueResult();
+                return;
+            }
             _activity.SynchronizeOutcome();
             _siege.Battlefield.ShowAnimal(_activity.Individual.Current);
             _petMotion.ShowAnimal(_activity.Individual.Current);
@@ -488,11 +493,34 @@ namespace HomelessPetHelper.Game
             if (!Session.TryConfirmRescue(out var failure))
                 throw new InvalidOperationException("Siege completion could not be confirmed: " + failure);
             _audio?.PlayEffect(GameAudioCues.RescueSuccess);
-            Checkpoint();
+            if (Checkpoint()) ShowRescueResult();
+        }
+
+        private void ShowRescueResult()
+        {
+            if (_overlays == null)
+            {
+                var view = _siege.GetComponent<LevelOverlayAnchor>().View;
+                var target = (RectTransform)_siege.transform;
+                _overlays = new LevelOverlaySession(view,
+                    new LevelOverlayBindings(SetFieldSuspended, ReturnFromSiege,
+                        () => string.Empty, () => null, (overlay, _) => _siege.BindResultOverlay(overlay),
+                        (_, targets) => false, target, target),
+                    _audioSession, null, _uiText, _playSettings, settingsOnly: true);
+            }
+            var copy = new SiegeText(_content.SiegeText);
+            _siege.ShowRescueResult();
+            _overlays.ShowRescueResult(copy.Get("game.resultTitle"), copy.Get("game.resultMessage"),
+                copy.Get("game.resultReturn"));
         }
 
         private void ReturnFromSiege()
         {
+            if (_disposed || _returnTravelling || !Progress.CanContinue)
+            {
+                _overlays?.AllowRescueResultRetry();
+                return;
+            }
             BeginFieldReturn(ReturnFromSiegeImmediately);
         }
 
@@ -516,7 +544,9 @@ namespace HomelessPetHelper.Game
                 }
             }
             else if (Session.TryReturnUnresolved(out failure)) { ShowStation(false); return; }
-            _siege.ShowExternalFeedback(_text.Get("loop.failure." + failure));
+            string message = _text.Get("loop.failure." + failure);
+            if (_overlays?.Top == LevelPopupKind.RescueResult) _overlays.AllowRescueResultRetry(message);
+            else _siege.ShowExternalFeedback(message);
         }
 
         private void ShowStation(bool arrival)
@@ -600,6 +630,7 @@ namespace HomelessPetHelper.Game
             {
                 if (Session.Outing.Session.IsSettled) _fieldSuspendedRequested = false;
                 Session.SetSuspended(_fieldSuspendedRequested);
+                _overlays?.AllowRescueResultRetry();
             }
         }
 

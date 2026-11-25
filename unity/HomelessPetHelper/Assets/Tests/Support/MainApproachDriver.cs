@@ -129,6 +129,9 @@ namespace HomelessPetHelper.Tests.Support
             }
             if (name == "Pause" && view.GetComponentsInChildren<Button>().Any(button =>
                 button.name == "OverlayResume")) name = "Resume";
+            if (name == "Retry" && view.GetComponentsInChildren<Button>().Any(button =>
+                    button.name == "OverlayConfirm") && !view.GetComponentsInChildren<Button>().Any(button =>
+                    button.name == "OverlayCancel")) name = "Confirm";
             // The scene trial exposes Return through its actual pause menu.
             if (name == "Retry" && !Button(view,name).isActiveAndEnabled) Click(view,"Pause");
             var button = Button(view, name);

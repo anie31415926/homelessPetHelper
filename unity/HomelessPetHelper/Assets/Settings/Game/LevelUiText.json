@@ -1,5 +1,6 @@
 {
   "entries": [
+    { "key": "station.keyboardUnavailable", "value": "输入法未打开，请再次点击输入框。" },
     {
       "key": "menu.pause",
       "value": "暂停"

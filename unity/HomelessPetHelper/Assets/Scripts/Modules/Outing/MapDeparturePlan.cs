@@ -12,15 +12,17 @@ namespace HomelessPetHelper.Modules.Outing
         public Guid RequestId { get; }
         public MapEntryKind EntryKind { get; }
         public OwnerReunionPlan ReunionPlan { get; }
-        public bool RequiresStationSpace => EntryKind != MapEntryKind.OwnerReunion;
+        public bool RequiresStationSpace { get; }
 
-        internal MapDeparturePlan(string pointId, HelpRequest request)
+        internal MapDeparturePlan(string pointId, HelpRequest request, bool visitOnly = false)
         {
             PointId = pointId;
             RequestId = request == null ? Guid.Empty : request.RequestId;
             ReunionPlan = request == null ? null : request.ReunionPlan;
             EntryKind = request == null ? MapEntryKind.Exploration :
                 ReunionPlan == null ? MapEntryKind.HelpRequest : MapEntryKind.OwnerReunion;
+            RequiresStationSpace = EntryKind == MapEntryKind.HelpRequest ||
+                (EntryKind == MapEntryKind.Exploration && !visitOnly);
         }
     }
 }

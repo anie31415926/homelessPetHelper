@@ -445,6 +445,18 @@
       "value": "时间到了，本次未完成。"
     },
     {
+      "key": "game.resultTitle",
+      "value": "救助成功"
+    },
+    {
+      "key": "game.resultMessage",
+      "value": "它愿意靠近你了，可以安全回站。"
+    },
+    {
+      "key": "game.resultReturn",
+      "value": "回救助站"
+    },
+    {
       "key": "game.transport",
       "value": "安全转运回站"
     },

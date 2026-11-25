@@ -33,6 +33,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         private bool _summary;
         private string _message;
         private bool _caring;
+        private bool _showAnimal;
         public bool MenuIsOpen => _menu.activeSelf;
         public RectTransform MenuTarget => (RectTransform)_menuButton.transform;
 
@@ -79,7 +80,8 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         {
             _caring = caring;
             _summary = summary;
-            _careStage.SetActive(caring);
+            _showAnimal = detail && !summary;
+            _careStage.SetActive(_showAnimal);
             _careCommands.SetActive(!caring);
             _progress.SetActive(caring);
             _careFeedback.gameObject.SetActive(caring && !string.IsNullOrEmpty(_message));
@@ -99,11 +101,12 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
 
         private void LateUpdate()
         {
-            if (!_caring) return;
+            if (!_showAnimal) return;
             float feedback = _careFeedback.gameObject.activeSelf ? _careFeedback.preferredHeight + _metrics.gap : 0;
             float available = ((RectTransform)_detail.parent).rect.height * _metrics.popupHeightRatio -
                 _metrics.margin * 2 - _metrics.touchSize * 2 - _metrics.gap * 6 - _metrics.bodySize - feedback;
-            float height = Mathf.Clamp(available, _metrics.touchSize * 2, 720);
+            float height = _caring ? Mathf.Clamp(available, _metrics.touchSize * 2, 720) :
+                Mathf.Clamp(available * 0.56f, _metrics.touchSize * 2, 430);
             if (!Mathf.Approximately(_careStageSize.preferredHeight, height))
                 _careStageSize.minHeight = _careStageSize.preferredHeight = height;
         }

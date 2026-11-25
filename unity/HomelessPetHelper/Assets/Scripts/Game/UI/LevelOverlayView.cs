@@ -21,7 +21,7 @@ namespace HomelessPetHelper.Game.UI
         [SerializeField] private UiText _confirmationTitle, _confirmLabel, _cancelLabel, _browseLabel;
         [SerializeField] private Button _browse;
         [SerializeField] private Image _dialogPortrait;
-        [SerializeField] private InputField _stationInput;
+        [SerializeField] private StationNameInput _stationInput;
         [SerializeField] private UiText _stationInputError;
         [SerializeField] private AudioSettingsView _audio;
         [SerializeField] private Toggle _pauseAtDecision;
@@ -37,9 +37,13 @@ namespace HomelessPetHelper.Game.UI
         private LevelOverlaySession _session;
         private float _noticeUntil;
         private string _defaultTitle, _defaultConfirm, _defaultCancel;
+        private string _stationKeyboardError;
         private TextAnchor _defaultConfirmationAlignment;
         public AudioSettingsView Audio => _audio;
-        internal string StationInput => _stationInput.text;
+        internal string StationInput
+        {
+            get { _stationInput.ReadKeyboard(); return _stationInput.text; }
+        }
 
         public void Open(LevelOverlaySession session, OptionPreviewText text)
         {
@@ -52,6 +56,7 @@ namespace HomelessPetHelper.Game.UI
             _defaultTitle = _confirmationTitle.text;
             _defaultConfirm = _confirmLabel.text;
             _defaultCancel = _cancelLabel.text;
+            _stationKeyboardError = text.Get("station.keyboardUnavailable");
             _defaultConfirmationAlignment = _confirmationText.alignment;
             SetConfirmation(string.Empty);
             _noticeUntil = 0;
@@ -61,15 +66,18 @@ namespace HomelessPetHelper.Game.UI
 
         public void Refresh(LevelPopupKind? top, bool canInteract)
         {
+            bool showKeyboard = top == LevelPopupKind.Confirmation && !_confirmationPage.activeInHierarchy &&
+                _stationInput != null && _stationInput.gameObject.activeSelf && canInteract;
             _modalRoot.SetActive(top.HasValue);
             _modalBackdrop.SetActive(top.HasValue);
             _pausePage.SetActive(top == LevelPopupKind.Pause);
             _settingsPage.SetActive(top == LevelPopupKind.Settings);
             _objectivesPage.SetActive(top == LevelPopupKind.Objectives);
-            _confirmationPage.SetActive(top == LevelPopupKind.Confirmation);
+            _confirmationPage.SetActive(top == LevelPopupKind.Confirmation || top == LevelPopupKind.RescueResult);
             _modalInput.interactable = canInteract;
             _modalInput.blocksRaycasts = true;
             if (top.HasValue) HideGuide();
+            if (showKeyboard) _stationInput.OpenKeyboard();
         }
 
         public void SetObjectives(string text, bool canReplay)
@@ -81,6 +89,7 @@ namespace HomelessPetHelper.Game.UI
             _confirmationTitle.text = _defaultTitle;
             _confirmLabel.text = _defaultConfirm;
             _cancelLabel.text = _defaultCancel;
+            _cancel.gameObject.SetActive(true);
             _confirm.interactable = true;
             _confirm.gameObject.SetActive(true);
             _browse.gameObject.SetActive(false);
@@ -88,6 +97,18 @@ namespace HomelessPetHelper.Game.UI
             _dialogPortrait.gameObject.SetActive(false);
             HideStationInput();
         }
+
+        internal void SetRescueResult(string title, string body, string returnLabel)
+        {
+            SetConfirmation(body);
+            _confirmationTitle.text = title;
+            _confirmationText.alignment = TextAnchor.MiddleCenter;
+            _confirmLabel.text = returnLabel;
+            _cancel.gameObject.SetActive(false);
+        }
+
+        internal void SetRescueResultReturning(bool returning) => _confirm.interactable = !returning;
+        internal void SetRescueResultMessage(string message) => _confirmationText.text = message;
 
         internal void SetStationDialog(StationDialog dialog)
         {
@@ -113,7 +134,7 @@ namespace HomelessPetHelper.Game.UI
         private void HideStationInput()
         {
             if (_stationInput == null || _stationInputError == null) return;
-            _stationInput.DeactivateInputField();
+            _stationInput.CloseKeyboard();
             _stationInput.gameObject.SetActive(false);
             _stationInput.SetTextWithoutNotify(string.Empty);
             ShowInputError(null);
@@ -126,6 +147,7 @@ namespace HomelessPetHelper.Game.UI
         }
 
         private void ClearInputError(string _) => ShowInputError(null);
+        private void ShowKeyboardUnavailable() => ShowInputError(_stationKeyboardError);
         public void SetSettingsStatus(string text)
         {
             _settingsStatus.text = text;
@@ -169,7 +191,11 @@ namespace HomelessPetHelper.Game.UI
             _confirm.onClick.AddListener(Confirm);
             _cancel.onClick.AddListener(Cancel);
             _browse.onClick.AddListener(Browse);
-            if (_stationInput != null) _stationInput.onValueChanged.AddListener(ClearInputError);
+            if (_stationInput != null)
+            {
+                _stationInput.onValueChanged.AddListener(ClearInputError);
+                _stationInput.KeyboardUnavailable += ShowKeyboardUnavailable;
+            }
         }
 
         private void OnDisable()
@@ -185,7 +211,11 @@ namespace HomelessPetHelper.Game.UI
             _confirm.onClick.RemoveListener(Confirm);
             _cancel.onClick.RemoveListener(Cancel);
             _browse.onClick.RemoveListener(Browse);
-            if (_stationInput != null) _stationInput.onValueChanged.RemoveListener(ClearInputError);
+            if (_stationInput != null)
+            {
+                _stationInput.onValueChanged.RemoveListener(ClearInputError);
+                _stationInput.KeyboardUnavailable -= ShowKeyboardUnavailable;
+            }
         }
 
         private void LateUpdate()

@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261125-柴犬标准站姿选定-01a2076c.md",
+  "sessionId": "01a2076c-48cc-7063-a3a1-e609ac9a8e34",
+  "phase": "delivery",
+  "readAt": "2026-11-25T10:57:20.527Z",
+  "writePaths": [
+    "art-source/pet-roster-20261124/standard-stand/shiba-neutral/selected/",
+    "docs/协作任务/20261125-柴犬标准站姿选定-01a2076c.md",
+    "docs/协作执行记录/20261125-柴犬标准站姿选定-01a2076c/",
+    "test-results/resource-catalog/"
+  ],
+  "contextDigest": "3a7b36c1edc6867c658912e3b911bcc08eb1940d56f61786c0e0802719639db9",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261125-已完成改动提交推送-01a20e2b.md",
+      "sha256": "84780394b3edb893e4dcff58c8875edb65ee593c8378e2cb18aaee61d53e5e7b"
+    },
+    {
+      "path": "docs/协作任务/20261125-柴犬标准站姿选定-01a2076c.md",
+      "sha256": "692030a2c1f7d7a763f1f16db0cd5308922a5b028c7a13fe0f418e16fde460a7"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "18be29799fff69955a919d60116e703d0fabd2d2871f7b35c76ca2ff0e992a03"
+    }
+  ]
+}

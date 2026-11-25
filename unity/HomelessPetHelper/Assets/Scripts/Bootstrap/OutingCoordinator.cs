@@ -183,6 +183,12 @@ namespace HomelessPetHelper.Bootstrap
         /// present. Exploration has no fabricated request or guaranteed animal.
         /// </summary>
         public bool TrySelectAndDepart(Guid sessionId, string pointId, out OutingAssemblyFailure failure)
+            => TryDepart(sessionId, pointId, visitOnly: false, out failure);
+
+        public bool TryVisitLocation(Guid sessionId, string pointId, out OutingAssemblyFailure failure)
+            => TryDepart(sessionId, pointId, visitOnly: true, out failure);
+
+        private bool TryDepart(Guid sessionId, string pointId, bool visitOnly, out OutingAssemblyFailure failure)
         {
             failure = OutingAssemblyFailure.None;
             if (!TryRequireActiveSession(sessionId, out failure))
@@ -206,8 +212,10 @@ namespace HomelessPetHelper.Bootstrap
                 return false;
             }
 
-            if (!_mapRules.TryPlanDeparture(pointId, _station.AvailableTemporaryPlaces,
-                out var plan, out var selectFailure))
+            bool planned = visitOnly
+                ? _mapRules.TryPlanLocationVisit(pointId, out var plan, out var selectFailure)
+                : _mapRules.TryPlanDeparture(pointId, _station.AvailableTemporaryPlaces, out plan, out selectFailure);
+            if (!planned)
             {
                 failure = MapOutingFailure(selectFailure);
                 return false;

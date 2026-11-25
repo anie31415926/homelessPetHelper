@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using HomelessPetHelper.Framework.UI;
 using UnityEngine;
 using UnityEngine.UI;
 using static HomelessPetHelper.Modules.Siege.SiegeState;
@@ -15,6 +16,17 @@ namespace HomelessPetHelper.Modules.Siege.UI
         [SerializeField] private GameObject _legacyContent;
         private bool _sceneMode;
         private TextAsset _sceneCopy;
+        private ILevelOverlay _resultOverlay;
+        private bool _rescueResultPresented;
+
+        public void BindResultOverlay(ILevelOverlay overlay) => _resultOverlay = overlay;
+
+        public void ShowRescueResult()
+        {
+            _rescueResultPresented = true;
+            if (_sceneMode) _scene.ShowRescueResult();
+            else Render();
+        }
         public SiegeFieldView Scene => _sceneMode ? _scene : null;
 
         public void SetFieldMode(bool enabled)
@@ -118,6 +130,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (gameObject.activeInHierarchy) throw new InvalidOperationException("Bind a closed siege panel.");
             _external = true;
             _reportedOutcome = false;
+            _rescueResultPresented = false;
             _externalPaused = false;
             _session = session ?? throw new ArgumentNullException(nameof(session));
             _catalog = session.Catalog;
@@ -137,6 +150,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _completed = _returnRequested = null;
             _suspensionChanged = null;
             _session = null;
+            _resultOverlay = null;
         }
 
         public void ShowExternalFeedback(string feedback)
@@ -262,7 +276,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             if (_external)
             {
-                _returnRequested?.Invoke();
+                if (!_rescueResultPresented) _returnRequested?.Invoke();
                 return;
             }
             _session = new SiegeSession(
@@ -322,6 +336,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private void OnApplicationFocus(bool focused)
         {
             if (_sceneMode) { _scene.SetApplicationFocus(focused); return; }
+            if (_resultOverlay != null) { _resultOverlay.SetApplicationFocus(focused); return; }
             _hasFocus = focused;
             if (!focused)
                 Interrupt();
@@ -330,6 +345,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private void OnApplicationPause(bool paused)
         {
             if (_sceneMode) { _scene.SetApplicationPaused(paused); return; }
+            if (_resultOverlay != null) { _resultOverlay.SetApplicationPaused(paused); return; }
             _applicationPaused = paused;
             if (paused)
                 Interrupt();
@@ -538,6 +554,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (_external)
             {
                 SetLabel(_retry, _text.Get(s.Phase == BattlePhase.Won ? "game.transport" : "game.return"));
+                _retry.gameObject.SetActive(!_rescueResultPresented);
+                _feedback.gameObject.SetActive(!_rescueResultPresented);
                 _retry.interactable = !_externalPaused;
                 if (_externalFeedback == null && s.Phase == BattlePhase.Won)
                     _feedback.text = _text.Get("game.won");

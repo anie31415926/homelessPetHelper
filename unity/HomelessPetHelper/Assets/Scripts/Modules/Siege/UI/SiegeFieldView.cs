@@ -43,6 +43,12 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private SiegeText _text;
         private SiegeCellPool _handPool;
         private Action _completed, _returnRequested;
+        private bool _rescueResultPresented;
+        internal void ShowRescueResult()
+        {
+            _rescueResultPresented = true;
+            if (isActiveAndEnabled && _session != null) Render();
+        }
         private Action<bool> _suspend;
         private bool _reported, _paused, _focused = true, _backgrounded;
         private string _error, _tower, _externalFeedback;
@@ -164,6 +170,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
                     "field.discard", "field.materials", "field.menu", "field.help" })
                 _text.Get(key);
             _completed = completed; _returnRequested = returnRequested; _suspend = suspend;
+            _rescueResultPresented = false;
             _plan.Clear(); _reported = _paused = _backgrounded = false; _focused = true;
             _error = _tower = _externalFeedback = null; _turn = -1;
             _nextCardId = _nextCardHint = null;
@@ -336,7 +343,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         }
         private void Submit()
         {
-            if (_session == null) return;
+            if (_session == null || _rescueResultPresented) return;
             if (_session.Phase == SiegeState.BattlePhase.Won || _session.Phase == SiegeState.BattlePhase.Timeout)
             { Return(); return; }
             if (!CanAct || !_session.Realtime && !Allows("siege.submit")) return;
@@ -428,12 +435,13 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 _plan.HasAction ? valid ? _text.Format("field.plan", cost, state.Energy - cost) : _text.Get(reason) :
                 selectedUnaffordable ? _text.Get("field.unaffordable") :
                 _nextCardHint ?? _text.Get(_plan.ShowsEntrances ? "field.deploy" : "field.ready"));
-            _hint.gameObject.SetActive(!_paused && (_externalFeedback != null || _error != null || terminal ||
-                _plan.HasAction || _plan.Anchor.HasValue || selectedUnaffordable || !_compact && _nextCardHint != null));
+            _hint.gameObject.SetActive(!_rescueResultPresented && !_paused &&
+                (_externalFeedback != null || _error != null || terminal || _plan.HasAction ||
+                    _plan.Anchor.HasValue || selectedUnaffordable || !_compact && _nextCardHint != null));
             Label(_submit, _text.Get(terminal ? state.Phase == SiegeState.BattlePhase.Won ? "game.transport" :
                 "game.return" :
                 _plan.HasAction ? "unity.submit" : "unity.skip"));
-            _submit.gameObject.SetActive(terminal || !state.Realtime);
+            _submit.gameObject.SetActive(!_rescueResultPresented && (terminal || !state.Realtime));
             _submit.interactable = !_paused && (terminal || CanAct && valid && Allows("siege.submit"));
             if (hudChanged || intentChanged)
                 _pauseInfo.text = state.Realtime ? _status.text + "\n" + _intent.text + "\n\n" +

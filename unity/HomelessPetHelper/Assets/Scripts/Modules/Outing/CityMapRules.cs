@@ -116,6 +116,15 @@ namespace HomelessPetHelper.Modules.Outing
             return true;
         }
 
+        public bool TryPlanLocationVisit(string pointId, out MapDeparturePlan plan, out OutingFailure failure)
+        {
+            plan = null;
+            if (!TryRequireOpenPoint(pointId, out failure)) return false;
+
+            plan = new MapDeparturePlan(pointId, null, visitOnly: true);
+            return true;
+        }
+
         private bool TryRequireOpenPoint(string pointId, out OutingFailure failure)
         {
             failure = OutingFailure.None;

@@ -59,6 +59,39 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(f.Station.Animals, Is.Empty);
         }
 
+        [TestCase("yard")]
+        [TestCase("parking")]
+        public void LocationVisitAtFullStationChargesTravelWithoutAcceptingHelpRequest(string pointId)
+        {
+            var fixture = new Fixture(0);
+            Guid outingId = fixture.Begin();
+
+            Assert.That(fixture.Coordinator.TryVisitLocation(outingId, pointId, out _), Is.True);
+            Assert.That(fixture.Coordinator.Session.SelectedPointId, Is.EqualTo(pointId));
+            Assert.That(fixture.Coordinator.Session.AcceptedRequestId, Is.EqualTo(Guid.Empty));
+            Assert.That(fixture.Coordinator.Session.DeparturePlan.RequiresStationSpace, Is.False);
+            Assert.That(fixture.Request.State, Is.EqualTo(RequestState.Available));
+            Assert.That(fixture.Clock.Current.ElapsedMinutes, Is.Zero);
+            Assert.That(fixture.Coordinator.TryEndUnresolved(outingId, out var summary, out _), Is.True);
+            Assert.That(summary.ElapsedMinutes, Is.EqualTo(5));
+            Assert.That(fixture.Coordinator.TryEndUnresolved(outingId, out _, out _), Is.False);
+            Assert.That(fixture.Clock.Current.ElapsedMinutes, Is.EqualTo(5));
+            Assert.That(fixture.Station.Animals, Is.Empty);
+            Assert.That(fixture.Request.State, Is.EqualTo(RequestState.Available));
+        }
+
+        [Test]
+        public void InvalidLocationVisitDoesNotDepartOrAdvanceTime()
+        {
+            var fixture = new Fixture(0);
+            Guid outingId = fixture.Begin();
+
+            Assert.That(fixture.Coordinator.TryVisitLocation(outingId, "missing", out _), Is.False);
+            Assert.That(fixture.Coordinator.Session.HasDeparted, Is.False);
+            Assert.That(fixture.Flow.Stage, Is.EqualTo(RescueStage.Map));
+            Assert.That(fixture.Clock.Current.ElapsedMinutes, Is.Zero);
+        }
+
         [TestCase(false, 20L)]
         [TestCase(true, 30L)]
         public void NegotiationReturnChargesOnlyActivitiesActuallyEntered(bool openedRoute, long expected)

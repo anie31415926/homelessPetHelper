@@ -37,7 +37,7 @@ namespace HomelessPetHelper.Game.UI
         private StationDialog _stationDialog;
         private float _stationConfirmAfter;
         private bool _focused = true, _backgrounded, _disposed, _completionHandled;
-        private bool _saveNeedsReload;
+        private bool _saveNeedsReload, _rescueResultReturning;
         private readonly bool _settingsOnly;
         private int _guideRevision = -1;
         public LevelPopupKind? Top => _stack.Top;
@@ -192,8 +192,37 @@ namespace HomelessPetHelper.Game.UI
             if (CanInteract && Top == LevelPopupKind.Confirmation) _stationDialog?.Browse?.Invoke();
         }
 
+        internal void ShowRescueResult(string title, string message, string returnLabel)
+        {
+            if (_disposed || _stack.Contains(LevelPopupKind.RescueResult)) return;
+            // A completed battle supersedes any battle menu; keep a single modal backdrop.
+            RestoreSettingsDraft();
+            _stack.Clear();
+            _confirmation = Confirmation.None;
+            _stack.TryOpen(LevelPopupKind.RescueResult);
+            _view.SetRescueResult(title, message, returnLabel);
+            Refresh();
+        }
+
+        internal void AllowRescueResultRetry(string message = null)
+        {
+            if (_disposed || Top != LevelPopupKind.RescueResult) return;
+            _rescueResultReturning = false;
+            _view.SetRescueResultReturning(false);
+            if (!string.IsNullOrEmpty(message)) _view.SetRescueResultMessage(message);
+            Refresh();
+        }
+
         public void Confirm()
         {
+            if (Top == LevelPopupKind.RescueResult)
+            {
+                if (!CanInteract || _rescueResultReturning) return;
+                _rescueResultReturning = true;
+                _view.SetRescueResultReturning(true);
+                _bindings.Return();
+                return;
+            }
             if (CanInteract && Top == LevelPopupKind.Confirmation && _stationDialog != null)
             {
                 var dialog = _stationDialog;
@@ -294,7 +323,9 @@ namespace HomelessPetHelper.Game.UI
         private void Refresh()
         {
             if (_disposed) return;
-            _bindings.Suspend(_stack.Depth > 0 || !_focused || _backgrounded);
+            // A won battle is already terminal. Keep the confirmed rescue queryable while the result is visible.
+            bool modalPausesBattle = Top.HasValue && Top != LevelPopupKind.RescueResult;
+            _bindings.Suspend(modalPausesBattle || !_focused || _backgrounded);
             _view.Refresh(Top, CanInteract);
             _guideRevision = -1;
         }
