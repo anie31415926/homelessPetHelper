@@ -9,6 +9,8 @@ namespace HomelessPetHelper.Tests.StationHabitat.EditMode
 {
     public sealed class StationHabitatAssetTests
     {
+        private const string CatAtlasPath = "Assets/Art/PetSit/T_Cat_SitAtlas.png";
+
         [Test]
         public void NewBindingsAreExplicitAndMainHasNoPreviewDependency()
         {
@@ -37,11 +39,42 @@ namespace HomelessPetHelper.Tests.StationHabitat.EditMode
                 .Count(x => x.EndsWith(".png", StringComparison.Ordinal)), Is.EqualTo(1));
             var skin = actor.GetComponentInChildren<SkinnedMeshRenderer>(true);
             Assert.That(AssetDatabase.GetAssetPath(skin.sharedMaterial.mainTexture),
-                Is.EqualTo("Assets/Art/PetSit/T_Cat_SitAtlas.png"));
-            var importer = (TextureImporter)AssetImporter.GetAtPath(
-                "Assets/Art/PetSit/T_Cat_SitAtlas.png");
+                Is.EqualTo(CatAtlasPath));
+            var importer = (TextureImporter)AssetImporter.GetAtPath(CatAtlasPath);
             Assert.That(importer.textureShape, Is.EqualTo(TextureImporterShape.Texture2D));
             Assert.That(importer.isReadable || importer.mipmapEnabled, Is.False);
+        }
+
+        [Test]
+        public void CatAtlasWebGlOverrideKeepsUncompressedAlphaAndSourceSize()
+        {
+            var importer = (TextureImporter)AssetImporter.GetAtPath(CatAtlasPath);
+            var webGl = importer.GetPlatformTextureSettings("WebGL");
+            Assert.That(webGl.overridden, Is.True);
+            Assert.That(webGl.format, Is.EqualTo(TextureImporterFormat.RGBA32));
+            Assert.That(webGl.textureCompression, Is.EqualTo(TextureImporterCompression.Uncompressed));
+            Assert.That(webGl.crunchedCompression || webGl.allowsAlphaSplitting, Is.False);
+            importer.GetSourceTextureWidthAndHeight(out int width, out int height);
+            Assert.That(webGl.maxTextureSize, Is.GreaterThanOrEqualTo(Math.Max(width, height)));
+            Assert.That(importer.npotScale, Is.EqualTo(TextureImporterNPOTScale.None));
+        }
+
+        [TestCase("farForeleg", "farFrontToe")]
+        [TestCase("nearForeleg", "nearFrontToe")]
+        public void CatForelegPreservesToeInfluenceWithTwoBoneSkinning(string meshName, string toeName)
+        {
+            var actor = AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Prefabs/Widgets/Widget_StationHabitatActor.prefab");
+            var renderer = actor.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Single(skin => skin.name == meshName);
+            int toe = Array.FindIndex(renderer.bones, bone => bone.name == toeName);
+            Assert.That(toe, Is.GreaterThanOrEqualTo(0));
+            var weights = renderer.sharedMesh.boneWeights;
+            Assert.That(weights, Has.Length.EqualTo(renderer.sharedMesh.vertexCount));
+            Assert.That(weights.All(weight => weight.weight0 >= weight.weight1 &&
+                Mathf.Approximately(weight.weight0 + weight.weight1, 1) &&
+                weight.weight2 == 0 && weight.weight3 == 0), Is.True);
+            Assert.That(weights.Any(weight => weight.boneIndex0 == toe && weight.weight0 == 1), Is.True);
         }
 
         private static void RequireBindings(MonoBehaviour view)

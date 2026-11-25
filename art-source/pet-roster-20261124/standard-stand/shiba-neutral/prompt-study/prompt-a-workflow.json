@@ -1,0 +1,185 @@
+{
+  "identity": "test-results/pet-roster-20261124/cleaned/柴犬/宠物游戏操作界面背景设计 (27).png",
+  "cropAtWidth1000": [
+    320,
+    87,
+    370,
+    390
+  ],
+  "neutralSize": {
+    "width": 728,
+    "height": 768
+  },
+  "legMaskSha256": "e116ad9fa560c6c22511cfc361d75fcaadfbc5672718acba7bacc0748057f66c",
+  "maskScope": "front-pair",
+  "inputSha256": [
+    "5562ef4579fde31651b91e625281c238f60256005ff70de79709be8aa7f58f3a"
+  ],
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "roster-stand-5562ef4579fde316.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "Replace the front legs only. Final image: exact original side-view watercolor Shiba, relaxed square stand. One near foreleg descends almost vertically from beneath the fluffy chest; the thick short forearm transitions smoothly into a broad rounded paw without a narrow wrist. Place the base of this paw on the existing floor, level with the visible near rear paw. The two forelegs almost overlap in profile, with the far toe tips peeking out directly behind the near paw. Neither front paw reaches ahead of the chest. Keep the original shoulder and chest outline above the upper foreleg, and leave all other fur, anatomy, colors, head, hind legs and tail unchanged. Match the original small wash shapes and brown pencil line. Clean away the former reaching paw without leaving a duplicate outline.",
+        "negative_prompt": "three-quarter, frontal, biped, sitting, walking, long legs, one merged front paw, diagonal front leg, interrupted shoulder contour, new chest markings, silhouette tear, floating paws, broken joints, extra legs, thick outlines, photoreal, 3d, cast shadow, background elements, text, watermark",
+        "resolution": 768,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "14",
+          0
+        ],
+        "seed": 2026112611,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "15",
+          0
+        ],
+        "filename_prefix": "roster-standard-shiba-pose-prompt"
+      }
+    },
+    "11": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "roster-stand-e116ad9fa560c6c2.png"
+      }
+    },
+    "12": {
+      "class_type": "ImageToMask",
+      "inputs": {
+        "image": [
+          "11",
+          0
+        ],
+        "channel": "red"
+      }
+    },
+    "13": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "4",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "14": {
+      "class_type": "SetLatentNoiseMask",
+      "inputs": {
+        "samples": [
+          "13",
+          0
+        ],
+        "mask": [
+          "12",
+          0
+        ]
+      }
+    },
+    "15": {
+      "class_type": "ImageCompositeMasked",
+      "inputs": {
+        "destination": [
+          "4",
+          0
+        ],
+        "source": [
+          "8",
+          0
+        ],
+        "x": 0,
+        "y": 0,
+        "resize_source": false,
+        "mask": [
+          "12",
+          0
+        ]
+      }
+    }
+  }
+}

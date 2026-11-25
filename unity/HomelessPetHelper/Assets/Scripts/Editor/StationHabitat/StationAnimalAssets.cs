@@ -230,24 +230,40 @@ namespace HomelessPetHelper.Editor.StationHabitat
             return renderer;
         }
 
+        private static BoneWeight PackWeights(Skin data, int offset, int[] slots)
+        {
+            for (int slot = 0; slot < slots.Length; slot++)
+            {
+                int source = offset + slot;
+                int insert = slot;
+                while (insert > 0 && data.weights[slots[insert - 1]] < data.weights[source])
+                {
+                    slots[insert] = slots[insert - 1];
+                    insert--;
+                }
+                slots[insert] = source;
+            }
+            return new BoneWeight
+            {
+                boneIndex0 = data.indices[slots[0]], boneIndex1 = data.indices[slots[1]],
+                boneIndex2 = data.indices[slots[2]], boneIndex3 = data.indices[slots[3]],
+                weight0 = data.weights[slots[0]], weight1 = data.weights[slots[1]],
+                weight2 = data.weights[slots[2]], weight3 = data.weights[slots[3]]
+            };
+        }
+
         private Mesh CreateMesh(Skin data, float[][] inverses, Mesh existing)
         {
             int count = data.positions.Length / 3;
             var vertices = new Vector3[count];
             var uv = new Vector2[count];
             var weights = new BoneWeight[count];
+            var weightSlots = new int[4];
             for (int i = 0; i < count; i++)
             {
                 vertices[i] = new Vector3(data.positions[i * 3], data.positions[i * 3 + 1], 0);
                 uv[i] = new Vector2(data.uv[i * 2], data.uv[i * 2 + 1]);
-                int w = i * 4;
-                weights[i] = new BoneWeight
-                {
-                    boneIndex0 = data.indices[w], boneIndex1 = data.indices[w + 1],
-                    boneIndex2 = data.indices[w + 2], boneIndex3 = data.indices[w + 3],
-                    weight0 = data.weights[w], weight1 = data.weights[w + 1],
-                    weight2 = data.weights[w + 2], weight3 = data.weights[w + 3],
-                };
+                weights[i] = PackWeights(data, i * 4, weightSlots);
             }
             var bind = new Matrix4x4[inverses.Length];
             for (int i = 0; i < bind.Length; i++)

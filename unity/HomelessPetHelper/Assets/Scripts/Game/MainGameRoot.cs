@@ -27,6 +27,7 @@ namespace HomelessPetHelper.Game
         public MainMusicSession Music { get; private set; }
 
         private ISaveStorage _progressStorage;
+        private bool _showOpening = true;
         private Func<int> _outingSeedSource;
         private bool _started;
         private ISaveStorage _audioStorage, _guidanceStorage, _playStorage;
@@ -46,10 +47,11 @@ namespace HomelessPetHelper.Game
         /// <summary>
         /// Explicit composition hook, called before Start. Tests use isolated durable or memory storage.
         /// </summary>
-        public void ConfigureProgressStorage(ISaveStorage storage)
+        public void ConfigureProgressStorage(ISaveStorage storage, bool showOpening = true)
         {
             if (_started) throw new InvalidOperationException("Configure progress storage before Start.");
             _progressStorage = storage ?? throw new ArgumentNullException(nameof(storage));
+            _showOpening = showOpening;
         }
 
         /// <summary>Explicit randomness dependency for deterministic composition; configure before Start.</summary>
@@ -76,7 +78,8 @@ namespace HomelessPetHelper.Game
                 scope.Bind(Audio.Playback);
             }
             Presenter = new MainLoopPresenter(_station, _map, _siege, _approach, _content, Audio.Playback,
-                _progressStorage ?? CreateProgressStorage(), _outingSeedSource, Audio, Guidance, PlaySettings, _travel);
+                _progressStorage ?? CreateProgressStorage(), _outingSeedSource, Audio, Guidance, PlaySettings, _travel,
+                _showOpening);
             _bootstrap.BindSession(Presenter.Session);
             Music = new MainMusicSession(Audio.Playback, _content.MusicCatalog);
             RefreshMusic();

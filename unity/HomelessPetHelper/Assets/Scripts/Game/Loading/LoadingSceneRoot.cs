@@ -9,16 +9,16 @@ namespace HomelessPetHelper.Game.Loading
     {
         public const string ScenePath = "Assets/Scenes/SC_Loading.unity";
         public const string MainScenePath = "Assets/Scenes/Main.unity";
-        public const float DefaultDemoSeconds = 3f;
+        private const float EntryFadeSeconds = .22f;
         [SerializeField] private LoadingView _view;
         [SerializeField] private string _destination = MainScenePath;
-        [SerializeField, Min(0f)] private float _demoSeconds = DefaultDemoSeconds;
         [SerializeField, Min(1f)] private float _timeoutSeconds = 60f;
         [SerializeField] private bool _previewOnly;
         private ILoadingTask _preparation;
         private UnitySceneLoadingTask _scene;
         private Coroutine _routine;
         private bool _started, _cancelled;
+        private bool _entryRequested;
         public bool HasFailed { get; private set; }
 
         private void Start()
@@ -27,7 +27,9 @@ namespace HomelessPetHelper.Game.Loading
             if (_view == null) throw new InvalidOperationException("Missing Loading view binding.");
             _started = true;
             _view.SetProgress(0f);
-            if (!_previewOnly) _routine = StartCoroutine(LoadRoutine());
+            if (_previewOnly) return;
+            _view.ShowCover();
+            _view.EnterRequested += RequestEntry;
         }
 
         public void ConfigurePreview()
@@ -54,15 +56,42 @@ namespace HomelessPetHelper.Game.Loading
 
         private IEnumerator LoadRoutine()
         {
+            yield return FadeCover();
+            _view.ShowLoading();
             // Paint the lightweight scene before starting any potentially expensive preparation.
             yield return null;
             if (!BeginPreparation()) yield break;
-            yield return RunTaskRoutine(_preparation, 0f, .9f);
+            float sceneStart = _preparation == null ? 0f : .9f;
+            if (_preparation != null) yield return RunTaskRoutine(_preparation, 0f, sceneStart);
             if (HasFailed || _cancelled || !BeginScene()) yield break;
-            yield return RunTaskRoutine(_scene, .9f, .99f);
+            yield return RunTaskRoutine(_scene, sceneStart, .99f);
             if (HasFailed || _cancelled) yield break;
             _view.SetProgress(1f);
-            yield return null;
+            yield return ActivateScene();
+            _routine = null;
+        }
+
+        private void RequestEntry()
+        {
+            if (_entryRequested || _cancelled) return;
+            _entryRequested = true;
+            _view.HideEntry();
+            _routine = StartCoroutine(LoadRoutine());
+        }
+
+        private IEnumerator FadeCover()
+        {
+            float elapsed = 0f;
+            while (elapsed < EntryFadeSeconds)
+            {
+                yield return null;
+                elapsed += Time.unscaledDeltaTime;
+                _view.SetOpacity(1f - Mathf.Clamp01(elapsed / EntryFadeSeconds));
+            }
+        }
+
+        private IEnumerator ActivateScene()
+        {
             _scene.Activate();
             float waited = 0f;
             while (!_scene.HasActivated)
@@ -75,7 +104,6 @@ namespace HomelessPetHelper.Game.Loading
                 }
                 yield return null;
             }
-            _routine = null;
         }
 
         private bool BeginPreparation()
@@ -85,11 +113,7 @@ namespace HomelessPetHelper.Game.Loading
                 if (float.IsNaN(_timeoutSeconds) || float.IsInfinity(_timeoutSeconds) || _timeoutSeconds <= 0f)
                     throw new InvalidOperationException("Invalid Loading timeout.");
                 // Injected preparation may first load a bundle containing the destination scene.
-                if (_preparation == null)
-                {
-                    UnitySceneLoadingTask.ValidateDestination(_destination);
-                    _preparation = new DemoLoadingTask(_demoSeconds);
-                }
+                if (_preparation == null) UnitySceneLoadingTask.ValidateDestination(_destination);
                 return true;
             }
             catch (Exception exception) { Fail(exception); return false; }
@@ -151,6 +175,11 @@ namespace HomelessPetHelper.Game.Loading
 
         private void OnDisable()
         {
+            if (_view != null && _started && !_previewOnly)
+            {
+                _view.EnterRequested -= RequestEntry;
+                _view.HideEntry();
+            }
             if (_routine != null) StopCoroutine(_routine);
             _routine = null;
             _cancelled = true;

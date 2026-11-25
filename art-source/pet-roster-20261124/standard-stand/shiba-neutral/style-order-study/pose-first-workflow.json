@@ -1,0 +1,122 @@
+{
+  "identity": "test-results/pet-roster-20261124/cleaned/柴犬/宠物游戏操作界面背景设计 (27).png",
+  "cropAtWidth1000": [
+    320,
+    87,
+    370,
+    390
+  ],
+  "neutralSize": {
+    "width": 728,
+    "height": 768
+  },
+  "maskScope": "none",
+  "inputSha256": [
+    "5562ef4579fde31651b91e625281c238f60256005ff70de79709be8aa7f58f3a"
+  ],
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "roster-stand-5562ef4579fde316.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "将原图中的柴犬幼犬改成自然放松的标准站姿，四爪着地，保持原来的侧面视角。只改姿势，不改变角色设计：保留原图的大圆头、短吻、短腿、紧凑身形、奶油胸毛和卷尾。沿用原图的暖桃色块、手绘水彩笔触和细褐线。不要画成写实成年犬。",
+        "negative_prompt": "",
+        "resolution": 768,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112611,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "roster-standard-shiba-style-zh"
+      }
+    }
+  }
+}

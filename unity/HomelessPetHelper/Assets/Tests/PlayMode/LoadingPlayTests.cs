@@ -9,6 +9,7 @@ using HomelessPetHelper.Tests.Support;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
@@ -23,6 +24,8 @@ namespace HomelessPetHelper.Tests.PlayMode
         {
             Time.timeScale = 1f;
             SceneManager.sceneLoaded -= Preview;
+            var host = Object.FindObjectOfType<LoadingSceneRoot>();
+            if (host != null) host.enabled = false;
             _storage.Dispose();
         }
 
@@ -42,42 +45,62 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator StartupReachesExistingMainWithoutChangingSaveComposition()
+        public IEnumerator StartupStaysOnCoverUntilPlayerClicksEnter()
         {
             yield return SceneManager.LoadSceneAsync(LoadingSceneRoot.ScenePath);
             var view = Object.FindObjectOfType<LoadingView>();
-            float started = Time.realtimeSinceStartup;
-            float previous = 0f;
-            bool intermediate = false;
-            var samples = new System.Collections.Generic.List<string>();
-            Time.timeScale = 0f;
-            float deadline = Time.realtimeSinceStartup + 30f;
-            while (SceneManager.GetActiveScene().name != "Main" && Time.realtimeSinceStartup < deadline)
-            {
-                if (view != null)
-                {
-                    Assert.That(view.Progress, Is.InRange(previous, 1f));
-                    previous = view.Progress;
-                    intermediate |= previous > .1f && previous < .8f;
-                    samples.Add(previous.ToString("R", System.Globalization.CultureInfo.InvariantCulture));
-                }
-                yield return null;
-            }
-            Time.timeScale = 1f;
+            var entry = view.GetComponentInChildren<Button>(true);
             yield return null;
-            Assert.That(intermediate, Is.True, "Formal startup must show the configured progress demonstration.");
-            Assert.That(Time.realtimeSinceStartup - started, Is.GreaterThanOrEqualTo(
-                LoadingSceneRoot.DefaultDemoSeconds - .1f));
-            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("Main"));
+            Assert.That(entry.gameObject.activeInHierarchy, Is.True);
+            var host = Object.FindObjectOfType<LoadingSceneRoot>();
+            var settings = new SerializedObject(host);
+            settings.FindProperty("_timeoutSeconds").floatValue = 1f;
+            settings.ApplyModifiedPropertiesWithoutUndo();
+            yield return new WaitForSecondsRealtime(1.1f);
+            Assert.That(SceneManager.GetActiveScene().path, Is.EqualTo(LoadingSceneRoot.ScenePath));
+            Assert.That(Object.FindObjectOfType<MainGameRoot>(), Is.Null);
+            Assert.That(view.Progress, Is.Zero);
+            Assert.That(view.GetComponentInChildren<LoadingArtworkMotion>(), Is.Null);
+            Assert.That(host.HasFailed, Is.False);
+            Assert.That(entry.isActiveAndEnabled && entry.interactable, Is.True);
+            Assert.That(entry.GetComponentInChildren<Text>().text, Is.EqualTo("进入救助站"));
+            settings.FindProperty("_timeoutSeconds").floatValue = 60f;
+            settings.ApplyModifiedPropertiesWithoutUndo();
+            Assert.That(ClickEntry(entry), Is.True);
+            Assert.That(entry.gameObject.activeSelf, Is.False);
+            Assert.That(ClickEntry(entry), Is.False);
+            yield return WaitForMain();
             Assert.That(Object.FindObjectOfType<MainGameRoot>().Presenter, Is.Not.Null);
             Assert.That(Object.FindObjectOfType<LoadingSceneRoot>(), Is.Null);
-            Directory.CreateDirectory("LoadingEvidence");
-            File.WriteAllText("LoadingEvidence/startup-progress.json", "[" + string.Join(",", samples) + "]");
             LogAssert.NoUnexpectedReceived();
         }
 
+        private static bool ClickEntry(Button entry) => ExecuteEvents.Execute(entry.gameObject,
+            new PointerEventData(EventSystem.current) { button = PointerEventData.InputButton.Left },
+            ExecuteEvents.pointerClickHandler);
+
+        private static IEnumerator EnterAndWaitForLoading(LoadingView view)
+        {
+            yield return null;
+            Assert.That(ClickEntry(view.GetComponentInChildren<Button>(true)), Is.True);
+            float deadline = Time.realtimeSinceStartup + 5f;
+            while (view.GetComponentInChildren<LoadingArtworkMotion>() == null && Time.realtimeSinceStartup < deadline)
+                yield return null;
+            Assert.That(view.GetComponentInChildren<LoadingArtworkMotion>(), Is.Not.Null);
+            yield return null; yield return null; yield return null;
+        }
+
+        private static IEnumerator WaitForMain()
+        {
+            float deadline = Time.realtimeSinceStartup + 30f;
+            while (SceneManager.GetActiveScene().path != LoadingSceneRoot.MainScenePath &&
+                Time.realtimeSinceStartup < deadline) yield return null;
+            yield return null;
+            Assert.That(SceneManager.GetActiveScene().path, Is.EqualTo(LoadingSceneRoot.MainScenePath));
+        }
+
         private static IEnumerator LoadWithPreparation(ILoadingTask task, float timeout = 60f,
-            string destination = null)
+            string destination = null, bool enter = true)
         {
             void Configure(Scene scene, LoadSceneMode mode)
             {
@@ -94,18 +117,23 @@ namespace HomelessPetHelper.Tests.PlayMode
             try
             {
                 yield return SceneManager.LoadSceneAsync(LoadingSceneRoot.ScenePath);
-                yield return null; yield return null; yield return null;
+                yield return null;
+                if (enter) yield return EnterAndWaitForLoading(Object.FindObjectOfType<LoadingView>());
             }
             finally { SceneManager.sceneLoaded -= Configure; }
         }
 
         [UnityTest]
-        public IEnumerator InjectedPreparationOwnsProgressAndCompletionInsteadOfDefaultDemo()
+        public IEnumerator InjectedPreparationStartsOnClickAndKeepsArtworkUntilComplete()
         {
             var task = new ManualPreparation { Progress = .4f };
-            yield return LoadWithPreparation(task);
+            yield return LoadWithPreparation(task, enter: false);
             var host = Object.FindObjectOfType<LoadingSceneRoot>();
             var view = Object.FindObjectOfType<LoadingView>();
+            yield return new WaitForSecondsRealtime(.3f);
+            Assert.That(task.TickCount, Is.Zero);
+            Assert.That(view.GetComponentInChildren<LoadingArtworkMotion>(), Is.Null);
+            yield return EnterAndWaitForLoading(view);
             Assert.That(view.Progress, Is.EqualTo(.36f).Within(.001f));
             Assert.That(task.TickCount, Is.GreaterThan(0));
             var rejected = new ManualPreparation();
@@ -120,11 +148,10 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return null; yield return null;
             Assert.That(view.Progress, Is.LessThan(.9f));
             Assert.That(SceneManager.GetActiveScene().path, Is.EqualTo(LoadingSceneRoot.ScenePath));
+            var entry = view.GetComponentInChildren<Button>(true);
+            Assert.That(ClickEntry(entry), Is.False);
             task.IsComplete = true;
-            float deadline = Time.realtimeSinceStartup + 30f;
-            while (SceneManager.GetActiveScene().name != "Main" && Time.realtimeSinceStartup < deadline)
-                yield return null;
-            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("Main"));
+            yield return WaitForMain();
             Assert.That(task.DisposeCount, Is.EqualTo(1));
             Assert.That(Object.FindObjectOfType<MainGameRoot>().Presenter, Is.Not.Null);
             LogAssert.NoUnexpectedReceived();
@@ -312,7 +339,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             view.SetProgress(.5f); Assert.That(view.Progress, Is.EqualTo(.5f));
             view.SetProgress(4); Assert.That(view.Progress, Is.EqualTo(1));
             view.ShowFailure();
-            Assert.That(view.GetComponentsInChildren<Text>().Any(label => label.text == "Load failed"), Is.True);
+            Assert.That(view.GetComponentsInChildren<Text>().Any(label => label.text == "准备失败，请重开"), Is.True);
             Assert.That(view.GetComponentsInChildren<Text>().Any(label => label.text == "100%"), Is.False);
             LogAssert.NoUnexpectedReceived();
         }
@@ -336,11 +363,11 @@ namespace HomelessPetHelper.Tests.PlayMode
             try
             {
                 yield return SceneManager.LoadSceneAsync(LoadingSceneRoot.ScenePath);
-                yield return null; yield return null; yield return null;
+                yield return EnterAndWaitForLoading(Object.FindObjectOfType<LoadingView>());
                 Assert.That(Object.FindObjectOfType<LoadingSceneRoot>().HasFailed, Is.True);
                 Assert.That(SceneManager.GetActiveScene().path, Is.EqualTo(LoadingSceneRoot.ScenePath));
                 Assert.That(Object.FindObjectOfType<LoadingView>().GetComponentsInChildren<Text>()
-                    .Any(label => label.text == "Load failed"), Is.True);
+                    .Any(label => label.text == "准备失败，请重开"), Is.True);
             }
             finally { SceneManager.sceneLoaded -= ConfigureMissingDestination; }
         }
@@ -425,6 +452,78 @@ namespace HomelessPetHelper.Tests.PlayMode
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.worldCamera = null;
                 RenderTexture.active = before; camera.targetTexture = null; target.Release();
                 Object.Destroy(texture); Object.Destroy(target); Object.Destroy(camera.gameObject);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator CoverEntryFitsTheInsetAndReceivesRaycasts()
+        {
+            yield return LoadPreview();
+            var view = Object.FindObjectOfType<LoadingView>();
+            view.ShowCover();
+            var canvas = view.GetComponent<Canvas>();
+            var camera = new GameObject("TitleCapture", typeof(Camera)).GetComponent<Camera>();
+            var safe = view.GetComponentInChildren<SafeAreaView>();
+            safe.enabled = false;
+            var inset = (RectTransform)safe.transform;
+            inset.anchorMin = new Vector2(.04f, .05f);
+            inset.anchorMax = new Vector2(.96f, .93f);
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = camera;
+            var entry = view.GetComponentInChildren<Button>();
+            try
+            {
+                foreach (var size in new[] { new Vector2Int(320, 569), new Vector2Int(390, 845),
+                    new Vector2Int(360, 840), new Vector2Int(768, 1024) })
+                    yield return CaptureCover(canvas, camera, entry, size);
+            }
+            finally
+            {
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.worldCamera = null;
+                Object.Destroy(camera.gameObject);
+            }
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        private static IEnumerator CaptureCover(Canvas canvas, Camera camera, Button entry, Vector2Int size)
+        {
+            var target = new RenderTexture(size.x, size.y, 24);
+            var texture = new Texture2D(size.x, size.y, TextureFormat.RGB24, false);
+            var previous = RenderTexture.active;
+            try
+            {
+                camera.targetTexture = target;
+                yield return null;
+                Canvas.ForceUpdateCanvases();
+                var corners = new Vector3[4];
+                var buttonRect = (RectTransform)entry.transform;
+                buttonRect.GetWorldCorners(corners);
+                foreach (Vector3 corner in corners)
+                {
+                    Vector3 point = camera.WorldToViewportPoint(corner);
+                    Assert.That(point.x, Is.InRange(.039f, .961f));
+                    Assert.That(point.y, Is.InRange(.049f, .931f));
+                }
+                var pointer = new PointerEventData(EventSystem.current)
+                    { position = camera.WorldToScreenPoint(buttonRect.position) };
+                var hits = new System.Collections.Generic.List<RaycastResult>();
+                canvas.GetComponent<GraphicRaycaster>().Raycast(pointer, hits);
+                Assert.That(hits.Any(hit => hit.gameObject == entry.gameObject), Is.True);
+                camera.Render();
+                RenderTexture.active = target;
+                texture.ReadPixels(new Rect(0, 0, size.x, size.y), 0, 0);
+                texture.Apply();
+                Directory.CreateDirectory("LoadingEvidence");
+                File.WriteAllBytes($"LoadingEvidence/title-{size.x}x{size.y}.png", texture.EncodeToPNG());
+            }
+            finally
+            {
+                RenderTexture.active = previous;
+                camera.targetTexture = null;
+                target.Release();
+                Object.Destroy(target);
+                Object.Destroy(texture);
             }
         }
     }

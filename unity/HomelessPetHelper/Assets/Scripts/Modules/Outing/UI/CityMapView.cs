@@ -29,6 +29,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
         [SerializeField] private CityMapScrollRect _mapScroll;
         [SerializeField] private ScrollRect _detailsScroll;
         [SerializeField] private GameObject _detailsOverflow;
+        [SerializeField] private CityMapAtmosphere _atmosphere;
+        [SerializeField] private CityMapFog _fog;
 
         private readonly Dictionary<string, CityMapPointBinding> _points =
             new Dictionary<string, CityMapPointBinding>(StringComparer.Ordinal);
@@ -128,9 +130,12 @@ namespace HomelessPetHelper.Modules.Outing.UI
         {
             if (!_points.TryGetValue(pointId, out CityMapPointBinding point))
                 throw new ArgumentException("Unbound city map point: " + pointId, nameof(pointId));
-            bool marked = selected && state != PointDisplayState.Locked;
-            point.Render(label, stateLabel, interactable, marked ? _selectedPointPaper : _pointPaper, marked);
-            if (selected && _focusedPointId != pointId)
+            bool locked = state == PointDisplayState.Locked;
+            bool marked = selected && !locked;
+            point.Render(label, stateLabel, interactable && !locked, marked ? _selectedPointPaper : _pointPaper,
+                _fog != null && locked);
+            if (_atmosphere != null && pointId == "market") _atmosphere.SetFlowerLocked(locked);
+            if (marked && _focusedPointId != pointId)
             {
                 _focusedPointId = pointId;
                 _mapScroll.FocusOn((RectTransform)point.Button.transform);
@@ -190,6 +195,12 @@ namespace HomelessPetHelper.Modules.Outing.UI
         private void LateUpdate()
         {
             if (Input.GetKeyDown(KeyCode.Escape)) OnCancel();
+            if (_selecting && !_inputPaused && !IsSuspended && !IsDetailsOpen)
+            {
+                float elapsed = Time.unscaledDeltaTime;
+                if (_atmosphere != null) _atmosphere.Advance(elapsed);
+                if (_fog != null) _fog.Advance(elapsed);
+            }
             if (!IsDetailsOpen) return;
             bool overflow = _detailsScroll.content.rect.height > _detailsScroll.viewport.rect.height + 1;
             if (_detailsOverflow.activeSelf != overflow) _detailsOverflow.SetActive(overflow);

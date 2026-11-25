@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="128" viewBox="0 0 256 128">
+  <defs>
+    <linearGradient id="cloud" x2=".28" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#fff9e7"/>
+      <stop offset=".55" stop-color="#f8f6e9"/>
+      <stop offset="1" stop-color="#cfe4df"/>
+    </linearGradient>
+    <linearGradient id="honey" x2=".2" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#ffe582"/>
+      <stop offset="1" stop-color="#eab052"/>
+    </linearGradient>
+    <filter id="soft" x="-15%" y="-20%" width="130%" height="140%">
+      <feGaussianBlur stdDeviation="2.5"/>
+    </filter>
+    <clipPath id="body"><path d="M206 34C203 28 210 22 221 22C232 22 241 27 240 35C239 42 231 46 222 45C213 44 208 41 206 34Z"/></clipPath>
+  </defs>
+  <path d="M11 81C8 65 19 51 37 50C41 32 56 24 73 28C80 14 95 12 110 17C122 21 127 30 128 37C141 29 157 37 160 48C174 48 184 59 182 74C180 91 163 103 143 103C131 106 120 104 111 103C96 111 76 108 62 103C46 108 26 101 17 92Z" fill="url(#cloud)" filter="url(#soft)"/>
+  <path d="M18 78C15 66 27 54 40 55C46 40 59 32 75 36C82 22 96 20 111 25C122 30 124 40 123 47C136 38 150 43 155 55C169 54 176 64 174 77C170 91 155 95 139 94C124 99 119 98 109 94C93 105 76 100 63 94C44 100 25 94 18 78Z" fill="url(#cloud)"/>
+  <path d="M27 67Q33 59 44 62Q50 41 67 43M84 35Q99 25 112 37M131 54Q146 47 152 62M45 89Q61 91 68 85" fill="none" stroke="#fffef1" stroke-width="3" stroke-linecap="round" opacity=".64"/>
+  <path d="M225 27C217 20 218 11 225 10C234 10 234 19 231 27M229 27C228 18 236 13 241 17C246 22 238 28 232 29" fill="#e2f5e8" stroke="#7ca8a2" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M206 34C203 28 210 22 221 22C232 22 241 27 240 35C239 42 231 46 222 45C213 44 208 41 206 34Z" fill="url(#honey)" stroke="#704626" stroke-width="2.3"/>
+  <path d="M214 21Q223 33 216 45L221 47Q228 34 219 20ZM226 21Q234 32 228 45L233 45Q240 33 231 22Z" fill="#775036" clip-path="url(#body)"/>
+  <path d="M209 26Q205 20 201 22M205 28Q201 25 199 27" fill="none" stroke="#704626" stroke-linecap="round" stroke-width="1.7"/>
+  <ellipse cx="210" cy="31.5" rx="1.6" ry="1.9" fill="#593b2b"/>
+  <ellipse cx="210" cy="36" rx="2.2" ry="1.3" fill="#ec9469"/>
+  <path d="M216 26Q220 24 224 25" fill="none" stroke="#fff3c5" stroke-width="1.7" stroke-linecap="round"/>
+</svg>

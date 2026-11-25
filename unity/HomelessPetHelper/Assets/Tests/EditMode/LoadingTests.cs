@@ -60,7 +60,10 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(dependencies, Does.Contain("Assets/Prefabs/Panels/Panel_Loading.prefab"));
             Assert.That(dependencies.Any(path => path.Contains("EditorScenes") || path.Contains("GameContent.asset")),
                 Is.False);
-            Assert.That(dependencies.Count(path => path.EndsWith(".png", StringComparison.Ordinal)), Is.EqualTo(2));
+            Assert.That(dependencies.Where(path => path.EndsWith(".png", StringComparison.Ordinal)), Is.EquivalentTo(
+                new[] { "Assets/Art/Loading/T_Loading_Elements.png", "Assets/Art/Loading/T_Loading_Background.png",
+                    "Assets/Art/UI/T_UI_LevelControls.png" }));
+            Assert.That(dependencies, Does.Contain("Assets/Art/Loading/T_WeChat_Cover.jpg"));
         }
 
         [Test]
@@ -70,6 +73,10 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(prefab, Is.Not.Null);
             Assert.That(prefab.GetComponentsInChildren<MonoBehaviour>(true), Has.None.Null);
             var motion = prefab.GetComponentInChildren<LoadingArtworkMotion>(true);
+            var entry = prefab.GetComponentInChildren<Button>(true);
+            Assert.That(entry.gameObject.activeSelf, Is.False);
+            Assert.That(entry.GetComponentInParent<SafeAreaView>(true), Is.Not.Null);
+            Assert.That(prefab.GetComponent<GraphicRaycaster>(), Is.Not.Null);
             Assert.That(motion.OrbitAnimalCount, Is.EqualTo(13));
             Assert.That(motion.DoorAnimalCount, Is.EqualTo(2));
             Assert.That(prefab.GetComponentInChildren<SafeAreaView>(true), Is.Not.Null);
@@ -83,10 +90,10 @@ namespace HomelessPetHelper.Tests.EditMode
             }
             foreach (Image image in prefab.GetComponentsInChildren<Image>(true))
             {
-                Assert.That(image.raycastTarget, Is.False);
+                Assert.That(image.raycastTarget, Is.EqualTo(image == entry.targetGraphic));
                 Assert.That(image.sprite, Is.Not.Null, image.name + " must retain its imported sprite identity.");
             }
-            Assert.That(prefab.GetComponentsInChildren<Image>(true).Length, Is.EqualTo(33));
+            Assert.That(prefab.GetComponentsInChildren<Image>(true).Length, Is.EqualTo(35));
             foreach (string name in new[] { "T_Loading_Elements.png", "T_Loading_Background.png" })
             {
                 var importer = (TextureImporter)AssetImporter.GetAtPath("Assets/Art/Loading/" + name);

@@ -16,6 +16,7 @@ parser.add_argument("--sha256", help="Reject a different upstream binary before 
 parser.add_argument("--output", type=Path, help="Defaults to the historical Noto output")
 parser.add_argument("--family", help="New family/PostScript name for a renamed derivative (ASCII, no spaces)")
 parser.add_argument("--weight", type=int, default=400)
+parser.add_argument("--pet-names", action="store_true", help="Include the GB2312 level-one name repertoire")
 parser.add_argument("--license-file", type=Path, help="Embed the original OFL so distributed font binaries retain it")
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
@@ -28,6 +29,10 @@ if args.family and not re.fullmatch(r"[A-Za-z][A-Za-z0-9-]*", args.family):
 if args.family and not args.license_file:
     parser.error("Renamed derivatives must include --license-file for redistribution")
 characters = set(chr(c) for c in range(32, 127))
+if args.pet_names:
+    for first in range(0xB0, 0xD8):
+        for second in range(0xA1, 0xFF):
+            characters.update(bytes((first, second)).decode("gb2312", errors="ignore"))
 for directory in (assets / "Settings", assets / "Prefabs", assets / "Scripts/Game", root / "src/siege"):
     for file in sorted(directory.rglob("*")):
         if file.suffix in (".json", ".cs", ".prefab"):

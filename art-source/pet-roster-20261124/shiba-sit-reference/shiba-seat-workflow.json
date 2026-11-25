@@ -1,0 +1,117 @@
+{
+  "identity": "test-results/pet-roster-20261124/cleaned/柴犬/宠物游戏操作界面背景设计 (27).png",
+  "cropAtWidth1000": [
+    320,
+    87,
+    370,
+    390
+  ],
+  "inputSha256": [
+    "41e8e69d695ea1356d3c90e5206d0f8fce95913e1cd0e05cbf58e3f7af1a55d3"
+  ],
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "roster-stand-41e8e69d695ea135.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "Change ONLY the pose of this exact watercolor Shiba puppy from standing to a relaxed fully seated left-facing side view. Keep the original head size, round eye, small short muzzle, cheek and ear silhouettes, chest ruff, reddish and cream fur colors, short thick legs and spiral tail. Do not make it realistic or adult. The dog is in a real canine sit, not a crouch: both front paws support on one floor with near foreleg mostly upright under the chest; the rounded rump actually rests on the SAME floor; the hind thigh points forward, the hock is tucked underneath, and one small rear paw peeks out ahead of the rump. The tail curls at the back with its root attached and does not prop up the body. Keep the muzzle pointing strictly LEFT. One continuous side-on illustration, full paws and ears in frame, neutral solid pale background, no floor shadow, no props, no letters.",
+        "negative_prompt": "three-quarter, frontal, biped, standing, crouching, lying, raised haunches, floating paws, broken joints, extra legs, thick outlines, photoreal, 3d, cast shadow, background elements, text, watermark",
+        "resolution": 768,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112505,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "roster-standard-shiba-seat"
+      }
+    }
+  }
+}

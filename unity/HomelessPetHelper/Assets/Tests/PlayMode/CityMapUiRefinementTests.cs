@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using HomelessPetHelper.Framework.UI;
+using HomelessPetHelper.Modules.Outing;
 using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Rescue.UI;
 using HomelessPetHelper.Modules.Station.UI;
@@ -140,6 +141,155 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator FlowerAndCloudsAnimateWithoutMovingTheHitAreaOrChangingPointLockBehavior()
+        {
+            yield return Load();
+            var market = Button("Market");
+            var hitArea = (RectTransform)market.transform;
+            var label = market.GetComponentsInChildren<Text>().Single(text => text.enabled);
+            const string flowerName = "\u6e56\u7554\u82b1\u6d77";
+            Assert.That(label.text, Is.EqualTo(flowerName));
+            Assert.That(flowerName.All(label.font.HasCharacter), Is.True);
+            var atmosphere = _view.GetComponentInChildren<CityMapAtmosphere>();
+            var flower = _view.GetComponentInChildren<CityMapFlowerSway>();
+            Assert.That(atmosphere.raycastTarget, Is.False);
+            Vector2 hitPosition = hitArea.anchoredPosition;
+            Vector2 hitSize = hitArea.rect.size;
+            Vector2 flowerPosition = ((RectTransform)flower.transform).anchoredPosition;
+            yield return new WaitForSecondsRealtime(.3f);
+            Assert.That(hitArea.anchoredPosition, Is.EqualTo(hitPosition));
+            Assert.That(hitArea.rect.size, Is.EqualTo(hitSize));
+            Assert.That(((RectTransform)flower.transform).anchoredPosition, Is.EqualTo(flowerPosition));
+            Button("Market").onClick.Invoke();
+            Assert.That(_view.IsDetailsOpen, Is.True);
+            Assert.That(Label("Heading").text, Is.EqualTo(flowerName));
+            _view.CloseDetails();
+
+            var canvas = _view.GetComponent<Canvas>();
+            var camera = new GameObject("AtmosphereEvidence", typeof(Camera)).GetComponent<Camera>();
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            var target = new RenderTexture(390, 844, 24);
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = camera;
+            canvas.planeDistance = 10;
+            camera.targetTexture = target;
+            try
+            {
+                yield return Settle();
+                Map().FocusOn(hitArea);
+                yield return Settle();
+                Save(camera, target, "flower-live-a");
+                yield return new WaitForSecondsRealtime(.7f);
+                yield return Settle();
+                Save(camera, target, "flower-live-b");
+                _view.RenderPoint("market", flowerName, "Locked", PointDisplayState.Locked, false, true);
+                Assert.That(label.enabled, Is.False);
+                Assert.That(market.IsInteractable(), Is.False);
+                market.onClick.Invoke();
+                Assert.That(_view.IsDetailsOpen, Is.False);
+                _view.RenderPoint("market", flowerName, "Open", PointDisplayState.NoRequest, false, true);
+                Assert.That(label.enabled && market.IsInteractable(), Is.True);
+            }
+            finally
+            {
+                camera.targetTexture = null;
+                target.Release();
+                Object.Destroy(target);
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                Object.Destroy(camera.gameObject);
+            }
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator RegionalFogCoversTerrainAndRevealsNeighborWithoutMovingOpenPoints()
+        {
+            yield return Load();
+            var fog = _view.GetComponentInChildren<CityMapFog>();
+            var atmosphere = _view.GetComponentInChildren<CityMapAtmosphere>();
+            var canvas = _view.GetComponent<Canvas>();
+            var camera = new GameObject("RegionFogEvidence", typeof(Camera)).GetComponent<Camera>();
+            var target = new RenderTexture(768, 1024, 24);
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = camera;
+            canvas.planeDistance = 10;
+            camera.targetTexture = target;
+            try
+            {
+                _view.GetComponentInChildren<ToastView>(true).Clear();
+                atmosphere.enabled = false;
+                Map().normalizedPosition = new Vector2(0, 1);
+                yield return Settle();
+                Assert.That(fog.raycastTarget, Is.False);
+                Assert.That(fog.GetComponentInParent<RectMask2D>(), Is.Not.Null);
+                var points = Map().content.GetComponentsInChildren<Button>()
+                    .Where(button => button.transform.parent == Map().content).ToArray();
+                Assert.That(points.Length, Is.EqualTo(7));
+                Assert.That(points.All(button => button.IsInteractable()), Is.True);
+                Vector2[] anchors = points.Select(button => ((RectTransform)button.transform).anchorMin).ToArray();
+                var dock = new Vector2(.29f, .82f);
+                var island = new Vector2(.24f, .945f);
+                var outside = new Vector2(.05f, .49f);
+                var path = new Vector2(.49f, .50f);
+                Vector2[] spots = { dock, island, outside, path };
+
+                Color[] before = ReadRegions(camera, target, spots, "region-fog-before");
+                fog.enabled = false;
+                yield return Settle();
+                Color[] bare = ReadRegions(camera, target, spots, null);
+                fog.enabled = true;
+                for (int i = 0; i < 3; i++)
+                    Assert.That(ColorDistance(before[i], bare[i]), Is.GreaterThan(.22f), spots[i].ToString());
+                Assert.That(ColorDistance(before[3], bare[3]), Is.LessThan(.035f));
+
+                fog.PreviewRevealed = true;
+                yield return new WaitForSecondsRealtime(1.4f);
+                yield return Settle();
+                Color[] after = ReadRegions(camera, target, spots, "region-fog-revealed");
+                for (int i = 0; i < 2; i++)
+                    Assert.That(ColorDistance(after[i], bare[i]), Is.LessThan(.035f));
+                for (int i = 2; i < 4; i++)
+                    Assert.That(ColorDistance(after[i], before[i]), Is.LessThan(.035f));
+                Assert.That(points.Select(button => ((RectTransform)button.transform).anchorMin),
+                    Is.EqualTo(anchors));
+                Assert.That(points.All(button => button.IsInteractable()), Is.True);
+            }
+            finally
+            {
+                fog.PreviewRevealed = false;
+                atmosphere.enabled = true;
+                camera.targetTexture = null;
+                target.Release();
+                Object.Destroy(target);
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                Object.Destroy(camera.gameObject);
+            }
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        private Color[] ReadRegions(Camera camera, RenderTexture target, Vector2[] spots, string name)
+        {
+            Texture2D image = Capture(camera, target);
+            try
+            {
+                if (name != null) WriteEvidence(image, name);
+                Rect area = Map().content.rect;
+                return spots.Select(spot =>
+                {
+                    Vector2 p = area.min + Vector2.Scale(spot, area.size);
+                    Vector3 screen = camera.WorldToScreenPoint(Map().content.TransformPoint(p));
+                    Assert.That(screen.x, Is.InRange(1, target.width - 2));
+                    Assert.That(screen.y, Is.InRange(1, target.height - 2));
+                    return image.GetPixel(Mathf.RoundToInt(screen.x), Mathf.RoundToInt(screen.y));
+                }).ToArray();
+            }
+            finally { Object.Destroy(image); }
+        }
+
+        private static float ColorDistance(Color a, Color b) =>
+            Mathf.Abs(a.r - b.r) + Mathf.Abs(a.g - b.g) + Mathf.Abs(a.b - b.b);
+
+        [UnityTest]
         public IEnumerator LongDetailsScrollWithActionsOutsideMaskAndFreshSelectionResetsBody()
         {
             yield return Load(); Button("Yard").onClick.Invoke();
@@ -219,11 +369,24 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
         private static void Save(Camera camera, RenderTexture target, string name)
         {
+            Texture2D image = Capture(camera, target);
+            try { WriteEvidence(image, name); }
+            finally { Object.Destroy(image); }
+        }
+
+        private static Texture2D Capture(Camera camera, RenderTexture target)
+        {
             camera.Render(); var previous = RenderTexture.active; RenderTexture.active = target;
             var image = new Texture2D(target.width, target.height, TextureFormat.RGB24, false);
             image.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0); image.Apply();
-            RenderTexture.active = previous; Directory.CreateDirectory("FullscreenMapEvidence");
-            File.WriteAllBytes("FullscreenMapEvidence/" + name + ".png", image.EncodeToPNG()); Object.Destroy(image);
+            RenderTexture.active = previous;
+            return image;
+        }
+
+        private static void WriteEvidence(Texture2D image, string name)
+        {
+            Directory.CreateDirectory("FullscreenMapEvidence");
+            File.WriteAllBytes("FullscreenMapEvidence/" + name + ".png", image.EncodeToPNG());
         }
         private CityMapScrollRect Map() => _view.GetComponentInChildren<CityMapScrollRect>();
         private Button Button(string name) => _view.GetComponentsInChildren<Button>(true).Single(b => b.name == name);

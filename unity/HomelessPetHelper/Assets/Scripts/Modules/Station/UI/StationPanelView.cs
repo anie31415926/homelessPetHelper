@@ -29,6 +29,7 @@ namespace HomelessPetHelper.Modules.Station.UI
         [SerializeField] private StationAnimalView[] _animals;
         [SerializeField] private RectTransform _rosterContent;
         [SerializeField] private Button _enter;
+        [SerializeField] private Button _summaryRename, _detailRename;
         [SerializeField] private Button _back;
         [SerializeField] private Button _check;
         [SerializeField] private Button _pet;
@@ -46,6 +47,7 @@ namespace HomelessPetHelper.Modules.Station.UI
         private bool _focused = true;
         private bool _applicationPaused;
         private bool _overlaySuspended;
+        private bool _renameAvailable;
         private ILevelOverlay _overlay;
         private readonly List<StationAnimalView> _extraAnimals = new List<StationAnimalView>();
 
@@ -55,6 +57,7 @@ namespace HomelessPetHelper.Modules.Station.UI
         public event Action<bool> SuspensionChanged;
         public event Action SettingsRequested;
         public event Action MemorialRequested;
+        public event Action RenameRequested;
 
         public DirtSurfaceView Surface => _surface;
         public Habitat.StationHabitatView Habitat => _habitat;
@@ -83,6 +86,15 @@ namespace HomelessPetHelper.Modules.Station.UI
         }
 
         public void SetHistoryAvailable(bool available) => _history.interactable = available;
+        public void SetRenameLabel(string label)
+        {
+            if (_summaryRename == null || _detailRename == null) return;
+            _renameAvailable = true;
+            _summaryRename.GetComponentInChildren<Text>(true).text = label;
+            _detailRename.GetComponentInChildren<Text>(true).text = label;
+            _summaryRename.gameObject.SetActive(true);
+            _detailRename.gameObject.SetActive(true);
+        }
         public void SetSettingsAvailable(bool available)
         { if (_chrome != null) _chrome.SetSettingsAvailable(available); }
         public void RequestSettings() => SettingsRequested?.Invoke();
@@ -119,7 +131,7 @@ namespace HomelessPetHelper.Modules.Station.UI
         public void ShowPage(bool summary, bool detail, bool caring = false)
         {
             _surface.SetCleaning(false);
-            _summary.SetActive(summary);
+            _summary.SetActive(summary && !_overlaySuspended);
             _overview.SetActive(_chrome != null || (!summary && !detail));
             if (_scene != null) _scene.SetPresentationVisible(!summary && !caring);
             _detail.SetActive(!summary && detail);
@@ -153,6 +165,7 @@ namespace HomelessPetHelper.Modules.Station.UI
             bool cleaning, bool canFinish, StationCareAvailability care, bool suspended, IReadOnlyDirtField fur = null)
         {
             _name.text = name;
+            if (_detailRename != null) _detailRename.gameObject.SetActive(!cleaning && _renameAvailable);
             _condition.text = condition;
             if (_careAvailability != null)
             {
@@ -197,11 +210,15 @@ namespace HomelessPetHelper.Modules.Station.UI
             _actions.interactable = !suspended;
             _actions.alpha = 1;
             _restart.interactable = !suspended;
+            if (_summaryRename != null) _summaryRename.interactable = !suspended;
+            if (_detailRename != null) _detailRename.interactable = !suspended;
         }
 
         private void OnEnable()
         {
             _enter.onClick.AddListener(Enter);
+            if (_summaryRename != null) _summaryRename.onClick.AddListener(Rename);
+            if (_detailRename != null) _detailRename.onClick.AddListener(Rename);
             _back.onClick.AddListener(Back);
             _check.onClick.AddListener(Check);
             _pet.onClick.AddListener(Pet);
@@ -224,6 +241,8 @@ namespace HomelessPetHelper.Modules.Station.UI
         private void OnDisable()
         {
             _enter.onClick.RemoveListener(Enter);
+            if (_summaryRename != null) _summaryRename.onClick.RemoveListener(Rename);
+            if (_detailRename != null) _detailRename.onClick.RemoveListener(Rename);
             _back.onClick.RemoveListener(Back);
             _check.onClick.RemoveListener(Check);
             _pet.onClick.RemoveListener(Pet);
@@ -246,6 +265,7 @@ namespace HomelessPetHelper.Modules.Station.UI
         }
 
         private void Enter() => Request(StationCommand.Enter);
+        private void Rename() => RenameRequested?.Invoke();
         private void Back() => Request(StationCommand.Back);
         private void Check() => Request(StationCommand.Check);
         private void Pet() => Request(StationCommand.Pet);

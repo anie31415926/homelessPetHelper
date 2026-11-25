@@ -59,6 +59,59 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator NewGameOpeningPointsAtExistingCatRequestAndDoesNotRepeatAfterReload()
+        {
+            UseOpening();
+            yield return Load();
+            PresentOpeningOrNotice();
+            Assert.That(FeedbackContains("救助站开门啦"), Is.True);
+            Assert.That(FeedbackContains("水晶矿洞"), Is.True);
+            var request = _root.Presenter.Session.Requests.Requests.Single(item => item.PointId == "parking");
+            Click(_station, "OverlayConfirm");
+            Assert.That(_map.gameObject.activeInHierarchy, Is.True);
+            Assert.That(request.State, Is.EqualTo(RequestState.Available));
+            Click(_map, "Primary");
+            yield return WaitForPanel<Game.Approach.ApproachPanelView>();
+            Assert.That(_root.Presenter.Session.Outing.Session.AcceptedRequestId, Is.EqualTo(request.RequestId));
+
+            yield return Load();
+            Assert.That(_root.Presenter.Progress.IsNewGame, Is.False);
+            Assert.That(_root.Presenter.Session.Outing.Session.AcceptedRequestId, Is.EqualTo(request.RequestId));
+        }
+
+        [UnityTest]
+        public IEnumerator OpeningCanBeDismissedAndLeavesTheRequestAvailable()
+        {
+            UseOpening();
+            yield return Load();
+            PresentOpeningOrNotice();
+            Assert.That(FeedbackContains("救助站开门啦"), Is.True);
+            yield return new UiLayoutCompliancePlayTests().CaptureAndAssert(_station, "station-opening");
+            _root.Presenter.Overlays.CancelConfirmation();
+
+            yield return Load();
+            PresentOpeningOrNotice();
+            Assert.That(_root.Presenter.Progress.IsNewGame, Is.False);
+            Assert.That(FeedbackContains("救助站开门啦"), Is.False);
+            Assert.That(_root.Presenter.Session.Requests.Requests.Single(item => item.PointId == "parking").State,
+                Is.EqualTo(RequestState.Available));
+        }
+
+        private void UseOpening()
+        {
+            _scope.Dispose();
+            _scope = new MainSceneStorageScope(() => _storage, showOpening: true);
+        }
+
+        private void PresentOpeningOrNotice()
+        {
+            var present = typeof(MainLoopPresenter).GetMethod("PresentPendingRescueNotice",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            Assert.That(present, Is.Not.Null);
+            present.Invoke(_root.Presenter, null);
+        }
+
+        [UnityTest]
         public IEnumerator RescueNoticeOpensTheSameMapRequestAndAcceptedOutingSurvivesReload()
         {
             yield return Load();
@@ -69,10 +122,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(session.Clock.TryAdvance(session.Clock.Current.Version, 180, out _, out _), Is.True);
             Assert.That(presenter.Progress.TryCheckpoint(), Is.True, presenter.Progress.PersistenceError?.ToString());
             var notice = session.Requests.Requests.Last();
-            var present = typeof(MainLoopPresenter).GetMethod("PresentPendingRescueNotice",
-                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            Assert.That(present, Is.Not.Null);
-            present.Invoke(presenter, null);
+            PresentOpeningOrNotice();
             Assert.That(FeedbackContains("救助消息"), Is.True);
             var content = Resources.FindObjectsOfTypeAll<GameContent>().Single(item => item.name == "GameContent");
             Assert.That(FeedbackContains(new OptionPreviewText(content.MapText).Get("yard")), Is.True);
@@ -112,6 +162,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(catActivity.Battle.Snapshot.EncounterId, Is.EqualTo("cat"));
             yield return Win();
             Click(_siege, "Retry");
+            Assert.That(FeedbackContains("先让它歇一会儿"), Is.True);
             var layout = new UiLayoutCompliancePlayTests();
             yield return layout.CaptureAndAssert(_station, "arrival-summary");
             var cat = _root.Presenter.Session.Station.Animals.Single().AnimalId;
@@ -178,7 +229,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Click(_station, "Back");
             yield return CaptureStation();
             Click(_station, "Animal1");
-            Assert.That(_station.GetComponentsInChildren<Text>(true).Any(text => text.text.Contains("救助狗狗")), Is.True);
+            Assert.That(_station.GetComponentsInChildren<Text>(true).Any(text => text.text == "小麦"), Is.True);
             Click(_station, "Back");
             Click(_station, "Restart");
             Assert.That(_map.GetComponentsInChildren<Text>(true).Single(text => text.name == "Heading").text,
@@ -204,9 +255,30 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return Win();
             Click(_siege, "Retry");
             yield return WaitForPanel<StationPanelView>();
-            Click(_station, "Enter"); Click(_station, "Animal0");
             var animal = _root.Presenter.Session.Station.Animals.Single();
             var layout = new UiLayoutCompliancePlayTests();
+            Assert.That(FeedbackContains("栗子"), Is.True);
+            Click(_station, "SummaryRename");
+            var nameField = _station.GetComponentInChildren<InputField>();
+            Assert.That(nameField.text, Is.EqualTo("栗子"));
+            nameField.text = "<abc>";
+            Click(_station, "OverlayConfirm");
+            Assert.That(FeedbackContains("请输入"), Is.True);
+            Assert.That(_root.Presenter.Progress.GetCustomName(animal.AnimalId), Is.Null);
+            nameField.text = "雪团芝麻麦芽芋圆";
+            yield return layout.CaptureAndAssert(_station, "name-summary-dialog");
+            Click(_station, "OverlayConfirm");
+            Assert.That(FeedbackContains("雪团芝麻麦芽芋圆"), Is.True);
+            Click(_station, "Enter"); Click(_station, "Animal0");
+            yield return layout.CaptureAndAssert(_station, "name-detail-long");
+            Click(_station, "DetailRename");
+            _station.GetComponentInChildren<InputField>().text = "柚子";
+            Click(_station, "OverlayCancel");
+            Assert.That(_root.Presenter.Progress.GetCustomName(animal.AnimalId), Is.EqualTo("雪团芝麻麦芽芋圆"));
+            Click(_station, "DetailRename");
+            _station.GetComponentInChildren<InputField>().text = "柚子";
+            Click(_station, "OverlayConfirm");
+            Assert.That(FeedbackContains("柚子"), Is.True);
             Click(_station, "QuietSpace");
             Assert.That(FeedbackContains("基础检查"), Is.True);
             Click(_station, "OverlayCancel"); Click(_station, "Check");
@@ -226,6 +298,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(_root.Presenter.Session.Station.AvailableTemporaryPlaces, Is.EqualTo(1));
             yield return Load();
             Click(_station, "Animal0"); Click(_station, "QuietSpace");
+            Assert.That(_root.Presenter.Progress.GetCustomName(animal.AnimalId), Is.EqualTo("柚子"));
             Assert.That(FeedbackContains("1/2"), Is.True, "Published state is durable.");
             Click(_station, "OverlayConfirm");
             yield return new WaitForSecondsRealtime(0.4f);
@@ -249,7 +322,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(_root.Presenter.Progress.CanContinue, Is.True);
             Assert.That(_root.Presenter.Session.Station.Animals, Is.Empty);
             Click(_station, "StationMenu"); Click(_station, "StationMemorial");
-            Assert.That(FeedbackContains("救助猫咪"), Is.True);
+            Assert.That(FeedbackContains("柚子"), Is.True);
             Assert.That(_station.GetComponentsInChildren<Image>().Single(i => i.name == "DialogPortrait").sprite,
                 Is.Not.Null);
             yield return layout.CaptureAndAssert(_station, "adoption-memorial");

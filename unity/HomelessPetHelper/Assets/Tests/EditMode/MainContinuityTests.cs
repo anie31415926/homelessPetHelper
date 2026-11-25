@@ -209,7 +209,7 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(restored.Session.Station.Animals.Single().AnimalId, Is.EqualTo(dog));
             Assert.That(restored.Session.Station.TryGetCurrentAnimal(cat, out _), Is.False);
             var raw = new SaveService(storage);
-            var section = new SaveSection<JObject>("main.station", 4, () => new JObject(), _ => null);
+            var section = new SaveSection<JObject>("main.station", 5, () => new JObject(), _ => null);
             raw.Register(section);
             Assert.That(raw.TryOpen(out _, out _), Is.True);
             Assert.That(raw.TryRead(section, out var data, out _), Is.True);
@@ -217,6 +217,32 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That((string)memorial["Name"], Is.EqualTo("Milo"));
             Assert.That((string)memorial["Appearance"], Is.EqualTo("cat.shy"));
             Assert.That(data.ToString(), Does.Not.Contain(cat.ToString("N")));
+        }
+
+        [Test]
+        public void RenameIsDurableAndSaveFailureDoesNotPublishTheDraft()
+        {
+            var storage = new MemorySaveStorage();
+            Guid cat;
+            using (var first = Open(storage))
+            {
+                cat = Rescue(first, "ordinary");
+                Assert.That(first.TryRenameResident(cat, string.Empty), Is.False);
+                Assert.That(first.TryRenameResident(cat, "123"), Is.False);
+                Assert.That(first.TryRenameResident(cat, "<b>Milo</b>"), Is.False);
+                Assert.That(first.TryRenameResident(cat, "12345678A"), Is.False);
+                Assert.That(first.TryRenameResident(cat, "Milo"), Is.True, first.PersistenceError?.ToString());
+                int writes = storage.Writes;
+                Assert.That(first.TryRenameResident(cat, "Milo"), Is.True);
+                Assert.That(storage.Writes, Is.EqualTo(writes));
+                storage.FailWrites = true;
+                Assert.That(first.TryRenameResident(cat, "Poppy"), Is.False);
+                Assert.That(first.GetCustomName(cat), Is.EqualTo("Milo"));
+            }
+            storage.FailWrites = false;
+            using var restored = Open(storage);
+            Assert.That(restored.CanContinue, Is.True, restored.PersistenceError?.ToString());
+            Assert.That(restored.GetCustomName(cat), Is.EqualTo("Milo"));
         }
 
         [Test]
@@ -437,7 +463,7 @@ namespace HomelessPetHelper.Tests.EditMode
                 Assert.That(progress.TryCheckpoint(), Is.True);
             }
             var raw = new SaveService(storage);
-            var section = new SaveSection<JObject>("main.station", 4, () => new JObject(), _ => null);
+            var section = new SaveSection<JObject>("main.station", 5, () => new JObject(), _ => null);
             raw.Register(section);
             Assert.That(raw.TryOpen(out _, out _), Is.True);
             Assert.That(raw.TryRead(section, out var data, out _), Is.True);

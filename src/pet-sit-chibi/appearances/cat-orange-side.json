@@ -171,8 +171,8 @@
   },
   "walk": {
     "seconds": 0.9,
-    "stride": 0.12,
-    "lift": 0.065,
+    "stride": 0.16,
+    "lift": 0.105,
     "bodyBob": 0.012
   },
   "skin": {

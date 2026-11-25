@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('Check', 'Probe', 'BuildGameWebGL')]
+    [ValidateSet('Check', 'Probe', 'BuildGameWebGL', 'ExportGame')]
     [string]$Task = 'Check',
     [string]$EditorPath = $env:UNITY_EDITOR_PATH,
     [string]$SdkCachePath,
@@ -37,6 +37,10 @@ $devtools = Join-Path ${env:ProgramFiles(x86)} "Tencent/$($wechat)web$developerT
 } | Format-List
 if ($Task -eq 'Check') { return }
 if (-not (Test-Path -LiteralPath $webglPath -PathType Container)) { throw 'Install WebGL for this editor first.' }
+if ($Task -eq 'ExportGame' -and $env:HPH_WECHAT_APP_ID -cnotmatch '^wx[0-9a-f]{16}$')
+{
+    throw 'Set HPH_WECHAT_APP_ID to the registered mini game AppID before exporting.'
+}
 
 $reportRoot = Join-Path $repo 'test-results/wechat-environment'
 $probe = Join-Path $reportRoot "probe-$([Guid]::NewGuid().ToString('N'))"
@@ -81,7 +85,8 @@ if (-not [string]::IsNullOrWhiteSpace($SdkCachePath))
     $env:GIT_CONFIG_COUNT = [string]($configIndex + 1)
     Write-Output 'Using verified official SDK checkout to seed the Git package cache; manifest keeps its pinned URL.'
 }
-$method = if ($Task -eq 'BuildGameWebGL') { 'WeChatEnvironmentProbe.BuildGameWebGl' }
+$method = if ($Task -eq 'ExportGame') { 'WeChatEnvironmentProbe.ExportGame' }
+    elseif ($Task -eq 'BuildGameWebGL') { 'WeChatEnvironmentProbe.BuildGameWebGl' }
     elseif ($BuildWebGL) { 'WeChatEnvironmentProbe.BuildWebGl' }
     else { 'WeChatEnvironmentProbe.Verify' }
 $buildPlayer = $BuildWebGL -or $Task -eq 'BuildGameWebGL'
@@ -91,7 +96,7 @@ try
 {
     $arguments = @('-batchmode', '-nographics', '-quit', '-projectPath', "`"$probe`"",
         '-logFile', "`"$log`"", '-executeMethod', $method)
-    if ($buildPlayer) { $arguments += @('-buildTarget', 'WebGL') }
+    if ($buildPlayer -or $Task -eq 'ExportGame') { $arguments += @('-buildTarget', 'WebGL') }
     $process = Start-Process -FilePath $EditorPath -ArgumentList $arguments -WindowStyle Hidden -PassThru
     if (-not $process.WaitForExit(1200000))
     {
@@ -106,6 +111,10 @@ try
     if ($buildPlayer)
     {
         Get-Content -LiteralPath (Join-Path $probe 'ProbeReports/webgl-build.json') -Raw | Write-Output
+    }
+    if ($Task -eq 'ExportGame')
+    {
+        Get-Content -LiteralPath (Join-Path $probe 'ProbeReports/wechat-export.json') -Raw | Write-Output
     }
     Write-Output "Evidence: $probe"
 }

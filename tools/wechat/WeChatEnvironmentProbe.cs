@@ -1,11 +1,13 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using WeChatWASM;
 
 public static class WeChatEnvironmentProbe
 {
@@ -80,6 +82,59 @@ public static class WeChatEnvironmentProbe
         }
 
         BuildPlayer(scenes);
+    }
+
+    public static void ExportGame()
+    {
+        Verify();
+        string appId = Environment.GetEnvironmentVariable("HPH_WECHAT_APP_ID");
+        if (!Regex.IsMatch(appId ?? string.Empty, @"^wx[0-9a-f]{16}$"))
+        {
+            throw new InvalidOperationException("A registered mini game AppID is required.");
+        }
+
+        const string output = "WeChatCandidate";
+        var config = WXConvertCore.config;
+        config.ProjectConf.Appid = appId;
+        config.ProjectConf.projectName = "Homeless Pet Helper";
+        config.ProjectConf.bgImageSrc = "Assets/Art/Loading/T_WeChat_Cover.jpg";
+        config.ProjectConf.HideAfterCallMain = true;
+        config.ProjectConf.Orientation = (WXScreenOritation)0;
+        config.ProjectConf.relativeDST = output;
+        config.ProjectConf.DST = Path.GetFullPath(output);
+        config.ProjectConf.CDN = string.Empty;
+        config.ProjectConf.assetLoadType = 1;
+        config.ProjectConf.compressDataPackage = true;
+        config.CompileOptions.DevelopBuild = false;
+        config.CompileOptions.Il2CppOptimizeSize = true;
+        config.CompileOptions.Webgl2 = true;
+        config.CompileOptions.profilingFuncs = false;
+        config.CompileOptions.fbslim = false;
+        config.CompileOptions.enablePerfAnalysis = false;
+
+        var result = WXConvertCore.DoExport();
+        string miniGame = Path.Combine(output, "minigame");
+        bool hasProject = File.Exists(Path.Combine(miniGame, "project.config.json"));
+        File.WriteAllText("ProbeReports/wechat-export.json", JsonUtility.ToJson(new ExportResult
+        {
+            Result = result.ToString(),
+            HasMiniGameProject = hasProject,
+            EffectiveResourceMode = config.ProjectConf.assetLoadType == 1 ? "Package" : "CDN",
+            DataCompressed = config.ProjectConf.compressDataPackage
+        }, true) + "\n");
+        if (result != WXConvertCore.WXExportError.SUCCEED || !hasProject)
+        {
+            throw new InvalidOperationException("WeChat SDK export did not produce a mini game project.");
+        }
+    }
+
+    [Serializable]
+    private sealed class ExportResult
+    {
+        public string Result;
+        public bool HasMiniGameProject;
+        public string EffectiveResourceMode;
+        public bool DataCompressed;
     }
 
     private static void BuildPlayer(string[] scenes)

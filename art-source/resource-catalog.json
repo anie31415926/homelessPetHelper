@@ -1406,13 +1406,59 @@
       }
     },
     {
+      "id": "station.care.cat-rescue-portrait",
+      "name": "现场动画橘猫同源护理近景",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 静态依赖。选择已救回的橘猫进行清洁或梳理时显示。",
+      "use": "452×512 原始站姿，复用现场骨骼动画的原图与粉色围巾辨识特征；只在护理取静态姿态以保留拖拽命中，不复制贴图。",
+      "plannedBytes": 102400,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/PetMotion/T_Pet_original.png"
+        }
+      ],
+      "generation": {
+        "tool": "复用现有项目动物原图",
+        "notes": "非本次生图；同源原图也用于 pet-mesh.cat-side 参考。保持现有来源、许可和目标平台审核状态。"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "station.care.effect-atlas",
+      "name": "护理泡泡与梳理毛束贴图",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 静态依赖，完成站内检查后沿现有清洁或梳理条件可见。",
+      "use": "256×256 RGBA，洗澡虹彩泡泡及梳理毛束和闪光共用一张；只有有效操作触发，不影响结算。",
+      "plannedBytes": 32768,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/Station/T_Station_CareEffects.png"
+        },
+        {
+          "role": "workflow",
+          "path": "tools/station-care-visuals.mjs"
+        }
+      ],
+      "generation": {
+        "tool": "项目内矢量稿 + Sharp 离线栅格化",
+        "notes": "无外部模型、素材或字体；色阶、笔触和透明光斑由生成脚本声明。同一脚本从现场 Sprite 的 alpha 派生旧护理取样投影。"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
       "id": "animal.dog.station-care",
       "name": "站内护理临时狗图",
       "module": "Station",
       "status": "temporary",
       "loadTiming": "first-play",
       "availability": "Main静态引用随场景加载；资源已移至Assets/Art，仍为临时美术，正式许可和微信下载待审。原开放条件不变。",
-      "use": "512×512 透明护理主图；已接站内 Editor 试玩，深浅底边缘与六比例初筛；duel.html 脑内过招实验复用同文件为前景与回顾图，不复制、不作为正式资产审核",
+      "use": "512×512 原透明护理图；保留旧预览、其他站内用途及既有护理网格绑定；Main 护理近景改用 field-animal.dog，HTML 实验仍复用本图。",
       "plannedBytes": 153600,
       "files": [
         {
@@ -1459,7 +1505,7 @@
       "status": "temporary",
       "loadTiming": "first-play",
       "availability": "Main静态引用随场景加载；资源已移至Assets/Art，仍为临时美术，正式许可和微信下载待审。原开放条件不变。",
-      "use": "512×512 透明护理主图；两个猫样本共用基础图，脏污/梳理独立叠加，已接站内 Editor 试玩；B版 Web 与 Unity 救助案例复用同一 Sprite 为独立前景；duel.html 脑内过招实验复用为前景与回顾图，不复制动物图，不修改原站内绑定；SC_RescueLoop 现场与新 Panel_StationLoop 仍复用此 Sprite 和原遮罩，同一个体的脏污成果由数据及局部场记录，不另存每只动物图片",
+      "use": "512×512 原透明护理图；保留旧预览、其他站内用途及既有护理网格绑定；Main 护理近景改用 station.care.cat-rescue-portrait，HTML 实验仍复用本图。",
       "plannedBytes": 153600,
       "files": [
         {
@@ -2478,6 +2524,35 @@
       }
     },
     {
+      "id": "city-map.storybook.atmosphere",
+      "name": "绘本地图 · 蜜蜂与云雾",
+      "module": "CityMap",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 地图静态依赖；未锁定地点只显示浮云，锁定点复用同一云贴片。",
+      "use": "蜜蜂和云雾共用 256×128 透明图页；花海网格使用现有花园纹理。",
+      "plannedBytes": 24576,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityMap_Atmosphere.png"
+        },
+        {
+          "role": "master",
+          "path": "art-source/city-map-atmosphere-20261125/atmosphere.svg"
+        }
+      ],
+      "generation": {
+        "tool": "手工 SVG / Sharp",
+        "record": "art-source/city-map-atmosphere-20261125/README.md"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
       "id": "city-map.storybook.bubble-pool",
       "name": "绘本地图 · 泡泡湖",
       "module": "CityMap",
@@ -3356,7 +3431,7 @@
         "rights": "pending",
         "target": "pending"
       },
-      "use": "救助/开路现场全身动物Sprite，成年自然比例；现有站内和地图头像保持，来源/视觉/渠道仍待验。",
+      "use": "救助、开路及 Main 护理近景共用的全身 Sprite；地图头像保持，来源和渠道仍待验。",
       "generation": {
         "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
         "model": "qwen_image_2.1_int8_convrot.safetensors",
@@ -3412,7 +3487,7 @@
         "rights": "pending",
         "target": "pending"
       },
-      "use": "救助/开路现场全身动物Sprite，成年自然比例；现有站内和地图头像保持，来源/视觉/渠道仍待验。",
+      "use": "开路和救助的旧静态后备猫 Sprite；现场动画猫护理复用的是现有骨骼原图，地图头像保持。",
       "generation": {
         "tool": "本地ComfyUI Qwen Image 2.1 INT8 ConvRot",
         "model": "qwen_image_2.1_int8_convrot.safetensors",
@@ -6502,36 +6577,17 @@
       "use": "8 种形象及原图清理对照。全尺寸清图本机派生，不作为动画图集或首批依赖。",
       "plannedBytes": 262144,
       "files": [
-        {
-          "role": "candidate",
-          "path": "art-source/pet-roster-20261124/roster-board.jpg"
-        },
-        {
-          "role": "workflow",
-          "path": "art-source/pet-roster-20261124/roster.json"
-        },
-        {
-          "role": "workflow",
-          "path": "art-source/pet-roster-20261124/dog-shiba-sit-study.json"
-        },
-        {
-          "role": "workflow",
-          "path": "tools/pet-roster-reference.mjs"
-        },
-        {
-          "role": "workflow",
-          "path": "tools/pet-roster-dog-study.mjs"
-        }
+        { "role": "candidate", "path": "art-source/pet-roster-20261124/roster-board.jpg" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/roster.json" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/dog-shiba-sit-study.json" },
+        { "role": "workflow", "path": "tools/pet-roster-reference.mjs" },
+        { "role": "workflow", "path": "tools/pet-roster-dog-study.mjs" }
       ],
       "generation": {
         "tool": "本地 Sharp 与字形边界插值；不重画动物",
         "record": "art-source/pet-roster-20261124/README.md"
       },
-      "review": {
-        "visual": "pending",
-        "rights": "pending",
-        "target": "pending"
-      }
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
     },
     {
       "id": "pet-roster-20261124.tuxedo-sit-texture",
@@ -6543,24 +6599,14 @@
       "use": "五个动作阶段的深浅底对照；非运行图集。",
       "plannedBytes": 196608,
       "files": [
-        {
-          "role": "candidate",
-          "path": "art-source/pet-roster-20261124/sit-texture/tuxedo-poses.jpg"
-        },
-        {
-          "role": "workflow",
-          "path": "art-source/pet-roster-20261124/sit-texture/tuxedo.json"
-        }
+        { "role": "candidate", "path": "art-source/pet-roster-20261124/sit-texture/tuxedo-poses.jpg" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/sit-texture/tuxedo.json" }
       ],
       "generation": {
         "tool": "本地 Sharp、手工蒙版与骨骼网格烘焙",
         "record": "art-source/pet-roster-20261124/sit-texture/README.md"
       },
-      "review": {
-        "visual": "pending",
-        "rights": "pending",
-        "target": "pending"
-      }
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
     },
     {
       "id": "pet-roster-20261124.shiba-sit-texture",
@@ -6569,27 +6615,17 @@
       "status": "candidate",
       "loadTiming": "preview-only",
       "availability": "仅供绑图和轮廓评审，不进 Main 或 Unity",
-      "use": "五个动作阶段的深浅底对照；非运行图集。",
+      "use": "原侧身的独立犬类站坐，连续胸毛与近侧前腿；五个阶段深浅底对照，非运行图集。",
       "plannedBytes": 196608,
       "files": [
-        {
-          "role": "candidate",
-          "path": "art-source/pet-roster-20261124/sit-texture/shiba-poses.jpg"
-        },
-        {
-          "role": "workflow",
-          "path": "art-source/pet-roster-20261124/sit-texture/shiba.json"
-        }
+        { "role": "candidate", "path": "art-source/pet-roster-20261124/sit-texture/shiba-poses.jpg" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/sit-texture/shiba.json" }
       ],
       "generation": {
         "tool": "本地 Sharp、手工蒙版与骨骼网格烘焙",
         "record": "art-source/pet-roster-20261124/sit-texture/README.md"
       },
-      "review": {
-        "visual": "pending",
-        "rights": "pending",
-        "target": "pending"
-      }
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
     },
     {
       "id": "pet-roster-20261124.standard-stand-review",
@@ -6601,36 +6637,139 @@
       "use": "上排奶牛猫、下排柴犬；左右为初版和复修版。",
       "plannedBytes": 196608,
       "files": [
-        {
-          "role": "candidate",
-          "path": "art-source/pet-roster-20261124/standard-stand/review.jpg"
-        },
-        {
-          "role": "workflow",
-          "path": "art-source/pet-roster-20261124/standard-stand/tuxedo-workflow.json"
-        },
-        {
-          "role": "workflow",
-          "path": "art-source/pet-roster-20261124/standard-stand/shiba-workflow.json"
-        },
-        {
-          "role": "workflow",
-          "path": "art-source/pet-roster-20261124/standard-stand/tuxedo-refine-workflow.json"
-        },
-        {
-          "role": "workflow",
-          "path": "art-source/pet-roster-20261124/standard-stand/shiba-refine-workflow.json"
-        }
+        { "role": "candidate", "path": "art-source/pet-roster-20261124/standard-stand/review.jpg" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/tuxedo-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/tuxedo-refine-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-refine-workflow.json" }
       ],
       "generation": {
         "tool": "本机 ComfyUI / Qwen Image 2.1 双参考",
         "record": "art-source/pet-roster-20261124/README.md"
       },
-      "review": {
-        "visual": "pending",
-        "rights": "pending",
-        "target": "pending"
-      }
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-roster-20261124.shiba-sit-reference",
+      "name": "柴犬侧坐结构对照",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "仅供落座结构比对，不进入动画图集、Unity 或 Main",
+      "use": "比较原侧站、现有坐姿与前爪、后爪、臀部接地参考",
+      "plannedBytes": 196608,
+      "files": [
+        { "role": "candidate", "path": "art-source/pet-roster-20261124/shiba-sit-reference/comparison.jpg" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/shiba-sit-reference/shiba-seat-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/shiba-sit-reference/shiba-seat-refine-workflow.json" }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1",
+        "record": "art-source/pet-roster-20261124/shiba-sit-reference/README.md"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-roster-20261124.shiba-seat-target",
+      "name": "柴犬坐稳原图绑图定格",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "只用于确认柴犬站坐末姿，不进入 Unity 或 Main",
+      "use": "原图定格与骨骼叠图，检查末姿承重及落点。",
+      "plannedBytes": 196608,
+      "files": [
+        { "role": "candidate", "path": "art-source/pet-roster-20261124/shiba-sit-reference/seat-target.jpg" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/sit-texture/shiba-seat-target.json" }
+      ],
+      "generation": {
+        "tool": "原侧图裁片 / 定长骨骼 / Sharp",
+        "record": "art-source/pet-roster-20261124/shiba-sit-reference/README.md"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-roster-20261124.shiba-seat-leg-study",
+      "name": "柴犬侧坐前后腿重做对照",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "仅供重绑时参考，不替换原图，不进入动画图集、Unity 或 Main",
+      "use": "对比原侧站、失败绑图末姿与新坐姿的前腿承重和近侧后腿轮廓",
+      "plannedBytes": 196608,
+      "files": [
+        { "role": "candidate", "path": "art-source/pet-roster-20261124/shiba-sit-reference/leg-study.jpg" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/shiba-sit-reference/shiba-seat-legs-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/shiba-sit-reference/shiba-seat-legs-refine-workflow.json" }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1 双参考",
+        "record": "art-source/pet-roster-20261124/shiba-sit-reference/README.md"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-roster-20261124.shiba-neutral-stand",
+      "name": "柴犬中立侧站母图候选",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "供站姿评审和后续重新标骨点，不进入 Unity 或 Main",
+      "use": "728×768 侧站制作母图，仅重画四腿区域，保留原图身份",
+      "plannedBytes": 655360,
+      "files": [
+        { "role": "candidate", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/standing.png" },
+        { "role": "reference", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/comparison.jpg" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/masked-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/full-workflow.json" }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1 局部重绘",
+        "record": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/README.md"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-roster-20261124.shiba-redraw-stand",
+      "name": "柴犬标准侧站整体重绘候选",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "只供确认整图站姿，不进 Unity 或 Main",
+      "use": "736×800 侧站母图，重点核对臀部至近侧后爪的轮廓连续性",
+      "plannedBytes": 1048576,
+      "files": [
+        { "role": "candidate", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/standing-redraw.png" },
+        { "role": "reference", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/redraw-comparison.jpg" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/redraw-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/redraw-refine-workflow.json" }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1 整体重绘",
+        "record": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/README.md"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-roster-20261124.shiba-storybook-stand",
+      "name": "柴犬标准侧站原画风复修候选",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "仅供对照画风和站姿，未绑定或导入 Unity",
+      "use": "736×800 站姿母图，保留原水彩色块、毛束和短腿造型，臀腿连续",
+      "plannedBytes": 1048576,
+      "files": [
+        { "role": "candidate", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/standing-storybook.png" },
+        { "role": "reference", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/storybook-comparison.jpg" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/storybook-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/storybook-refine-workflow.json" }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1 轮廓引导整图重绘，Sharp 调色",
+        "record": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/README.md"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
     },
     {
       "id": "treehouse-field.room",
@@ -7134,6 +7273,73 @@
         "rights": "pending",
         "target": "pending"
       }
+    },
+    {
+      "id": "pet-roster-20261124.shiba-foreleg-prompt-study",
+      "name": "柴犬站姿前腿提示词对照",
+      "module": "Station",
+      "status": "planned",
+      "loadTiming": "preview-only",
+      "availability": "站姿评审用，不用于绑定或进 Unity",
+      "use": "728×768 原侧图局部编辑提示词对照，检查前腿轮廓、遮挡和落脚点",
+      "plannedBytes": 1048576,
+      "files": [],
+      "generation": { "tool": "本机 ComfyUI / Qwen Image 2.1 定种子局部编辑" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-roster-20261124.shiba-flux-stand-study",
+      "name": "柴犬标准站姿 FLUX 换模对照",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "仅为评审对照，非绑定母图，不进入 Unity",
+      "use": "对照原图、Qwen B 及 FLUX 的文字、灰色轮廓和形变引导结果",
+      "plannedBytes": 1048576,
+      "files": [
+        { "role": "candidate", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/flux-study/comparison.jpg" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/flux-study/text-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/flux-study/guide-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/flux-study/shape-workflow.json" }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / FLUX.2 [klein] 4B",
+        "record": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/flux-study/README.md"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-roster-20261124.shiba-style-order-study",
+      "name": "柴犬标准站姿画风提示顺序对照",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "只评审中文提示句序，不进入 Unity",
+      "use": "同原图、种子与采样参数对比站姿要求前置和画风要求前置",
+      "plannedBytes": 1048576,
+      "files": [
+        { "role": "candidate", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/style-order-study/comparison.jpg" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/style-order-study/pose-first-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/style-order-study/style-first-workflow.json" }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1",
+        "record": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/style-order-study/README.md"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-roster-20261124.shiba-qwen-fresh-study",
+      "name": "柴犬 Qwen 纯文生图与参考编码对照",
+      "module": "Station",
+      "status": "planned",
+      "loadTiming": "preview-only",
+      "availability": "用来评审画风与站姿，不进 Unity",
+      "use": "关闭缓存后对比纯中文文生图和接入参考图 VAE 的结果",
+      "plannedBytes": 1048576,
+      "files": [],
+      "generation": { "tool": "本机 ComfyUI / Qwen Image 2.1" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
     }
   ]
 }

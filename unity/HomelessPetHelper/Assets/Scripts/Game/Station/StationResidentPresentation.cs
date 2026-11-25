@@ -13,7 +13,7 @@ namespace HomelessPetHelper.Game.Station
         private DirtField _sampleDirt;
         private DirtField _sampleFur;
 
-        internal string Name { get; private set; }
+        internal string Name { get; set; }
         internal Sprite Art { get; private set; }
         internal IReadOnlyDirtField Dirt => SharedCare != null ? SharedCare.Dirt : _sampleDirt;
         internal IReadOnlyDirtField Fur => SharedCare != null ? SharedCare.Fur : _sampleFur;

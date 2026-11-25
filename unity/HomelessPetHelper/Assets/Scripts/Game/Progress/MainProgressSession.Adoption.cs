@@ -39,7 +39,7 @@ namespace HomelessPetHelper.Game.Progress
             if (AdoptionBlock(animalId) != null || IsListed(animalId)) return false;
             var draft = Capture();
             draft.Residents.Single(item => item.Current.Id == animalId.ToString("N")).AdoptionListed = true;
-            if (!TryCommitAdoption(draft)) return false;
+            if (!TryCommitStationDraft(draft)) return false;
             _listed.Add(animalId);
             return true;
         }
@@ -52,7 +52,8 @@ namespace HomelessPetHelper.Game.Progress
             var resident = draft.Residents.Single(item => item.Current.Id == animalId.ToString("N"));
             draft.Memorials = _memorials.Append(new MemorialData
             {
-                RequestId = resident.RequestId, Name = name, Appearance = resident.Current.DefinitionId
+                RequestId = resident.RequestId, Name = resident.CustomName ?? name,
+                Appearance = resident.Current.DefinitionId
             }).ToArray();
             draft.Residents = draft.Residents.Where(item => item != resident).ToArray();
             draft.Fields = new WorldFieldData
@@ -60,7 +61,7 @@ namespace HomelessPetHelper.Game.Progress
                 Locations = draft.Fields.Locations,
                 Encounters = draft.Fields.Encounters.Where(item => item.RequestId != resident.RequestId).ToArray()
             };
-            if (!TryCommitAdoption(draft)) return false;
+            if (!TryCommitStationDraft(draft)) return false;
             if (!Session.Station.TryReleaseHealthyResident(Session.StationSessionId, animalId))
                 throw new InvalidOperationException("Committed adoption eligibility changed on the gameplay thread.");
             Session.ForgetDepartedResident(animalId);
@@ -68,6 +69,7 @@ namespace HomelessPetHelper.Game.Progress
             _requestsByOuting.Remove(Guid.ParseExact(resident.OutingId, "N"));
             Fields.ApplyArchivedEncounters(draft.Fields.Encounters);
             _listed.Remove(animalId);
+            _customNames.Remove(animalId);
             _memorials = draft.Memorials;
             return true;
         }
@@ -78,11 +80,15 @@ namespace HomelessPetHelper.Game.Progress
             data.Dispatch = _dispatch.Capture();
             data.Memorials = _memorials;
             foreach (var resident in data.Residents)
-                resident.AdoptionListed = IsListed(Guid.ParseExact(resident.Current.Id, "N"));
+            {
+                Guid id = Guid.ParseExact(resident.Current.Id, "N");
+                resident.AdoptionListed = IsListed(id);
+                resident.CustomName = GetCustomName(id);
+            }
             return data;
         }
 
-        private bool TryCommitAdoption(MainProgressData draft)
+        private bool TryCommitStationDraft(MainProgressData draft)
         {
             if (_saves != null)
             {
@@ -91,7 +97,7 @@ namespace HomelessPetHelper.Game.Progress
                 return false;
             }
             if (Validate(draft) == null) return true;
-            PersistenceError = new SaveError(SaveErrorCode.InvalidSection, "Invalid adoption checkpoint.");
+            PersistenceError = new SaveError(SaveErrorCode.InvalidSection, "Invalid station checkpoint.");
             return false;
         }
     }

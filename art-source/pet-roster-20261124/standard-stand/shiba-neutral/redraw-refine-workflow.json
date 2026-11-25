@@ -1,0 +1,129 @@
+{
+  "identity": "test-results/pet-roster-20261124/cleaned/柴犬/宠物游戏操作界面背景设计 (27).png",
+  "cropAtWidth1000": [
+    320,
+    87,
+    370,
+    390
+  ],
+  "poseReference": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/standing.png",
+  "inputSha256": [
+    "41e8e69d695ea1356d3c90e5206d0f8fce95913e1cd0e05cbf58e3f7af1a55d3",
+    "14ad70e4aed320c90965c1465cf5862d44b6077cac708c6465c933be4cc9d226"
+  ],
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "roster-stand-41e8e69d695ea135.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "Paint one new uninterrupted watercolor illustration from scratch, a production base sprite of the exact super-deformed Shiba puppy in Image 1, at rest on four paws in a strict side profile looking directly left. Image 1 is the identity: very big round head, single large round glossy brown eye, tiny stubby muzzle, soft peach honey and cream fur, layered fluffy chest and a thick tight spiral tail over the back. Image 2 is for the placement of the four feet ONLY; discard its disconnected hind-leg junction. Match source baby proportions, short low body and very short legs. The near rump is a rounded solid mass continuous with a full rounded upper thigh. Paint the warm coat and fur flow from the back across the hip and into the upper thigh without a line, gap, horizontal break, white band or sudden color change. Follow one uninterrupted outer contour down the rump, the slightly angulated hock and the short hind paw. The belly curves naturally into the front edge of the thigh. Keep the near hind thigh in front of the far leg, not hidden. Near front leg upright and directly under the shoulder, equal level near front and rear paw soles, far paws slightly offset but readable. Level back, standing still, not walking. Crisp soft pencil edge and translucent warm watercolor. Simple untextured ivory background, no ground shadow, no text. Keep a small arc of soft shading around the front of the broad outer thigh, not a closed outline. A round puppy with a disproportionately large head, never an adult dog.",
+        "negative_prompt": "three-quarter, frontal, biped, sitting, walking, adult dog, long muzzle, narrow eye, saturated orange coat, long legs, striding, lifting paw, merged feet, disconnected thigh, white stripe across hip, collage seam, floating paws, broken joints, extra legs, thick outlines, photoreal, 3d, cast shadow, background elements, text, watermark",
+        "resolution": 768,
+        "images.image_1": [
+          "4",
+          0
+        ],
+        "images.image_2": [
+          "10",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112571,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "roster-standard-shiba-redraw"
+      }
+    },
+    "10": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "roster-stand-14ad70e4aed320c9.png"
+      }
+    }
+  }
+}

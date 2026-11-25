@@ -9,6 +9,7 @@ using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Siege;
 using HomelessPetHelper.Modules.Siege.UI;
 using HomelessPetHelper.Modules.Station.UI;
+using HomelessPetHelper.Modules.Station.UI.Habitat;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -56,6 +57,9 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
             yield return null;
             yield return null;
             yield return null;
+            var native = UnityEngine.Object.FindObjectOfType<StationCatPlayer>();
+            Assert.That(native, Is.Not.Null, "Main must bind the accepted single-skeleton cat.");
+            Assert.That(native.GetComponent<HomelessPetHelper.Modules.PetMotion.PetMotionPlayer>(), Is.Null);
             var session = root.Presenter.Session;
             var arrival = session.Station.Animals.Single();
             Assert.That(station.Scene.Cells[0].AnimalId, Is.EqualTo(arrival.AnimalId));
@@ -84,6 +88,8 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
 
         private static void Click(Component view, string name)
         {
+            if (view is CityMapView map)
+            { MainApproachDriver.Click(map, name); return; }
             if (view is SiegeTrialView siege && siege.Scene != null)
             { MainApproachDriver.Click(view, name); return; }
             if (view is StationPanelView station && station.Scene != null && name.StartsWith("Animal",

@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using HomelessPetHelper.Editor.CityMap;
+using HomelessPetHelper.Modules.Outing.UI;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -24,10 +25,20 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(AssetDatabase.GetAssetPath(terrain.sprite),
                 Is.EqualTo(ArtFolder + "T_CityMap_Neighborhood.jpg"));
             Assert.That(terrain.sprite.rect.size, Is.EqualTo(new Vector2(673, 1024)));
-            Assert.That(terrain.rectTransform.childCount, Is.EqualTo(9));
+            Assert.That(terrain.rectTransform.childCount, Is.EqualTo(11));
             var landmarks = terrain.transform.Find("Landmarks");
             Assert.That(landmarks, Is.Not.Null);
             Assert.That(landmarks.GetSiblingIndex(), Is.Zero, "Artwork must render below the point labels.");
+            var atmosphere = terrain.GetComponentInChildren<CityMapAtmosphere>(true);
+            Assert.That(atmosphere.transform.GetSiblingIndex(), Is.EqualTo(2));
+            Assert.That(atmosphere.raycastTarget, Is.False);
+            Assert.That(atmosphere.maskable, Is.True);
+            var fog = terrain.GetComponentInChildren<CityMapFog>(true);
+            Assert.That(fog.transform.GetSiblingIndex(), Is.EqualTo(1));
+            Assert.That(fog.raycastTarget, Is.False);
+            Assert.That(fog.maskable, Is.True);
+            Assert.That(fog.PreviewRevealed, Is.False);
+            Assert.That(landmarks.Find("FlowerGarden").GetComponent<CityMapFlowerSway>(), Is.Not.Null);
             Assert.That(landmarks.childCount, Is.EqualTo(12));
             foreach (RectTransform landmark in landmarks)
             {
@@ -42,7 +53,8 @@ namespace HomelessPetHelper.Tests.EditMode
             var areas = new System.Collections.Generic.List<Rect>();
             foreach (RectTransform hotspot in terrain.rectTransform)
             {
-                if (hotspot == landmarks) continue;
+                if (hotspot == landmarks || hotspot == atmosphere.rectTransform || hotspot == fog.rectTransform)
+                    continue;
                 bool shelter = hotspot.name == "ShelterArtwork";
                 Image hit = hotspot.GetComponent<Image>();
                 Assert.That(hit.sprite, Is.Null, hotspot.name);

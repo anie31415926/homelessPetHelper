@@ -30,9 +30,10 @@ namespace HomelessPetHelper.Modules.Outing.UI
                 throw new InvalidOperationException("Point artwork, label and highlight must be separate: " + _pointId);
         }
 
-        internal void Render(string label, string stateLabel, bool enabled, Sprite paper, bool selected)
+        internal void Render(string label, string stateLabel, bool enabled, Sprite paper, bool hidden)
         {
             _label.text = label;
+            if (_label.enabled == hidden) _label.enabled = !hidden;
             _stateLabel.text = stateLabel;
             _button.interactable = enabled;
             _highlight.sprite = paper;

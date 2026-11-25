@@ -40,6 +40,8 @@ namespace HomelessPetHelper.Tests.EditMode
             var root = AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Prefabs/Panels/" + panel + ".prefab");
             Assert.That(root, Is.Not.Null);
+            var detailSurface = root.GetComponent<StationPanelView>().Surface;
+            var detailBubbles = detailSurface.GetComponentInChildren<CareBubbleView>(true);
             foreach (Transform node in root.GetComponentsInChildren<Transform>(true))
             {
                 Assert.That(GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(node.gameObject), Is.Zero);
@@ -56,9 +58,16 @@ namespace HomelessPetHelper.Tests.EditMode
                 SerializedProperty field = new SerializedObject(view).GetIterator();
                 while (field.NextVisible(true))
                 {
+                    if (view is DirtSurfaceView && IsProjectionBinding(field.propertyPath))
+                    {
+                        Assert.That(field.objectReferenceValue != null,
+                            Is.EqualTo(expandable && view == detailSurface), view.name + ": " + field.propertyPath);
+                        continue;
+                    }
                     if (view is StationPanelView &&
                         (field.propertyPath == "_rosterContent" || field.propertyPath == "_habitat" ||
-                            field.propertyPath == "_scene" || field.propertyPath == "_chrome"))
+                            field.propertyPath == "_scene" || field.propertyPath == "_chrome" ||
+                            field.propertyPath == "_summaryRename" || field.propertyPath == "_detailRename"))
                     {
                         Assert.That(field.objectReferenceValue != null, Is.EqualTo(expandable),
                             "Only the expandable loop panel owns saved scroll content and the habitat.");
@@ -76,9 +85,14 @@ namespace HomelessPetHelper.Tests.EditMode
             {
                 Assert.That(bubbles.GetComponent<CanvasRenderer>(), Is.Not.Null,
                     "Bubble state can be live without rendering when the saved CanvasRenderer is missing.");
+                var atlas = new SerializedObject(bubbles).FindProperty("_atlas").objectReferenceValue;
+                Assert.That(atlas != null, Is.EqualTo(expandable && bubbles == detailBubbles), bubbles.name);
             }
             Assert.That(EditorBuildSettings.scenes.Any(scene => scene.path.Contains("EditorScenes")), Is.False);
         }
+
+        private static bool IsProjectionBinding(string path) => path == "_legacyCat" || path == "_legacyDog" ||
+            path == "_rescueCat" || path == "_rescueDog" || path == "_catProjection" || path == "_dogProjection";
 
         [TestCase("cat")]
         [TestCase("dog")]

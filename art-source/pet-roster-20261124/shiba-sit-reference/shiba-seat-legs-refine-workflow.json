@@ -1,0 +1,129 @@
+{
+  "identity": "test-results/pet-roster-20261124/cleaned/柴犬/宠物游戏操作界面背景设计 (27).png",
+  "cropAtWidth1000": [
+    320,
+    87,
+    370,
+    390
+  ],
+  "identityDetail": "test-results/pet-sit-accepted/standard-stand/shiba-seat/master.png",
+  "inputSha256": [
+    "41e8e69d695ea1356d3c90e5206d0f8fce95913e1cd0e05cbf58e3f7af1a55d3",
+    "4847593325ce271b1ca6e88f9dfe9f71855bd5003919c5dfea756d3032aed68a"
+  ],
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "roster-stand-41e8e69d695ea135.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "Edit Image 1, the pale soft chibi watercolor puppy, changing only its posture to the side-on sit shown in Image 2. Use Image 2 ONLY for placement of legs and pelvis, NEVER copy its taller adult proportions, dark orange coat or face. Keep the very large round head, little round brown eye, extremely short blunt smiling muzzle, pale honey fur, cream chest, ears and thick curled tail of Image 1. In the new pose the chest is upright, both short front legs descend vertically and smoothly from below the chest, and their paws lie flat pointing left. Do not draw a diagonal foreleg, dog bow or straight line from throat to front toe. One broad, visibly rounded near rear thigh sits beside the belly, NOT hidden by the torso. Its narrow folded lower leg and short rear paw extend out in front of the haunches, behind the front paws. Show the entire near rear paw and its joint contour, with a clear gap between the front and rear paws. Rump, front paws and rear paw are on one ground plane; the spiral tail stays on top of the rump. Fully seated strict left profile, single character, full paws in view, same hand-painted soft storybook illustration as Image 1. Plain pale background, no shadow, no text. Preserve the pale colors and compact round silhouette of Image 1. There is exactly ONE visible round eye. Show the near foreleg entirely from its rounded shoulder to its planted toes, and the curved haunch to the visible planted rear paw.",
+        "negative_prompt": "three-quarter, frontal, biped, standing, crouching, lying, raised haunches, adult, narrow head, realistic long muzzle, diagonal forearm, missing hind paw, buried thigh, merged feet, floating paws, broken joints, extra legs, thick outlines, photoreal, 3d, cast shadow, background elements, text, watermark",
+        "resolution": 768,
+        "images.image_1": [
+          "4",
+          0
+        ],
+        "images.image_2": [
+          "10",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112551,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "roster-standard-shiba-seat-legs"
+      }
+    },
+    "10": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "roster-stand-4847593325ce271b.png"
+      }
+    }
+  }
+}

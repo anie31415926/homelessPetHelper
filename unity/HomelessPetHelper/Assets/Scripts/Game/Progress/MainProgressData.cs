@@ -85,6 +85,7 @@ namespace HomelessPetHelper.Game.Progress
         [Preserve, JsonProperty(Required = Required.AllowNull)] public string[] AssessedProblemIds;
         [Preserve, JsonProperty(Required = Required.Always)] public CoatData Coat;
         [Preserve, JsonProperty(Required = Required.Always)] public bool AdoptionListed;
+        [Preserve, JsonProperty(Required = Required.AllowNull)] public string CustomName;
         [Preserve] public ResidentData() { }
     }
 

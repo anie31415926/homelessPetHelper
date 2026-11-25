@@ -44,6 +44,7 @@ namespace HomelessPetHelper.Game
         public AnimalSnapshot OutingAnimal => _outingAnimal?.Current;
         private bool _disposed;
         private bool _restoringProgress;
+        private bool _openingPending;
         private int _savedOpeningVersion = -1, _savedBattleRevision = -1;
         private readonly MainAudioSession _audioSession;
         private readonly Settings.PlaySettingsSession _playSettings;
@@ -59,7 +60,8 @@ namespace HomelessPetHelper.Game
             ApproachPanelView approach, GameContent content,
             AudioService audio = null, ISaveStorage progressStorage = null, Func<int> outingSeedSource = null,
             MainAudioSession audioSession = null, GuidanceProgressSession guidance = null,
-            Settings.PlaySettingsSession playSettings = null, CityMap.Travel.MapTravelView travel = null)
+            Settings.PlaySettingsSession playSettings = null, CityMap.Travel.MapTravelView travel = null,
+            bool showOpening = true)
         {
             _travel = travel;
             _station = station;
@@ -87,6 +89,7 @@ namespace HomelessPetHelper.Game
             _mapText = new OptionPreviewText(content.MapText);
             Progress = new MainProgressSession(_config, content.Artwork, progressStorage,
                 content.CreateFieldProgressContent(_fields));
+            _openingPending = showOpening && Progress.IsNewGame;
             _map.gameObject.SetActive(false);
             _siege.gameObject.SetActive(false);
             _approach.gameObject.SetActive(false);
@@ -195,6 +198,7 @@ namespace HomelessPetHelper.Game
             if (_disposed || !Progress.CanContinue || !_station.isActiveAndEnabled ||
                 !_stationPresenter.CanPresentRescueNotice || _overlays?.Top != null ||
                 Session.Flow.IsSuspended || !_station.gameObject.activeInHierarchy) return;
+            if (TryPresentOpening()) return;
             var request = Progress.UnshownRescueNotice;
             if (request == null || !_config.Definition.TryGetPoint(request.PointId, out var point)) return;
             Progress.MarkRescueNoticeShown();
@@ -213,6 +217,24 @@ namespace HomelessPetHelper.Game
                 CancelLabel = _mapText.Get("dispatch.later"), ConfirmLabel = _mapText.Get("dispatch.map"),
                 Accept = canDepart ? (Action)(() => OpenMap(request.PointId)) : null
             });
+        }
+
+        private bool TryPresentOpening()
+        {
+            if (!_openingPending) return false;
+            _openingPending = false;
+            string pointId = _config.InitialPointId;
+            if (!Session.Map.TrySelectPoint(pointId, out var request, out _) ||
+                _config.GetRescue(request.TemplateId)?.AnimalDefinitionId != "cat.shy" ||
+                !_config.Definition.TryGetPoint(pointId, out var point)) return false;
+            OpenStationDialog(new StationDialog
+            {
+                Title = _text.Get("opening.title"),
+                Body = _text.Get("opening.body", _mapText.Get(point.DisplayNameKey)),
+                ConfirmLabel = _text.Get("opening.go"), CancelLabel = _mapText.Get("dispatch.later"),
+                Accept = () => OpenMap(pointId), Cancel = () => Checkpoint()
+            });
+            return true;
         }
 
         private void OpenStationSettings()
@@ -498,7 +520,8 @@ namespace HomelessPetHelper.Game
             _savedOpeningVersion = _savedBattleRevision = -1;
             _map.gameObject.SetActive(false);
             Session.SetSuspended(false);
-            _stationPresenter.ShowSharedStation(arrival);
+            bool firstRescue = arrival && Session.Requests.Requests.Count(request => request.State == RequestState.Resolved) == 1;
+            _stationPresenter.ShowSharedStation(arrival, firstRescue);
             _station.gameObject.SetActive(true);
             Checkpoint();
         }

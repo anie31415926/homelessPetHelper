@@ -1,0 +1,122 @@
+{
+  "identity": "test-results/pet-roster-20261124/cleaned/柴犬/宠物游戏操作界面背景设计 (27).png",
+  "cropAtWidth1000": [
+    320,
+    87,
+    370,
+    390
+  ],
+  "neutralSize": {
+    "width": 728,
+    "height": 768
+  },
+  "legMaskSha256": null,
+  "inputSha256": [
+    "5562ef4579fde31651b91e625281c238f60256005ff70de79709be8aa7f58f3a"
+  ],
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "roster-stand-5562ef4579fde316.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "Precisely edit the attached hand-painted chibi Shiba puppy sprite. Change ONLY the stance of its four legs from a walking stride to a relaxed square stand. Keep the exact original big round head, large round brown eye, tiny blunt muzzle, ear shapes, cream scalloped chest ruff, pale peach honey watercolor pigment, short torso, and thick spiral tail over the back. No redraw of the head or coat. The dog still faces directly LEFT with only one eye visible. Put the near front paw directly under the shoulder instead of reaching forward; its short shin is almost vertical. Keep the near hind leg connected from the round hip into a clearly bent hock and a short planted paw, almost under the hip. Show two far paws offset a little behind the near paws, not merged or extra. Four very short sturdy legs on one horizontal ground plane, flat paws, no step, no crouch. Keep the existing level back and compact baby proportions, same soft pencil edge and watercolor brush texture. Plain pale paper background, no drawn baseline, no shadow, no text. One complete character.",
+        "negative_prompt": "three-quarter, frontal, biped, sitting, walking, adult dog, long muzzle, narrow eye, saturated orange coat, long legs, striding, lifting paw, merged feet, floating paws, broken joints, extra legs, thick outlines, photoreal, 3d, cast shadow, background elements, text, watermark",
+        "resolution": 768,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112551,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "roster-standard-shiba-neutral"
+      }
+    }
+  }
+}

@@ -32,6 +32,30 @@ test('standing joints match original pixel landmarks, without stretching the bin
     } finally {rig.dispose();}
 });
 
+test('tread has visible diagonal steps and returns all paws to the standing pose', () => {
+    const rig = createChibiRig();
+    const names = ['nearToe', 'farFrontToe', 'farToe', 'nearFrontToe'];
+    const standing = names.map(rig.world);
+    function offsetsAt(phase) {
+        rig.apply(0, phase, 1);
+        return names.map((name, index) => rig.world(name).sub(standing[index]));
+    }
+    try {
+        for (const phase of [0, Math.PI, 2 * Math.PI]) {
+            assert.ok(offsetsAt(phase).every(offset => offset.length() < .001));
+        }
+        for (const [phase, swinging] of [[Math.PI / 2, 0], [3 * Math.PI / 2, 2]]) {
+            offsetsAt(phase).forEach(({x, y}, index) => {
+                if (index >= swinging && index < swinging + 2) {
+                    assert.ok(x > .15 && y > .10, `${names[index]} needs a visible swing`);
+                } else {
+                    assert.ok(x < -.15 && Math.abs(y) < .012, `${names[index]} should stay close to the ground`);
+                }
+            });
+        }
+    } finally {rig.dispose();}
+});
+
 test('501 samples keep fixed lengths, unit scale and reachable contacts', () => {
     const rig = createChibiRig();
     try {

@@ -62,7 +62,9 @@ namespace HomelessPetHelper.Game.Progress
                 var usedRequests = new HashSet<Guid>();
                 foreach (var resident in data.Residents)
                 {
-                    if (resident == null || !Guid.TryParseExact(resident.RequestId, "N", out var requestId) ||
+                    if (resident == null ||
+                        resident.CustomName != null && !MainProgressSession.IsValidAnimalName(resident.CustomName) ||
+                        !Guid.TryParseExact(resident.RequestId, "N", out var requestId) ||
                         !pool.TryGet(requestId, out var request) || request.State != RequestState.Resolved ||
                         request.ReunionPlan != null || !usedRequests.Add(requestId))
                         throw new ArgumentException("Resident must belong to one resolved ordinary request.");

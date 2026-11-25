@@ -1,0 +1,134 @@
+{
+  "identity": "test-results/pet-roster-20261124/cleaned/柴犬/宠物游戏操作界面背景设计 (27).png",
+  "cropAtWidth1000": [
+    320,
+    87,
+    370,
+    390
+  ],
+  "neutralSize": {
+    "width": 728,
+    "height": 768
+  },
+  "poseReference": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/standing-redraw.png",
+  "poseProcessing": "paper-flood-silhouette",
+  "inputSha256": [
+    "5562ef4579fde31651b91e625281c238f60256005ff70de79709be8aa7f58f3a",
+    "9726be7c9ca3dded78c2148fcf6ab08c4bfc4518ca23cd7e96b29ebc6ecbd524"
+  ],
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "roster-stand-5562ef4579fde316.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "Draw the SAME cartoon Shiba puppy from color Image 1, as another pose drawn by the same artist for the same children's storybook. Image 1 is the exact style and character reference, not a generic dog: warm peach and apricot watercolor washes, warm brown delicate contour lines, angular scalloped groups of cream chest fluff, broad brush-shaped orange side patches, warm blush on the cheek, large round dark brown eye with a small soft highlight, tiny smile and the same layered brush shapes in the spiral tail. Keep the original huge round head, very short round muzzle and very short chunky paws. Copy the hand-painted color blocks and visible watercolor strokes of Image 1, NOT realistic hair. Image 2 is a plain gray silhouette used ONLY for the neutral four-foot stance, not a style guide. Draw a complete new continuous illustration, facing directly left with only one visible eye. Front paws stand beneath the chest without striding; near rump flows unbroken into the round thigh, bent hock and planted rear paw, one contour with no transverse line. Four distinct paws. Bare warm ivory background, no ground line, cast shadow or text.",
+        "negative_prompt": "three-quarter, frontal, biped, sitting, walking, individual hairs, fur strands, airbrush gradients, realistic fur, adult, long muzzle, reflective glass eye, washed-out tan, disconnected thigh, gray animal, floating paws, broken joints, extra legs, thick outlines, photoreal, 3d, cast shadow, background elements, text, watermark",
+        "resolution": 768,
+        "images.image_1": [
+          "4",
+          0
+        ],
+        "images.image_2": [
+          "10",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112581,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "roster-standard-shiba-storybook"
+      }
+    },
+    "10": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "roster-stand-9726be7c9ca3dded.png"
+      }
+    }
+  }
+}

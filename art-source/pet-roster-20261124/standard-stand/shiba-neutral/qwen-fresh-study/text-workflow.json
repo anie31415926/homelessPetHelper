@@ -1,0 +1,111 @@
+{
+  "identity": null,
+  "referenceMode": "none",
+  "inputSha256": [],
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "温暖的儿童绘本手绘水彩插画，米白纸底。柔和的蜜桃橘和奶油白大色块，褐色细铅笔轮廓，清楚的笔刷色斑，毛发画成层叠的圆尖毛束而不是细毛丝。一个大头短腿的柴犬幼犬，圆鼓鼓的头几乎和躯干一样高，圆亮棕眼、短钝奶油色吻部、微笑小嘴、小三角立耳、蓬松奶油白胸毛、紧凑圆身和搭在背上的多层螺旋卷尾。Q版比例，不是成年犬。全身，向左的正侧视图，自然放松的标准站姿，四只短爪着地。",
+        "negative_prompt": "写实成年犬，长腿，长吻，小头，写实毛丝，3D渲染",
+        "resolution": 768
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "16",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112611,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "roster-standard-shiba-qwen-text"
+      }
+    },
+    "16": {
+      "class_type": "QwenImage21Cache",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "device": "off",
+        "dtype": "default"
+      }
+    }
+  }
+}

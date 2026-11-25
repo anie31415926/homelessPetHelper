@@ -42,6 +42,7 @@ namespace HomelessPetHelper.Game.Station
         private WorldTimeVersion _cleaningVersion;
         private int _selected = -1;
         private bool _showSummary;
+        private bool _firstRescueSummary;
         internal bool CanPresentRescueNotice => !_suspended && !_persistenceBlocked && !_showSummary &&
             _selected < 0 && _tool == StationCareTool.None;
         private StationCareTool _tool;
@@ -69,7 +70,9 @@ namespace HomelessPetHelper.Game.Station
             _view.StrokeRequested += Stroke;
             _view.SuspensionChanged += Suspend;
             _view.MemorialRequested += OpenMemorial;
+            _view.RenameRequested += OpenRename;
             if (progress != null) _view.SetMemorialLabel(_text.Get("adoption.memorial"));
+            if (progress != null) _view.SetRenameLabel(_text.Get("petName.edit"));
             if (loop == null) Restart();
             else
             {
@@ -115,7 +118,7 @@ namespace HomelessPetHelper.Game.Station
             Refresh();
         }
 
-        public void ShowSharedStation(bool showReturn)
+        public void ShowSharedStation(bool showReturn, bool firstRescue = false)
         {
             if (_loop == null) throw new InvalidOperationException("This is a standalone fixture.");
             foreach (StationAnimalIntake arrival in _station.Animals)
@@ -125,8 +128,11 @@ namespace HomelessPetHelper.Game.Station
                     _stationSessionId, arrival, _clock, _residents.Count, _text, _artwork,
                         _careRoster?.Get(arrival.AnimalId),
                     _careRoster?.UsesDogArtwork(arrival.AnimalDefinitionId) ?? arrival.AnimalDefinitionId == "dog"));
+                if (_progress != null) _residents[arrival.AnimalId].Name =
+                    _progress.GetCustomName(arrival.AnimalId) ?? _text.Get(_progress.DefaultNameKey(arrival));
             }
             _summary = _loop.LastArrival;
+            _firstRescueSummary = firstRescue;
             _selected = -1;
             _showSummary = showReturn && _summary != null;
             _feedback = _text.Get(_station.Animals.Count == 0 ? "loop.empty" : "stationReady");
@@ -272,6 +278,41 @@ namespace HomelessPetHelper.Game.Station
                 CancelLabel = _text.Get("adoption.later"), ConfirmLabel = _text.Get("adoption.publish"),
                 Accept = () => PublishAdoption(animalId, resident)
             });
+        }
+
+        private void OpenRename()
+        {
+            if (_progress == null || _suspended || _persistenceBlocked || _tool != StationCareTool.None) return;
+            Guid animalId = _showSummary ? _summary.Arrival.AnimalId :
+                _selected >= 0 ? _station.Animals[_selected].AnimalId : Guid.Empty;
+            if (!_residents.TryGetValue(animalId, out var resident)) return;
+            _showDialog(new StationDialog
+            {
+                Title = _text.Get("petName.title"), Body = _text.Get("petName.hint"),
+                CancelLabel = _text.Get("petName.cancel"), ConfirmLabel = _text.Get("petName.save"),
+                InitialInput = resident.Name, InputError = NameError,
+                AcceptInput = name => SaveName(animalId, resident, name.Trim())
+            });
+        }
+
+        private string NameError(string input)
+        {
+            string name = input.Trim();
+            if (!MainProgressSession.IsValidAnimalName(name)) return _text.Get("petName.invalid");
+            foreach (char character in name)
+                if (!_font.HasCharacter(character)) return _text.Get("petName.glyph");
+            return null;
+        }
+
+        private void SaveName(Guid animalId, StationResidentPresentation resident, string name)
+        {
+            if (name == resident.Name) return;
+            if (_progress.TryRenameResident(animalId, name))
+            {
+                resident.Name = name;
+                Refresh();
+            }
+            else if (!_progress.CanContinue) ReportPersistenceFailure();
         }
 
         private void PublishAdoption(Guid animalId, StationResidentPresentation resident)
@@ -590,7 +631,8 @@ namespace HomelessPetHelper.Game.Station
             if (_showSummary)
             {
                 StationResidentPresentation resident = _residents[_summary.Arrival.AnimalId];
-                _view.ShowSummary(_text.Get("summaryBody", resident.Name, _summary.Arrival.Condition.Dirtiness),
+                _view.ShowSummary(_text.Get(_firstRescueSummary ? "opening.summary" : "summaryBody", resident.Name,
+                        _summary.Arrival.Condition.Dirtiness),
                     resident.Art, _summary.Arrival.AnimalAtArrival);
             }
             else if (_selected < 0)
@@ -662,6 +704,7 @@ namespace HomelessPetHelper.Game.Station
             _view.StrokeRequested -= Stroke;
             _view.SuspensionChanged -= Suspend;
             _view.MemorialRequested -= OpenMemorial;
+            _view.RenameRequested -= OpenRename;
             if (_loop == null)
             {
                 _station.Close();

@@ -1,0 +1,204 @@
+{
+  "identity": "cleaned/柴犬/宠物游戏操作界面背景设计 (27).png",
+  "identitySha256": "3a1016c8fb57b60f4c331a226166e360ca3a1e59c46703c0546aad81087656ec",
+  "cropAtWidth1000": [
+    320,
+    87,
+    370,
+    390
+  ],
+  "canvas": [
+    720,
+    768
+  ],
+  "guideSha256": null,
+  "shapeFile": "test-results/shiba-pose-only-comfy/standing-geometry-preview.png",
+  "shapeSha256": "374d09f89b1fc68407ffb5c80514cfc3be640eeb7f4e2b13c4114fadb4db524e",
+  "postMaskSha256": "730c4344867af971891969bfa4075c47819e87d8a3647d786ffc0a9bf5ba081b",
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "flux-2-klein-4b.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen_3_4b_fp4_flux2.safetensors",
+        "type": "flux2",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "flux2-vae.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "shiba-flux-374d09f89b1fc684.png"
+      }
+    },
+    "5": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "4",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "text": "Clean up the forelegs of the watercolor Shiba in image 1. Keep the forepaw placements in image 1: the near paw stays back under its shoulder in a standing pose. Image 2 is the original character and watercolor texture only, do not copy its forward-reaching paw. Smooth the kink in the left outline of the near shin into a gentle near-vertical line, and round the short cream paw so it rests flat. The far forepaw is only a few pale toes behind the near one. No new outline across the chest, no stump, no color block between shoulder and shin. Preserve all painted fur, proportions and cropping of image 1. Change the least possible area."
+      }
+    },
+    "7": {
+      "class_type": "ReferenceLatent",
+      "inputs": {
+        "conditioning": [
+          "6",
+          0
+        ],
+        "latent": [
+          "5",
+          0
+        ]
+      }
+    },
+    "8": {
+      "class_type": "BasicGuider",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "conditioning": [
+          "18",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "KSamplerSelect",
+      "inputs": {
+        "sampler_name": "euler"
+      }
+    },
+    "10": {
+      "class_type": "Flux2Scheduler",
+      "inputs": {
+        "steps": 4,
+        "width": 720,
+        "height": 768
+      }
+    },
+    "11": {
+      "class_type": "EmptyFlux2LatentImage",
+      "inputs": {
+        "width": 720,
+        "height": 768,
+        "batch_size": 1
+      }
+    },
+    "12": {
+      "class_type": "RandomNoise",
+      "inputs": {
+        "noise_seed": 2026112611
+      }
+    },
+    "13": {
+      "class_type": "SamplerCustomAdvanced",
+      "inputs": {
+        "noise": [
+          "12",
+          0
+        ],
+        "guider": [
+          "8",
+          0
+        ],
+        "sampler": [
+          "9",
+          0
+        ],
+        "sigmas": [
+          "10",
+          0
+        ],
+        "latent_image": [
+          "11",
+          0
+        ]
+      }
+    },
+    "14": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "13",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "15": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "14",
+          0
+        ],
+        "filename_prefix": "shiba-flux-shape"
+      }
+    },
+    "16": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "shiba-flux-3a1016c8fb57b60f.png"
+      }
+    },
+    "17": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "16",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "18": {
+      "class_type": "ReferenceLatent",
+      "inputs": {
+        "conditioning": [
+          "7",
+          0
+        ],
+        "latent": [
+          "17",
+          0
+        ]
+      }
+    }
+  }
+}

@@ -12,7 +12,10 @@ namespace HomelessPetHelper.Game.UI
     {
         internal string Title, Body, ConfirmLabel, CancelLabel, BrowseLabel;
         internal Sprite Portrait;
-        internal Action Accept, Browse;
+        internal Action Accept, Browse, Cancel;
+        internal string InitialInput;
+        internal Func<string, string> InputError;
+        internal Action<string> AcceptInput;
         internal bool Deliberate, CenterBody;
     }
 
@@ -43,7 +46,7 @@ namespace HomelessPetHelper.Game.UI
         public string PauseCaption => _text.Get("menu.pause");
         public string ObjectivesCaption => _text.Get("menu.objectives");
         private bool CanInteract => !_disposed && _focused && !_backgrounded;
-        internal bool StationConfirmReady => _stationDialog?.Accept != null &&
+        internal bool StationConfirmReady => (_stationDialog?.Accept != null || _stationDialog?.AcceptInput != null) &&
             Time.unscaledTime >= _stationConfirmAfter;
 
         public LevelOverlaySession(LevelOverlayView view, LevelOverlayBindings bindings, MainAudioSession audio,
@@ -195,6 +198,15 @@ namespace HomelessPetHelper.Game.UI
             {
                 var dialog = _stationDialog;
                 if (!StationConfirmReady) return;
+                if (dialog.AcceptInput != null)
+                {
+                    string input = _view.StationInput;
+                    string error = dialog.InputError?.Invoke(input);
+                    if (error != null) { _view.ShowInputError(error); return; }
+                    CloseStationDialog();
+                    dialog.AcceptInput(input);
+                    return;
+                }
                 CloseStationDialog();
                 dialog.Accept();
                 return;
@@ -234,7 +246,13 @@ namespace HomelessPetHelper.Game.UI
         public void CancelConfirmation()
         {
             if (!CanInteract || Top != LevelPopupKind.Confirmation) return;
-            if (_stationDialog != null) { CloseStationDialog(); return; }
+            if (_stationDialog != null)
+            {
+                var cancel = _stationDialog.Cancel;
+                CloseStationDialog();
+                cancel?.Invoke();
+                return;
+            }
             _confirmation = Confirmation.None;
             CloseTop(LevelPopupKind.Confirmation);
         }

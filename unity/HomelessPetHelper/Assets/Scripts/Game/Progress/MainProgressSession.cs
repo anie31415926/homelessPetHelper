@@ -26,6 +26,7 @@ namespace HomelessPetHelper.Game.Progress
         public SaveError PersistenceError { get; private set; }
         public bool CanContinue => Session != null && PersistenceError == null && !Session.IsClosed;
         public bool Recovered { get; }
+        public bool IsNewGame { get; }
 
         public MainProgressSession(CityMapPreviewConfig config, StationArtwork artwork, ISaveStorage storage = null,
             FieldProgressContent fieldContent = null)
@@ -34,15 +35,20 @@ namespace HomelessPetHelper.Game.Progress
             _artwork = artwork ?? throw new ArgumentNullException(nameof(artwork));
             _fieldContent = fieldContent;
             MainProgressData data;
-            if (storage == null) data = MainProgressCodec.NewGame(config);
+            if (storage == null)
+            {
+                data = MainProgressCodec.NewGame(config);
+                IsNewGame = true;
+            }
             else
             {
                 _saves = new SaveService(storage);
-                _section = new SaveSection<MainProgressData>("main.station", 4,
+                _section = new SaveSection<MainProgressData>("main.station", 5,
                     () => MainProgressCodec.NewGame(config), Validate,
                     new Dictionary<int, Func<JObject, JObject>>
                     {
-                        [1] = MigrateVersionOne, [2] = MigrateVersionTwo, [3] = MigrateVersionThree
+                        [1] = MigrateVersionOne, [2] = MigrateVersionTwo, [3] = MigrateVersionThree,
+                        [4] = MigrateVersionFour
                     });
                 _saves.Register(_section);
                 if (!_saves.TryOpen(out var status, out var error) ||
@@ -52,6 +58,7 @@ namespace HomelessPetHelper.Game.Progress
                     return;
                 }
                 Recovered = status == SaveOpenStatus.Recovered;
+                IsNewGame = status == SaveOpenStatus.New;
             }
             Session = MainProgressCodec.Restore(data, config, artwork, out var care, out var links);
             Care = care;
@@ -59,7 +66,11 @@ namespace HomelessPetHelper.Game.Progress
             Fields = new FieldProgressSession(data.Fields, fieldContent, config);
             _memorials = data.Memorials ?? Array.Empty<MemorialData>();
             foreach (var resident in data.Residents)
-                if (resident.AdoptionListed) _listed.Add(Guid.ParseExact(resident.Current.Id, "N"));
+            {
+                Guid animalId = Guid.ParseExact(resident.Current.Id, "N");
+                if (resident.AdoptionListed) _listed.Add(animalId);
+                if (resident.CustomName != null) _customNames.Add(animalId, resident.CustomName);
+            }
             Fields.RestoreActive(Session);
             _dispatch = new RequestDispatch(config, fieldContent, Session, data.Dispatch);
             _dispatch.Refresh(Fields.HasActive);
@@ -86,6 +97,14 @@ namespace HomelessPetHelper.Game.Progress
         private static JObject MigrateVersionThree(JObject data)
         {
             data["Dispatch"] = JValue.CreateNull();
+            return data;
+        }
+
+        private static JObject MigrateVersionFour(JObject data)
+        {
+            if (data["Residents"] is JArray residents)
+                foreach (var item in residents)
+                    if (item is JObject resident) resident["CustomName"] = JValue.CreateNull();
             return data;
         }
 

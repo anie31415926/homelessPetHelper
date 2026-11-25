@@ -12,14 +12,16 @@ The upstream Reserved Font Names are not used as the derivative's family name.
 - Source SHA256: `7dae804b344f7bc1a1c8426b9515e9b54d7baac3e123263d0bae94d0a305a732`
 - License: https://github.com/Warren2060/ChillRound/blob/46dda1602729b58de96e3fdee9f918d7aaa64727/LICENSE
 - Derivative family/PostScript: `PetRoundGame` / `PetRoundGame-Regular`.
-- Output: **253,772 bytes / 784 cmap entries**, generated with fonttools 4.68.0.
+- Output: **1,382,204 bytes / 3,869 cmap entries**, generated with fonttools 4.68.0.
 - Shared by GameContent and saved UI Text references; dynamic font, one face,
   no fallback references, no runtime downloads or font framework change.
 
 Rebuild after adding copy. The tool includes printable ASCII, saved Settings,
 Prefabs (including escaped Unicode), Game scripts and Siege copy. It rejects
-missing required Chinese/ASCII characters and a mismatched source hash. It is
-not a full Chinese input font; user-generated names would need a separate policy.
+missing required Chinese/ASCII characters and a mismatched source hash.
+For animal names, include GB2312 level-one common Han characters with
+`--pet-names`. The game rejects unsupported glyphs at entry instead of using
+a second font or rendering missing glyphs. This is not a full CJK input font.
 
 Example from the repository root, with fonttools installed in the chosen Python:
 
@@ -27,7 +29,7 @@ Example from the repository root, with fonttools installed in the chosen Python:
 python tools/build-game-font.py test-results/fonts/ChillRoundF.ttf \
   --sha256 7dae804b344f7bc1a1c8426b9515e9b54d7baac3e123263d0bae94d0a305a732 \
   --output unity/HomelessPetHelper/Assets/Art/Fonts/PetRound-Game.ttf \
-  --family PetRoundGame \
+  --family PetRoundGame --pet-names \
   --license-file unity/HomelessPetHelper/Assets/Art/Fonts/ChillRound-OFL.txt
 ```
 

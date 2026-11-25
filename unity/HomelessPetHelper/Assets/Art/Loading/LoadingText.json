@@ -1,4 +1,5 @@
 {
-  "loading": "Loading...",
-  "failed": "Load failed"
+  "loading": "准备中",
+  "failed": "准备失败，请重开",
+  "enter": "进入救助站"
 }
