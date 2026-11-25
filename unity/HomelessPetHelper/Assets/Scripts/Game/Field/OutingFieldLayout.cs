@@ -164,6 +164,7 @@ namespace HomelessPetHelper.Game.Field
 
         private TextAsset _lastBattleSource;
         private SiegeCatalog _lastBattle;
+        private Action<SiegeCatalogData> _lastBattleModifier;
         private bool[] _lastFloor;
 
         private bool FloorMatches(ApproachSession opening)
@@ -174,16 +175,22 @@ namespace HomelessPetHelper.Game.Field
             return true;
         }
 
-        public SiegeCatalog CreateBattleCatalog(TextAsset source, ApproachSession opening = null)
+        public SiegeCatalog CreateBattleCatalog(TextAsset source, ApproachSession opening = null) =>
+            CreateBattleCatalog(source, opening, null);
+
+        internal SiegeCatalog CreateBattleCatalog(TextAsset source, ApproachSession opening,
+            Action<SiegeCatalogData> modify)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (_data.stagedRoutes)
             {
                 if (opening != null) ValidateBattleClear(opening);
-                if (_lastBattleSource == source && _lastBattle != null && FloorMatches(opening)) return _lastBattle;
+                if (_lastBattleSource == source && _lastBattle != null &&
+                    Equals(_lastBattleModifier, modify) && FloorMatches(opening)) return _lastBattle;
             }
             // Never mutate generated content or its shared instances.
             var data = JsonUtility.FromJson<SiegeCatalogData>(source.text);
+            modify?.Invoke(data);
             data.map.width = Width;
             data.map.height = Height;
             if (_data.stagedRoutes)
@@ -223,6 +230,7 @@ namespace HomelessPetHelper.Game.Field
             {
                 _lastBattle = catalog;
                 _lastBattleSource = source;
+                _lastBattleModifier = modify;
                 _lastFloor = opening == null ? null : Enumerable.Range(0, CellCount).Select(opening.IsPassable).ToArray();
             }
             return catalog;

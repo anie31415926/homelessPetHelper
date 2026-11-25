@@ -18,7 +18,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         [SerializeField] private Button _menuButton;
         [SerializeField] private Button _menuClose;
         [SerializeField] private Button _history;
-        [SerializeField] private Button _settings;
+        [SerializeField] private Button _settings, _economy;
         [SerializeField] private Button _memorial;
         [SerializeField] private GameObject _menu;
         [SerializeField] private GameObject _footer;
@@ -38,6 +38,13 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
 
         public void SetSettingsAvailable(bool available)
         { if (_settings != null) _settings.gameObject.SetActive(available); }
+
+        public void SetEconomyLabel(string label)
+        {
+            if (_economy == null) return;
+            _economy.GetComponentInChildren<Text>(true).text = label;
+            _economy.gameObject.SetActive(true);
+        }
 
         public void SetMemorialLabel(string label)
         {
@@ -144,6 +151,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _menuClose.onClick.AddListener(CloseMenu);
             _history.onClick.AddListener(CloseMenu);
             _settings.onClick.AddListener(_owner.RequestSettings);
+            if (_economy != null) _economy.onClick.AddListener(_owner.RequestEconomy);
             if (_memorial != null) _memorial.onClick.AddListener(OpenMemorial);
             _backdrop.onClick.AddListener(DismissTop);
         }
@@ -154,6 +162,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _menuClose.onClick.RemoveListener(CloseMenu);
             _history.onClick.RemoveListener(CloseMenu);
             _settings.onClick.RemoveListener(_owner.RequestSettings);
+            if (_economy != null) _economy.onClick.RemoveListener(_owner.RequestEconomy);
             if (_memorial != null) _memorial.onClick.RemoveListener(OpenMemorial);
             _backdrop.onClick.RemoveListener(DismissTop);
             CloseMenu();

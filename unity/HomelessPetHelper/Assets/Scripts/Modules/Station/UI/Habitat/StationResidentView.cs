@@ -127,7 +127,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
                 _position.sizeDelta = new Vector2(size, size);
             }
             Vector2 anchor = _room != null ? Observing ?
-                RoomCagePoint(_place) :
+                _room.ObservationAnchor(_place, RoomCagePoint(_place)) :
                 new Vector2((float)Motion.Position.X, (float)Motion.Position.Y) : Observing ? CagePoint(_place) :
                 new Vector2(.07f + .60f * (float)Motion.Position.X,
                     .12f + .9f * (float)Motion.Position.Y + .075f * _place);

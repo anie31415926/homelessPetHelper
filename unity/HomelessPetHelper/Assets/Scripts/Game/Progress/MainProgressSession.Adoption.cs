@@ -61,7 +61,13 @@ namespace HomelessPetHelper.Game.Progress
                 Locations = draft.Fields.Locations,
                 Encounters = draft.Fields.Encounters.Where(item => item.RequestId != resident.RequestId).ToArray()
             };
+            if (_economyRules != null && !draft.Economy.AdoptionRewarded)
+            {
+                draft.Economy.Balance = checked(draft.Economy.Balance + _economyRules.adoptionAid);
+                draft.Economy.AdoptionRewarded = true;
+            }
             if (!TryCommitStationDraft(draft)) return false;
+            PublishEconomy(draft.Economy);
             if (!Session.Station.TryReleaseHealthyResident(Session.StationSessionId, animalId))
                 throw new InvalidOperationException("Committed adoption eligibility changed on the gameplay thread.");
             Session.ForgetDepartedResident(animalId);
@@ -77,6 +83,7 @@ namespace HomelessPetHelper.Game.Progress
         private MainProgressData Capture()
         {
             var data = MainProgressCodec.Capture(Session, Care, _requestsByOuting, Fields.Capture(Session));
+            data.Economy = CaptureEconomy();
             data.Dispatch = _dispatch.Capture();
             data.Memorials = _memorials;
             foreach (var resident in data.Residents)

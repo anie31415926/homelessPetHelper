@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using HomelessPetHelper.Modules.Station.Habitat;
 using UnityEngine;
 
@@ -10,21 +11,34 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         [SerializeField] private StationRoomObstacle[] _obstacles;
         [SerializeField] private RectTransform _bed;
         [SerializeField] private StationResidentView[] _residents;
+        [SerializeField] private Vector2[] _observationAnchors;
         [SerializeField] private float _bedDepth = .255f;
         [SerializeField] private Vector2 _min = new Vector2(.09f, .08f);
         [SerializeField] private Vector2 _max = new Vector2(.91f, .54f);
         [SerializeField] private Vector2 _start = new Vector2(.5f, .15f);
         [SerializeField] private Vector2 _rest = new Vector2(.26f, .16f);
         public RectTransform Content => _content;
-        private StationResidentView[] _ordered;
+        private List<StationResidentView> _ordered;
 
-        private void Awake() => _ordered = (StationResidentView[])_residents.Clone();
+        private void Awake() => EnsureOrder();
+
+        private void EnsureOrder() => _ordered ??= new List<StationResidentView>(_residents);
+
+        internal void Register(StationResidentView resident)
+        {
+            EnsureOrder();
+            _ordered.Add(resident);
+        }
+
+        internal Vector2 ObservationAnchor(int index, Vector2 fallback) =>
+            _observationAnchors != null && index < _observationAnchors.Length ?
+                _observationAnchors[index] : fallback;
 
         private void LateUpdate()
         {
-            // Four saved actors only; stable ordering changes the canvas only when feet cross depth bands.
+            // Stable ordering changes the canvas only when feet cross depth bands.
             int first = _bed.GetSiblingIndex();
-            for (int i = 0; i < _ordered.Length; i++)
+            for (int i = 0; i < _ordered.Count; i++)
             {
                 var resident = _ordered[i];
                 first = Mathf.Min(first, resident.transform.GetSiblingIndex());

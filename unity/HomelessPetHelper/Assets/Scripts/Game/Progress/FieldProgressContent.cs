@@ -17,6 +17,7 @@ namespace HomelessPetHelper.Game.Progress
         private readonly GameContent _content;
         private readonly OutingFieldCatalog _fields;
         private readonly ApproachCatalog _fallback;
+        private readonly StationEconomyRules _economy;
         private readonly string _battleVersion, _openingVersion, _legacyBattleVersion;
         private readonly Dictionary<string, SiegeCatalog> _battles = new Dictionary<string, SiegeCatalog>();
 
@@ -25,6 +26,7 @@ namespace HomelessPetHelper.Game.Progress
             _content = content;
             _fields = fields;
             _fallback = content.CreateApproachCatalog();
+            _economy = content.CreateEconomy();
             _battleVersion = Hash(battle);
             // Exact shipped v1 catalog hash; only this known configuration is compatible.
             _legacyBattleVersion = "479fd4be8dfb8f8fd0a03c4e34c30dd43ca4413c49b7c21d182394478d99fd25";
@@ -72,14 +74,17 @@ namespace HomelessPetHelper.Game.Progress
         internal ApproachCatalog Opening(string pointId, string layoutId) =>
             Layout(pointId, layoutId)?.Opening ?? _fallback;
 
-        internal SiegeCatalog Battle(string pointId, string layoutId, ApproachSession opening)
+        internal SiegeCatalog Battle(string pointId, string layoutId, ApproachSession opening,
+            bool clipEquipped = false)
         {
             var field = Layout(pointId, layoutId);
-            if (field?.AllowsOptionalCleanup == true) return _content.CreateFieldSiegeCatalog(field, opening);
-            string key = pointId + ":" + layoutId;
+            var clip = clipEquipped ? _economy ?? throw new ArgumentException("Missing rescue equipment.") : null;
+            if (field?.AllowsOptionalCleanup == true) return _content.CreateFieldSiegeCatalog(field, opening, clip);
+            string key = pointId + ":" + layoutId + ":" + clipEquipped;
             if (!_battles.TryGetValue(key, out var catalog))
             {
-                catalog = field == null ? _content.CreateSiegeCatalog() : _content.CreateFieldSiegeCatalog(field);
+                catalog = field == null ? _content.CreateSiegeCatalog(clip) :
+                    _content.CreateFieldSiegeCatalog(field, null, clip);
                 _battles.Add(key, catalog);
             }
             return catalog;

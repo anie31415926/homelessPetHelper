@@ -12,6 +12,8 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         [SerializeField] private Text _empty;
         [SerializeField] private StationRoomView _room;
         private StationHabitatArea _area;
+        private List<StationResidentView> _pool;
+        private readonly List<Guid> _departed = new List<Guid>();
         private readonly Dictionary<Guid, StationHabitatMotion> _motions = new Dictionary<Guid, StationHabitatMotion>();
         private bool _suspended;
         private bool _focused = true;
@@ -19,21 +21,22 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         private int _inspecting = -1;
         private bool _presentationVisible = true;
         public event Action<int> Selected;
-        public IReadOnlyList<StationResidentView> Cells => _cells;
+        public IReadOnlyList<StationResidentView> Cells => (IReadOnlyList<StationResidentView>)_pool ?? _cells;
         public int Count { get; private set; }
         public StationRoomView Room => _room;
 
         public void Show(IReadOnlyList<StationSceneResident> residents, int inspecting)
         {
-            if (residents == null || residents.Count > _cells.Length)
-                throw new ArgumentException("Station scene exceeds its saved display slots.");
+            if (residents == null) throw new ArgumentNullException(nameof(residents));
+            EnsureSlots(residents.Count);
+            ForgetDeparted(residents);
             Count = residents.Count;
             _inspecting = inspecting;
             _empty.gameObject.SetActive(_presentationVisible && Count == 0);
             int free = 0, caged = 0;
-            for (int i = 0; i < _cells.Length; i++)
+            for (int i = 0; i < Cells.Count; i++)
             {
-                _cells[i].gameObject.SetActive(_presentationVisible && i < Count);
+                Cells[i].gameObject.SetActive(_presentationVisible && i < Count);
                 if (i >= Count) continue;
                 var resident = residents[i];
                 if (!_motions.TryGetValue(resident.AnimalId, out var motion))
@@ -43,17 +46,45 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
                     for (int step = 0; step < i * 240; step++) motion.Tick(.05);
                     _motions.Add(resident.AnimalId, motion);
                 }
-                _cells[i].Bind(resident, motion, i, resident.Observing ? caged++ : free++, _room);
-                _cells[i].SetInspecting(resident.Index == inspecting);
+                Cells[i].Bind(resident, motion, i, resident.Observing ? caged++ : free++, _room);
+                Cells[i].SetInspecting(resident.Index == inspecting);
             }
             RefreshSuspension();
+        }
+
+        private void EnsureSlots(int count)
+        {
+            if (count <= Cells.Count) return;
+            _pool ??= new List<StationResidentView>(_cells);
+            var source = _cells[0];
+            while (_pool.Count < count)
+            {
+                var slot = Instantiate(source, source.transform.parent);
+                slot.gameObject.SetActive(false);
+                if (isActiveAndEnabled) slot.Selected += Select;
+                _pool.Add(slot);
+                _room?.Register(slot);
+            }
+        }
+
+        private void ForgetDeparted(IReadOnlyList<StationSceneResident> residents)
+        {
+            _departed.Clear();
+            foreach (Guid id in _motions.Keys)
+            {
+                bool stays = false;
+                foreach (var resident in residents)
+                    if (resident.AnimalId == id) { stays = true; break; }
+                if (!stays) _departed.Add(id);
+            }
+            foreach (Guid id in _departed) _motions.Remove(id);
         }
 
         public void ClearResidents()
         {
             _motions.Clear();
             Count = 0;
-            foreach (var cell in _cells) cell.gameObject.SetActive(false);
+            foreach (var cell in Cells) cell.gameObject.SetActive(false);
             _empty.gameObject.SetActive(true);
         }
 
@@ -66,26 +97,26 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         public void SetPresentationVisible(bool visible)
         {
             _presentationVisible = visible;
-            for (int i = 0; i < _cells.Length; i++)
-                _cells[i].gameObject.SetActive(visible && i < Count);
+            for (int i = 0; i < Cells.Count; i++)
+                Cells[i].gameObject.SetActive(visible && i < Count);
             _empty.gameObject.SetActive(visible && Count == 0);
         }
 
         private void OnEnable()
         {
-            foreach (var cell in _cells) cell.Selected += Select;
+            foreach (var cell in Cells) cell.Selected += Select;
             RefreshSuspension();
         }
         private void OnDisable()
         {
-            foreach (var cell in _cells) cell.Selected -= Select;
+            foreach (var cell in Cells) cell.Selected -= Select;
         }
         private void OnApplicationFocus(bool focused) { _focused = focused; RefreshSuspension(); }
         private void OnApplicationPause(bool paused) { _applicationPaused = paused; RefreshSuspension(); }
         private void RefreshSuspension()
         {
             bool suspended = _suspended || !_focused || _applicationPaused || !isActiveAndEnabled;
-            foreach (var cell in _cells) cell.SetSuspended(suspended);
+            foreach (var cell in Cells) cell.SetSuspended(suspended);
         }
         private void Select(int index)
         {
