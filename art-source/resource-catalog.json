@@ -7330,15 +7330,60 @@
     },
     {
       "id": "pet-roster-20261124.shiba-qwen-fresh-study",
-      "name": "柴犬 Qwen 纯文生图与参考编码对照",
+      "name": "柴犬标准站姿制作母图",
       "module": "Station",
-      "status": "planned",
+      "status": "candidate",
       "loadTiming": "preview-only",
-      "availability": "用来评审画风与站姿，不进 Unity",
-      "use": "关闭缓存后对比纯中文文生图和接入参考图 VAE 的结果",
+      "availability": "用户已选定为当前柴犬站坐制作源，不进 Unity",
+      "use": "736×800 的原图参考加 VAE 站姿母图，供拆层与骨点标定",
       "plannedBytes": 1048576,
-      "files": [],
-      "generation": { "tool": "本机 ComfyUI / Qwen Image 2.1" },
+      "files": [
+        { "role": "candidate", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/selected/standing.png", "reviewedSha256": "f9be08d9e36266d0ab2a2bfc1d0e447a77dfd586936a2e829558b938e2046de2" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/qwen-fresh-study/reference-vae-workflow.json" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/qwen-fresh-study/text-workflow.json" }
+      ],
+      "generation": {
+        "tool": "本机 ComfyUI / Qwen Image 2.1",
+        "record": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/selected/README.md"
+      },
+      "review": { "visual": "accepted", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-roster-20261124.shiba-selected-sit-preview",
+      "name": "柴犬选定母图站坐绑定预览",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "独立站坐预览，不进入 Unity 或主流程",
+      "use": "五个站坐时点深浅底姿态对照，检视后臀接地、尾尖贴近标注落点与背部轮廓",
+      "plannedBytes": 196608,
+      "files": [
+        { "role": "candidate", "path": "art-source/pet-roster-20261124/sit-texture/shiba-selected-poses.jpg" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/sit-texture/shiba-selected.json" }
+      ],
+      "generation": {
+        "tool": "定长 IK 网格预览 / Sharp",
+        "record": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/selected/README.md"
+      },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-roster-20261124.shiba-station-motion",
+      "name": "救助站柴犬站坐与四拍走路贴图",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "Main 救助站住客静态引用；检查后在房间行走，未接按需下载",
+      "use": "同一站姿母图的定长 IK 和网格变形，烘焙 40 帧站立、坐下、起身与走路",
+      "plannedBytes": 393216,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/Art/PetSit/T_Station_ShibaMotion.png" },
+        { "role": "workflow", "path": "art-source/pet-roster-20261124/sit-texture/shiba-selected.json" }
+      ],
+      "generation": {
+        "tool": "node tools/pet-roster-sit-texture.mjs shiba-station",
+        "record": "art-source/pet-roster-20261124/standard-stand/shiba-neutral/selected/README.md"
+      },
       "review": { "visual": "pending", "rights": "pending", "target": "pending" }
     }
   ]

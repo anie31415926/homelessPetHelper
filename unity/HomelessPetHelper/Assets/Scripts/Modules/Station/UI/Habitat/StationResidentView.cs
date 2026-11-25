@@ -9,6 +9,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
     public sealed class StationResidentView : MonoBehaviour
     {
         [SerializeField] private StationHabitatRenderer _rendererPrefab;
+        [SerializeField] private Texture2D _shibaAtlas;
         [SerializeField] private RawImage _motionImage;
         [SerializeField] private Image _stillImage;
         [SerializeField] private RectTransform _position;
@@ -36,6 +37,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         public Button SelectButton => _select;
         public RawImage MotionImage => _motionImage;
         public float GroundY => _position.anchorMin.y;
+        private bool HasShibaFrames => _resident.AnimatedShiba && _shibaAtlas != null;
 
         public void Bind(StationSceneResident resident, StationHabitatMotion motion, int slot, int place,
             StationRoomView room = null)
@@ -57,14 +59,17 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _name.text = resident.Name;
             _name.gameObject.SetActive(_room == null);
             _stillImage.sprite = resident.Art;
+            bool animated = resident.HasAnimation || HasShibaFrames;
+            if (changedKind || !resident.HasAnimation) Release();
+            if (HasShibaFrames) RenderShiba();
+            else if (_motionImage.texture == _shibaAtlas) _motionImage.texture = null;
             _stillCoat.Show(resident.Snapshot);
             _motionCoat.Show(resident.Snapshot);
-            _stillImage.gameObject.SetActive(!resident.HasAnimation);
-            _motionImage.gameObject.SetActive(resident.HasAnimation);
+            _stillImage.gameObject.SetActive(!animated);
+            _motionImage.gameObject.SetActive(animated);
             _cage.SetActive(resident.Observing);
             _position.sizeDelta = _room != null ? new Vector2(210, 210) :
                 resident.Observing ? new Vector2(300, 300) : new Vector2(360, 360);
-            if (changedKind || !resident.HasAnimation) Release();
             Place();
         }
 
@@ -92,19 +97,21 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         {
             if (_resident == null || _suspended || _inspecting) return;
             float seconds = Mathf.Min(Time.unscaledDeltaTime, .05f);
+            if (Observing) _restSeconds += seconds;
+            else Motion.Tick(seconds);
+            if (!_resident.HasAnimation || HasShibaFrames) return;
             _expression = _expression.MoveTowards(_targetExpression, seconds / ExpressionBlendSeconds);
             var appearance = _resident.Appearance != null ? _resident.Appearance : _rendererPrefab;
             // Wrap whole cycles of this appearance; different tail periods must not jump at wrap.
             float cycleWindow = appearance.Player.ExpressionPeriodSeconds * 100;
             _expressionSeconds = Mathf.Repeat(_expressionSeconds + seconds, cycleWindow);
-            if (Observing) _restSeconds += seconds;
-            else Motion.Tick(seconds);
         }
 
         private void LateUpdate()
         {
             if (_resident == null) return;
             Place();
+            if (HasShibaFrames) { RenderShiba(); return; }
             if (!_resident.HasAnimation) return;
             if (_renderer == null)
             {
@@ -117,6 +124,37 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _renderer.Render(Observing ? HabitatAction.Sit : Motion.Pose,
                 Observing ? _restSeconds : (float)Motion.PoseSeconds, Observing || Motion.FacingLeft,
                 !Observing && Motion.RisingFromRest, _expression, _expressionSeconds);
+        }
+
+        private void RenderShiba()
+        {
+            // Matches the shiba-station bake: 16 sit, 16 walk, 8 walk-in cells.
+            const int columns = 8, rows = 5;
+            int frame = ShibaFrame();
+            bool left = Observing || Motion.FacingLeft;
+            float width = 1f / columns, height = 1f / rows;
+            var uv = new Rect((frame % columns + (left ? 0 : 1)) * width,
+                (rows - 1 - frame / columns) * height, left ? width : -width, height);
+            if (_motionImage.texture != _shibaAtlas) _motionImage.texture = _shibaAtlas;
+            if (_motionImage.uvRect != uv) _motionCoat.SetFrameUv(_motionImage, uv);
+        }
+
+        private int ShibaFrame()
+        {
+            const float settleSeconds = 1.35f, walkCycleSeconds = .8f;
+            var pose = Observing ? HabitatAction.Sit : Motion.Pose;
+            float elapsed = Observing ? _restSeconds : (float)Motion.PoseSeconds;
+            if (pose == HabitatAction.Sit || pose == HabitatAction.Lie)
+                return Mathf.RoundToInt(15 * Mathf.Clamp01(elapsed / settleSeconds));
+            if (pose != HabitatAction.Walk) return 0;
+            if (Motion.RisingFromRest)
+            {
+                elapsed -= StationHabitatMotion.RiseSeconds;
+                if (elapsed < 0)
+                    return Mathf.RoundToInt(15 * Mathf.Clamp01(-elapsed / StationHabitatMotion.RiseSeconds));
+            }
+            if (elapsed < walkCycleSeconds * .5f) return 32 + (int)(elapsed / walkCycleSeconds * 16);
+            return 16 + Mathf.Min(15, (int)(Mathf.Repeat(elapsed, walkCycleSeconds) / walkCycleSeconds * 16));
         }
 
         private void Place()

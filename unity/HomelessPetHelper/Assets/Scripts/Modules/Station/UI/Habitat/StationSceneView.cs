@@ -39,7 +39,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
                 if (!_motions.TryGetValue(resident.AnimalId, out var motion))
                 {
                     if (_room != null && _area == null) _area = _room.CreateArea();
-                    motion = new StationHabitatMotion(resident.AnimalId.GetHashCode(), _area);
+                    motion = new StationHabitatMotion(resident.AnimalId.GetHashCode(), _area, resident.AnimatedShiba);
                     for (int step = 0; step < i * 240; step++) motion.Tick(.05);
                     _motions.Add(resident.AnimalId, motion);
                 }

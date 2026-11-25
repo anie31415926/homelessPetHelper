@@ -27,6 +27,13 @@ namespace HomelessPetHelper.Modules.Animals.UI
             if (isActiveAndEnabled) Refresh();
         }
 
+        public void SetFrameUv(RawImage image, Rect uv)
+        {
+            if (image == null || image != _target) throw new ArgumentException("Unexpected coat target.");
+            image.uvRect = uv;
+            if (_material != null) RefreshUv();
+        }
+
         private void OnEnable() { if (_snapshot != null) Refresh(); }
         private void OnDisable() => Release();
         private void OnDestroy() => Release();
@@ -77,8 +84,9 @@ namespace HomelessPetHelper.Modules.Animals.UI
             {
                 if (_rawUv == raw.uvRect && _rawUv.width != 0) return;
                 _rawUv = raw.uvRect;
-                // RawImage uses full texture coordinates, including intentional mirror flips.
-                uv = new Vector4(0, 0, 1, 1);
+                // Normalize within the sampled cell, preserving the texture's mirror direction.
+                uv = new Vector4(Mathf.Min(_rawUv.xMin, _rawUv.xMax), Mathf.Min(_rawUv.yMin, _rawUv.yMax),
+                    Mathf.Max(_rawUv.xMin, _rawUv.xMax), Mathf.Max(_rawUv.yMin, _rawUv.yMax));
             }
             else throw new InvalidOperationException("Unsupported coat target.");
             _material.SetVector("_UvRect", uv);

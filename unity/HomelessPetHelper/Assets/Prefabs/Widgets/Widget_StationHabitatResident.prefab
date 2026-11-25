@@ -814,6 +814,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rendererPrefab: {fileID: 1749472622813440833, guid: 0235d227cb7b6b041b7cd28796ee4b9a, type: 3}
+  _shibaAtlas: {fileID: 2800000, guid: 7bf665893c0245aa89c8ea2bc39b51a9, type: 3}
   _motionImage: {fileID: 8513452006831651084}
   _stillImage: {fileID: 6839084756133433819}
   _position: {fileID: 1872252057959480513}

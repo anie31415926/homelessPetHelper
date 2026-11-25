@@ -7,10 +7,12 @@ const sourceDir = 'art-source/pet-roster-20261124/sit-texture';
 const batch = 'test-results/pet-roster-20261124';
 const output = join(batch, 'sit-texture');
 const variants = ['tuxedo', 'shiba'];
+const selectable = [...variants, 'shiba-selected'];
 const names = process.argv.length > 2 ? process.argv.slice(2) : variants;
 const still = names.length === 1 && names[0] === 'shiba-seat-target';
-assert.ok(still || new Set(names).size === names.length && names.every(name => variants.includes(name)),
-    'Use tuxedo and/or shiba, or shiba-seat-target for the seated still');
+const station = names.length === 1 && names[0] === 'shiba-station';
+assert.ok(still || station || new Set(names).size === names.length && names.every(name => selectable.includes(name)),
+    'Use tuxedo, shiba, shiba-selected, shiba-seat-target or shiba-station');
 const load = async file => JSON.parse(await readFile(file, 'utf8'));
 const clamp = t => Math.max(0, Math.min(1, t));
 const smooth = t => { t = clamp(t); return t * t * (3 - 2 * t); };
@@ -74,7 +76,7 @@ function motion(profile) {
     }
 }
 
-function verifyMotion(rest, sample) {
+function verifyMotion({rest, hindGroundY = rest.hindToe[1]}, sample) {
     const initial = sample(0);
     for (const name of Object.keys(initial)) assert.ok(length(minus(initial[name], rest[name])) < .02, `Bind mismatch: ${name}`);
     let previous = initial;
@@ -85,8 +87,8 @@ function verifyMotion(rest, sample) {
                 assert.ok(Math.abs(length(segment) - length(segments(rest, names)[j])) < 1e-7);
             });
         }
-        assert.ok(pose.frontToe[1] <= rest.frontToe[1] && pose.hindToe[1] <= rest.hindToe[1]);
-        assert.ok(pose.frontToe[1] === rest.frontToe[1] || pose.hindToe[1] === rest.hindToe[1]);
+        assert.ok(pose.frontToe[1] <= rest.frontToe[1] && pose.hindToe[1] <= hindGroundY);
+        assert.ok(pose.frontToe[1] === rest.frontToe[1] || pose.hindToe[1] >= rest.hindToe[1]);
         for (const name of Object.keys(initial)) assert.ok(length(minus(pose[name], previous[name])) < 6);
         previous = pose;
     }
@@ -100,12 +102,40 @@ function jointBlend(p, a, b, at, from, to) {
     return smooth(((u * x + v * y) / Math.hypot(x, y) - from) / (to - from));
 }
 
+function rollRump(roll, point, base, t) {
+    if (!roll || t <= roll.start) return base;
+    const [x, y] = point;
+    const i = roll.edge.findIndex(entry => entry[1] >= y);
+    if (i <= 0) return base;
+    const a = roll.edge[i - 1], b = roll.edge[i];
+    const f = (y - a[1]) / (b[1] - a[1]);
+    const inward = mix(a[0], b[0], f) - x;
+    const target = [mix(a[2], b[2], f) - inward * .20, mix(a[3], b[3], f) - inward * .90];
+    const extent = smooth((y - roll.edge[0][1]) / 41) * smooth((roll.edge.at(-1)[1] - y) / 53);
+    const weight = (1 - smooth(inward / roll.blendWidth)) * extent * smooth((t - roll.start) / (1 - roll.start));
+    return lerp(base, target, weight);
+}
+
+function tailSkin(profile, pose, turn, t) {
+    const {rest, rumpRoll: roll} = profile;
+    const rotation = turn * profile.tailTurn + (pose.tailSway ?? 0);
+    if (roll?.tailTip && t > roll.start) {
+        const {source, offset, seatAngle} = roll.tailTip;
+        const weight = smooth((t - roll.start) / (1 - roll.start));
+        const point = roll.edge.find(([, y]) => y === roll.markedRows[0]).slice(2);
+        const start = transform(source, rest.tailRoot, pose.tailRoot, rotation);
+        return p => transform(p, source, lerp(start, plus(point, offset), weight), mix(rotation, radians(seatAngle), weight));
+    }
+    const root = rollRump(roll, rest.tailRoot, pose.tailRoot, t);
+    return p => transform(p, rest.tailRoot, root, rotation);
+}
+
 function skin(profile, {drive, offset}, pose, t) {
     const {rest, floorY} = profile;
     const turn = angle(minus(pose.hip, pose.shoulder)) - angle(minus(rest.hip, rest.shoulder));
     const body = p => transform(p, rest.hip, pose.hip, turn);
     const attachment = (name, rotation) => p => transform(p, rest[name], pose[name], rotation);
-    if (drive === 'tail') return attachment('tailRoot', turn * profile.tailTurn);
+    if (drive === 'tail') return tailSkin(profile, pose, turn, t);
     if (drive === 'head' || drive === 'head-front') {
         const face = attachment('head', radians(profile.headTurn) * smooth(t));
         const neck = attachment('shoulder', turn * .26);
@@ -133,7 +163,7 @@ function skin(profile, {drive, offset}, pose, t) {
         return p => {
             const q = body(p);
             q[1] += push * Math.exp(-((length(minus(p, profile.rump)) / 55) ** 2));
-            return lerp(q, ground(q), smooth(t * 3));
+            return rollRump(profile.rumpRoll, p, lerp(q, ground(q), smooth(t * 3)), t);
         };
     }
     const [root, bend, ankle, toe] = chainNames[drive];
@@ -147,7 +177,8 @@ function skin(profile, {drive, offset}, pose, t) {
         const join = jointBlend(p, rest[root], rest[bend], rest[root], 14, 76);
         const bent = lerp(lerp(upper(p), lower(p), knee), foot(p), paw);
         const moved = lerp(body(p), bent, join);
-        return [moved[0], Math.min(floorY + .5, moved[1])];
+        const grounded = [moved[0], Math.min(floorY + .5, moved[1])];
+        return drive === 'hind' && !offset ? rollRump(profile.rumpRoll, p, grounded, t) : grounded;
     };
     if (!offset) return mapLeg;
     const foreshortening = smooth(t) * (1 - (profile.seatedDepth ?? .54));
@@ -186,8 +217,10 @@ async function repairBody(input, profile) {
 
 async function makeParts(profile, sourcePath) {
     const [x, y, w, h] = profile.crop;
+    const left = Math.max(0, -x);
     const resized = await sharp(sourcePath).resize({width: profile.sourceWidth}).png().toBuffer();
-    const input = await sharp(resized).extract({left: x, top: y, width: w, height: h}).removeAlpha().png().toBuffer();
+    const input = await sharp(resized).extract({left: Math.max(x, 0), top: y, width: w - left, height: h})
+        .extend({left, top: 0, bottom: 0, right: 0, background: '#000000'}).removeAlpha().png().toBuffer();
     const repaired = await repairBody(input, profile);
     const parts = [];
     for (const part of profile.parts) {
@@ -243,7 +276,7 @@ function warp(profile, texture, map) {
     return frame;
 }
 
-function inspect(buffer, profile) {
+function inspect(buffer, profile, floorGap = 13) {
     const [, top, w, h] = profile.crop;
     let area = 0, bottom = 0, edge = 0;
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
@@ -254,14 +287,195 @@ function inspect(buffer, profile) {
     }
     assert.ok(area > w * h * .18, 'Blank or largely missing animal');
     assert.equal(edge, 0, 'Texture clipped by viewport');
-    assert.ok(bottom <= profile.floorY + 2 && bottom >= profile.floorY - 13, `Texture/floor gap: ${bottom}, floor ${profile.floorY}`);
+    assert.ok(bottom <= profile.floorY + 2 && bottom >= profile.floorY - floorGap, `Texture/floor gap: ${bottom}, floor ${profile.floorY}`);
     return {area, bottom};
 }
 
-async function render(profile, parts, pose, t) {
+function alphaDistance(pixels, width, height, reach) {
+    const distance = new Uint8Array(width * height);
+    for (let i = 0; i < distance.length; i++) distance[i] = pixels[i * 4 + 3] >= 160 ? reach : 0;
+    for (let y = 1; y < height; y++) for (let x = 1; x < width; x++) {
+        const i = y * width + x;
+        distance[i] = Math.min(distance[i], distance[i - 1] + 1, distance[i - width] + 1);
+    }
+    for (let y = height - 2; y >= 0; y--) for (let x = width - 2; x >= 0; x--) {
+        const i = y * width + x;
+        distance[i] = Math.min(distance[i], distance[i + 1] + 1, distance[i + width] + 1);
+    }
+    return distance;
+}
+
+function blendBodyJoins(profile, parts, layers, width, height) {
+    if (!profile.bodyJoinFeather) return;
+    const body = layers[parts.findIndex(part => part.drive === 'body')].input;
+    const support = alphaDistance(body, width, height, 8);
+    for (const [name, reach] of Object.entries(profile.bodyJoinFeather)) {
+        const layer = layers[parts.findIndex(part => part.name === name)].input;
+        const edge = alphaDistance(layer, width, height, reach);
+        // Feather joins only where the torso already fills the silhouette.
+        for (let i = 0; i < edge.length; i++) {
+            if (edge[i] >= reach || !support[i]) continue;
+            layer[i * 4 + 3] *= 1 - smooth(support[i] / 8) * (1 - smooth(edge[i] / reach));
+        }
+    }
+}
+
+function lowestOpaque(buffers, width, x, top, bottom) {
+    for (let y = bottom; y >= top; y--) {
+        if (buffers.some(buffer => buffer[(y * width + x) * 4 + 3] >= 160)) return y;
+    }
+    return -1;
+}
+
+function smoothBack(profile, parts, layers, pose, width, height, t) {
+    const roll = profile.rumpRoll;
+    if (!roll?.backSmooth || t <= roll.start) return;
+    const {shoulderSpan, radius, depth} = roll.backSmooth;
+    const [left, top] = profile.crop;
+    const [first, last] = shoulderSpan.map(y => Math.round(pose.shoulder[1] - top + y));
+    const indices = ['head-chest-foreleg', 'body', 'near-hind'].map(name => parts.findIndex(part => part.name === name));
+    const buffers = indices.map(i => layers[i].input);
+    const edge = [];
+    for (let y = Math.max(0, first - radius); y <= Math.min(height - 1, last + radius); y++) {
+        let x = width - 1;
+        const limit = Math.max(0, Math.round(pose.shoulder[0] - left));
+        while (x > limit && !buffers.some(buffer => buffer[(y * width + x) * 4 + 3] >= 160)) x--;
+        if (x > limit) edge[y] = x;
+    }
+    const weight = smooth((t - roll.start) / (1 - roll.start));
+    for (let y = Math.max(0, first); y <= Math.min(height - 1, last); y++) {
+        const x = edge[y];
+        if (x === undefined) continue;
+        let sum = 0, total = 0;
+        for (let i = -radius; i <= radius; i++) {
+            const neighbor = edge[y + i];
+            if (neighbor === undefined || Math.abs(neighbor - x) > 70) continue;
+            const w = radius + 1 - Math.abs(i);
+            sum += w * neighbor;
+            total += w;
+        }
+        const fade = smooth(Math.min(y - first, last - y) / radius);
+        const delta = (sum / total - x) * weight * fade;
+        if (Math.abs(delta) < .3) continue;
+        const start = Math.max(0, x - depth);
+        const end = Math.min(width - 1, x + Math.ceil(Math.abs(delta)) + 3);
+        for (const buffer of buffers) {
+            const row = Buffer.from(buffer.subarray((y * width + start) * 4, (y * width + end + 1) * 4));
+            for (let u = start; u <= end; u++) {
+                const from = u - delta * (1 - smooth((x - u) / depth));
+                const index = Math.min(end, Math.max(start, Math.floor(from)));
+                const a = (index - start) * 4, b = Math.min(a + 4, row.length - 4);
+                const f = clamp(from - index), out = (y * width + u) * 4;
+                const alphaA = (1 - f) * row[a + 3], alphaB = f * row[b + 3];
+                const alpha = alphaA + alphaB;
+                buffer[out + 3] = Math.round(alpha);
+                if (!alpha) continue;
+                for (let c = 0; c < 3; c++) buffer[out + c] = Math.round((row[a + c] * alphaA + row[b + c] * alphaB) / alpha);
+            }
+        }
+    }
+}
+
+function moveContactColumn(src, dst, width, x, anchor, base, drop) {
+    // Stretch the existing painted edge toward the floor, tapering to zero above it.
+    for (let y = anchor + 1; y <= Math.ceil(base + drop + 3); y++) {
+        const sourceY = y - drop * clamp((y - anchor) / (base + drop - anchor));
+        const row = Math.floor(sourceY), f = sourceY - row;
+        const a = (row * width + x) * 4, b = a + width * 4, target = (y * width + x) * 4;
+        const left = (1 - f) * src[a + 3], right = f * src[b + 3], alpha = left + right;
+        dst[target + 3] = Math.round(alpha);
+        if (!alpha) continue;
+        for (let c = 0; c < 3; c++) dst[target + c] = Math.round((src[a + c] * left + src[b + c] * right) / alpha);
+    }
+}
+
+function settleContour(profile, parts, layers, width, height, t) {
+    const contour = profile.seatedContour;
+    if (!contour || t <= contour.start) return null;
+    const [left, top] = profile.crop;
+    const floor = profile.floorY - top - 2;
+    const [from, to] = contour.range.map(x => x - left);
+    const [leading, trailing] = contour.falloff;
+    const indices = contour.parts.map(name => parts.findIndex(part => part.name === name));
+    const source = indices.map(i => layers[i].input);
+    const destination = source.map(buffer => Buffer.from(buffer));
+    const settle = smooth((t - contour.start) / (1 - contour.start));
+    for (let x = Math.max(0, from - leading); x <= Math.min(width - 1, to + trailing); x++) {
+        const base = lowestOpaque(source, width, x, floor - contour.depth, Math.min(height - 1, floor + 3));
+        if (base < 0 || base >= floor) continue;
+        const edge = Math.max((from - x) / leading, (x - to) / trailing, 0);
+        const drop = Math.min(floor - base, contour.maxDrop) * settle * (1 - smooth(edge));
+        if (drop < .01) continue;
+        const anchor = Math.max(0, base - contour.depth);
+        source.forEach((buffer, i) => moveContactColumn(buffer, destination[i], width, x, anchor, base, drop));
+    }
+    indices.forEach((index, i) => { layers[index].input = destination[i]; });
+    if (t !== 1) return null;
+    const columns = Array.from({length: to - from + 1}, (_, i) => from + i);
+    const gaps = columns.map(x => floor - lowestOpaque(destination, width, x, floor - 1, floor + 3));
+    assert.ok(gaps.every(gap => gap <= 1), 'Seated rump-to-leg contour has a gap above the floor');
+    return {columns: columns.length, maxGap: Math.max(...gaps)};
+}
+
+function traceRump(profile, layers, parts, maps, t) {
+    if (!profile.rumpRoll) return null;
+    const [start, end] = profile.rumpRoll.markedRows;
+    const [left, top, width, height] = profile.crop;
+    const samples = profile.rumpRoll.edge.filter(([, y]) => y >= start && y <= end);
+    const indices = ['body', 'near-hind'].map(name => parts.findIndex(part => part.name === name));
+    const buffers = indices.map(i => layers[i].input);
+    return samples.map(([x, y]) => {
+        const index = indices.find(i => parts[i].pixels[((y - top) * width + x - left) * 4 + 3] >= 100) ?? indices[0];
+        const point = maps[index]([x, y]).map(Math.round);
+        if (t === 1) {
+            assert.ok(Math.abs(point[1] - profile.floorY) <= 7, 'Marked standing rump edge failed to roll down');
+            if (profile.rumpRoll.tailTip && y === start) {
+                assert.ok(Math.abs(point[1] - (profile.floorY - 2)) <= 1, 'Top rump landmark must reach the floor');
+            }
+            const col = point[0] - left;
+            const bottom = Math.max(...[-2, -1, 0, 1, 2].map(dx =>
+                lowestOpaque(buffers, width, col + dx, profile.floorY - top - 8, Math.min(height - 1, profile.floorY - top + 2))));
+            assert.ok(bottom >= profile.floorY - top - 7, 'Marked rump edge missing at floor in rendered frame');
+        }
+        return point;
+    });
+}
+
+function checkTailContact(profile, parts, layers, t) {
+    const roll = profile.rumpRoll;
+    if (!roll?.tailTip) return null;
+    const [left, top, width, height] = profile.crop;
+    const find = name => layers[parts.findIndex(part => part.name === name)].input;
+    const tail = find('tail'), body = find('body'), hind = find('near-hind');
+    let bottom = -1, overlap = 0;
+    for (let i = 3; i < tail.length; i += 4) {
+        if (tail[i] < 160) continue;
+        bottom = Math.floor(i / (width * 4));
+        if (body[i] >= 160 || hind[i] >= 160) overlap++;
+    }
+    const floor = profile.floorY - top;
+    assert.ok(bottom >= 0 && bottom <= floor, 'Tail is missing or penetrates the floor');
+    assert.ok(overlap >= 40, 'Tail separated from the body');
+    if (t !== 1) return null;
+    const clearance = floor - bottom;
+    const [min, max] = roll.tailClearance;
+    assert.ok(clearance >= min && clearance <= max, `Unexpected seated tail clearance: ${clearance}`);
+    const [contactX, contactY] = roll.edge.find(([, y]) => y === roll.markedRows[0]).slice(2);
+    const tipX = contactX - left + roll.tailTip.offset[0];
+    const tip = Math.max(...[-3, -2, -1, 0, 1, 2, 3].map(dx =>
+        lowestOpaque([tail], width, tipX + dx, floor - max - 2, Math.min(height - 1, floor))));
+    assert.ok(tip >= bottom - 2 && Math.abs(tip + top - contactY) <= max, 'Tail tip missed the marked contact');
+    return clearance;
+}
+
+async function render(profile, parts, pose, t, farPoses = null) {
     const [, , width, height] = profile.crop;
     const raw = {width, height, channels: 4};
-    const layers = parts.map(part => ({input: warp(profile, part.pixels, skin(profile, part, pose, t)), raw}));
+    const maps = parts.map(part => skin(profile, part, part.offset && farPoses ? farPoses[part.drive] : pose, t));
+    const layers = parts.map((part, i) => ({input: warp(profile, part.pixels, maps[i]), raw}));
+    smoothBack(profile, parts, layers, pose, width, height, t);
+    blendBodyJoins(profile, parts, layers, width, height);
+    const contour = settleContour(profile, parts, layers, width, height, t);
     if (t === 1) {
         const body = layers[parts.findIndex(part => part.drive === 'body')].input;
         const [, top] = profile.crop;
@@ -271,7 +485,99 @@ async function render(profile, parts, pose, t) {
         assert.ok(contacts >= 8, 'Seated body layer did not settle on the floor');
     }
     const buffer = await sharp({create: {width, height, channels: 4, background: '#00000000'}}).composite(layers).raw().toBuffer();
-    return {check: inspect(buffer, profile), png: await sharp(buffer, {raw}).png().toBuffer(), layers};
+    const check = inspect(buffer, profile, farPoses ? 28 : 13);
+    if (contour) check.contour = contour;
+    const clearance = checkTailContact(profile, parts, layers, t);
+    if (clearance !== null) check.tailClearance = clearance;
+    if (t === 0 || t === 1) {
+        const trace = traceRump(profile, layers, parts, maps, t);
+        if (trace) check.rumpEdge = trace;
+    }
+    return {check, png: await sharp(buffer, {raw}).png().toBuffer(), layers};
+}
+
+// Source faces left. A planted paw moves right at a constant speed in local space.
+const walkStride = 156;
+const stance = .76;
+const beats = [
+    ['hind', false, 0, 24], ['front', false, .25, 31],
+    ['hind', true, .5, 22], ['front', true, .75, 27]
+];
+
+function walkFoot(cycle, lift) {
+    cycle -= Math.floor(cycle);
+    const swing = clamp((cycle - stance) / (1 - stance));
+    return [walkStride * (cycle - stance / 2 - smooth(swing)), -lift * Math.sin(Math.PI * swing) ** 2];
+}
+
+function walkPose({rest}, cycle, weight) {
+    const wave = Math.PI * 2 * cycle;
+    const hip = plus(rest.hip, [0, weight * (21 + 3 * Math.sin(wave * 2))]);
+    const turn = weight * .012 * Math.sin(wave * 2);
+    const shoulder = transform(rest.shoulder, rest.hip, hip, turn);
+    const pose = {hip, shoulder, head: plus(rest.head, minus(shoulder, rest.shoulder)),
+        tailRoot: transform(rest.tailRoot, rest.hip, hip, turn), tailSway: weight * .045 * Math.sin(wave)};
+    const far = {front: {...pose}, hind: {...pose}};
+    for (const [drive, distant, phase, lift] of beats) {
+        const chain = chainNames[drive];
+        const [root, bend, ankle, toe] = chain;
+        const [upper, lower, paw] = segments(rest, chain);
+        const target = distant ? far[drive] : pose;
+        const shift = walkFoot(cycle - phase, lift);
+        target[toe] = plus(rest[toe], shift.map(value => weight * value));
+        target[ankle] = minus(target[toe], paw);
+        target[bend] = joint(target[root], target[ankle], length(upper), length(lower), drive === 'front' ? -1 : 1);
+        segments(target, chain).forEach((segment, i) => {
+            assert.ok(Math.abs(length(segment) - length([upper, lower, paw][i])) < 1e-7);
+        });
+    }
+    return [pose, far];
+}
+
+async function stationAtlas() {
+    const configPath = join(sourceDir, 'shiba-selected.json');
+    const profile = {...await load(configPath), name: 'shiba-station'};
+    const folder = join(output, profile.name);
+    await mkdir(folder, {recursive: true});
+    const parts = await makeParts(profile, join(dirname(configPath), profile.sourceFile));
+    const sit = motion(profile);
+    verifyMotion(profile, sit);
+    for (let i = 0; i <= 240; i++) {
+        const cycle = i / 240;
+        const feet = beats.map(([, , phase, lift]) => walkFoot(cycle - phase, lift));
+        assert.ok(feet.filter(([, y]) => y < -1e-8).length <= 1, 'Walk lost lateral support');
+        walkPose(profile, cycle, 1);
+        if (i <= 120) walkPose(profile, cycle, smooth(cycle * 2));
+    }
+
+    const frames = [];
+    for (let i = 0; i < 16; i++) {
+        const t = i / 15;
+        frames.push((await render(profile, parts, sit(t), t)).png);
+    }
+    const walk = [];
+    for (let i = 0; i < 16; i++) {
+        const [pose, far] = walkPose(profile, i / 16, 1);
+        walk.push((await render(profile, parts, pose, 0, far)).png);
+    }
+    frames.push(...walk);
+    for (let i = 0; i < 8; i++) {
+        const [pose, far] = walkPose(profile, i / 16, smooth(i / 8));
+        frames.push((await render(profile, parts, pose, 0, far)).png);
+    }
+    const side = 128, columns = 8;
+    const tiles = [];
+    for (const [i, png] of frames.entries()) {
+        const input = await sharp(png).resize(side, side).png().toBuffer();
+        tiles.push({input, left: side * (i % columns), top: side * Math.floor(i / columns)});
+    }
+    await sharp({create: {width: side * columns, height: side * frames.length / columns, channels: 4,
+        background: '#00000000'}}).composite(tiles).png({compressionLevel: 9, palette: true, dither: 0})
+        .toFile('unity/HomelessPetHelper/Assets/Art/PetSit/T_Station_ShibaMotion.png');
+    const preview = [];
+    for (const png of walk) preview.push(await tile(profile, png, '#f2f5ed'));
+    await sharp(preview, {join: {animated: true}}).gif({delay: 50, loop: 0}).toFile(join(folder, 'walk.gif'));
+    console.log('PASS shiba-station: 241 gait and sit samples; 40 atlas cells.');
 }
 
 async function tile(profile, png, background) {
@@ -290,16 +596,23 @@ async function run(name, manifest) {
         const study = await load(join(dirname(configPath), profile.motionStudy));
         Object.assign(profile, {rest: study.standing, keys: study.keys});
     }
-    const record = manifest.animals.find(animal => animal.id === profile.id);
-    const sourcePath = join(batch, record[profile.source]);
+    const sourcePath = profile.sourceFile ? join(dirname(configPath), profile.sourceFile)
+        : join(batch, manifest.animals.find(animal => animal.id === profile.id)[profile.source]);
     const motionAt = motion(profile);
-    verifyMotion(profile.rest, motionAt);
+    verifyMotion(profile, motionAt);
     await mkdir(join(output, name), {recursive: true});
     const parts = await makeParts(profile, sourcePath);
     const frames = [], images = [], findings = [];
     for (let i = 0; i <= 30; i++) {
         const t = i / 30;
-        const {png, check} = await render(profile, parts, motionAt(t), t);
+        const {png, check, layers} = await render(profile, parts, motionAt(t), t);
+        if (profile.seatedContact && i === 30) {
+            check.support = seatSupport(profile, parts, layers);
+            for (const part of profile.seatedContact) {
+                assert.ok(check.support[part] >= 8, `Expected visible support from ${part}: ${JSON.stringify(check.support)}`);
+            }
+            assert.ok(check.support.tail <= (profile.rumpRoll?.tailTip ? 12 : 0), 'Only the tail tip may touch the floor');
+        }
         findings.push(check);
         frames.push(await tile(profile, png, '#f2f5ed'));
         if ([0, 9, 16, 24, 30].includes(i)) {
@@ -313,7 +626,8 @@ async function run(name, manifest) {
         .composite(tiles).jpeg({quality: 88}).toFile(join(sourceDir, name + '-poses.jpg'));
     const loop = [...frames, ...frames.slice(1, -1).reverse()];
     const delay = loop.map((_, i) => i === 0 || i === 30 ? 690 : 45);
-    await sharp(loop, {join: {animated: true}}).gif({delay, loop: 0}).toFile(join(output, name + '-sit.gif'));
+    const previewDir = profile.sourceFile ? join(output, name) : output;
+    await sharp(loop, {join: {animated: true}}).gif({delay, loop: 0}).toFile(join(previewDir, name + '-sit.gif'));
     console.log(`PASS ${name}: 241 skeleton samples; ${frames.length} raster frames.`);
     return {id: profile.id, skeletonSamples: 241, rasterFrames: findings};
 }
@@ -393,12 +707,17 @@ async function seatBoard(profile, folder, png, pose) {
         .jpeg({quality: 91}).toFile(join(folder, 'review.jpg'));
 }
 
-const manifest = await load(join(batch, 'manifest.json'));
+const manifest = still || names.some(name => variants.includes(name)) ? await load(join(batch, 'manifest.json')) : null;
+if (station) {
+    await stationAtlas();
+    process.exit(0);
+}
 if (still) {
     await seatTarget(manifest);
     process.exit(0);
 }
 const report = [];
 for (const name of names) report.push(await run(name, manifest));
-const reportName = names.length === variants.length ? 'checks.json' : 'checks-' + names[0] + '.json';
+const reportName = names.length === variants.length && variants.every(name => names.includes(name))
+    ? 'checks.json' : 'checks-' + names.join('-') + '.json';
 await writeFile(join(output, reportName), JSON.stringify(report, null, 2) + '\n');

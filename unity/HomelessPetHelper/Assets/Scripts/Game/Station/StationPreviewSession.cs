@@ -692,7 +692,7 @@ namespace HomelessPetHelper.Game.Station
                 bool observing = StationHabitatPlacement.NeedsObservation(Care(index).BasicAssessment, current);
                 bool cat = arrival.AnimalDefinitionId == "cat.shy" || arrival.AnimalDefinitionId == "preview.cat";
                 _sceneResidents.Add(new StationSceneResident(arrival.AnimalId, index, Resident(index).Name,
-                    Resident(index).Art, cat, observing, current));
+                    Resident(index).Art, cat, observing, current, animatedShiba: arrival.AnimalDefinitionId == "dog"));
             }
             _view.Scene.Show(_sceneResidents, _selected);
         }

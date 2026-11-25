@@ -12,12 +12,14 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         public Sprite Art { get; }
         public bool AnimatedCat { get; }
         public bool HasAnimation => AnimatedCat || Appearance != null;
+        public bool AnimatedShiba { get; }
         public bool Observing { get; }
         public AnimalSnapshot Snapshot { get; }
         public StationHabitatRenderer Appearance { get; }
 
         public StationSceneResident(Guid animalId, int index, string name, Sprite art,
-            bool animatedCat, bool observing, AnimalSnapshot snapshot = null, StationHabitatRenderer appearance = null)
+            bool animatedCat, bool observing, AnimalSnapshot snapshot = null, StationHabitatRenderer appearance = null,
+            bool animatedShiba = false)
         {
             if (animalId == Guid.Empty || index < 0 || string.IsNullOrWhiteSpace(name) || art == null)
                 throw new ArgumentException("Incomplete station scene resident.");
@@ -30,6 +32,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             Name = name;
             Art = art;
             AnimatedCat = animatedCat;
+            AnimatedShiba = animatedShiba;
             Observing = observing;
         }
     }

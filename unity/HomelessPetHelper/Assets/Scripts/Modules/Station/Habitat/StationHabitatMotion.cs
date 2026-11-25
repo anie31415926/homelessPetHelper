@@ -22,6 +22,7 @@ namespace HomelessPetHelper.Modules.Station.Habitat
         public static readonly HabitatPoint RestPoint = new HabitatPoint(.24, .34);
         private readonly Random _random;
         private readonly StationHabitatArea _area;
+        private readonly double _walkSpeed;
         private double _remaining = 3;
         private double _cooldown;
         private int _arrivals;
@@ -44,10 +45,11 @@ namespace HomelessPetHelper.Modules.Station.Habitat
             _interruptedPoseSeconds + (_interruptedRising ? 0 : ActionSeconds) : ActionSeconds;
         public bool RisingFromRest { get; private set; }
 
-        public StationHabitatMotion(int seed, StationHabitatArea area = null)
+        public StationHabitatMotion(int seed, StationHabitatArea area = null, bool shortStride = false)
         {
             _random = new Random(seed);
             _area = area;
+            _walkSpeed = shortStride ? .05 : .11;
             if (area != null) Position = area.Start;
             Destination = Position;
         }
@@ -137,7 +139,7 @@ namespace HomelessPetHelper.Modules.Station.Habitat
         private void Walk(double seconds)
         {
             double distance = Position.DistanceTo(Destination);
-            double step = .11 * seconds;
+            double step = _walkSpeed * seconds;
             if (distance <= step)
             {
                 Position = Destination;
