@@ -40,8 +40,7 @@ namespace HomelessPetHelper.Modules.Siege
                 SiegeCatalog.Require(e.unitIds != null && e.unitIds.Length == (e.rotateSupply ? 5 : 3)
                     && e.unitIds.Distinct().Count() == e.unitIds.Length
                     && e.unitIds.All(id => catalog.Unit(id) != null && catalog.Unit(id).Cost > 0
-                        && catalog.Unit(id).Cost <= catalog.Rules.EnergyCap
-                        && (e.rotateSupply || !string.IsNullOrEmpty(catalog.Unit(id).UpgradeId))), "encounter supply");
+                        && catalog.Unit(id).Cost <= catalog.Rules.EnergyCap), "encounter supply");
                 SiegeCatalog.Require(e.initialTowerIds != null && e.initialTowerIds.Length > 0
                     && e.buildTowerIds != null && e.buildTowerIds.Length > 0
                     && e.initialTowerIds.Concat(e.buildTowerIds).All(id => Tower(id) != null), "encounter towers");

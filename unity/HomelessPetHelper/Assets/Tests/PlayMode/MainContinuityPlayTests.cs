@@ -131,7 +131,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(_map.gameObject.activeInHierarchy, Is.True);
             Assert.That(session.Outing.Session.HasDeparted, Is.False);
             Assert.That(notice.State, Is.EqualTo(RequestState.Available));
-            Assert.That(session.Station.AvailableTemporaryPlaces, Is.EqualTo(2));
+            Assert.That(session.Station.AvailableTemporaryPlaces, Is.EqualTo(session.Station.TemporaryCapacity));
             Click(_map, "Primary");
             yield return WaitForPanel<Game.Approach.ApproachPanelView>();
             Guid animalId = presenter.OutingAnimal.AnimalId;
@@ -233,8 +233,9 @@ namespace HomelessPetHelper.Tests.PlayMode
             Click(_station, "Back");
             Click(_station, "Restart");
             Assert.That(_map.GetComponentsInChildren<Text>(true).Single(text => text.name == "Heading").text,
-                Is.EqualTo(mapCopy.Get("parking")), "With no supported request, keep an open place for inspection.");
-            Assert.That(Button(_map, "Primary").IsInteractable(), Is.False);
+                Is.EqualTo(mapCopy.Get("treehouse")),
+                "An available treehouse request remains after these two rescues.");
+            Assert.That(Button(_map, "Primary").IsInteractable(), Is.True);
             Assert.That(session.Outing.Session.HasDeparted, Is.False);
             Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(minutes));
             Assert.That(session.Station.Animals.Count, Is.EqualTo(2));
@@ -301,7 +302,8 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return new WaitForSecondsRealtime(0.4f);
             yield return layout.CaptureAndAssert(_station, "adoption-farewell");
             Click(_station, "OverlayCancel");
-            Assert.That(_root.Presenter.Session.Station.AvailableTemporaryPlaces, Is.EqualTo(1));
+            int capacity = _root.Presenter.Session.Station.TemporaryCapacity;
+            Assert.That(_root.Presenter.Session.Station.AvailableTemporaryPlaces, Is.EqualTo(capacity - 1));
             yield return Load();
             Click(_station, "Animal0"); Click(_station, "QuietSpace");
             Assert.That(_root.Presenter.Progress.GetCustomName(animal.AnimalId), Is.EqualTo("柚子"));
@@ -318,7 +320,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return new WaitForSecondsRealtime(0.4f);
             Click(_station, "OverlayConfirm");
             Assert.That(FeedbackContains("去新家"), Is.True);
-            Assert.That(_root.Presenter.Session.Station.AvailableTemporaryPlaces, Is.EqualTo(2));
+            Assert.That(_root.Presenter.Session.Station.AvailableTemporaryPlaces, Is.EqualTo(capacity));
             Assert.That(_root.Presenter.Session.LastArrival, Is.Null);
             Assert.That(_root.Presenter.Session.Requests.Requests.Count(r => r.State == RequestState.Resolved),
                 Is.EqualTo(1));

@@ -1,0 +1,11 @@
+{
+  "initialCapacity": 6,
+  "rescueAid": 100,
+  "assessmentAid": 50,
+  "adoptionAid": 50,
+  "extraBeds": 2,
+  "bedsPrice": 250,
+  "cleaningPrice": 150,
+  "clipPrice": 100,
+  "clipUnit": "clip"
+}

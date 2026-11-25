@@ -56,6 +56,7 @@ namespace HomelessPetHelper.Modules.Station.UI
         public event Action<Vector2, int> StrokeRequested;
         public event Action<bool> SuspensionChanged;
         public event Action SettingsRequested;
+        public event Action EconomyRequested;
         public event Action MemorialRequested;
         public event Action RenameRequested;
 
@@ -98,6 +99,8 @@ namespace HomelessPetHelper.Modules.Station.UI
         public void SetSettingsAvailable(bool available)
         { if (_chrome != null) _chrome.SetSettingsAvailable(available); }
         public void RequestSettings() => SettingsRequested?.Invoke();
+        public void RequestEconomy() => EconomyRequested?.Invoke();
+        public void SetEconomyLabel(string label) => _chrome?.SetEconomyLabel(label);
         internal void RequestMemorial() => MemorialRequested?.Invoke();
         public void SetMemorialLabel(string label) => _chrome?.SetMemorialLabel(label);
         public void BindOverlay(ILevelOverlay overlay) => _overlay = overlay;

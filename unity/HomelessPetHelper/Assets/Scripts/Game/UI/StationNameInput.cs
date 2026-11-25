@@ -27,7 +27,7 @@ namespace HomelessPetHelper.Game.UI
             ReadKeyboard();
             if (_ticket != 0) return;
             _ticket = HPHOpenNameKeyboard(text, characterLimit);
-            if (_ticket == 0) KeyboardUnavailable?.Invoke();
+            if (_ticket == 0) ReportKeyboardUnavailable();
 #endif
         }
 
@@ -44,7 +44,7 @@ namespace HomelessPetHelper.Game.UI
             int result = HPHPollNameKeyboard(_ticket, _nativeText, _nativeText.Length);
             if (result == 0) return;
             if (result != 1) _ticket = 0;
-            if (result < 0) { KeyboardUnavailable?.Invoke(); return; }
+            if (result < 0) { ReportKeyboardUnavailable(); return; }
             int length = Array.IndexOf(_nativeText, (byte)0);
             if (length >= 0) text = Encoding.UTF8.GetString(_nativeText, 0, length);
 #endif
@@ -70,6 +70,8 @@ namespace HomelessPetHelper.Game.UI
 #endif
             DeactivateInputField();
         }
+
+        private void ReportKeyboardUnavailable() => KeyboardUnavailable?.Invoke();
 
         protected override void OnDisable()
         {

@@ -31,6 +31,7 @@ namespace HomelessPetHelper.Game.Station
         private readonly StationCareRoster _careRoster;
         private readonly Func<bool> _checkpoint;
         private readonly MainProgressSession _progress;
+        private readonly StationEconomyMenu _economyMenu;
         private readonly Action<StationDialog> _showDialog;
         private bool _persistenceBlocked;
         private readonly Dictionary<Guid, IReadOnlyList<string>> _sampleAssessments =
@@ -71,6 +72,13 @@ namespace HomelessPetHelper.Game.Station
             _view.SuspensionChanged += Suspend;
             _view.MemorialRequested += OpenMemorial;
             _view.RenameRequested += OpenRename;
+            if (progress?.EconomyRules != null && showDialog != null)
+            {
+                _economyMenu = new StationEconomyMenu(progress, _text, showDialog, Refresh,
+                    ReportPersistenceFailure);
+                _view.EconomyRequested += OpenEconomy;
+                _view.SetEconomyLabel(_text.Get("economy.menu"));
+            }
             if (progress != null) _view.SetMemorialLabel(_text.Get("adoption.memorial"));
             if (progress != null) _view.SetRenameLabel(_text.Get("petName.edit"));
             if (loop == null) Restart();
@@ -202,11 +210,19 @@ namespace HomelessPetHelper.Game.Station
             Refresh();
         }
 
+        private void OpenEconomy()
+        {
+            if (CanPresentRescueNotice && _progress.CanContinue) _economyMenu?.Open();
+        }
+
         private void HandleCare(StationCommand command)
         {
             if (command == StationCommand.Finish && _tool != StationCareTool.None)
             {
-                EndCare();
+                bool washing = _tool == StationCareTool.Wash;
+                if (EndCare() && washing && _progress?.HasCleaningUpgrade == true &&
+                    CareAvailability(_selected).CanGroom)
+                    OfferGrooming();
             }
             else if (_tool == StationCareTool.None && command == StationCommand.Check)
             {
@@ -228,6 +244,16 @@ namespace HomelessPetHelper.Game.Station
             {
                 BeginCare(command == StationCommand.Groom);
             }
+        }
+
+        private void OfferGrooming()
+        {
+            _showDialog?.Invoke(new StationDialog
+            {
+                Title = _text.Get("economy.Cleaning.title"), Body = _text.Get("economy.groomHere"),
+                CancelLabel = _text.Get("adoption.later"), ConfirmLabel = _text.Get("economy.groomNow"),
+                Accept = () => { BeginCare(true); Refresh(); }
+            });
         }
 
         private void BeginCare(bool grooming)
@@ -350,13 +376,17 @@ namespace HomelessPetHelper.Game.Station
 
         private void SendForAdoption(Guid animalId, StationResidentPresentation resident, int applicant)
         {
+            int before = _progress.AidBalance;
             if (!_progress.TrySendForAdoption(animalId, resident.Name, applicant))
             { ReportAdoptionFailure(); return; }
             _residents.Remove(animalId);
             if (_view.Scene != null) _view.Scene.ClearResidents();
             if (_view.Habitat != null) _view.Habitat.ClearResidents();
             ShowSharedStation(false);
-            ShowAdoptionMessage("adoption.completed", _text.Get("adoption.sent", resident.Name), resident.Art);
+            string body = _text.Get("adoption.sent", resident.Name);
+            if (_progress.AidBalance > before)
+                body += "\n" + _text.Get("economy.amount", _progress.AidBalance - before);
+            ShowAdoptionMessage("adoption.completed", body, resident.Art);
         }
 
         private void ReportAdoptionFailure()
@@ -401,7 +431,8 @@ namespace HomelessPetHelper.Game.Station
         private void CheckSelectedAnimal()
         {
             StationCareSnapshot care = Care(_selected);
-            if (care.BasicAssessment == StationHealthAssessment.Unchecked)
+            bool firstCheckForAnimal = care.BasicAssessment == StationHealthAssessment.Unchecked;
+            if (firstCheckForAnimal)
             {
                 bool success = _loop != null ?
                     _station.TryAssessKnownHealthyAnimal(_stationSessionId, care.AnimalId, out _) :
@@ -423,7 +454,10 @@ namespace HomelessPetHelper.Game.Station
             }
 
             _feedback = _text.Get("checked", Resident(_selected).Name, _text.Get(HealthKey(_selected)));
-            _checkpoint?.Invoke();
+            int before = _progress?.AidBalance ?? 0;
+            if (firstCheckForAnimal) _progress?.RecordFirstAssessment();
+            if (_checkpoint?.Invoke() == true && _progress != null && _progress.AidBalance > before)
+                _feedback = _text.Get("economy.amount", _progress.AidBalance - before);
         }
 
         private StationCareSnapshot Care(int index)
@@ -631,9 +665,11 @@ namespace HomelessPetHelper.Game.Station
             if (_showSummary)
             {
                 StationResidentPresentation resident = _residents[_summary.Arrival.AnimalId];
-                _view.ShowSummary(_text.Get(_firstRescueSummary ? "opening.summary" : "summaryBody", resident.Name,
-                        _summary.Arrival.Condition.Dirtiness),
-                    resident.Art, _summary.Arrival.AnimalAtArrival);
+                string body = _text.Get(_firstRescueSummary ? "opening.summary" : "summaryBody", resident.Name,
+                    _summary.Arrival.Condition.Dirtiness);
+                int award = _progress?.RescueAidFor(_summary.Arrival.OutingId) ?? 0;
+                if (award > 0) body += "\n" + _text.Get("economy.amount", award);
+                _view.ShowSummary(body, resident.Art, _summary.Arrival.AnimalAtArrival);
             }
             else if (_selected < 0)
             {
@@ -705,6 +741,7 @@ namespace HomelessPetHelper.Game.Station
             _view.SuspensionChanged -= Suspend;
             _view.MemorialRequested -= OpenMemorial;
             _view.RenameRequested -= OpenRename;
+            _view.EconomyRequested -= OpenEconomy;
             if (_loop == null)
             {
                 _station.Close();

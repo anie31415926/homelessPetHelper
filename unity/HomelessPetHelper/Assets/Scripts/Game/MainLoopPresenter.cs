@@ -94,7 +94,7 @@ namespace HomelessPetHelper.Game
             _text = new OptionPreviewText(content.StationText);
             _mapText = new OptionPreviewText(content.MapText);
             Progress = new MainProgressSession(_config, content.Artwork, progressStorage,
-                content.CreateFieldProgressContent(_fields));
+                content.CreateFieldProgressContent(_fields), content.CreateEconomy());
             _openingPending = showOpening && Progress.IsNewGame;
             _map.gameObject.SetActive(false);
             _siege.gameObject.SetActive(false);
@@ -426,8 +426,7 @@ namespace HomelessPetHelper.Game
             if (activity == null)
             {
                 activity = new SiegeRescueActivity(outing.SessionId, Progress.Fields.Seed,
-                    _activeField == null ? _content.CreateSiegeCatalog() :
-                        _content.CreateFieldSiegeCatalog(_activeField, _approach.Session), encounter, _outingAnimal);
+                    Progress.Fields.CreateBattle(), encounter, _outingAnimal);
                 bool entered = Session.OpeningRoute == null
                     ? Session.TryEnterRouteFreeRescue(activity, out var failure)
                     : Session.TryEnterRescueAfterOpening(activity, out failure);
@@ -569,7 +568,7 @@ namespace HomelessPetHelper.Game
             bool firstRescue = arrival && Session.Requests.Requests.Count(request => request.State == RequestState.Resolved) == 1;
             _stationPresenter.ShowSharedStation(arrival, firstRescue);
             _station.gameObject.SetActive(true);
-            Checkpoint();
+            if (Checkpoint() && arrival) _stationPresenter.ShowSharedStation(true, firstRescue);
         }
 
         public void Dispose()
