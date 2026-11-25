@@ -489,6 +489,50 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(storage.Slots, Is.EqualTo(originals));
         }
 
+        [TestCase(false)]
+        [TestCase(true)]
+        public void DevelopmentLoadKeepsResidentAndArchivesStaleFieldOrRequest(bool staleRequest)
+        {
+            var storage = new MemorySaveStorage();
+            Guid animal;
+            using (var progress = Open(storage))
+            {
+                animal = Rescue(progress, "ordinary");
+                Check(progress, animal);
+                Assert.That(progress.TryCheckpoint(), Is.True);
+            }
+            var raw = new SaveService(storage);
+            var section = new SaveSection<JObject>("main.station", 6, () => new JObject(), _ => null);
+            raw.Register(section);
+            Assert.That(raw.TryOpen(out _, out _), Is.True);
+            Assert.That(raw.TryRead(section, out var data, out _), Is.True);
+            if (staleRequest)
+            {
+                var pending = data["Requests"].First(item => (int)item["State"] == (int)RequestState.Available);
+                pending["PointId"] = "removed";
+                var settled = data["Requests"].Single(item => (int)item["State"] == (int)RequestState.Resolved);
+                settled["TemplateId"] = "retired.rescue";
+                settled["PointId"] = "retired.location";
+            }
+            else
+                data["Fields"]["Active"] = new JObject { ["oldLayout"] = "removed" };
+            Assert.That(raw.TryCommit(writer => writer.Set(section, data), out _), Is.True);
+            var originals = storage.Slots.ToArray();
+            using (var strict = Open(storage)) Assert.That(strict.CanContinue, Is.False);
+            using (var recovered = new MainProgressSession(_config, _content.Artwork, storage, reconcileContent: true))
+            {
+                Assert.That(recovered.CanContinue, Is.True, recovered.PersistenceError?.ToString());
+                Assert.That(recovered.ReconciledContent, Is.True);
+                Assert.That(recovered.Session.Outing.Session, Is.Null);
+                Assert.That(recovered.Session.Station.Animals.Single().AnimalId, Is.EqualTo(animal));
+                Assert.That(storage.Slots, Is.EqualTo(originals));
+                Assert.That(recovered.TryCheckpoint(), Is.True, recovered.PersistenceError?.ToString());
+                Assert.That(storage.Archives, Is.EquivalentTo(originals));
+            }
+            using var reopened = Open(storage);
+            Assert.That(reopened.Session.Station.Animals.Single().AnimalId, Is.EqualTo(animal));
+        }
+
         [Test]
         public void RealFileSlotsRoundTripCheckedAnimalAndCareWithoutPlayerDirectory()
         {

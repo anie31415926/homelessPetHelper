@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using HomelessPetHelper.Bootstrap;
 using HomelessPetHelper.Framework.Persistence;
 using HomelessPetHelper.Game.CityMap;
 using HomelessPetHelper.Game.Station;
+using HomelessPetHelper.Modules.Outing;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HomelessPetHelper.Game.Progress
@@ -27,12 +30,14 @@ namespace HomelessPetHelper.Game.Progress
         public bool CanContinue => Session != null && PersistenceError == null && !Session.IsClosed;
         public bool Recovered { get; }
         public bool IsNewGame { get; }
+        public bool ReconciledContent { get; private set; }
 
         public MainProgressSession(CityMapPreviewConfig config, StationArtwork artwork, ISaveStorage storage = null,
-            FieldProgressContent fieldContent = null) : this(config, artwork, storage, fieldContent, null) { }
+            FieldProgressContent fieldContent = null, bool reconcileContent = false)
+            : this(config, artwork, storage, fieldContent, null, reconcileContent) { }
 
         internal MainProgressSession(CityMapPreviewConfig config, StationArtwork artwork, ISaveStorage storage,
-            FieldProgressContent fieldContent, StationEconomyRules economyRules)
+            FieldProgressContent fieldContent, StationEconomyRules economyRules, bool reconcileContent = false)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _artwork = artwork ?? throw new ArgumentNullException(nameof(artwork));
@@ -52,7 +57,7 @@ namespace HomelessPetHelper.Game.Progress
                     {
                         [1] = MigrateVersionOne, [2] = MigrateVersionTwo, [3] = MigrateVersionThree,
                         [4] = MigrateVersionFour, [5] = MigrateVersionFive
-                    });
+                    }, reconcileContent ? (Func<JObject, JObject>)ReconcileOnRead : null);
                 _saves.Register(_section);
                 if (!_saves.TryOpen(out var status, out var error) ||
                     !_saves.TryRead(_section, out data, out error))
@@ -60,6 +65,7 @@ namespace HomelessPetHelper.Game.Progress
                     PersistenceError = error;
                     return;
                 }
+                if (ReconciledContent) _saves.PreserveOriginalsBeforeNextCommit();
                 Recovered = status == SaveOpenStatus.Recovered;
                 IsNewGame = status == SaveOpenStatus.New;
             }
@@ -130,14 +136,14 @@ namespace HomelessPetHelper.Game.Progress
             return data;
         }
 
-        internal Modules.Outing.HelpRequest UnshownRescueNotice => _dispatch?.UnshownNotice;
+        internal HelpRequest UnshownRescueNotice => _dispatch?.UnshownNotice;
 
         internal void MarkRescueNoticeShown() => _dispatch.MarkShown();
 
         public void RecordRescuedReturn(Guid outingId, Guid requestId)
         {
             if (!CanContinue || !Session.Requests.TryGet(requestId, out var request) ||
-                request.State != Modules.Outing.RequestState.Resolved
+                request.State != RequestState.Resolved
                     || Session.LastArrival?.Arrival.OutingId != outingId ||
                 _requestsByOuting.ContainsKey(outingId))
                 throw new InvalidOperationException("Only a new, committed rescue return may be recorded.");
@@ -194,6 +200,57 @@ namespace HomelessPetHelper.Game.Progress
             }
             catch (ArgumentException) { return "Invalid or incompatible Main station checkpoint."; }
             catch (OverflowException) { return "Main checkpoint time exceeds the supported range."; }
+            catch (InvalidOperationException) { return "Invalid Main checkpoint state."; }
+            catch (KeyNotFoundException) { return "Unavailable Main checkpoint content."; }
+        }
+
+        private JObject ReconcileOnRead(JObject original)
+        {
+            var repaired = (JObject)original.DeepClone();
+            // Notice scheduling is independent of the station and location snapshots.
+            repaired["Dispatch"] = JValue.CreateNull();
+            if (IsReadable(repaired)) return MarkReconciled(repaired);
+
+            if (!(repaired["Requests"] is JArray requests)) return original;
+            var settledIds = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var key in new[] { "Residents", "Memorials" })
+                if (repaired[key] is JArray records)
+                    foreach (var record in records.OfType<JObject>())
+                        settledIds.Add((string)record["RequestId"]);
+            foreach (var request in requests.OfType<JObject>())
+                if ((int?)request["State"] == (int)RequestState.Accepted &&
+                    !settledIds.Contains((string)request["Id"]))
+                    request["State"] = (int)RequestState.Available;
+            if (repaired["Fields"] is JObject fields && fields["Active"]?.Type == JTokenType.Object)
+            {
+                fields["Active"] = JValue.CreateNull();
+                if (IsReadable(repaired)) return MarkReconciled(repaired);
+            }
+            repaired["Fields"] = JObject.FromObject(FieldProgressSession.Empty());
+            if (IsReadable(repaired)) return MarkReconciled(repaired);
+
+            // If the request catalog changed, replace only unowned requests with current seeds.
+            // A settled ledger entry must still cross-check with its resident or memorial.
+            var retained = requests.OfType<JObject>().Where(request =>
+                (int?)request["State"] == (int)RequestState.Resolved || settledIds.Contains((string)request["Id"]));
+            repaired["Requests"] = new JArray(retained.ToArray());
+            foreach (var request in _config.CreateRequestPool().Requests)
+                ((JArray)repaired["Requests"]).Add(JObject.FromObject(MainProgressCodec.CaptureRequest(request)));
+            return IsReadable(repaired) ? MarkReconciled(repaired) : original;
+        }
+
+        private JObject MarkReconciled(JObject data)
+        {
+            ReconciledContent = true;
+            return data;
+        }
+
+        private bool IsReadable(JObject snapshot)
+        {
+            try { return Validate(snapshot.ToObject<MainProgressData>(JsonSerializer.Create(new JsonSerializerSettings
+                { MissingMemberHandling = MissingMemberHandling.Error, TypeNameHandling = TypeNameHandling.None,
+                    MetadataPropertyHandling = MetadataPropertyHandling.Ignore }))) == null; }
+            catch (JsonException) { return false; }
         }
 
         public void Dispose()

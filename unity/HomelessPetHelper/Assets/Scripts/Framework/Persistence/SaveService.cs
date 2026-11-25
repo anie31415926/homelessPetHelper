@@ -22,6 +22,7 @@ namespace HomelessPetHelper.Framework.Persistence
         private int _activeSlot = -1;
         private bool _started;
         private bool _busy;
+        private bool _archiveBeforeCommit;
 
         public bool CanWrite { get; private set; }
         public IReadOnlyList<SaveError> RecoveryWarnings => _recoveryWarnings.AsReadOnly();
@@ -49,6 +50,7 @@ namespace HomelessPetHelper.Framework.Persistence
             _document = null;
             _activeSlot = -1;
             _recoveryWarnings.Clear();
+            _archiveBeforeCommit = false;
             _busy = true;
             try
             {
@@ -125,6 +127,12 @@ namespace HomelessPetHelper.Framework.Persistence
             finally { _busy = false; }
         }
 
+        public void PreserveOriginalsBeforeNextCommit()
+        {
+            if (!CanWrite || _busy) throw new InvalidOperationException("Open a valid save first.");
+            _archiveBeforeCommit = true;
+        }
+
         private JObject[] ReadCandidates()
         {
             var candidates = new JObject[2];
@@ -194,7 +202,13 @@ namespace HomelessPetHelper.Framework.Persistence
                         return Fail(SaveErrorCode.Conflict, "Storage changed; reopen before saving.", out error);
                     }
                 }
-                if (_damaged[target]) _storage.Archive(target);
+                if (_archiveBeforeCommit)
+                {
+                    for (int slot = 0; slot < _observed.Length; slot++)
+                        if (_observed[slot] != null) _storage.Archive(slot);
+                    _archiveBeforeCommit = false;
+                }
+                else if (_damaged[target]) _storage.Archive(target);
                 _storage.Write(target, content);
                 if (!string.Equals(_storage.Read(target), content, StringComparison.Ordinal))
                     throw new IOException("Save readback did not match the checkpoint.");

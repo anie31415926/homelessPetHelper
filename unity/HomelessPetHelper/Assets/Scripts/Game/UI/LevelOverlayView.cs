@@ -110,12 +110,15 @@ namespace HomelessPetHelper.Game.UI
         internal void SetRescueResultReturning(bool returning) => _confirm.interactable = !returning;
         internal void SetRescueResultMessage(string message) => _confirmationText.text = message;
 
+        internal void SetStationDialogBody(string text) => _confirmationText.text = text;
+
         internal void SetStationDialog(StationDialog dialog)
         {
             _confirmationTitle.text = dialog.Title;
             _confirmationText.text = dialog.Body;
             _confirmationText.alignment = dialog.CenterBody ? TextAnchor.MiddleCenter : _defaultConfirmationAlignment;
             _cancelLabel.text = dialog.CancelLabel;
+            _cancel.gameObject.SetActive(!dialog.HideCancel);
             _confirmLabel.text = dialog.ConfirmLabel ?? string.Empty;
             _confirm.interactable = !dialog.Deliberate;
             _confirm.gameObject.SetActive(dialog.Accept != null || dialog.AcceptInput != null);

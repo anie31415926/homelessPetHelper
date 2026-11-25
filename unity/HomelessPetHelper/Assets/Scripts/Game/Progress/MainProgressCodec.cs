@@ -68,9 +68,6 @@ namespace HomelessPetHelper.Game.Progress
                         !pool.TryGet(requestId, out var request) || request.State != RequestState.Resolved ||
                         request.ReunionPlan != null || !usedRequests.Add(requestId))
                         throw new ArgumentException("Resident must belong to one resolved ordinary request.");
-                    var encounter = config.GetRescue(request.TemplateId);
-                    if (encounter == null || resident.Current?.DefinitionId != encounter.AnimalDefinitionId)
-                        throw new ArgumentException("Request and animal content differ.");
                     var restored = MainResidentCodec.Restore(resident);
                     residents.Add(restored);
                     if (!links.TryAdd(restored.Arrival.OutingId, requestId))
@@ -82,21 +79,20 @@ namespace HomelessPetHelper.Game.Progress
                         !Guid.TryParseExact(memorial.RequestId, "N", out var requestId) ||
                         !pool.TryGet(requestId, out var request) || request.State != RequestState.Resolved ||
                         request.ReunionPlan != null || !usedRequests.Add(requestId) ||
-                        memorial.Appearance != config.GetRescue(request.TemplateId)?.AnimalDefinitionId ||
                         config.GetAnimalPresentation(memorial.Appearance) == null)
                         throw new ArgumentException("Invalid adoption memorial.");
                 }
                 if (pool.Requests.Count(request => request.State == RequestState.Resolved) != usedRequests.Count)
                     throw new ArgumentException("Resolved requests and arrivals differ.");
                 session.Station.RestoreResidents(residents);
-                config.TimePolicy.TryGetDuration(OutingReturnProgress.HandingOver, false, out var rescueMinutes, out _);
-                long minimumMinutes = checked(rescueMinutes * (long)(usedRequests.Count - residents.Count));
+                // Historical rescues are settled; current travel/rescue costs only apply to new outings.
+                long minimumMinutes = usedRequests.Count == 0 ? 0 : 1;
                 for (int i = 0; i < residents.Count; i++)
                 {
                     var state = MainResidentCodec.RestoreCoat(data.Residents[i].Coat);
                     MainResidentCodec.ValidateMask(state, residents[i].Arrival.AnimalDefinitionId, artwork, config);
                     care.Restore(residents[i].Arrival.AnimalId, state);
-                    minimumMinutes = checked(minimumMinutes + rescueMinutes + state.WashSettledMinutes +
+                    minimumMinutes = checked(minimumMinutes + state.WashSettledMinutes +
                         state.GroomSettledMinutes);
                 }
                 if (data.ElapsedMinutes < minimumMinutes)
@@ -120,6 +116,14 @@ namespace HomelessPetHelper.Game.Progress
             {
                 if (item == null || !Guid.TryParseExact(item.Id, "N", out var id))
                     throw new ArgumentException("Invalid request identity.");
+                if (item.State == (int)RequestState.Resolved)
+                {
+                    if (item.OwnerId != null || item.ReceivingId != null)
+                        throw new ArgumentException("Resolved station request cannot be a reunion.");
+                    requests.Add(new HelpRequest(id, item.TemplateId, item.PointId, item.Version));
+                    states.Add(RequestState.Resolved);
+                    continue;
+                }
                 var template = config.GetRequestTemplate(item.TemplateId);
                 var definition = config.RequestBinding(item.TemplateId, item.PointId, item.Version);
                 var reunionBinding = definition?.hasDirectReception == true ? definition.reunion : null;
@@ -138,7 +142,7 @@ namespace HomelessPetHelper.Game.Progress
             return RequestPoolState.Restore(requests, states);
         }
 
-        private static RequestData CaptureRequest(HelpRequest request) => new RequestData
+        internal static RequestData CaptureRequest(HelpRequest request) => new RequestData
         {
             Id = request.RequestId.ToString("N"), TemplateId = request.TemplateId, PointId = request.PointId,
             Version = request.TemplateVersion, State = (int)request.State,

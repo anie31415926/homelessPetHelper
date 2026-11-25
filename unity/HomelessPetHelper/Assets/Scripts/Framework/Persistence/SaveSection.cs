@@ -13,13 +13,16 @@ namespace HomelessPetHelper.Framework.Persistence
     {
         private readonly Func<T> _createDefault;
         private readonly Func<T, string> _validate;
+        private readonly Func<JObject, JObject> _prepareRead;
         private readonly Dictionary<int, Func<JObject, JObject>> _migrations;
 
         public SaveSection(string id, int version, Func<T> createDefault, Func<T, string> validate,
-            IDictionary<int, Func<JObject, JObject>> migrations = null) : base(id, version)
+            IDictionary<int, Func<JObject, JObject>> migrations = null,
+            Func<JObject, JObject> prepareRead = null) : base(id, version)
         {
             _createDefault = createDefault ?? throw new ArgumentNullException(nameof(createDefault));
             _validate = validate ?? throw new ArgumentNullException(nameof(validate));
+            _prepareRead = prepareRead;
             _migrations = migrations == null ? new Dictionary<int, Func<JObject, JObject>>() :
                 new Dictionary<int, Func<JObject, JObject>>(migrations);
         }
@@ -55,7 +58,17 @@ namespace HomelessPetHelper.Framework.Persistence
                 record["data"] = migrated.DeepClone();
                 record["version"] = ++version;
             }
-            Read(record);
+            try { Read(record); }
+            catch (Exception cause) when (_prepareRead != null &&
+                (cause is JsonException || cause is SaveError error && error.Code == SaveErrorCode.InvalidSection))
+            {
+                // Normalize only the detached disk candidate; all writes still use Capture validation.
+                var original = (JObject)record["data"];
+                var repaired = _prepareRead(original);
+                if (ReferenceEquals(original, repaired)) throw;
+                record["data"] = repaired;
+                Read(record);
+            }
         }
 
         private void Validate(T data)

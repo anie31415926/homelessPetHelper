@@ -1,10 +1,14 @@
 using System;
+using System.Collections;
 using System.IO;
+using System.Linq;
 using HomelessPetHelper.Bootstrap;
 using HomelessPetHelper.Framework.Audio.UI;
 using HomelessPetHelper.Framework.Persistence;
 using HomelessPetHelper.Framework.Persistence.WeChat;
 using HomelessPetHelper.Game.Field;
+using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Game.UI;
 using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Siege.UI;
 using HomelessPetHelper.Modules.Station.UI;
@@ -15,6 +19,17 @@ namespace HomelessPetHelper.Game
     [DisallowMultipleComponent]
     public sealed class MainGameRoot : MonoBehaviour
     {
+        private const int SaveSlotCount = 3;
+        private const float SavingIndicatorSeconds = 0.45f;
+        private const int SavingIndicatorSteps = 3;
+        private enum SlotState { Empty, Occupied, Unavailable }
+
+        private Func<int, ISaveStorage> _saveSlotStorage = CreateProgressStorage;
+        private LevelOverlaySession _titleOverlays;
+        private Coroutine _manualSave;
+        private OptionPreviewText _saveText;
+        private int _activeSlot;
+
         [SerializeField] private GameBootstrap _bootstrap;
         [SerializeField] private GameContent _content;
         [SerializeField] private StationPanelView _station;
@@ -79,10 +94,8 @@ namespace HomelessPetHelper.Game
                 if (scope == null) throw new InvalidOperationException("Missing Main audio scope.");
                 scope.Bind(Audio.Playback);
             }
-            Presenter = new MainLoopPresenter(_station, _map, _siege, _approach, _content, Audio.Playback,
-                _progressStorage ?? CreateProgressStorage(), _outingSeedSource, Audio, Guidance, PlaySettings, _travel,
-                _showOpening, _mapWeather);
-            _bootstrap.BindSession(Presenter.Session);
+            if (_progressStorage != null) StartGame(_progressStorage);
+            else ShowSaveMenu();
             Music = new MainMusicSession(Audio.Playback, _content.MusicCatalog);
             RefreshMusic();
             InvokeRepeating(nameof(SaveFieldProgress), 5f, 5f);
@@ -112,6 +125,7 @@ namespace HomelessPetHelper.Game
             CancelInvoke(nameof(SaveFieldProgress));
             Presenter?.FlushFieldProgress();
             if (_bootstrap != null) _bootstrap.BindSession(null);
+            CloseSaveMenu();
             Presenter?.Dispose();
             Presenter = null;
             foreach (AudioScope scope in _audioScopes)
@@ -132,12 +146,15 @@ namespace HomelessPetHelper.Game
             if (!focused) SaveFieldProgress();
         }
 
-        private static ISaveStorage CreateProgressStorage()
+        private static ISaveStorage CreateProgressStorage(int slot)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            return new WeChatSaveStorage("homeless-pet.main.v1");
+            const string key = "homeless-pet.main.v1";
+            return new WeChatSaveStorage(slot == 0 ? key : key + ".profile-" + slot);
 #else
-            return new FileSaveStorage(Path.Combine(Application.persistentDataPath, "main-progress"));
+            const string folder = "main-progress";
+            return new FileSaveStorage(Path.Combine(Application.persistentDataPath,
+                slot == 0 ? folder : folder + "-profile-" + slot));
 #endif
         }
 
@@ -166,6 +183,153 @@ namespace HomelessPetHelper.Game
 #else
             return new FileSaveStorage(Path.Combine(Application.persistentDataPath, "guidance-progress"));
 #endif
+        }
+
+        public void ConfigureSaveSlots(Func<int, ISaveStorage> storage)
+        {
+            if (_started) throw new InvalidOperationException("Configure save slots before Start.");
+            _saveSlotStorage = storage ?? throw new ArgumentNullException(nameof(storage));
+        }
+
+        private OptionPreviewText SaveText => _saveText ??= new OptionPreviewText(_content.StationText);
+
+        private bool StartGame(ISaveStorage storage, bool? expectedNewGame = null)
+        {
+            Presenter = new MainLoopPresenter(_station, _map, _siege, _approach, _content, Audio.Playback,
+                storage, _outingSeedSource, Audio, Guidance, PlaySettings, _travel, _showOpening, _mapWeather,
+                expectedNewGame.HasValue ? (Action)ShowStationSaveMenu : null, expectedNewGame);
+            if (expectedNewGame.HasValue && !Presenter.AcceptedSaveSelection)
+            {
+                Presenter.Dispose();
+                Presenter = null;
+                return false;
+            }
+            _bootstrap.BindSession(Presenter.Session);
+            RefreshMusic();
+            return true;
+        }
+
+        private void ShowSaveMenu(string feedback = null)
+        {
+            _map.gameObject.SetActive(false);
+            _siege.gameObject.SetActive(false);
+            _approach.gameObject.SetActive(false);
+            _station.gameObject.SetActive(true);
+            _station.ApplyFont(_content.Font);
+            _station.ShowPage(false, false, false);
+            var target = _station.MenuTarget;
+            _titleOverlays ??= new LevelOverlaySession(_station.GetComponent<LevelOverlayAnchor>().View,
+                new LevelOverlayBindings(_station.SetOverlaySuspended, () => { }, () => string.Empty,
+                    () => null, (overlay, guide) => _station.BindOverlay(overlay),
+                    (action, targets) => false, target, target),
+                Audio, null, _content.CreateLevelUiText(), PlaySettings, settingsOnly: true);
+            _titleOverlays.ShowStationDialog(new StationDialog
+            {
+                Title = SaveText.Get("slots.title"), Body = feedback ?? SaveText.Get("slots.welcome"),
+                ConfirmLabel = SaveText.Get("slots.new"), Accept = () => ShowSlotSelection(true),
+                BrowseLabel = SaveText.Get("slots.load"), Browse = () => ShowSlotSelection(false),
+                HideCancel = true, CenterBody = true
+            });
+        }
+
+        private void ShowSlotSelection(bool newGame, int index = 0, string feedback = null)
+        {
+            var states = Enumerable.Range(0, SaveSlotCount).Select(ReadSlotState).ToArray();
+            bool Matches(SlotState state) => newGame ? state == SlotState.Empty : state == SlotState.Occupied;
+            var candidates = Enumerable.Range(0, SaveSlotCount).Where(slot => Matches(states[slot])).ToArray();
+            if (candidates.Length == 0)
+            {
+                ShowSaveMenu(SaveText.Get(states.Contains(SlotState.Unavailable) ? "slots.readFailed" :
+                    newGame ? "slots.full" : "slots.empty"));
+                return;
+            }
+            index %= candidates.Length;
+            int slot = candidates[index];
+            _titleOverlays.ShowStationDialog(new StationDialog
+            {
+                Title = SaveText.Get(newGame ? "slots.new" : "slots.load"),
+                Body = feedback ?? SaveText.Get(newGame ? "slots.emptySlot" : "slots.occupiedSlot", slot + 1),
+                ConfirmLabel = SaveText.Get("slots.select"), Accept = () => SelectSlot(slot, newGame),
+                BrowseLabel = SaveText.Get("slots.next"),
+                Browse = candidates.Length > 1 ? (Action)(() => ShowSlotSelection(newGame, index + 1)) : null,
+                CancelLabel = SaveText.Get("slots.back"), Cancel = () => ShowSaveMenu(), CenterBody = true
+            });
+        }
+
+        private SlotState ReadSlotState(int slot)
+        {
+            try
+            {
+                var storage = _saveSlotStorage(slot);
+                return storage.Read(0) == null && storage.Read(1) == null ? SlotState.Empty : SlotState.Occupied;
+            }
+            catch (Exception) { return SlotState.Unavailable; }
+        }
+
+        private void SelectSlot(int slot, bool newGame)
+        {
+            CloseSaveMenu();
+            _activeSlot = slot;
+            if (!StartGame(_saveSlotStorage(slot), newGame))
+                ShowSaveMenu(SaveText.Get(newGame ? "slots.createFailed" : "save.loadFailed"));
+        }
+
+        private void CloseSaveMenu()
+        {
+            _titleOverlays?.Dispose();
+            _titleOverlays = null;
+        }
+
+        private void ShowStationSaveMenu()
+        {
+            if (_manualSave != null) return;
+            var overlays = Presenter.StationSaveOverlays;
+            overlays.ShowStationDialog(new StationDialog
+            {
+                Title = SaveText.Get("slots.current", _activeSlot + 1), Body = SaveText.Get("slots.actions"),
+                ConfirmLabel = SaveText.Get("slots.save"),
+                Accept = () => _manualSave = StartCoroutine(SaveManually(overlays)),
+                BrowseLabel = SaveText.Get("slots.settings"), Browse = () =>
+                {
+                    overlays.DismissStationDialog();
+                    overlays.OpenStandaloneSettings();
+                },
+                CancelLabel = SaveText.Get("slots.back")
+            });
+        }
+
+        private IEnumerator SaveManually(LevelOverlaySession overlays)
+        {
+            overlays.ShowStationDialog(new StationDialog
+            {
+                Title = SaveText.Get("slots.save"), Body = SaveText.Get("slots.saving", "…"),
+                HideCancel = true, CenterBody = true
+            });
+            // Yield a frame so synchronous platform writes never precede the first visual feedback.
+            yield return null;
+            float step = SavingIndicatorSeconds / SavingIndicatorSteps;
+            for (int frame = 1; frame <= SavingIndicatorSteps; frame++)
+            {
+                overlays.UpdateStationDialogBody(SaveText.Get("slots.saving", new string('.', frame)));
+                yield return new WaitForSecondsRealtime(step);
+            }
+            bool saved = Presenter.TryManualSave();
+            _manualSave = null;
+            overlays.ShowStationDialog(new StationDialog
+            {
+                Title = SaveText.Get("slots.save"),
+                Body = SaveText.Get(saved ? "slots.saved" : "save.writeFailed"), CenterBody = true,
+                CancelLabel = SaveText.Get("slots.back"), Cancel = saved ? (Action)null : ReturnToSaveMenu,
+                ConfirmLabel = SaveText.Get("slots.title"), Accept = saved ? (Action)ReturnToSaveMenu : null
+            }, replaceWhileInactive: true);
+        }
+
+        private void ReturnToSaveMenu()
+        {
+            _bootstrap.BindSession(null);
+            Presenter.Dispose();
+            Presenter = null;
+            ShowSaveMenu();
         }
     }
 }

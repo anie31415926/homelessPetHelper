@@ -63,6 +63,8 @@ namespace HomelessPetHelper.Game
         private readonly LevelGuideCatalog _guides;
         private readonly OptionPreviewText _uiText;
         private LevelOverlaySession _overlays;
+        private readonly Action _openSaveMenu;
+        internal bool AcceptedSaveSelection { get; }
         public LevelOverlaySession Overlays => _overlays;
         public MainProgressSession Progress { get; }
         public GameLoopSession Session => Progress.Session;
@@ -72,9 +74,11 @@ namespace HomelessPetHelper.Game
             AudioService audio = null, ISaveStorage progressStorage = null, Func<int> outingSeedSource = null,
             MainAudioSession audioSession = null, GuidanceProgressSession guidance = null,
             Settings.PlaySettingsSession playSettings = null, CityMap.Travel.MapTravelView travel = null,
-            bool showOpening = true, OutingWeatherGraphic mapWeather = null)
+            bool showOpening = true, OutingWeatherGraphic mapWeather = null,
+            Action openSaveMenu = null, bool? expectedNewGame = null)
         {
             _travel = travel;
+            _openSaveMenu = openSaveMenu;
             _station = station;
             _map = map;
             _mapWeather = mapWeather;
@@ -101,11 +105,20 @@ namespace HomelessPetHelper.Game
             _text = new OptionPreviewText(content.StationText);
             _mapText = new OptionPreviewText(content.MapText);
             Progress = new MainProgressSession(_config, content.Artwork, progressStorage,
-                content.CreateFieldProgressContent(_fields), content.CreateEconomy());
+                content.CreateFieldProgressContent(_fields), content.CreateEconomy(),
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                reconcileContent: true);
+#else
+                reconcileContent: false);
+#endif
             _openingPending = showOpening && Progress.IsNewGame;
             _map.gameObject.SetActive(false);
             _siege.gameObject.SetActive(false);
             _approach.gameObject.SetActive(false);
+            if (expectedNewGame.HasValue && (!Progress.CanContinue ||
+                Progress.IsNewGame != expectedNewGame.Value || expectedNewGame.Value && !Progress.TryCheckpoint()))
+                return;
+            AcceptedSaveSelection = Progress.CanContinue;
             if (!Progress.CanContinue)
             {
                 _station.gameObject.SetActive(true);
@@ -124,7 +137,8 @@ namespace HomelessPetHelper.Game
             _approach.CheckpointRequested += FlushFieldProgress;
             _station.gameObject.SetActive(true);
             Session.SetSuspended(false);
-            if (Progress.Recovered) _stationPresenter.ReportPersistenceRecovery();
+            if (Progress.ReconciledContent) _station.SetFeedback(_text.Get("save.contentUpdated"));
+            else if (Progress.Recovered) _stationPresenter.ReportPersistenceRecovery();
             _restoringProgress = true;
             try
             {
@@ -264,8 +278,12 @@ namespace HomelessPetHelper.Game
         private void OpenStationSettings()
         {
             if (_disposed || !Progress.CanContinue || _audioSession == null || !_station.isActiveAndEnabled) return;
-            GetStationOverlays().OpenStandaloneSettings();
+            if (_openSaveMenu == null) GetStationOverlays().OpenStandaloneSettings();
+            else _openSaveMenu();
         }
+
+        internal bool TryManualSave() => Progress.CanContinue && Progress.TryCheckpoint();
+        internal LevelOverlaySession StationSaveOverlays => GetStationOverlays();
 
         private void OpenStationDialog(StationDialog dialog)
         {

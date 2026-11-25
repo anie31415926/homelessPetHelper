@@ -16,7 +16,7 @@ namespace HomelessPetHelper.Game.UI
         internal string InitialInput;
         internal Func<string, string> InputError;
         internal Action<string> AcceptInput;
-        internal bool Deliberate, CenterBody;
+        internal bool Deliberate, CenterBody, HideCancel;
     }
 
     /// <summary>One level owns one popup chain, input guide and draft settings lifetime.</summary>
@@ -177,9 +177,9 @@ namespace HomelessPetHelper.Game.UI
             Refresh();
         }
 
-        internal void ShowStationDialog(StationDialog dialog)
+        internal void ShowStationDialog(StationDialog dialog, bool replaceWhileInactive = false)
         {
-            if (!_settingsOnly || !CanInteract ||
+            if (!_settingsOnly || (!CanInteract && !(replaceWhileInactive && !_disposed && _stationDialog != null)) ||
                 (_stationDialog == null && !_stack.TryOpen(LevelPopupKind.Confirmation))) return;
             _stationDialog = dialog;
             _stationConfirmAfter = Time.unscaledTime + (dialog.Deliberate ? 0.35f : 0f);
@@ -277,6 +277,7 @@ namespace HomelessPetHelper.Game.UI
             if (!CanInteract || Top != LevelPopupKind.Confirmation) return;
             if (_stationDialog != null)
             {
+                if (_stationDialog.HideCancel) return;
                 var cancel = _stationDialog.Cancel;
                 CloseStationDialog();
                 cancel?.Invoke();
@@ -284,6 +285,18 @@ namespace HomelessPetHelper.Game.UI
             }
             _confirmation = Confirmation.None;
             CloseTop(LevelPopupKind.Confirmation);
+        }
+
+        internal void UpdateStationDialogBody(string text)
+        {
+            if (_stationDialog == null || Top != LevelPopupKind.Confirmation) return;
+            _stationDialog.Body = text;
+            _view.SetStationDialogBody(text);
+        }
+
+        internal void DismissStationDialog()
+        {
+            if (_stationDialog != null && Top == LevelPopupKind.Confirmation) CloseStationDialog();
         }
 
         private void CloseStationDialog()
