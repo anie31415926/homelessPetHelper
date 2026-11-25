@@ -52,14 +52,17 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
             ((RectTransform)_root.transform).sizeDelta = new Vector2(600, 1000);
             _toast.Show(message, .1f);
             string seen = "", last = "";
-            for (int frame = 0; frame < 500 && _toast.IsShowing; frame++)
+            // 按真实时间等待：batchmode 下帧率可达数千 fps，固定帧数只等于零点几秒，
+            // 会在一页都没播完时提前退出。
+            float deadline = Time.realtimeSinceStartup + 20f;
+            while (_toast.IsShowing && Time.realtimeSinceStartup < deadline)
             {
                 if (_toast.CurrentLine != last)
                 { last = _toast.CurrentLine; seen += last; }
                 var label = _toast.GetComponentInChildren<Text>();
                 Assert.That(label.fontSize, Is.EqualTo(48));
                 Assert.That(label.preferredWidth, Is.LessThanOrEqualTo(label.rectTransform.rect.width + 1));
-                yield return null;
+                yield return new WaitForSecondsRealtime(.05f);
             }
             Assert.That(seen, Is.EqualTo(message));
             _toast.Show("完成"); _toast.Show("更新后的提醒");
@@ -91,10 +94,11 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
             _toast.Show(message, .1f);
             var pages = new List<string>();
             string last = "";
-            for (int frame = 0; frame < 500 && _toast.IsShowing; frame++)
+            float deadline = Time.realtimeSinceStartup + 20f;
+            while (_toast.IsShowing && Time.realtimeSinceStartup < deadline)
             {
                 if (_toast.CurrentLine != last) { last = _toast.CurrentLine; pages.Add(last); }
-                yield return null;
+                yield return new WaitForSecondsRealtime(.05f);
             }
             Assert.That(string.Concat(pages), Is.EqualTo(message));
             Assert.That(pages.Count, Is.GreaterThan(1));

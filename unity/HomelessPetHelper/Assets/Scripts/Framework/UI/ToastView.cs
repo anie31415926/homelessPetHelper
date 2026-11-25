@@ -19,6 +19,7 @@ namespace HomelessPetHelper.Framework.UI
         private int[] _elements;
         private int _start, _end;
         private float _elapsed, _holdSeconds, _width = -1, _pixelScale = -1;
+        private int _pages = 1;
         private bool _suspended;
         public bool IsShowing => !string.IsNullOrEmpty(_message);
         public string CurrentLine => _label.text;
@@ -47,7 +48,7 @@ namespace HomelessPetHelper.Framework.UI
 
         public void Clear()
         {
-            _message = null; _elements = null; _start = _end = 0; _elapsed = 0; _width = -1;
+            _message = null; _elements = null; _start = _end = 0; _elapsed = 0; _width = -1; _pages = 1;
             _group.alpha = 0; _group.blocksRaycasts = _group.interactable = false;
             _label.text = string.Empty;
         }
@@ -106,9 +107,11 @@ namespace HomelessPetHelper.Framework.UI
             else
             {
                 _label.fontSize = _metrics.bodySize;
-                float remaining = Measure(_start, _elements.Length);
-                int pages = Mathf.Max(2, Mathf.CeilToInt(remaining / textWidth));
-                _end = FarthestEnd(_start, Mathf.Min(textWidth, remaining / pages * 1.02f));
+                // 页数只按整条消息算一次。若每翻一页都用剩余长度重算，剩余文字会被
+                // 越切越碎（24 字能切成 8+8+4+2+1+1），总时长拉长到播不完。
+                float total = Measure(0, _elements.Length);
+                if (_start == 0) _pages = Mathf.Max(1, Mathf.CeilToInt(total / textWidth));
+                _end = FarthestEnd(_start, Mathf.Min(textWidth, total / _pages * 1.02f));
             }
             _label.text = Slice(_start, _end);
             var rect = (RectTransform)transform;
