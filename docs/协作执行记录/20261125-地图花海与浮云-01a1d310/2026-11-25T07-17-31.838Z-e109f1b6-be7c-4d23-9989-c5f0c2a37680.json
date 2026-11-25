@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261125-地图花海与浮云-01a1d310.md",
+  "sessionId": "01a1d310-49aa-7061-97e4-183bf146eb20",
+  "phase": "start",
+  "readAt": "2026-11-25T07:17:31.838Z",
+  "writePaths": [
+    "art-source/city-map-atmosphere-20261125/",
+    "docs/协作任务/20261125-地图花海与浮云-01a1d310.md",
+    "docs/协作执行记录/20261125-地图花海与浮云-01a1d310/",
+    "test-results/city-map-atmosphere/",
+    "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityMap_Atmosphere.png",
+    "unity/HomelessPetHelper/Assets/Art/CityMap/T_CityMap_Atmosphere.png.meta",
+    "unity/HomelessPetHelper/Assets/Art/Fonts/PetRound-Game.ttf",
+    "unity/HomelessPetHelper/Assets/Art/Fonts/README.md",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_CityMap.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Outing/UI/CityMapAtmosphere.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Outing/UI/CityMapAtmosphere.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Outing/UI/CityMapFlowerSway.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Outing/UI/CityMapFlowerSway.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Outing/UI/CityMapPointBinding.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Outing/UI/CityMapView.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/CityMapText.json",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/CityMapLayerAssetTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/CityMapUiRefinementTests.cs"
+  ],
+  "contextDigest": "b37e56bd1097582c0807d89aa8a58650cbe99d08747a38bbc17de8decefaea01",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261125-地图花海与浮云-01a1d310.md",
+      "sha256": "77fe8cae6ad20acf8e8ea84ef9b32c4b1bf242a742a92df6743c989b8125c888"
+    },
+    {
+      "path": "docs/协作任务/20261125-救助站开场-01a20e2b.md",
+      "sha256": "a3fd80c66bcf22d25888babd8bb01875d77d30b198495294e89e57ad8eb532a3"
+    },
+    {
+      "path": "docs/协作任务/20261125-柴犬原图改站姿-01a2076c.md",
+      "sha256": "a37d57b81e752743a04f488d50aee0f34f6baeb0e6e480b7db62109a15250052"
+    },
+    {
+      "path": "docs/协作任务/20261125-树屋关卡美术-01a1f73e.md",
+      "sha256": "b69c27d252ad86dee966f56a3e8f36db05c1020d06008d6b8ccc20c14c9722d0"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "18be29799fff69955a919d60116e703d0fabd2d2871f7b35c76ca2ff0e992a03"
+    }
+  ]
+}

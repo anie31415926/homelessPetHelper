@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261125-柴犬站姿臀腿修复-01a2076c.md",
+  "sessionId": "01a2076c-48cc-7063-a3a1-e609ac9a8e34",
+  "phase": "delivery",
+  "readAt": "2026-11-25T06:47:05.641Z",
+  "writePaths": [
+    "art-source/pet-roster-20261124/standard-stand/shiba-neutral/",
+    "art-source/resource-catalog.json",
+    "docs/协作任务/20261125-柴犬站姿臀腿修复-01a2076c.md",
+    "docs/协作执行记录/20261125-柴犬站姿臀腿修复-01a2076c/",
+    "test-results/pet-sit-accepted/standard-stand/shiba-redraw-refine/",
+    "test-results/pet-sit-accepted/standard-stand/shiba-redraw/",
+    "test-results/resource-catalog/",
+    "test-results/shiba-redraw-comfy/",
+    "tools/pet-roster-standard-comfy.mjs"
+  ],
+  "contextDigest": "692a429e07e01953180fd6e5f287d2bb4c3e95a7c65d932b70d4bf4fa3887e77",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261125-柴犬站姿臀腿修复-01a2076c.md",
+      "sha256": "9556e87de43dc23991d6f38868eaacd90738fa4aefec42c62f5d188de501ed2c"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "18be29799fff69955a919d60116e703d0fabd2d2871f7b35c76ca2ff0e992a03"
+    }
+  ]
+}

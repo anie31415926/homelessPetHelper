@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261125-社区援助金首版-01a1f74d.md",
+  "sessionId": "01a1f74d-412d-7613-a27d-fae91bb606ef",
+  "phase": "scope-change",
+  "readAt": "2026-11-25T09:44:51.540Z",
+  "writePaths": [
+    "docs/协作任务/20261125-社区援助金首版-01a1f74d.md",
+    "docs/协作执行记录/20261125-社区援助金首版-01a1f74d/",
+    "docs/社区援助金与救助站成长.md",
+    "test-results/station-economy-worktree/",
+    "test-results/station-economy/",
+    "unity/HomelessPetHelper/Assets/Art/Fonts/PetRound-Game.ttf",
+    "unity/HomelessPetHelper/Assets/Art/Fonts/README.md",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_StationLoop.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Field/OutingFieldLayout.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/GameContent.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainLoopPresenter.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/FieldProgressContent.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/FieldProgressSession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/FieldProgressValidator.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/MainProgressData.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/MainProgressSession.Adoption.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/MainProgressSession.Economy.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/MainProgressSession.Economy.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/MainProgressSession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/StationEconomyRules.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/StationEconomyRules.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Station/StationEconomyMenu.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Station/StationEconomyMenu.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Station/StationPreviewSession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/SiegeContentCatalog.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationResidentView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationRoomView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationSceneChrome.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationSceneView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/StationPanelView.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/GameContent.asset",
+    "unity/HomelessPetHelper/Assets/Settings/Game/StationEconomy.json",
+    "unity/HomelessPetHelper/Assets/Settings/Game/StationEconomy.json.meta",
+    "unity/HomelessPetHelper/Assets/Settings/Game/StationPreviewText.json",
+    "unity/HomelessPetHelper/Assets/Settings/Siege/SiegeTrialText.json",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/LocationProgressTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/MainContinuityTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/HomelessPetHelper.Tests.PlayMode.asmdef",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/StationEconomyPlayTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/StationEconomyPlayTests.cs.meta"
+  ],
+  "contextDigest": "baab146268bfff7cfc596102758ff48eba176548c31ca98dd6f19684e8dd75f9",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261125-实时救助手牌与头顶进度-01a1f73e.md",
+      "sha256": "3adbb92ac8a66b90248a3a0f58d1b773f9dac8612fc86a42ba353d3b9cb18bb2"
+    },
+    {
+      "path": "docs/协作任务/20261125-护理真动物与贴图特效-01a20cd2.md",
+      "sha256": "9533fe5d5fae88c7baf16055b1814b9c4b88bc62a4c971bf00ad21be2b4852fb"
+    },
+    {
+      "path": "docs/协作任务/20261125-柴犬中英文站姿对照-01a2076c.md",
+      "sha256": "ed2a6e9c3298a9361e0188f8dbce871ae0fcf7187226a54a1c808fef8dd42134"
+    },
+    {
+      "path": "docs/协作任务/20261125-社区援助金首版-01a1f74d.md",
+      "sha256": "5eb947c95b0d15538448e9a218df66abf945f8baa2fef4a969ca19803e03b8fc"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "18be29799fff69955a919d60116e703d0fabd2d2871f7b35c76ca2ff0e992a03"
+    }
+  ]
+}
