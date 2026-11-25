@@ -1,9 +1,12 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('Check', 'Probe', 'BuildGameWebGL', 'ExportGame')]
+    [ValidateSet('Check', 'Probe', 'BuildGameWebGL', 'ExportGame', 'Upload')]
     [string]$Task = 'Check',
     [string]$EditorPath = $env:UNITY_EDITOR_PATH,
     [string]$SdkCachePath,
+    [string]$Version,
+    [string]$Description = 'Homeless Pet Helper',
+    [ValidateRange(5, 240)][int]$TimeoutMinutes = 45,
     [switch]$BuildWebGL
 )
 
@@ -24,7 +27,17 @@ $webglPath = Join-Path (Split-Path -Parent $EditorPath) 'Data/PlaybackEngines/We
 $manifest = Get-Content -LiteralPath (Join-Path $project 'Packages/manifest.json') -Raw | ConvertFrom-Json
 $wechat = -join [char[]]@(0x5FAE, 0x4FE1)
 $developerTools = -join [char[]]@(0x5F00, 0x53D1, 0x8005, 0x5DE5, 0x5177)
-$devtools = Join-Path ${env:ProgramFiles(x86)} "Tencent/$($wechat)web$developerTools/$wechat$developerTools.exe"
+# Devtools may sit outside the standard C: location; this machine keeps it under D:\ root.
+# Try env override -> standard locations -> each drive root before reporting it missing.
+$devtoolsFolder = $wechat + 'web' + $developerTools
+$devtoolsExe = $wechat + $developerTools + '.exe'
+$devtoolsRoots = @()
+if (-not [string]::IsNullOrWhiteSpace($env:WECHAT_DEVTOOLS_PATH)) { $devtoolsRoots += $env:WECHAT_DEVTOOLS_PATH }
+if (-not [string]::IsNullOrWhiteSpace(${env:ProgramFiles(x86)})) { $devtoolsRoots += (Join-Path ${env:ProgramFiles(x86)} ('Tencent\' + $devtoolsFolder)) }
+if (-not [string]::IsNullOrWhiteSpace($env:ProgramFiles)) { $devtoolsRoots += (Join-Path $env:ProgramFiles ('Tencent\' + $devtoolsFolder)) }
+foreach ($drive in @('C', 'D', 'E')) { $devtoolsRoots += ($drive + ':\' + $devtoolsFolder) }
+$devtoolsRoot = $devtoolsRoots | Where-Object { Test-Path -LiteralPath (Join-Path $_ $devtoolsExe) -PathType Leaf } | Select-Object -First 1
+$devtools = if ($devtoolsRoot) { Join-Path $devtoolsRoot $devtoolsExe } else { Join-Path $devtoolsRoots[0] $devtoolsExe }
 [pscustomobject]@{
     UnityVersion = $version
     EditorPath = $EditorPath
@@ -36,13 +49,28 @@ $devtools = Join-Path ${env:ProgramFiles(x86)} "Tencent/$($wechat)web$developerT
     ExpectedSdkRevision = $sdkRevision
 } | Format-List
 if ($Task -eq 'Check') { return }
-if (-not (Test-Path -LiteralPath $webglPath -PathType Container)) { throw 'Install WebGL for this editor first.' }
-if ($Task -eq 'ExportGame' -and $env:HPH_WECHAT_APP_ID -cnotmatch '^wx[0-9a-f]{16}$')
+if ($Task -ne 'Upload' -and -not (Test-Path -LiteralPath $webglPath -PathType Container)) { throw 'Install WebGL for this editor first.' }
+if ($Task -in @('ExportGame', 'Upload') -and $env:HPH_WECHAT_APP_ID -cnotmatch '^wx[0-9a-f]{16}$')
 {
-    throw 'Set HPH_WECHAT_APP_ID to the registered mini game AppID before exporting.'
+    throw 'Set HPH_WECHAT_APP_ID to the registered mini game AppID before exporting or uploading.'
 }
 
 $reportRoot = Join-Path $repo 'test-results/wechat-environment'
+if ($Task -eq 'Upload')
+{
+    $cli = Join-Path (Split-Path -Parent $devtools) 'cli.bat'
+    if (-not (Test-Path -LiteralPath $cli -PathType Leaf)) { throw "WeChat devtools CLI not found: $cli" }
+    # Upload the newest ExportGame output; probe-* folders are ordered by write time.
+    $candidate = Get-ChildItem -Path (Join-Path $reportRoot 'probe-*/WeChatCandidate/minigame') -Directory -ErrorAction SilentlyContinue |
+        Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    if (-not $candidate) { throw 'No exported mini game project found; run -Task ExportGame first.' }
+    if ([string]::IsNullOrWhiteSpace($Version)) { $Version = '0.' + (Get-Date -Format 'MMddHHmm') }
+    Write-Output "Project : $($candidate.FullName)"
+    Write-Output "Version : $Version"
+    & $cli upload --project $candidate.FullName -v $Version -d $Description
+    if ($LASTEXITCODE -ne 0) { throw "WeChat upload failed with exit code $LASTEXITCODE." }
+    return
+}
 $probe = Join-Path $reportRoot "probe-$([Guid]::NewGuid().ToString('N'))"
 New-Item -ItemType Directory -Path $probe -Force | Out-Null
 foreach ($folder in @('Assets', 'Packages', 'ProjectSettings'))
@@ -98,10 +126,10 @@ try
         '-logFile', "`"$log`"", '-executeMethod', $method)
     if ($buildPlayer -or $Task -eq 'ExportGame') { $arguments += @('-buildTarget', 'WebGL') }
     $process = Start-Process -FilePath $EditorPath -ArgumentList $arguments -WindowStyle Hidden -PassThru
-    if (-not $process.WaitForExit(1200000))
+    if (-not $process.WaitForExit($TimeoutMinutes * 60000))
     {
         Stop-Process -Id $process.Id -Force
-        throw 'Isolated probe timed out after 20 minutes; only its own Unity process was stopped.'
+        throw "Isolated probe timed out after $TimeoutMinutes minutes; only its own Unity process was stopped."
     }
     $process.WaitForExit()
     if ($process.ExitCode -ne 0) { throw "Unity probe exit $($process.ExitCode). See $log" }

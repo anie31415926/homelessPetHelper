@@ -216,7 +216,7 @@ namespace HomelessPetHelper.Tests.EditMode
                     new EditorBuildSettingsScene("Assets/EditorScenes/SC_StationWhiteboard.unity", true)
                 };
                 ImageAuditReport report = ImageResourceAudit.Scan();
-                Assert.That(report.Textures.Single(item => item.Path.EndsWith("T_Station_cat.png"))
+                Assert.That(report.Textures.Single(item => item.Path.EndsWith("T_Pet_original.png"))
                     .InEnabledBuildSceneDependencies, Is.True);
             }
             finally
@@ -237,7 +237,7 @@ namespace HomelessPetHelper.Tests.EditMode
             CollectionAssert.AreEquivalent(before, HashProjectFiles());
             Assert.That(SceneManager.GetActiveScene().path, Is.EqualTo(scenePath));
             Assert.That(SceneManager.GetActiveScene().isDirty, Is.EqualTo(dirty));
-            Assert.That(report.Textures.Any(item => item.Path.EndsWith("T_Station_cat.png")), Is.True);
+            Assert.That(report.Textures.Any(item => item.Path.EndsWith("T_Pet_original.png")), Is.True);
             Assert.That(report.Textures.Where(item => item.Path.StartsWith("Assets/EditorScenes/"))
                 .All(item => !item.InEnabledBuildSceneDependencies), Is.True);
             Assert.That(File.ReadAllText(ImageResourceAudit.ReportDirectory + "/image-resources.md"),

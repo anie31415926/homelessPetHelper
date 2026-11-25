@@ -13,10 +13,10 @@
         "Assets/Art/CityMap/Animals/T_Animal_CatOrange.png",
         "Assets/Art/CityMap/Animals/T_Animal_DogWhite.png",
         "Assets/Art/CityMap/Animals/T_Animal_Rabbit.png",
-        "Assets/Art/CityMap/T_CityPlace_Parking.png",
-        "Assets/Art/CityMap/T_CityPlace_Porch.png",
-        "Assets/Art/CityMap/T_CityPlace_Shelter.png",
-        "Assets/Art/CityMap/T_CityPlace_Yard.png"
+        "Assets/Art/CityMap/StorybookLandmarks/T_Storybook_CloudPark.png",
+        "Assets/Art/CityMap/StorybookLandmarks/T_Storybook_FlowerGarden.png",
+        "Assets/Art/CityMap/StorybookLandmarks/T_Storybook_Shelter.png",
+        "Assets/Art/CityMap/StorybookLandmarks/T_Storybook_Treehouse.png"
       ]
     }
   ]

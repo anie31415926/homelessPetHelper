@@ -111,7 +111,7 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
             var scene = panel.GetComponentInChildren<StationSceneView>(true);
             var cell = scene.Cells[0];
             var animal = Animal(AnimalEmotion.Irritated);
-            var art = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Station/T_Station_CatTemporary.png");
+            var art = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/PetMotion/T_Pet_original.png");
             try
             {
                 Assert.That(art, Is.Not.Null);

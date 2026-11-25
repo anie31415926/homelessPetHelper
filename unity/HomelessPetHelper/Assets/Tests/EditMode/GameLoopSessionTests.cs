@@ -37,7 +37,8 @@ namespace HomelessPetHelper.Tests.EditMode
                 Assert.That(loop.TryConfirmRescue(out _), Is.True);
                 Assert.That(loop.TryReturnRescued(Condition(), out _), Is.True);
                 Assert.That(activity.DisposeCount, Is.EqualTo(1));
-                Assert.That(loop.Clock.Current.ElapsedMinutes, Is.EqualTo(25), "No opening-route charge.");
+                Assert.That(loop.Clock.Current.ElapsedMinutes,
+                    Is.EqualTo(RouteFreeDuration(OutingReturnProgress.HandingOver)), "No opening-route charge.");
                 Assert.That(loop.LastArrival.Arrival.AnimalAtArrival, Is.SameAs(initial));
                 Assert.That(loop.Station.TryGetCurrentAnimal(initial.AnimalId, out var resident), Is.True);
                 Assert.That(resident, Is.SameAs(initial));
@@ -51,7 +52,8 @@ namespace HomelessPetHelper.Tests.EditMode
                 Assert.That(loop.Station.TryGetCurrentAnimal(initial.AnimalId, out resident), Is.True);
                 Assert.That(resident, Is.SameAs(initial));
                 Assert.That(loop.TryReturnUnresolved(out _), Is.True);
-                Assert.That(loop.Clock.Current.ElapsedMinutes, Is.EqualTo(25));
+                Assert.That(loop.Clock.Current.ElapsedMinutes,
+                    Is.EqualTo(RouteFreeDuration(OutingReturnProgress.HandingOver)));
             }
         }
 
@@ -103,7 +105,8 @@ namespace HomelessPetHelper.Tests.EditMode
                 activity.Assistance = true;
                 Assert.That(loop.TryReturnUnresolved(out _), Is.True);
                 Assert.That(loop.Station.Animals, Is.Empty);
-                Assert.That(loop.Clock.Current.ElapsedMinutes, Is.EqualTo(20));
+                Assert.That(loop.Clock.Current.ElapsedMinutes,
+                    Is.EqualTo(RouteFreeDuration(OutingReturnProgress.Negotiating)));
                 Assert.That(loop.Map.TrySelectPoint("parking", out _, out _), Is.True);
                 loop.Dispose();
                 loop.Dispose();
@@ -139,6 +142,14 @@ namespace HomelessPetHelper.Tests.EditMode
             RequestPoolState requests = config.CreateRequestPool();
             return new GameLoopSession(config.InitialCapacity, config.MinutesPerDay,
                 config.CreateRules(new PointUnlockState(), requests), requests, config.TimePolicy);
+        }
+
+        private static long RouteFreeDuration(OutingReturnProgress progress)
+        {
+            var config = new CityMapPreviewConfig(
+                AssetDatabase.LoadAssetAtPath<TextAsset>(CityMapAssets.ConfigPath));
+            Assert.That(config.TimePolicy.TryGetDuration(progress, false, out long minutes, out _), Is.True);
+            return minutes;
         }
 
         private static AnimalIntakeCondition Condition() =>

@@ -17,24 +17,14 @@ MonoBehaviour:
   _stationText: {fileID: 4900000, guid: 1a4e193a2d0eda9fb11ae4a8f791be72, type: 3}
   _siegeData: {fileID: 4900000, guid: 7f5ca716834c6cd4ab7c3dbead4d93c9, type: 3}
   _siegeText: {fileID: 4900000, guid: 9fec97e4b62c434408162c0c2da3dc09, type: 3}
-  _cat: {fileID: 21300000, guid: 099cf82042a138e498db36376a0b41f0, type: 3}
-  _dog: {fileID: 21300000, guid: 43f1712d098a41747a1104731c477248, type: 3}
+  _cat: {fileID: 21300000, guid: e8ab41f882845da4e8d1a7be9a64343a, type: 3}
+  _dog: {fileID: 21300000, guid: cd137a207a0a70f47bed528797be805e, type: 3}
   _catMask: {fileID: 4900000, guid: e7f3e9d489d6cda449fa658e2060ece1, type: 3}
   _dogMask: {fileID: 4900000, guid: 2ebdc47a57e7c764b90e585596ec285b, type: 3}
   _font: {fileID: 12800000, guid: f9c1d9eb9a134080bc3ffcdf2b05dc8e, type: 3}
   _outingArtwork:
   - _pointId: parking
     _background: {fileID: 21300000, guid: 2b299a268fd111942b80a5313f7403a4, type: 3}
-  - _pointId: yard
-    _background: {fileID: 21300000, guid: 5e32b0d364b5b5c4ab2a75664bf07503, type: 3}
-  - _pointId: porch
-    _background: {fileID: 21300000, guid: 11d162ccbec8c7c4ebedf2913caa64c1, type: 3}
-  - _pointId: park
-    _background: {fileID: 21300000, guid: 30c417c27000de14fb9c8c4821b1182a, type: 3}
-  - _pointId: market
-    _background: {fileID: 21300000, guid: 78b9a92126b15234685d9893b15f3889, type: 3}
-  - _pointId: riverside
-    _background: {fileID: 21300000, guid: 12e944dea5dbf63468498840b9cf0e43, type: 3}
   - _pointId: treehouse
     _background: {fileID: 21300000, guid: 2be2c203e1bf4a619597915115764a1c, type: 3}
     _props: {fileID: 11400000, guid: 295e2cb564734aaf839d146719cc87f3, type: 2}

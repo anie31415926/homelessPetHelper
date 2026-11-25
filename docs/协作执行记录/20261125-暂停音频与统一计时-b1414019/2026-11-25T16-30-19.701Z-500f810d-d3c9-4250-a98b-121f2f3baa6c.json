@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261125-暂停音频与统一计时-b1414019.md",
+  "sessionId": "b1414019-b3a1-432f-832a-00013b976cae",
+  "phase": "scope-change",
+  "readAt": "2026-11-25T16:30:19.701Z",
+  "writePaths": [
+    "docs/协作任务/20261125-暂停音频与统一计时-b1414019.md",
+    "docs/协作执行记录/20261125-暂停音频与统一计时-b1414019/",
+    "test-results/pause-audio-20261125/",
+    "test-results/worldtime-20261125/",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/CityMapPresenter.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/CityMap/CityMapPreviewConfig.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainGameRoot.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainLoopPresenter.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Station/StationPreviewSession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/UI/LevelOverlaySession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/WorldTime/GameTimeText.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/WorldTime/GameTimeText.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/WorldTime/VirtualCalendar.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/WorldTime/VirtualCalendar.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/WorldTime/VirtualDate.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/WorldTime/VirtualDate.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/WorldTime/WorldTimeSnapshot.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/CityMapConfig.json",
+    "unity/HomelessPetHelper/Assets/Settings/Game/CityMapText.json",
+    "unity/HomelessPetHelper/Assets/Settings/Game/StationPreviewText.json",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/CityMapConfigTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/VirtualCalendarTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/VirtualCalendarTests.cs.meta",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/CityMapPreviewTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/CityMapUiRefinementTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/LocationProgressPlayTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/MainGameTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/MainMusicTests.cs"
+  ],
+  "contextDigest": "ad60dd53473d0a4cf53ab040acb72e66ab2e518c4ad310d54eda82e3a67b10e9",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f9834924ea6fddc2eb630dcde8e90fa012f81f6564889c1e98ef3a1f96f2585"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261125-暂停音频与统一计时-b1414019.md",
+      "sha256": "d443690b1d8deb95de6820810f64914cd7a0f8dfca8167287de4f46cbe0dd6a5"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}

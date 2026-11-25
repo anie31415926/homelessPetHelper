@@ -1,10 +1,10 @@
 ﻿[CmdletBinding()]
 param(
-    [ValidateSet('Initialize', 'PreviewAssets', 'PreviewLayout', 'CaseAssets', 'CaseLayout', 'CaseCompactLayout',
-        'CaseCompactPolish', 'LoadingAssets', 'LoadingArt', 'LoadingStartup',
-        'StationAssets', 'StationArt', 'StationCareLayout', 'LoopAssets', 'ResourceAudit',
+    [ValidateSet('Initialize', 'PreviewAssets', 'PreviewLayout', 'CaseAssets', 'CaseLayout',
+        'LoadingAssets', 'LoadingStartup',
+        'StationAssets', 'StationArt', 'LoopAssets', 'ResourceAudit',
         'SiegeAssets', 'SiegeLayout', 'SiegeBuild', 'PetMotionAssets', 'PetMotionAudit', 'PetMotionBake',
-        'RuntimeMove', 'MainAssets', 'ApproachAssets', 'MapInfoAssets', 'ForestEdgeAssets', 'YardFieldAssets', 'YardFieldRefine', 'LevelUiAssets', 'LevelUiStyle', 'LevelUiRefresh', 'LevelUiFullscreen', 'FieldPropAssets', 'LevelPresentation', 'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
+        'MainAssets', 'ApproachAssets', 'MapInfoAssets', 'YardFieldAssets', 'YardFieldRefine', 'LevelUiAssets', 'LevelUiStyle', 'LevelUiRefresh', 'LevelUiFullscreen', 'LevelPresentation', 'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
     [string]$Task = 'EditMode',
     [string]$EditorPath = $env:UNITY_EDITOR_PATH,
     [string]$TestFilter,
@@ -107,12 +107,6 @@ switch ($Task)
         if (-not $Isolated) { throw 'LoadingStartup requires an isolated snapshot.' }
         $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Loading.LoadingStartupAuthor.Apply')
     }
-    'LoadingArt'
-    {
-        if (-not $Isolated) { throw 'LoadingArt requires an isolated snapshot.' }
-        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Loading.LoadingArtworkUpgrade.Apply')
-        break
-    }
     'LoadingAssets'
     {
         if (-not $Isolated) { throw 'LoadingAssets requires an isolated snapshot.' }
@@ -124,21 +118,6 @@ switch ($Task)
         if (-not $Isolated) { throw 'LevelPresentation requires an isolated snapshot.' }
         $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.LevelUi.LevelPresentationAuthor.Apply')
         break
-    }
-    'FieldPropAssets'
-    {
-        if (-not $Isolated) { throw 'FieldPropAssets requires an isolated snapshot.' }
-        $sourceFolder = Join-Path $projectPath 'FieldPropSource'
-        New-Item -ItemType Directory -Path $sourceFolder | Out-Null
-        $manifest = Join-Path $repoRoot 'art-source\field-props-20261122\unity-import.json'
-        Copy-Item -LiteralPath $manifest -Destination (Join-Path $sourceFolder 'manifest.json')
-        $imports = Get-Content -LiteralPath $manifest -Raw -Encoding UTF8 | ConvertFrom-Json
-        foreach ($page in $imports.pages)
-        {
-            Copy-Item -LiteralPath (Join-Path $repoRoot $page.source) `
-                -Destination (Join-Path $sourceFolder (Split-Path -Leaf $page.texture))
-        }
-        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Field.FieldPropArtImport.Apply')
     }
     'LevelUiFullscreen'
     {
@@ -170,21 +149,6 @@ switch ($Task)
         if (-not $Isolated) { throw 'YardFieldAssets requires an isolated snapshot.' }
         $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Field.YardFieldAuthor.Apply')
     }
-    'ForestEdgeAssets'
-    {
-        if (-not $Isolated) { throw 'ForestEdgeAssets requires an isolated snapshot.' }
-        $sourceFolder = Join-Path $projectPath 'ForestEdgeSource'
-        New-Item -ItemType Directory -Path $sourceFolder | Out-Null
-        $importManifest = Join-Path $repoRoot 'art-source\forest-edge-20261121\unity-import.json'
-        Copy-Item -LiteralPath $importManifest -Destination (Join-Path $sourceFolder 'manifest.json')
-        $imports = Get-Content -LiteralPath $importManifest -Raw -Encoding UTF8 | ConvertFrom-Json
-        foreach ($item in $imports.assets)
-        {
-            Copy-Item -LiteralPath (Join-Path $repoRoot $item.source) `
-                -Destination (Join-Path $sourceFolder (Split-Path -Leaf $item.target))
-        }
-        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.CityMap.ForestEdgeArtImport.Apply')
-    }
     'MapInfoAssets'
     {
         if (-not $Isolated) { throw 'MapInfoAssets requires an isolated snapshot.' }
@@ -194,11 +158,6 @@ switch ($Task)
     {
         if (-not $Isolated) { throw 'ApproachAssets requires an isolated snapshot.' }
         $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.Approach.ApproachPanelAuthor.Apply')
-    }
-    'RuntimeMove'
-    {
-        if (-not $Isolated) { throw 'RuntimeMove requires an isolated snapshot.' }
-        $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.RuntimeMigration.MoveAssets')
     }
     'MainAssets'
     {
@@ -247,18 +206,6 @@ switch ($Task)
         $unityArguments += @('-quit', '-executeMethod',
             'HomelessPetHelper.Editor.StationPreview.Loop.RescueLoopAssets.CreateSavedScene')
     }
-    'CaseCompactPolish'
-    {
-        if (-not $Isolated) { throw 'CaseCompactPolish must run in an isolated saved-project snapshot.' }
-        $unityArguments += @('-quit', '-executeMethod',
-            'HomelessPetHelper.Editor.RescueCase.RescueCompactLayoutUpgrade.RefineSavedPrefab')
-    }
-    'CaseCompactLayout'
-    {
-        if (-not $Isolated) { throw 'CaseCompactLayout must run in an isolated saved-project snapshot.' }
-        $unityArguments += @('-quit', '-executeMethod',
-            'HomelessPetHelper.Editor.RescueCase.RescueCompactLayoutUpgrade.UpgradeSavedPrefab')
-    }
     'Initialize'
     {
         $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.ProjectSetup.Initialize')
@@ -292,12 +239,6 @@ switch ($Task)
     {
         $unityArguments += @('-quit', '-executeMethod',
             'HomelessPetHelper.Editor.StationPreview.StationPreviewAssets.NormalizeArt')
-    }
-    'StationCareLayout'
-    {
-        if (-not $Isolated) { throw 'StationCareLayout must run in an isolated saved-project snapshot.' }
-        $unityArguments += @('-quit', '-executeMethod',
-            'HomelessPetHelper.Editor.StationPreview.StationCarePreviewUpgrade.UpgradeSavedPrefab')
     }
     'Build'
     {

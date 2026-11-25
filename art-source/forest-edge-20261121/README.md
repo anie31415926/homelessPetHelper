@@ -1,5 +1,7 @@
 # 林缘社区 ComfyUI 候选批次
 
+> 2026-11-26 清理注记：本批次 workflow / history 中引用的 `T_Station_CatTemporary.png` 等临时资源已删除，此处保留为历史快照，不是当前资源清单。
+
 2026-11-21。用户认可布局后，要求使用本机 ComfyUI 按所发图片画风生成本批。16 项候选均已落盘，状态为 `candidate / preview-only`；未导入 Unity、未替换现有图或 Prefab、未提交推送。场景、地标和整体展示分别保存，整体预览不作为分层地图的运行底图。
 
 ## 直接看图

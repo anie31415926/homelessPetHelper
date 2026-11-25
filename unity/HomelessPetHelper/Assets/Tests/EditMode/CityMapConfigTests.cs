@@ -83,7 +83,7 @@ namespace HomelessPetHelper.Tests.EditMode
         [TestCase("\"templateId\": \"ordinary\"", "\"templateId\": \"missing\"")]
         [TestCase("\"templateVersion\": 1", "\"templateVersion\": 0")]
         [TestCase("\"receivingArrangementId\": \"safe-receiving\"", "\"receivingArrangementId\": \"\"")]
-        [TestCase("\"explorationMinutes\": 5", "\"explorationMinutes\": 0")]
+        [TestCase("\"explorationMinutes\": 30", "\"explorationMinutes\": 0")]
         [TestCase("\"hasDirectReception\": true", "\"hasDirectReception\": false")]
         [TestCase("\"points\": [", "\"points\": null,\"ignoredPoints\": [")]
         [TestCase("\"requestTemplates\": [", "\"requestTemplates\": null,\"ignoredTemplates\": [")]
@@ -100,7 +100,7 @@ namespace HomelessPetHelper.Tests.EditMode
         [Test]
         public void DurationOverflowAndMissingTextAreRejected()
         {
-            var overflowing = new TextAsset(Source().text.Replace("\"explorationMinutes\": 5",
+            var overflowing = new TextAsset(Source().text.Replace("\"explorationMinutes\": 30",
                 "\"explorationMinutes\": 9223372036854775807"));
             var missingText = new TextAsset("{\"entries\":[{\"key\":\"unused\",\"value\":\"unused\"}]}");
             try
@@ -162,7 +162,7 @@ namespace HomelessPetHelper.Tests.EditMode
         [TestCase("detail.request", "{2}")]
         [TestCase("detail.noRequest", "{1}")]
         [TestCase("departure.rescue", "{2}")]
-        [TestCase("departure.preview", "{0:Q}")]
+        [TestCase("departure.preview", "{2}")]
         [TestCase("returned", "{1}")]
         [TestCase("arrived", "{1}")]
         [TestCase("parking", "{0}")]

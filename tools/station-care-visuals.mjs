@@ -35,7 +35,7 @@ const mix = (a, b, t) => Math.round(a + (b - a) * t);
 const clamp = (x, min, max) => Math.max(min, Math.min(max, x));
 
 async function project(kind) {
-  const old = await readFile(new URL(`Station/T_Station_${kind}TemporaryMask.bytes`, art));
+  const old = await readFile(new URL(`Station/T_Station_${kind}CareMask.bytes`, art));
   if (old.length !== size * size) throw new Error('Unexpected legacy mask dimensions');
   const sprite = new URL(kind === 'Cat' ? 'PetMotion/T_Pet_original.png' : 'Outing/T_Outing_DogNatural.png', art);
   const raster = await sharp(await readFile(sprite)).resize(size, size, { fit: 'fill' }).ensureAlpha().raw().toBuffer();

@@ -43,10 +43,10 @@ namespace HomelessPetHelper.Tests.EditMode
         [TestCase("Assets/Art/CityMap/Animals/T_Animal_CatOrange.png")]
         [TestCase("Assets/Art/CityMap/Animals/T_Animal_DogWhite.png")]
         [TestCase("Assets/Art/CityMap/T_CityMap_Neighborhood.jpg")]
-        [TestCase("Assets/EditorScenes/StationArt/T_Station_cat.png")]
-        [TestCase("Assets/EditorScenes/StationArt/T_Station_dog.png")]
-        [TestCase("Assets/Art/Station/T_Station_CatTemporary.png")]
-        [TestCase("Assets/Art/Station/T_Station_DogTemporary.png")]
+        [TestCase("Assets/Art/Outing/T_Outing_Parking.jpg")]
+        [TestCase("Assets/Art/Outing/T_Outing_Treehouse.jpg")]
+        [TestCase("Assets/Art/PetMotion/T_Pet_original.png")]
+        [TestCase("Assets/Art/Outing/T_Outing_DogNatural.png")]
         public void InstalledPlatformPropertiesCanBeCachedByBuiltInInspector(string path)
         {
             var importer = AssetImporter.GetAtPath(path) as TextureImporter;

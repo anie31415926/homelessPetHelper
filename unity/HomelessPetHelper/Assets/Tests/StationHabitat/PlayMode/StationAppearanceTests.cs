@@ -26,7 +26,7 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
             var panel = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Prefabs/Panels/Panel_StationLoop.prefab"));
             var scene = panel.GetComponentInChildren<StationSceneView>(true);
-            var art = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Station/T_Station_CatTemporary.png");
+            var art = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/PetMotion/T_Pet_original.png");
             var animal = new AnimalIndividual(Guid.NewGuid(), "cat", new AnimalDisposition(false,
                 AnimalEmotion.Happy, AnimalStress.None, AnimalBehavior.Settled),
                 new AnimalHealthSnapshot(Array.Empty<AnimalHealthProblem>()), coat: new AnimalCoatCondition(20, 30));

@@ -10,10 +10,10 @@ const inputs = [
     ['CatOrange', 'Animals/T_Animal_CatOrange.png'],
     ['DogWhite', 'Animals/T_Animal_DogWhite.png'],
     ['Rabbit', 'Animals/T_Animal_Rabbit.png'],
-    ['Parking', 'T_CityPlace_Parking.png'],
-    ['Porch', 'T_CityPlace_Porch.png'],
-    ['Shelter', 'T_CityPlace_Shelter.png'],
-    ['Yard', 'T_CityPlace_Yard.png'],
+    ['CloudPark', 'StorybookLandmarks/T_Storybook_CloudPark.png'],
+    ['FlowerGarden', 'StorybookLandmarks/T_Storybook_FlowerGarden.png'],
+    ['Treehouse', 'StorybookLandmarks/T_Storybook_Treehouse.png'],
+    ['Shelter', 'StorybookLandmarks/T_Storybook_Shelter.png'],
 ];
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 

@@ -5,6 +5,7 @@ using HomelessPetHelper.Game.Loading;
 using HomelessPetHelper.Modules.Rescue.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEditor.U2D.Sprites;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -72,13 +73,23 @@ namespace HomelessPetHelper.Editor.Loading
             var importer = (TextureImporter)AssetImporter.GetAtPath(path);
             Configure(importer);
             importer.spriteImportMode = SpriteImportMode.Multiple;
-            importer.spritesheet = manifest.sprites.Select(s => new SpriteMetaData
+            var factory = new SpriteDataProviderFactories();
+            factory.Init();
+            var provider = factory.GetSpriteEditorDataProviderFromObject(importer);
+            provider.InitSpriteEditorDataProvider();
+            var previous = provider.GetSpriteRects().ToDictionary(rect => rect.name);
+            var rects = manifest.sprites.Select(s => new SpriteRect
             {
                 name = s.name,
                 rect = new Rect(s.rect[0], 512 - s.rect[1] - s.rect[3], s.rect[2], s.rect[3]),
                 pivot = new Vector2(.5f, .5f),
-                alignment = (int)SpriteAlignment.Center
+                alignment = SpriteAlignment.Center,
+                spriteID = previous.TryGetValue(s.name, out var old) ? old.spriteID : GUID.Generate()
             }).ToArray();
+            provider.SetSpriteRects(rects);
+            provider.GetDataProvider<ISpriteNameFileIdDataProvider>().SetNameFileIdPairs(
+                rects.Select(rect => new SpriteNameFileIdPair(rect.name, rect.spriteID)));
+            provider.Apply();
             importer.SaveAndReimport();
             importer = (TextureImporter)AssetImporter.GetAtPath(ArtPath + "T_Loading_Background.png");
             Configure(importer);

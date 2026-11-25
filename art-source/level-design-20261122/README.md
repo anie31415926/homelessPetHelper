@@ -1,5 +1,7 @@
 # 正式关卡设计：ComfyUI 界面构图参考
 
+> 2026-11-26 清理注记：本批次 workflow / history 中引用的 `T_Station_CatTemporary.png` 等临时资源已删除，此处保留为历史快照，不是当前资源清单。
+
 2026-11-22。用户明确要求使用本机 ComfyUI，沿用项目清新手绘/水彩画风。本批只生成整体界面参考，保存在 Unity 外，不替换现有图片、Prefab、路线或交互。生成前已在唯一[资源台账](../resource-catalog.json)登记两个 planned 条目。
 
 ## 看图

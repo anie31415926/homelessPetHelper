@@ -1,10 +1,10 @@
-# 城市地图临时图（ComfyUI，非最终版）
+# 城市地图美术（含历史生成记录）
 
-生成日期：2026-11-17（画风迭代）/ 2026-11-18（场景+动物分层重构）。最初用于地图Editor白板。**全部仍为临时图，不作为最终美术；2026-11-20已成为Main运行时依赖，不再是Editor-only。**
+生成日期：2026-11-17（画风迭代）/ 2026-11-18（场景+动物分层重构）。最初用于地图Editor白板，2026-11-20 起成为 Main 运行时依赖。**2026-11-26 清理：旧的 `T_CityPlace_*.png` 地标图、`T_CityMap_Forest.jpg` 森林承接图与 5 张 `T_Outing_*.jpg` 现场背景已删除；当前地标为 `StorybookLandmarks/` 与 `ValleyIcons/`，现场背景只保留 Parking + Treehouse 并加兜底。下方生成环境为历史来源，不是当前文件清单。**
 
 ## 2026-11-20 迁移说明
 
-本目录保持`.meta`/GUID迁到`Assets/Art/CityMap/`，地面、地点建筑和动物角标均由现有地图静态引用，Main依赖检查已覆盖。当前底图为`T_CityMap_Neighborhood.jpg`，建筑为`T_CityPlace_*.png`，分层布局在`CityMapLayers.json`；下方旧背景文件名和生成环境保留为历史来源，不是当前文件清单。唯一台账仍temporary/first-play，正式画风/许可/微信未验。完整流程与报告见仓库`docs/Main正式流程与资源迁移.md`。
+本目录保持`.meta`/GUID迁到`Assets/Art/CityMap/`，底图与地标由现有地图静态引用，Main依赖检查已覆盖。当前底图为`T_CityMap_Neighborhood.jpg`，地标为`StorybookLandmarks/T_Storybook_*.png` 与`ValleyIcons/T_Valley_*.png`；`CityMapLayers.json` 是早期 `T_CityPlace_*` 坐标的创作记录，随旧图清理已清空 layers，不是运行时布局加载器。唯一台账仍temporary/first-play，正式画风/许可/微信未验。完整流程与报告见仓库`docs/Main正式流程与资源迁移.md`。
 
 ## 当前方案：场景与动物分层（2026-11-18 起）
 
@@ -60,6 +60,6 @@
 
 ## 2026-11-21 林缘批次接入（当前）
 
-用户认可并授权接入后，原地面与四张地标保持路径/GUID替图，新增公园、市场、河岸三张地标。当前为768×1024地面、7处独立地标和6个地点按钮；名称/求助状态由独立UI显示。`CityMapLayers.json`保存源像素坐标，静态Prefab以锚点摆放。森林图`T_CityMap_Forest.jpg`已导入但Main未引用，未增加切换入口。
+用户认可并授权接入后，原地面与四张地标保持路径/GUID替图，新增公园、市场、河岸三张地标；这批 `T_CityPlace_*.png` 与森林承接图 `T_CityMap_Forest.jpg` 已于 2026-11-26 清理。当前底图为 `T_CityMap_Neighborhood.jpg`，12 处 Storybook 地标由静态 Prefab 以锚点摆放；名称/求助状态由独立 UI 显示。`CityMapLayers.json` 仅存早期创作坐标，layers 已随旧图清理清空，不是运行时加载器。
 
-6张现场位于`Assets/Art/Outing/`，`GameContent.asset`按地点ID显式绑定，开路和逆塔防复用同一张图。15项导入清单、哈希及来源见仓库`art-source/forest-edge-20261121/unity-import.json`；增量导入工具只允许隔离运行，不重复创建面板。图均为temporary，许可/微信目标待验；当前状态和验证以`docs/林缘美术Unity接入.md`为准，下方旧文件名/画风和生成环境仅供历史追溯。
+现场背景现只保留 `Assets/Art/Outing/T_Outing_Parking.jpg` 与 `T_Outing_Treehouse.jpg` 两张；`GameContent.asset` 按地点 ID 绑定这两条，其余地点由 `GameContent.GetOutingArtwork` 回退到 Parking，保证进入地点必有现场。开路和逆塔防复用同一张图。15项导入清单、哈希及来源见仓库 `art-source/forest-edge-20261121/unity-import.json`（历史快照，部分资源已删）；增量导入工具已随本轮清理移除。图均为temporary，许可/微信目标待验；当前状态和验证以 `docs/林缘美术Unity接入.md` 为准，下方旧文件名/画风和生成环境仅供历史追溯。

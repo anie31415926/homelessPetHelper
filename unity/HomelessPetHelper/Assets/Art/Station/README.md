@@ -1,19 +1,23 @@
-# Station Care Temporary Art
+# Station Care Art
 
-Care preview assets generated locally with ComfyUI on 2026-11-18.
-These are not final or release-approved resources. Do not overwrite the older StationArt images.
+As of the 2026-11-26 cleanup, station care uses the formal rescued-animal sprites
+`Assets/Art/PetMotion/T_Pet_original.png` (cat) and
+`Assets/Art/Outing/T_Outing_DogNatural.png` (dog). They are bound in
+`Assets/Settings/Game/GameContent.asset` and in the station panels; the temporary
+512 x 512 preview PNGs and every `*Temporary*` name in this folder were removed.
 
-On 2026-11-20 these assets moved with their GUIDs to Assets/Art/Station and became
-static Main dependencies. The paired sprites and masks support station care in the
-runtime loop; moving out of EditorScenes does not approve final art or release delivery.
+The 128 x 128 bottom-left-origin care grids are kept as
+`T_Station_CatCareMask.bytes` / `T_Station_DogCareMask.bytes`. Only the file names
+changed: their GUIDs and bytes are unchanged, so existing save data and the care
+grid still work. `T_Station_*CareProjection.bytes` maps the formal sprite
+silhouettes back onto that grid, and `T_Station_CareEffects.png` is the shared
+bubble/effect atlas.
 
-The source masters, complete prompts, node workflows, seeds and generation history are under
-`art-source/station-care-temporary/` outside Unity Assets. The image inventory is maintained in
+Dirt and messy fur are independent procedural fields; do not bake these states
+into more images. The ComfyUI masters, prompts, workflows and generation history
+under `art-source/station-care-temporary/` are a historical snapshot, not current
+Unity assets. The image inventory is maintained in
 `art-source/resource-catalog.json` at repository root.
 
-Two 512 x 512 transparent PNG base animals are shared by the three preview samples. Matching
-128 x 128 bottom-left-origin byte masks exclude transparent pixels and the central face.
-Dirt and messy fur are independent procedural fields; do not bake these states into more images.
-
-Import: Sprite Single / FullRect, alpha, max size 512, Read/Write off, mipmaps off.
-Desktop preview uses uncompressed textures; channel texture compression and download size are unverified.
+Import settings of the formal sprites are owned by their own folders. Channel
+texture compression and download size remain unverified.

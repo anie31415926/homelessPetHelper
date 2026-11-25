@@ -1,5 +1,7 @@
 # 林缘美术 Unity 接入
 
+> 2026-11-26 清理注记：本文提到的 `T_CityPlace_*.png`、`T_Station_*Temporary*`、`T_Rescue_ShelterTemporary.jpg`、`T_CityMap_Forest.jpg` 等临时/过时资源，以及 `RuntimeMove`、`ForestEdgeAssets`、`StationCareLayout`、`StationCatAssets` 等一次性 Editor 工具与命令，均已在本轮清理中删除；以下相关段落保留为当时事实，当前资源与工具以工程现状为准。
+
 2026-11-21。用户认可 ComfyUI 候选并明确“可以接入到工程里”。本轮将认可图片接入已保存的 Main 流程，不增加求助供给、森林切换或现场新规则。任务与全部验证证据见[协作任务](协作任务/20261121-林缘美术接入-01a1f74d.md)。
 
 ## 当前接入
@@ -8,7 +10,7 @@
 - 配置地点为单车棚、居民小院、临街门廊、林缘公园、市场后院、河岸步道。保留原三条求助；新三处没有人为补造求助，在Main可看详情但沿用已有探索未开放限制。
 - 6张现场背景由`GameContent.asset > Outing Artwork`按稳定地点ID显式绑定。Main开路及逆塔防每次进入时读取当前地点图片；不按猫狗种类决定场景，不从节点名/数组顺序推断地点。
 - 图片和操作层分离。开路背景不拦截指针，地面/可达格透明度降低，墙、水沟、箱子及杂物保持原规则和可读层；逆塔防背景位于战场Graphic之后。按钮、棋盘障碍和路线仍是原白板试做表现，本轮未绘制这些交互资源。
-- 森林承接图已导入`Assets/Art/CityMap/T_CityMap_Forest.jpg`供后续编辑；Main不引用，没有增加切图入口、解锁条件或无缝连接。整体合成图只在Unity外供审核，避免与独立地标重复叠加。
+- 森林承接图 `Assets/Art/CityMap/T_CityMap_Forest.jpg` 曾导入供后续编辑但 Main 从未引用；已在 2026-11-26 清理中随其它过时地图资源删除，未增加切图入口、解锁条件或无缝连接。整体合成图只在Unity外供审核，避免与独立地标重复叠加。
 - 新玩家文案在`CityMapText.json`，字体依既有脚本重建为680个cmap条目、171076字节，字体GUID与OFL保留。
 
 路径相对`unity/HomelessPetHelper/`。完整来源、运行路径、尺寸与SHA256见[15项导入清单](../art-source/forest-edge-20261121/unity-import.json)，生成依据/母图仍在[出图批次](../art-source/forest-edge-20261121/README.md)。图片只记temporary；用户观感认可记visual accepted，许可/目标仍pending，不视为发布批准。

@@ -9,28 +9,19 @@ namespace HomelessPetHelper.Tests.EditMode
 {
     public sealed class StationAssetTests
     {
-        [TestCase("Cat")]
-        [TestCase("Dog")]
-        public void TemporaryCareArtRespectsPreviewImageBudgetAndAlignedMask(string kind)
+        [TestCase("Cat", "Assets/Art/PetMotion/T_Pet_original.png")]
+        [TestCase("Dog", "Assets/Art/Outing/T_Outing_DogNatural.png")]
+        public void CareMaskKeepsAlignedGridAndFormalAnimalSpritesAreBound(string kind, string spritePath)
         {
-            string path = "Assets/Art/Station/T_Station_" + kind + "Temporary";
-            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path + ".png");
-            var importer = (TextureImporter)AssetImporter.GetAtPath(path + ".png");
-            Assert.That(sprite, Is.Not.Null);
-            Assert.That(sprite.texture.width, Is.EqualTo(512));
-            Assert.That(sprite.texture.height, Is.EqualTo(512));
-            Assert.That(new System.IO.FileInfo(path + ".png").Length, Is.LessThanOrEqualTo(150 * 1024));
-            Assert.That(importer.isReadable, Is.False);
-            Assert.That(importer.mipmapEnabled, Is.False);
-            Assert.That(importer.alphaIsTransparency, Is.True);
-            Assert.That(importer.GetDefaultPlatformTextureSettings().maxTextureSize, Is.EqualTo(512));
-            var settings = new TextureImporterSettings();
-            importer.ReadTextureSettings(settings);
-            Assert.That(settings.spriteMeshType, Is.EqualTo(SpriteMeshType.FullRect));
-            byte[] mask = AssetDatabase.LoadAssetAtPath<TextAsset>(path + "Mask.bytes").bytes;
-            Assert.That(mask.Length, Is.EqualTo(128 * 128));
-            Assert.That(mask.Any(value => value == 0) && mask.Any(value => value == 255), Is.True);
-            Assert.That(mask[0], Is.Zero);
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(spritePath);
+            Assert.That(sprite, Is.Not.Null, spritePath);
+            string maskPath = "Assets/Art/Station/T_Station_" + kind + "CareMask.bytes";
+            var mask = AssetDatabase.LoadAssetAtPath<TextAsset>(maskPath);
+            Assert.That(mask, Is.Not.Null, maskPath);
+            byte[] bytes = mask.bytes;
+            Assert.That(bytes.Length, Is.EqualTo(128 * 128));
+            Assert.That(bytes.Any(value => value == 0) && bytes.Any(value => value == 255), Is.True);
+            Assert.That(bytes[0], Is.Zero);
         }
 
         [TestCase("Panel_StationWhiteboard", false)]
@@ -93,22 +84,5 @@ namespace HomelessPetHelper.Tests.EditMode
 
         private static bool IsProjectionBinding(string path) => path == "_legacyCat" || path == "_legacyDog" ||
             path == "_rescueCat" || path == "_rescueDog" || path == "_catProjection" || path == "_dogProjection";
-
-        [TestCase("cat")]
-        [TestCase("dog")]
-        public void SampleArtIsStaticNonReadableAndMaskIsBounded(string kind)
-        {
-            string path = "Assets/EditorScenes/StationArt/T_Station_" + kind;
-            var importer = (TextureImporter)AssetImporter.GetAtPath(path + ".png");
-            Assert.That(AssetDatabase.LoadAssetAtPath<Sprite>(path + ".png"), Is.Not.Null,
-                string.Join(",", AssetDatabase.LoadAllAssetsAtPath(path + ".png")
-                    .Select(asset => asset.GetType().Name)));
-            Assert.That(importer.textureType, Is.EqualTo(TextureImporterType.Sprite));
-            Assert.That(importer.isReadable, Is.False);
-            Assert.That(importer.mipmapEnabled, Is.False);
-            byte[] mask = AssetDatabase.LoadAssetAtPath<TextAsset>(path + "Mask.bytes").bytes;
-            Assert.That(mask.Length, Is.EqualTo(128 * 128));
-            Assert.That(mask.Any(value => value == 0) && mask.Any(value => value == 255), Is.True);
-        }
     }
 }

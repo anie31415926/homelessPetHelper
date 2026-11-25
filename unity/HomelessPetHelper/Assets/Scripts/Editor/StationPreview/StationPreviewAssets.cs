@@ -19,8 +19,8 @@ namespace HomelessPetHelper.Editor.StationPreview
         public const string ScenePath = "Assets/EditorScenes/SC_StationWhiteboard.unity";
         public const string PanelPath = "Assets/Prefabs/Panels/Panel_StationWhiteboard.prefab";
         public const string TextPath = "Assets/Settings/Game/StationPreviewText.json";
-        public const string ArtFolder = "Assets/EditorScenes/StationArt";
-        public const string CareArtFolder = "Assets/Art/Station";
+        private const string FormalCatArt = "Assets/Art/PetMotion/T_Pet_original.png";
+        private const string FormalDogArt = "Assets/Art/Outing/T_Outing_DogNatural.png";
 
         [MenuItem("Homeless Pet Helper/Preview/Open Station Whiteboard")]
         public static void OpenScene()
@@ -39,7 +39,7 @@ namespace HomelessPetHelper.Editor.StationPreview
                 throw new InvalidOperationException("Create new station assets only in an isolated batch project.");
             }
 
-            ImportArt();
+            EnsureArt();
             var text = new OptionPreviewText(AssetDatabase.LoadAssetAtPath<TextAsset>(TextPath));
             CreatePanel(text);
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -49,29 +49,13 @@ namespace HomelessPetHelper.Editor.StationPreview
             AssetDatabase.SaveAssets();
         }
 
-        private static void ImportArt()
+        private static void EnsureArt()
         {
-            foreach (string kind in new[] { "cat", "dog" })
+            foreach (string path in new[] { FormalCatArt, FormalDogArt })
             {
-                string path = ArtFolder + "/T_Station_" + kind + ".png";
-                var importer = (TextureImporter)AssetImporter.GetAtPath(path);
-                importer.textureType = TextureImporterType.Sprite;
-                importer.textureShape = TextureImporterShape.Texture2D;
-                importer.spriteImportMode = SpriteImportMode.Single;
-                importer.mipmapEnabled = false;
-                importer.isReadable = false;
-                importer.alphaIsTransparency = true;
-                importer.maxTextureSize = 1024;
-                importer.textureCompression = TextureImporterCompression.Uncompressed;
-                importer.filterMode = FilterMode.Bilinear;
-                var settings = new TextureImporterSettings();
-                importer.ReadTextureSettings(settings);
-                settings.spriteMeshType = SpriteMeshType.FullRect;
-                importer.SetTextureSettings(settings);
-                importer.SaveAndReimport();
                 if (AssetDatabase.LoadAssetAtPath<Sprite>(path) == null)
                 {
-                    throw new InvalidOperationException("Station art failed to import as a Sprite: " + path);
+                    throw new InvalidOperationException("Station art is not imported as a Sprite: " + path);
                 }
             }
         }
@@ -83,13 +67,13 @@ namespace HomelessPetHelper.Editor.StationPreview
                 throw new InvalidOperationException("Normalize fixture art in an isolated batch project.");
             }
 
-            ImportArt();
+            EnsureArt();
             GameObject root = PrefabUtility.LoadPrefabContents(PanelPath);
             try
             {
                 var serialized = new SerializedObject(root.GetComponent<StationPanelView>());
                 var image = (Image)serialized.FindProperty("_summaryAnimal").objectReferenceValue;
-                image.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(ArtFolder + "/T_Station_cat.png");
+                image.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(FormalCatArt);
                 foreach (DirtSurfaceView surface in root.GetComponentsInChildren<DirtSurfaceView>(true))
                 {
                     var surfaceFields = new SerializedObject(surface);
@@ -158,7 +142,7 @@ namespace HomelessPetHelper.Editor.StationPreview
             GameObject artwork = Rect("Animal", stage.transform);
             Stretch((RectTransform)artwork.transform);
             var image = artwork.AddComponent<Image>();
-            image.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(ArtFolder + "/T_Station_cat.png");
+            image.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(FormalCatArt);
             image.preserveAspect = true;
             image.raycastTarget = false;
             Bind(view, "_summaryAnimal", image);

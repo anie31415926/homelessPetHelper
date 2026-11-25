@@ -274,6 +274,22 @@ namespace HomelessPetHelper.Game.CityMap
             if (_loop != null && _outing.Session.IsSettled) _returned?.Invoke();
         }
 
+        /// <summary>Map-level back settles the outing and returns to the station.</summary>
+        internal void LeaveToStation()
+        {
+            if (_disposed || _paused || _travelling || !_view.isActiveAndEnabled) return;
+            var session = _outing.Session;
+            if (session.Stage == OutingStage.MapSelecting)
+            {
+                Cancel();
+                return;
+            }
+            // Arrived (still unsettled): fold in any exploration progress, then settle through the
+            // same command the Primary back button uses.
+            if (session.Stage == OutingStage.Departed)
+                Act();
+        }
+
         private void Refresh()
         {
             var session = _outing.Session;
@@ -287,7 +303,8 @@ namespace HomelessPetHelper.Game.CityMap
             string details = selecting ? GetDetails(currentPoint) :
                 session.IsSettled ?
                 _text.Get(!session.HasDeparted ? "cancelled" : session.AcceptedRequestId == Guid.Empty ?
-                    "returned.exploring" : "returned", _outing.LastSummary.ElapsedMinutes) :
+                    "returned.exploring" : "returned",
+                    GameTimeText.FormatDuration(_outing.LastSummary.ElapsedMinutes)) :
                 _text.Get(session.AcceptedRequestId == Guid.Empty ? "arrived.exploring" : "arrived.detail");
             string command = selecting ? "depart" : session.IsSettled ? "reopen" : "return";
             bool canDepart = CanDepart(_selection, out MapDeparturePlan plan, out string restriction);
@@ -305,7 +322,7 @@ namespace HomelessPetHelper.Game.CityMap
                 RenderPoints(snapshot, selecting);
                 return;
             }
-            _view.Render(_text.Get("status", _station.AvailableTemporaryPlaces, time.ElapsedMinutes),
+            _view.Render(_text.Get("status", _station.AvailableTemporaryPlaces, GameTimeText.FormatClock(time)),
                 heading, details, selecting ? GetDeparturePreview(plan) : string.Empty,
                 _paused ? _text.Get("paused") : feedback, _text.Get(command),
                 selecting, _paused || _travelling, !selecting || canDepart);
@@ -334,12 +351,13 @@ namespace HomelessPetHelper.Game.CityMap
             if (arrived && cleanup == null && puzzle == null) details += "\n" + _text.Get("visit.quiet");
             if (selecting && !station && point != null && _hasActivities?.Invoke(point.PointId) == true)
                 details += "\n" + _text.Get("visit.activities");
-            string departure = !station && selecting && canExplore ? _text.Get("visit.cost", visit) : string.Empty;
+            string departure = !station && selecting && canExplore ?
+                _text.Get("visit.cost", GameTimeText.FormatDuration(visit)) : string.Empty;
             if (!station && selecting && canRescue && rescue?.EntryKind == MapEntryKind.HelpRequest)
             {
                 _config.TimePolicy.TryGetDuration(OutingReturnProgress.HandingOver, _hasOpeningRoute,
                     out long rescueMinutes, out _);
-                departure += "\n" + _text.Get("visit.rescueCost", rescueMinutes);
+                departure += "\n" + _text.Get("visit.rescueCost", GameTimeText.FormatDuration(rescueMinutes));
             }
             else if (!station && selecting && canExplore && point?.DisplayState == PointDisplayState.HasHelpRequest &&
                 _station.IsFull) departure += "\n" + _text.Get("visit.rescueFull");
@@ -347,7 +365,7 @@ namespace HomelessPetHelper.Game.CityMap
             _primaryExplores = selecting && !station && !canRescue && canExplore;
             string feedback = !selecting ? _externalFeedback ??
                 (_feedbackKey != "ready" ? _text.Get(_feedbackKey) : string.Empty) : string.Empty;
-            _view.Render(station ? _text.Get("visit.time", time.ElapsedMinutes) : string.Empty,
+            _view.Render(station ? _text.Get("visit.time", GameTimeText.FormatClock(time)) : string.Empty,
                 station ? _text.Get("shelter") : arrived ? _text.Get("arrived", pointName) : pointName,
                 details, departure, _paused ? _text.Get("paused") : feedback,
                 _text.Get(station ? "visit.close" : arrived ? "return" : canRescue ? "visit.rescue" : "visit.go"),
@@ -396,7 +414,8 @@ namespace HomelessPetHelper.Game.CityMap
                 OutingReturnProgress.Exploring;
             if (!_config.TimePolicy.TryGetDuration(progress, _hasOpeningRoute, out long minutes, out var failure))
                 throw new InvalidOperationException("Cannot preview outing duration: " + failure);
-            return _text.Get(entersRescue ? "departure.rescue" : "departure.preview", minutes, space);
+            return _text.Get(entersRescue ? "departure.rescue" : "departure.preview",
+                GameTimeText.FormatDuration(minutes), space);
         }
     }
 }

@@ -105,3 +105,16 @@ Review 提示不阻断构建；schema/路径错误、缺失文件和审核内容
 2026-11-18：`npm run test:assets` 为 13/13，通过源字节/哈希、计划与实际区分、缺失/漏登记、审核后替图、重复内容、预算边界、路径限制、只读及确定性测试。`npm run assets:check` 已对当前仓库执行：8 张临时运行图合计 569726 bytes（约 556.4 KiB），无缺失/漏登记；保留一条首批范围未确认提示。机器可读结果与阅读报告位于忽略的 `test-results/resource-catalog/`。
 
 本轮新增 Node 工具、台账与文档，不改 Unity 运行时/Prefab/图片，不触发新的 ComfyUI 生成；护理图由同期工作产出，本轮只登记。未接运行时加载、未验证实际分包/微信下载、未自动提交或推送；原有 Unity 审计测试结果见[工具记录](../docs/轻量资源检查工具.md)，没有为本工具重跑 Unity 全量回归。
+
+## 2026-11-26 历史快照加注（临时/过时资源清理）
+
+本轮清理删除了以下 Unity 资源（含 `.meta`）：`Assets/Art/CityMap/T_CityPlace_*.png` 与 `T_CityMap_Forest.jpg`、`Assets/Art/Outing/` 下除 Parking / Treehouse 外的 5 张 `T_Outing_*.jpg`、`Assets/Art/Station/T_Station_*Temporary*` 两张 PNG，以及 `Assets/EditorScenes/StationArt/`、`RescueCaseArt/` 下的旧样例图。动物显示统一改绑正式形象 `T_Pet_original.png`（猫）/ `T_Outing_DogNatural.png`（狗）；两个 128×128 护理 mask 只改名为 `T_Station_*CareMask.bytes`，GUID 与字节不变。
+
+`resource-catalog.json` 已同步删除这 18 条 `MissingFile` 登记，`npm run assets:check` 恢复通过。下列**历史快照 / 工作流保留原样**，不作为当前资源清单；其中引用的旧资源名与一次性工具名仅为当时事实：
+
+- `forest-edge-20261121/catalog-before.json`、`unity-import.json`
+- `city-map-layered/README.md`、`derivation.json`
+- `city-map-neighborhood/`、`rescue-layout-b/`、`station-care-temporary/` 下的 `workflow.json` / `history.json` / `README.md`
+- `field-animals-20261122/`、`field-props-20261122/`、`level-design-20261122/`、`ui-handdrawn-20261122/`、`ui-soft-20261122/`、`loading-comfy-20261123/` 等批次台账
+
+ValleyIcons 12 张按用户最终决定**全部保留**；`Panel_CityMap.prefab` 的 `_detailArt` / `_stationIcon` 仍活绑定其中 7 张。

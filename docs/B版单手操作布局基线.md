@@ -1,5 +1,7 @@
 # 单手操作布局基线（B版修订）
 
+> 2026-11-26 清理注记：本文提到的 `T_CityPlace_*.png`、`T_Station_*Temporary*`、`T_Rescue_ShelterTemporary.jpg`、`T_CityMap_Forest.jpg` 等临时/过时资源，以及 `RuntimeMove`、`ForestEdgeAssets`、`StationCareLayout`、`StationCatAssets` 等一次性 Editor 工具与命令，均已在本轮清理中删除；以下相关段落保留为当时事实，当前资源与工具以工程现状为准。
+
 2026-11-18。用户确认先用 B 做操作基线，允许必要图片用本地 ComfyUI 生成。先做 Web 布局探索，随后用户要求接入 Unity，已原地更新既有救助案例，不批准新的玩法规则或正式美术。
 
 **同日最新修订优先**：用户反馈B版画面仍太小、按钮大不一定好操作，要求回到低占高、靠底部、居中长条；取消单独确认按钮，短暂长按选项确认，列表上方或教程提示方法。已据此修改本地稿；不再继续Figma。这条替代初版“先选择再点全宽执行按钮”，不是新的玩法结算规则。

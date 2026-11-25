@@ -107,46 +107,8 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(serialized.FindProperty("_departure").objectReferenceValue, Is.Not.Null);
         }
 
-        [TestCase("Parking", 206, 165)]
-        [TestCase("Yard", 249, 187)]
-        [TestCase("Porch", 235, 220)]
-        [TestCase("Shelter", 204, 136)]
-        [TestCase("Park", 265, 105)]
-        [TestCase("Market", 198, 155)]
-        [TestCase("Riverside", 140, 105)]
-        public void PlaceSpritesKeepNativeSizeTransparentSilhouettesAndBoundedImports(
-            string name, int width, int height)
-        {
-            string path = ArtFolder + "T_CityPlace_" + name + ".png";
-            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-            var importer = (TextureImporter)AssetImporter.GetAtPath(path);
-            Assert.That(sprite.rect.size, Is.EqualTo(new Vector2(width, height)));
-            Assert.That(importer.spriteImportMode, Is.EqualTo(SpriteImportMode.Single));
-            Assert.That(importer.maxTextureSize, Is.EqualTo(512));
-            Assert.That(importer.isReadable, Is.False);
-            Assert.That(importer.mipmapEnabled, Is.False);
-            Assert.That(importer.npotScale, Is.EqualTo(TextureImporterNPOTScale.None));
-            Assert.That(importer.alphaIsTransparency, Is.True);
-            Assert.That(importer.alphaSource, Is.EqualTo(TextureImporterAlphaSource.FromInput));
-            Assert.That(new FileInfo(path).Length, Is.LessThanOrEqualTo(61440));
-            var source = new Texture2D(2, 2);
-            try
-            {
-                Assert.That(source.LoadImage(File.ReadAllBytes(path)), Is.True);
-                Assert.That(source.width, Is.EqualTo(width));
-                Assert.That(source.height, Is.EqualTo(height));
-                Color32[] pixels = source.GetPixels32();
-                Assert.That(new[] { pixels[0].a, pixels[source.width - 1].a,
-                    pixels[pixels.Length - source.width].a, pixels[pixels.Length - 1].a },
-                    Is.All.EqualTo((byte)0), "Landmark corners must not retain a rectangular background.");
-                Assert.That(pixels.Count(pixel => pixel.a == 255), Is.GreaterThan(pixels.Length / 5));
-                Assert.That(pixels.Any(pixel => pixel.a > 0 && pixel.a < 255), Is.True);
-            }
-            finally { UnityEngine.Object.DestroyImmediate(source); }
-        }
-
         [Test]
-        public void MainUsesStorybookTerrainAndOnlyTheCurrentLandmarkTextures()
+        public void MainUsesStorybookTerrainAndNoRetiredPlaceSprites()
         {
             var source = new Texture2D(2, 2);
             try
@@ -162,8 +124,8 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(dependencies, Does.Contain(ArtFolder + "T_CityMap_Neighborhood.jpg"));
             Assert.That(dependencies.Count(path => path.StartsWith(ArtFolder + "StorybookLandmarks/",
                 StringComparison.Ordinal) && path.EndsWith(".png", StringComparison.Ordinal)), Is.EqualTo(12));
-            Assert.That(dependencies.Any(path => path.StartsWith(ArtFolder + "ValleyIcons/",
-                StringComparison.Ordinal)), Is.False);
+            // ValleyIcons are kept by user decision (2026-11-26) and remain bound by the map
+            // detail art; they are intentionally not asserted as absent here.
             Assert.That(dependencies.Any(path => path.StartsWith(ArtFolder + "T_CityPlace_",
                 StringComparison.Ordinal)), Is.False);
             Assert.That(dependencies.Any(path => path.StartsWith("Assets/EditorScenes/", StringComparison.Ordinal)),
