@@ -86,7 +86,7 @@ namespace HomelessPetHelper.Game.Loading
                 _slots[i].gameObject.SetActive(true);
                 _deleteSlots[i].gameObject.SetActive(deletable);
                 Label(_deleteSlots[i], _strings.delete);
-                ClearButtonArt(_deleteSlots[i]);
+                StyleDeleteMark(_deleteSlots[i]);
                 SetLabelPadding(_slots[i], deletable ? 130f : 36f);
                 var name = string.Format(_strings.slotName, i + 1);
                 anyEmpty |= slot.Status == StartupSaveSlots.State.Empty;
@@ -171,10 +171,15 @@ namespace HomelessPetHelper.Game.Loading
             rect.offsetMax = new Vector2(-rightPadding, 0f);
         }
 
-        private static void ClearButtonArt(Button button)
+        private static void StyleDeleteMark(Button button)
         {
-            var art = button.GetComponent<Image>();
-            if (art != null) art.enabled = false;
+            var label = button.GetComponentInChildren<UnityEngine.UI.Text>(true);
+            label.alignment = TextAnchor.MiddleCenter;
+            label.resizeTextForBestFit = false;
+            label.fontSize = 72;
+            var rect = (RectTransform)label.transform;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
         }
 
         public void ShowCover()

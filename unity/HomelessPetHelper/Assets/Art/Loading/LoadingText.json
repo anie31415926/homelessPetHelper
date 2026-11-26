@@ -12,7 +12,7 @@
   "slotUnavailable": "{0} · 暂时无法读取",
   "slotFailed": "无法打开所选存档，请重试或选择其他档位。",
   "slotFull": "存档已满，已有进度会保留。",
-  "delete": "删除",
+  "delete": "×",
   "deleteTitle": "删除存档",
   "deleteWarning": "确定删除{0}？\n救助进度将无法恢复。",
   "deleteConfirm": "确认删除",
