@@ -82,9 +82,12 @@ namespace HomelessPetHelper.Game.Loading
             for (int i = 0; i < slots.Length; i++)
             {
                 var slot = slots[i];
+                bool deletable = !newOnly && slot.CanDelete;
                 _slots[i].gameObject.SetActive(true);
-                _deleteSlots[i].gameObject.SetActive(!newOnly && slot.CanDelete);
+                _deleteSlots[i].gameObject.SetActive(deletable);
                 Label(_deleteSlots[i], _strings.delete);
+                ClearButtonArt(_deleteSlots[i]);
+                SetLabelPadding(_slots[i], deletable ? 130f : 36f);
                 var name = string.Format(_strings.slotName, i + 1);
                 anyEmpty |= slot.Status == StartupSaveSlots.State.Empty;
                 var date = slot.SavedAt?.ToLocalTime().ToString(_strings.dateFormat, CultureInfo.InvariantCulture)
@@ -103,6 +106,7 @@ namespace HomelessPetHelper.Game.Loading
                 _ => failed ? _strings.slotFailed : newOnly && !anyEmpty ? _strings.slotFull : string.Empty
             };
             Label(_closeSlots, _strings.back);
+            SetButtonSpan(_closeSlots, 0.075f, 0.925f);
         }
 
         internal void ShowDeleteConfirmation(int slot, Action confirmed)
@@ -118,6 +122,7 @@ namespace HomelessPetHelper.Game.Loading
                 _deleteSlots[i].gameObject.SetActive(false);
             }
             Label(_closeSlots, _strings.cancel);
+            SetButtonSpan(_closeSlots, 0.075f, 0.48f);
             Label(_confirmDelete, _strings.deleteConfirm);
             _confirmDelete.gameObject.SetActive(true);
         }
@@ -149,6 +154,28 @@ namespace HomelessPetHelper.Game.Loading
         }
 
         private static void Label(Button button, string text) => button.GetComponentInChildren<UnityEngine.UI.Text>(true).text = text;
+
+        private static void SetButtonSpan(Button button, float min, float max)
+        {
+            var rect = (RectTransform)button.transform;
+            rect.anchorMin = new Vector2(min, rect.anchorMin.y);
+            rect.anchorMax = new Vector2(max, rect.anchorMax.y);
+        }
+
+        private static void SetLabelPadding(Button button, float rightPadding)
+        {
+            var label = button.GetComponentInChildren<UnityEngine.UI.Text>(true);
+            label.alignment = TextAnchor.MiddleLeft;
+            var rect = (RectTransform)label.transform;
+            rect.offsetMin = new Vector2(36f, 0f);
+            rect.offsetMax = new Vector2(-rightPadding, 0f);
+        }
+
+        private static void ClearButtonArt(Button button)
+        {
+            var art = button.GetComponent<Image>();
+            if (art != null) art.enabled = false;
+        }
 
         public void ShowCover()
         {
