@@ -123,7 +123,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator StationMenuReturnsHomeAfterSavingAndCancelKeepsPlay()
+        public IEnumerator StationMenuBackClosesPanelAndSaveResultOffersHome()
         {
             SceneManager.sceneLoaded += Configure;
             try
@@ -135,16 +135,15 @@ namespace HomelessPetHelper.Tests.PlayMode
                 var before = _slots[0].Slots.ToArray();
                 var station = Object.FindObjectOfType<Modules.Station.UI.StationPanelView>();
                 station.RequestSettings();
-                Assert.That(HasText("回到开始"), Is.True);
-
-                Click("回到开始");
-                Assert.That(HasText("会先保存当前进度，再回到开始。"), Is.True);
-                Click("继续游戏");
-                Assert.That(HasText("手动存档"), Is.False);
+                Assert.That(HasText("手动存档"), Is.True);
+                Click("返回");
+                Assert.That(HasText("手动存档"), Is.False, "Back closes the station panel.");
                 Assert.That(_slots[0].Slots, Is.EqualTo(before));
 
                 station.RequestSettings();
-                Click("回到开始");
+                Click("手动存档");
+                yield return WaitForSave();
+                Assert.That(HasText("回到开始"), Is.True);
                 Click("回到开始");
                 yield return WaitForLoading();
                 yield return WaitForCover();
@@ -279,7 +278,8 @@ namespace HomelessPetHelper.Tests.PlayMode
         private static void ClickDelete(int slot) => Object.FindObjectsOfType<Button>()
             .Single(button => button.name == "DeleteSlot" + slot && button.interactable).onClick.Invoke();
 
-        private static bool SlotListOpen() => Object.FindObjectsOfType<Button>().Any(button => button.name == "SaveSlot1");
+        private static bool SlotListOpen() => Object.FindObjectsOfType<Button>()
+            .Any(button => button.name == "SaveSlot1");
 
         private static Button Slot(int slot) => Object.FindObjectsOfType<Button>().Single(button =>
             button.name == "SaveSlot" + slot);

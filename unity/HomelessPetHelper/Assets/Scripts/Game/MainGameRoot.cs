@@ -436,7 +436,8 @@ namespace HomelessPetHelper.Game
             var overlays = Presenter.StationSaveOverlays;
             overlays.ShowStationDialog(new StationDialog
             {
-                Title = SaveText.Get("slots.current", _activeSlot + 1), Body = SaveText.Get("slots.actions"),
+                Title = SaveText.Get("slots.current", _activeSlot + 1),
+                Body = SaveText.Get("slots.actions") + "\n" + SaveText.Get("slots.actionsHome"),
                 ConfirmLabel = SaveText.Get("slots.save"),
                 Accept = () => _manualSave = StartCoroutine(SaveManually(overlays)),
                 BrowseLabel = SaveText.Get("slots.settings"), Browse = () =>
@@ -444,22 +445,7 @@ namespace HomelessPetHelper.Game
                     overlays.DismissStationDialog();
                     overlays.OpenStandaloneSettings();
                 },
-                CancelLabel = SaveText.Get("slots.home"), Cancel = () => ConfirmReturnHome(overlays)
-            });
-        }
-
-        private void ConfirmReturnHome(LevelOverlaySession overlays)
-        {
-            overlays.ShowStationDialog(new StationDialog
-            {
-                Title = SaveText.Get("slots.home"), Body = SaveText.Get("slots.homeBody"),
-                ConfirmLabel = SaveText.Get("slots.home"),
-                Accept = () =>
-                {
-                    if (_manualSave == null) _manualSave = StartCoroutine(ReturnHome(overlays));
-                },
-                CancelLabel = SaveText.Get("slots.continueGame"), Cancel = () => CloseStationDialogs(overlays),
-                CenterBody = true
+                CancelLabel = SaveText.Get("slots.back"), Cancel = () => CloseStationDialogs(overlays)
             });
         }
 
@@ -467,24 +453,6 @@ namespace HomelessPetHelper.Game
         {
             // One station dialog is replaced, not stacked: dismissing the confirmation returns to play.
             overlays.DismissStationDialog();
-        }
-
-        private IEnumerator ReturnHome(LevelOverlaySession overlays)
-        {
-            bool saved = Presenter != null && Presenter.TryManualSave();
-            yield return null;
-            _manualSave = null;
-            if (!saved)
-            {
-                overlays.ShowStationDialog(new StationDialog
-                {
-                    Title = SaveText.Get("save.errorTitle"), Body = SaveText.Get("slots.homeFailed"),
-                    CancelLabel = SaveText.Get("slots.continueGame"),
-                    Cancel = () => CloseStationDialogs(overlays), CenterBody = true
-                }, replaceWhileInactive: true);
-                yield break;
-            }
-            ReturnToSaveMenu();
         }
 
         private IEnumerator SaveManually(LevelOverlaySession overlays)
