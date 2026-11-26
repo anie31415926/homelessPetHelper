@@ -179,7 +179,7 @@ namespace HomelessPetHelper.Game.Loading
             label.fontSize = 72;
             label.color = new Color(0.325f, 0.259f, 0.216f, 1f);
             var art = button.GetComponent<Image>();
-            if (art != null) art.color = new Color(1f, 1f, 1f, 0f);
+            if (art != null) art.color = new Color(0.977f, 0.982f, 0.965f, 1f);
             var rect = (RectTransform)label.transform;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
