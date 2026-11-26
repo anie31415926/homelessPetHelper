@@ -42,10 +42,24 @@ namespace HomelessPetHelper.Tests.PlayMode
             var presenter = Object.FindObjectOfType<MainGameRoot>().Presenter;
             MainApproachDriver.Click(Object.FindObjectOfType<StationPanelView>(), "Restart");
             var map = Object.FindObjectOfType<CityMapView>();
-            Assert.That(presenter.WorldWeather.Kind, Is.EqualTo(OutingWeatherKind.Rain));
+            var seed = AssetDatabase.LoadAssetAtPath<GameContent>("Assets/Settings/Game/GameContent.asset")
+                .CreateMapConfig().Seed;
+            var clock = presenter.Session.Clock;
+            var scheduled = WorldWeatherSchedule.Sample(seed, clock.Current.ElapsedMinutes,
+                clock.Current.MinutesPerDay);
+            Assert.That(presenter.WorldWeather.Kind, Is.EqualTo(scheduled.Kind),
+                "World weather follows the clock schedule on construction.");
+            Assert.That(presenter.WorldWeather.Intensity, Is.EqualTo(scheduled.Intensity));
+            Assert.That(clock.TryAdvance(clock.Current.Version, WorldWeatherSchedule.BlockMinutes,
+                out _, out _), Is.True);
+            presenter.ResampleWorldWeather();
+            var next = WorldWeatherSchedule.Sample(seed, clock.Current.ElapsedMinutes,
+                clock.Current.MinutesPerDay);
+            Assert.That(presenter.WorldWeather.Kind, Is.EqualTo(next.Kind),
+                "Resampling follows the advanced clock.");
+            Assert.That(presenter.WorldWeather.Intensity, Is.EqualTo(next.Intensity));
             yield return VerifyMapWeather(map, presenter);
             var start = presenter.WorldWeather;
-            var clock = presenter.Session.Clock;
             var originalTime = clock.Current;
             Assert.That(clock.TryAdvance(originalTime.Version, originalTime.MinutesPerDay * 7L / 12,
                 out _, out _), Is.True);

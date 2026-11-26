@@ -30,7 +30,8 @@ namespace HomelessPetHelper.Game
         private readonly StationPanelView _station;
         private readonly CityMapView _map;
         private readonly OutingWeatherGraphic _mapWeather;
-        public OutingWeather WorldWeather { get; private set; } = OutingWeather.InitialWorld;
+        public OutingWeather WorldWeather { get; private set; }
+        private bool _worldWeatherManual;
         private OutingWeather? _outingWeather;
         private OutingFieldLayout _explorationLayout;
         private ApproachSession _explorationOpening;
@@ -85,7 +86,6 @@ namespace HomelessPetHelper.Game
             _station = station;
             _map = map;
             _mapWeather = mapWeather;
-            SetWorldWeather(WorldWeather);
             _siege = siege;
             _approach = approach ?? throw new ArgumentNullException(nameof(approach));
             _content = content;
@@ -114,6 +114,7 @@ namespace HomelessPetHelper.Game
 #else
                 reconcileContent: false);
 #endif
+            RefreshWorldWeather();
             _openingPending = showOpening && Progress.IsNewGame;
             _map.gameObject.SetActive(false);
             _siege.gameObject.SetActive(false);
@@ -249,12 +250,35 @@ namespace HomelessPetHelper.Game
                 _fieldSuspendedRequested = false;
                 Session.SetSuspended(false);
                 _map.gameObject.SetActive(true);
+                RefreshWorldWeather();
                 if (_mapPresenter == null) CreateMapPresenter();
                 else _mapPresenter.RefreshArrival();
             });
         }
 
+        /// <summary>Debug override; the schedule resumes only through <see cref="ResampleWorldWeather"/>.</summary>
         public void SetWorldWeather(OutingWeather weather)
+        {
+            _worldWeatherManual = true;
+            ApplyWorldWeather(weather);
+        }
+
+        /// <summary>Drops a debug override and samples the weather timeline for the current clock.</summary>
+        public void ResampleWorldWeather()
+        {
+            _worldWeatherManual = false;
+            RefreshWorldWeather();
+        }
+
+        private void RefreshWorldWeather()
+        {
+            if (_disposed || _worldWeatherManual || Session == null) return;
+            var time = Session.Clock.Current;
+            ApplyWorldWeather(WorldWeatherSchedule.Sample(_config.Seed, time.ElapsedMinutes,
+                time.MinutesPerDay));
+        }
+
+        private void ApplyWorldWeather(OutingWeather weather)
         {
             WorldWeather = weather;
             _mapWeather?.ShowOnMap(weather);
@@ -292,6 +316,7 @@ namespace HomelessPetHelper.Game
             int seed = _outingSeedSource != null ? _outingSeedSource() :
                 _config.Seed ^ (BitConverter.ToInt32(outingId.ToByteArray(), 0) & int.MaxValue);
             if (!Session.TryOpenMap(outingId, seed, out failure)) return false;
+            RefreshWorldWeather();
             _outingWeather = null;
             CloseOverlays();
             _mapPresenter?.Dispose();
@@ -776,6 +801,7 @@ namespace HomelessPetHelper.Game
         private void ShowStation(bool arrival)
         {
             ClearOutingProgress();
+            RefreshWorldWeather();
             CloseOverlays();
             _mapPresenter?.Dispose();
             _mapPresenter = null;
