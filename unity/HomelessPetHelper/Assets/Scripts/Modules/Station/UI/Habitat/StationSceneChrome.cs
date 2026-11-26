@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using HomelessPetHelper.Framework.UI;
@@ -18,9 +19,9 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         [SerializeField] private Button _menuButton;
         [SerializeField] private Button _menuClose;
         [SerializeField] private Button _history;
-        [SerializeField] private Button _settings, _economy;
-        [SerializeField] private Button _memorial;
+        [SerializeField] private Button _settings;
         [SerializeField] private GameObject _menu;
+        [SerializeField] private StationHandbookSheet _menuSheet;
         [SerializeField] private GameObject _footer;
         [SerializeField] private ToastView _notice;
         [SerializeField] private CanvasGroup _detailInput;
@@ -38,20 +39,24 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         public RectTransform MenuTarget => (RectTransform)_menuButton.transform;
 
         public void SetSettingsAvailable(bool available)
-        { if (_settings != null) _settings.gameObject.SetActive(available); }
+        { if (_settings != null) _settings.interactable = available; }
 
-        public void SetEconomyLabel(string label)
+        public void SetHandbookLabels(string title, string[] tabs, string[] pages)
+        { if (_menuSheet != null) _menuSheet.SetLabels(title, tabs, pages); }
+
+        public void SetHandbookStatus(string status)
+        { if (_menuSheet != null) _menuSheet.SetStatus(status); }
+
+        public void SetHandbookOffers(string aid, HandbookOffer[] offers, Action<int> open)
         {
-            if (_economy == null) return;
-            _economy.GetComponentInChildren<Text>(true).text = label;
-            _economy.gameObject.SetActive(true);
+            if (_menuSheet == null) return;
+            _menuSheet.SetOffers(aid, offers, open);
         }
 
-        public void SetMemorialLabel(string label)
+        public void SetHandbookMemories(HandbookMemory[] memories, Action<int> open)
         {
-            if (_memorial == null) return;
-            _memorial.GetComponentInChildren<Text>(true).text = label;
-            _memorial.gameObject.SetActive(true);
+            if (_menuSheet == null) return;
+            _menuSheet.SetMemories(memories, open);
         }
 
         public void SetOverlayCovered(bool covered)
@@ -133,8 +138,6 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _menuClose.onClick.AddListener(CloseMenu);
             _history.onClick.AddListener(CloseMenu);
             _settings.onClick.AddListener(_owner.RequestSettings);
-            if (_economy != null) _economy.onClick.AddListener(_owner.RequestEconomy);
-            if (_memorial != null) _memorial.onClick.AddListener(OpenMemorial);
             _backdrop.onClick.AddListener(DismissTop);
         }
         private void OnDisable()
@@ -143,8 +146,6 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _menuClose.onClick.RemoveListener(CloseMenu);
             _history.onClick.RemoveListener(CloseMenu);
             _settings.onClick.RemoveListener(_owner.RequestSettings);
-            if (_economy != null) _economy.onClick.RemoveListener(_owner.RequestEconomy);
-            if (_memorial != null) _memorial.onClick.RemoveListener(OpenMemorial);
             _backdrop.onClick.RemoveListener(DismissTop);
             CloseMenu();
             _notice.Clear();
@@ -157,17 +158,13 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         {
             _notice.Clear();
             _menu.SetActive(!_menu.activeSelf);
+            if (_menu.activeSelf && _menuSheet != null) _menuSheet.Open();
             RefreshBackdrop();
         }
         private void CloseMenu()
         {
             _menu.SetActive(false);
             RefreshBackdrop();
-        }
-        private void OpenMemorial()
-        {
-            CloseMenu();
-            _owner.RequestMemorial();
         }
         private void DismissTop()
         {

@@ -323,6 +323,98 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator HandbookTabsKeepEntriesInsideOnePaper()
+        {
+            yield return Load();
+            RayClick(Button("StationMenu"));
+            yield return null; Canvas.ForceUpdateCanvases();
+            RectTransform Page(string name) => _view.GetComponentsInChildren<RectTransform>(true)
+                .Single(rect => rect.name == name);
+            Assert.That(Page("PageStation").gameObject.activeSelf, Is.True);
+            Assert.That(Page("PageEconomy").gameObject.activeSelf, Is.False);
+            Assert.That(Button("History").gameObject.activeInHierarchy, Is.True);
+            RayClick(Button("TabEconomy"));
+            yield return null; Canvas.ForceUpdateCanvases();
+            Assert.That(Page("PageEconomy").gameObject.activeSelf, Is.True);
+            Assert.That(Page("PageStation").gameObject.activeSelf, Is.False);
+            Assert.That(Visible("EconomyOffer", "EconomyEmpty"), Is.True);
+            yield return Capture("handbook-economy");
+            RayClick(Button("TabMemorial"));
+            yield return null; Canvas.ForceUpdateCanvases();
+            Assert.That(Visible("MemorialCard", "MemorialEmpty"), Is.True);
+            yield return Capture("handbook-memorial");
+            RayClick(Button("TabSettings"));
+            Assert.That(Button("StationSettings").gameObject.activeInHierarchy, Is.True);
+            yield return Capture("handbook-settings");
+            RayClick(Button("TabStation"));
+            yield return null; Canvas.ForceUpdateCanvases();
+            Assert.That(Page("PageStation").gameObject.activeSelf, Is.True);
+            Assert.That(_view.GetComponent<StationSceneChrome>().MenuIsOpen, Is.True);
+            RayClick(Button("CloseStationMenu"));
+        }
+
+        [UnityTest]
+        public IEnumerator HandbookPauseRowSwapsPauseAndContinue()
+        {
+            yield return Load();
+            RayClick(Button("StationMenu"));
+            yield return null; Canvas.ForceUpdateCanvases();
+            Toggle pause = _view.GetComponentsInChildren<Toggle>(true)
+                .First(toggle => toggle.name == "Pause" && toggle.gameObject.activeInHierarchy);
+            Text label = pause.GetComponentInChildren<Text>(true);
+            GameObject pauseIcon = _view.GetComponentsInChildren<Transform>(true)
+                .Single(item => item.name == "IconPause").gameObject;
+            GameObject continueIcon = _view.GetComponentsInChildren<Transform>(true)
+                .Single(item => item.name == "IconPlay").gameObject;
+            Assert.That(label.text, Is.EqualTo("暂停"));
+            Assert.That(pauseIcon.activeSelf, Is.True);
+            Assert.That(continueIcon.activeSelf, Is.False);
+            pause.isOn = true;
+            yield return null; Canvas.ForceUpdateCanvases();
+            Assert.That(label.text, Is.EqualTo("继续"));
+            Assert.That(pauseIcon.activeSelf, Is.False);
+            Assert.That(continueIcon.activeSelf, Is.True);
+            yield return Capture("menu-paused");
+            pause.isOn = false;
+            yield return null; Canvas.ForceUpdateCanvases();
+            Assert.That(label.text, Is.EqualTo("暂停"));
+            Assert.That(pauseIcon.activeSelf, Is.True);
+            Assert.That(continueIcon.activeSelf, Is.False);
+            RayClick(Button("CloseStationMenu"));
+        }
+
+        [UnityTest]
+        public IEnumerator HandbookPopulatedPagesFillRowsAndGrid()
+        {
+            yield return Load();
+            var sheet = _view.GetComponentInChildren<StationHandbookSheet>(true);
+            var art = AssetDatabase.LoadAllAssetsAtPath("Assets/Art/UI/T_UI_LevelControls.png")
+                .OfType<Sprite>().ToArray();
+            sheet.SetOffers("援助金 120", new[]
+            {
+                new HandbookOffer("扩建安置区", "需要 80 援助金", null, false),
+                new HandbookOffer("清洁台升级", "已升级", null, true),
+                new HandbookOffer("木夹子", "已加入外出编队", null, true)
+            }, _ => { });
+            sheet.SetMemories(new[]
+            {
+                new HandbookMemory("栗子", art.First(sprite => sprite.name == "Paw")),
+                new HandbookMemory("小麦", art.First(sprite => sprite.name == "Home")),
+                new HandbookMemory("松果", art.First(sprite => sprite.name == "Objectives")),
+                new HandbookMemory("团团", art.First(sprite => sprite.name == "Paw"))
+            }, _ => { });
+            RayClick(Button("StationMenu"));
+            yield return null; Canvas.ForceUpdateCanvases();
+            RayClick(Button("TabEconomy"));
+            yield return null; Canvas.ForceUpdateCanvases();
+            yield return Capture("handbook-economy-filled");
+            RayClick(Button("TabMemorial"));
+            yield return null; Canvas.ForceUpdateCanvases();
+            yield return Capture("handbook-memorial-filled");
+            RayClick(Button("CloseStationMenu"));
+        }
+
+        [UnityTest]
         public IEnumerator HomeSheetAndCareRemainInsideFourPortraitViewports()
         {
             yield return Load();
@@ -369,6 +461,9 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
 
         private Button Button(string name) => _view.GetComponentsInChildren<Button>(true)
             .Single(button => button.name == name);
+
+        private bool Visible(params string[] names) => _view.GetComponentsInChildren<RectTransform>(true)
+            .Any(rect => names.Any(name => rect.name.StartsWith(name)) && rect.gameObject.activeInHierarchy);
 
         private static void RayClick(Button button, bool execute = true)
         {

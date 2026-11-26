@@ -247,7 +247,8 @@ namespace HomelessPetHelper.Tests.PlayMode
         private void OpenStore()
         {
             MainApproachDriver.Click(Station, "StationMenu");
-            MainApproachDriver.Click(Station, "StationEconomy");
+            MainApproachDriver.Click(Station, "TabEconomy");
+            MainApproachDriver.Click(Station, "EconomyOffer0");
         }
 
         private void CloseMenu() => MainApproachDriver.Click(Station, "CloseStationMenu");

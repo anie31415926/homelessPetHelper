@@ -339,9 +339,11 @@ namespace HomelessPetHelper.Tests.PlayMode
         public IEnumerator AdoptionPublishesChoosesAndArchivesWithoutReleasingOnCancelOrSaveFailure()
         {
             yield return Load();
-            Click(_station, "StationMenu"); Click(_station, "StationMemorial");
-            Assert.That(FeedbackContains("送养完成后"), Is.True);
-            Click(_station, "OverlayCancel");
+            Click(_station, "StationMenu"); Click(_station, "TabMemorial");
+            Assert.That(_station.GetComponentsInChildren<Text>(true).Any(text =>
+                text.name == "MemorialEmpty" && text.gameObject.activeInHierarchy &&
+                text.text.Contains("送养完成后")), Is.True);
+            Click(_station, "CloseStationMenu");
             Click(_station, "Restart"); Click(_map, "Parking"); Click(_map, "Primary");
             yield return WaitForPanel<Game.Approach.ApproachPanelView>();
             MainApproachDriver.Complete();
@@ -421,12 +423,13 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return Load();
             Assert.That(_root.Presenter.Progress.CanContinue, Is.True);
             Assert.That(_root.Presenter.Session.Station.Animals, Is.Empty);
-            Click(_station, "StationMenu"); Click(_station, "StationMemorial");
+            Click(_station, "StationMenu"); Click(_station, "TabMemorial"); Click(_station, "MemorialCard0");
             Assert.That(FeedbackContains("柚子"), Is.True);
             Assert.That(_station.GetComponentsInChildren<Image>().Single(i => i.name == "DialogPortrait").sprite,
                 Is.Not.Null);
             yield return layout.CaptureAndAssert(_station, "adoption-memorial");
             Click(_station, "OverlayCancel");
+            Click(_station, "CloseStationMenu");
             Click(_station, "Restart"); Click(_map, "Yard"); Click(_map, "Primary");
             yield return WaitForPanel<Game.Approach.ApproachPanelView>();
         }

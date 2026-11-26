@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261126-站内菜单改版-38456717.md",
+  "sessionId": "38456717",
+  "phase": "scope-change",
+  "readAt": "2026-11-26T18:12:27.927Z",
+  "writePaths": [
+    "docs/协作任务/20261126-站内菜单改版-38456717.md",
+    "docs/协作执行记录/20261126-站内菜单改版-38456717/",
+    "docs/站内菜单功能盘点与优化建议.md",
+    "test-results/station-ui-20261126/",
+    "test-results/station-ui-20261127/",
+    "tools/unity.ps1",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_Loading.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_StationLoop.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/StationPreview/StationHandbookAuthor.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Editor/StationPreview/StationHandbookAuthor.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Station/StationEconomyMenu.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Station/StationPreviewSession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationHandbookMemoryView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationHandbookMemoryView.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationHandbookModels.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationHandbookModels.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationHandbookOfferView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationHandbookOfferView.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationHandbookSheet.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationHandbookSheet.cs.meta",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/Habitat/StationSceneChrome.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/UI/StationPanelView.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/StationPreviewText.json",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/MainContinuityPlayTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/StationEconomyPlayTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PlayMode/StationSceneUiTests.cs"
+  ],
+  "contextDigest": "22f207616a38247946a9ab9627346a2e010ecf8af38794e56bd91731f4324321",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "828e9e702ae5c0a02de89f49865adf95590f3db115ab5f6e3c2a42aca4bcdef6"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261126-世界天气调度-38456717.md",
+      "sha256": "d69bc0870eac577a20c6f207f6e7d2f136d58936661736c13829ba0b6e7309d4"
+    },
+    {
+      "path": "docs/协作任务/20261126-开始界面按钮排版-38455757.md",
+      "sha256": "378edfca32e2e553d4356b9f09fe5e99ce670ca70905e7fc1817af7d48108f1d"
+    },
+    {
+      "path": "docs/协作任务/20261126-站内菜单改版-38456717.md",
+      "sha256": "450a28cd7f78a75e1fdd36c1ea4757266c296f854c30d4c4804671ead1925bde"
+    },
+    {
+      "path": "docs/协作任务/20261126-站内返回主界面与存档菜单-38455757.md",
+      "sha256": "a2505fa5c54eb9ad0d83ffee62c504a64b3ebdbb64844c176269e1fd2b66f22e"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}

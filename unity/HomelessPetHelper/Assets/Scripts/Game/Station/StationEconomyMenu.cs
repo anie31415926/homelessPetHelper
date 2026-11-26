@@ -24,7 +24,8 @@ namespace HomelessPetHelper.Game.Station
             _saveFailed = saveFailed;
         }
 
-        internal void Open() => Show(0);
+        internal void Open(int index = 0) =>
+            Show(index < 0 || index >= Items.Length ? 0 : index);
 
         private void Show(int index)
         {

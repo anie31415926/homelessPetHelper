@@ -3596,6 +3596,31 @@
       }
     },
     {
+      "id": "ui.station.handbook.gear",
+      "name": "救助站手账设置齿轮",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "救助站手账设置页静态Prefab引用；临时图标，不代表正式美术定稿",
+      "use": "256×256透明底灰色小齿轮，显示44×44；替代原'Settings'花朵切片，避开与装饰花混淆",
+      "plannedBytes": 8192,
+      "files": [
+        {
+          "role": "runtime",
+          "path": "unity/HomelessPetHelper/Assets/Art/UI/T_UI_Gear.png"
+        }
+      ],
+      "generation": {
+        "tool": "PowerShell System.Drawing 程序绘制",
+        "notes": "按8齿+中心孔几何绘制，浅灰填充、深灰描边；无外部参考或许可风险，运行时仅保证44px可辨。"
+      },
+      "review": {
+        "visual": "pending",
+        "rights": "pending",
+        "target": "pending"
+      }
+    },
+    {
       "id": "ui.handdrawn.controls",
       "name": "手绘UI14切片候选页",
       "module": "CommonUI",

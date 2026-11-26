@@ -4,7 +4,7 @@ param(
         'LoadingAssets', 'LoadingStartup',
         'StationAssets', 'StationArt', 'LoopAssets', 'ResourceAudit',
         'SiegeAssets', 'SiegeLayout', 'SiegeBuild', 'PetMotionAssets', 'PetMotionAudit', 'PetMotionBake',
-        'MainAssets', 'ApproachAssets', 'MapInfoAssets', 'YardFieldAssets', 'YardFieldRefine', 'LevelUiAssets', 'LevelUiStyle', 'LevelUiRefresh', 'LevelUiFullscreen', 'LevelPresentation', 'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
+        'MainAssets', 'ApproachAssets', 'MapInfoAssets', 'YardFieldAssets', 'YardFieldRefine', 'LevelUiAssets', 'LevelUiStyle', 'LevelUiRefresh', 'LevelUiFullscreen', 'LevelPresentation', 'StationHandbook', 'EditMode', 'PlayMode', 'Build', 'BuildDevelopment')]
     [string]$Task = 'EditMode',
     [string]$EditorPath = $env:UNITY_EDITOR_PATH,
     [string]$TestFilter,
@@ -117,6 +117,13 @@ switch ($Task)
     {
         if (-not $Isolated) { throw 'LevelPresentation requires an isolated snapshot.' }
         $unityArguments += @('-quit', '-executeMethod', 'HomelessPetHelper.Editor.LevelUi.LevelPresentationAuthor.Apply')
+        break
+    }
+    'StationHandbook'
+    {
+        if (-not $Isolated) { throw 'StationHandbook requires an isolated snapshot.' }
+        $unityArguments += @('-quit', '-executeMethod',
+            'HomelessPetHelper.Editor.StationPreview.StationHandbookAuthor.Apply')
         break
     }
     'LevelUiFullscreen'

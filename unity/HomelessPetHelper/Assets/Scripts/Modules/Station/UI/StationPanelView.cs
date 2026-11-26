@@ -58,8 +58,6 @@ namespace HomelessPetHelper.Modules.Station.UI
         public event Action<Vector2, int> StrokeRequested;
         public event Action<bool> SuspensionChanged;
         public event Action SettingsRequested;
-        public event Action EconomyRequested;
-        public event Action MemorialRequested;
         public event Action RenameRequested;
 
         public DirtSurfaceView Surface => _surface;
@@ -103,10 +101,13 @@ namespace HomelessPetHelper.Modules.Station.UI
         public void SetSettingsAvailable(bool available)
         { if (_chrome != null) _chrome.SetSettingsAvailable(available); }
         public void RequestSettings() => SettingsRequested?.Invoke();
-        public void RequestEconomy() => EconomyRequested?.Invoke();
-        public void SetEconomyLabel(string label) => _chrome?.SetEconomyLabel(label);
-        internal void RequestMemorial() => MemorialRequested?.Invoke();
-        public void SetMemorialLabel(string label) => _chrome?.SetMemorialLabel(label);
+        public void SetHandbookLabels(string title, string[] tabs, string[] pages) =>
+            _chrome?.SetHandbookLabels(title, tabs, pages);
+        public void SetHandbookStatus(string status) => _chrome?.SetHandbookStatus(status);
+        public void SetHandbookOffers(string aid, Habitat.HandbookOffer[] offers, Action<int> open) =>
+            _chrome?.SetHandbookOffers(aid, offers, open);
+        public void SetHandbookMemories(Habitat.HandbookMemory[] memories, Action<int> open) =>
+            _chrome?.SetHandbookMemories(memories, open);
         public void BindOverlay(ILevelOverlay overlay) => _overlay = overlay;
         public void SetOverlaySuspended(bool suspended)
         {
