@@ -20,8 +20,9 @@ namespace HomelessPetHelper.Game.Loading
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Button _loadSave, _newGame, _closeSlots;
         [SerializeField] private Button[] _slots, _deleteSlots;
-        [SerializeField] private Button _confirmDelete;
-        [SerializeField] private UnityEngine.UI.Text _deleteWarning;
+        [SerializeField] private Button _confirmDelete, _dialogCancel;
+        [SerializeField] private UnityEngine.UI.Text _deleteWarning, _deleteTitle;
+        [SerializeField] private GameObject _deleteDialog;
         [SerializeField] private GameObject _savePage, _saveBackdrop;
         [SerializeField] private UnityEngine.UI.Text _saveHeading, _saveFeedback, _entryFeedback;
         private LoadingText _strings;
@@ -44,6 +45,7 @@ namespace HomelessPetHelper.Game.Loading
             _newGame.onClick.AddListener(() => SaveListRequested?.Invoke(true));
             _closeSlots.onClick.AddListener(CloseSlots);
             _confirmDelete.onClick.AddListener(ConfirmDelete);
+            _dialogCancel.onClick.AddListener(CloseSlots);
             for (int i = 0; i < _slots.Length; i++)
             {
                 int slot = i;
@@ -76,6 +78,8 @@ namespace HomelessPetHelper.Game.Loading
             _saveBackdrop.SetActive(true);
             _savePage.SetActive(true);
             _saveHeading.text = newOnly ? _strings.create : _strings.load;
+            _deleteDialog.SetActive(false);
+            _closeSlots.gameObject.SetActive(true);
             _confirmDelete.gameObject.SetActive(false);
             _deleteWarning.gameObject.SetActive(false);
             bool anyEmpty = false;
@@ -112,19 +116,15 @@ namespace HomelessPetHelper.Game.Loading
         internal void ShowDeleteConfirmation(int slot, Action confirmed)
         {
             _confirmDeletion = confirmed;
-            _saveHeading.text = _strings.deleteTitle;
+            _deleteDialog.SetActive(true);
+            _deleteTitle.text = _strings.deleteTitle;
             _saveFeedback.text = string.Empty;
             _deleteWarning.text = string.Format(_strings.deleteWarning, string.Format(_strings.slotName, slot + 1));
             _deleteWarning.gameObject.SetActive(true);
-            for (int i = 0; i < _slots.Length; i++)
-            {
-                _slots[i].gameObject.SetActive(false);
-                _deleteSlots[i].gameObject.SetActive(false);
-            }
-            Label(_closeSlots, _strings.cancel);
-            SetButtonSpan(_closeSlots, 0.075f, 0.48f);
+            _closeSlots.gameObject.SetActive(false);
             Label(_confirmDelete, _strings.deleteConfirm);
             _confirmDelete.gameObject.SetActive(true);
+            Label(_dialogCancel, _strings.cancel);
         }
 
         private void ConfirmDelete()

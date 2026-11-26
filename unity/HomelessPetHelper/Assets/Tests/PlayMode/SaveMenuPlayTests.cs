@@ -220,7 +220,8 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Click("加载存档");
                 ClickDelete(2);
                 Assert.That(HasText("确定删除存档 2？\n救助进度将无法恢复。"), Is.True);
-                Assert.That(SlotListOpen(), Is.False);
+                // 确认改为弹窗浮在存档列表上：列表保持打开，只由遮罩挡住点击。
+                Assert.That(SlotListOpen(), Is.True);
                 Click("取消");
                 Assert.That(_slots[1].Slots, Is.EqualTo(target));
                 Assert.That(SlotListOpen(), Is.True);
