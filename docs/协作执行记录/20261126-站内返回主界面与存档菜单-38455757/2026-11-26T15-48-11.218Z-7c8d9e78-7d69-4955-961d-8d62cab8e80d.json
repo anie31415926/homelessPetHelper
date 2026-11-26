@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261126-站内返回主界面与存档菜单-38455757.md",
+  "sessionId": "38455757035822594",
+  "phase": "delivery",
+  "readAt": "2026-11-26T15:48:11.218Z",
+  "writePaths": [
+    "docs/协作任务/20261126-站内返回主界面与存档菜单-38455757.md",
+    "docs/协作执行记录/20261126-站内返回主界面与存档菜单-38455757/",
+    "unity/HomelessPetHelper/Assets/Scripts/Framework/Persistence/SaveService.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainGameRoot.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/UI/LevelOverlaySession.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/StationPreviewText.json",
+    "unity/HomelessPetHelper/Assets/Tests/Persistence/SaveServiceTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/SaveMenuPlayTests.cs"
+  ],
+  "contextDigest": "fbb9af4081dd5fd1862682b96d9bf43cded0454446462ace9d9652adcf7d2274",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "828e9e702ae5c0a02de89f49865adf95590f3db115ab5f6e3c2a42aca4bcdef6"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261126-世界天气调度-38456717.md",
+      "sha256": "d69bc0870eac577a20c6f207f6e7d2f136d58936661736c13829ba0b6e7309d4"
+    },
+    {
+      "path": "docs/协作任务/20261126-站内菜单改版-38456717.md",
+      "sha256": "36749b9b2ff16173da7d27367c424c6ef51691363ae52651f781d0ae84d9619a"
+    },
+    {
+      "path": "docs/协作任务/20261126-站内返回主界面与存档菜单-38455757.md",
+      "sha256": "a2505fa5c54eb9ad0d83ffee62c504a64b3ebdbb64844c176269e1fd2b66f22e"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}
