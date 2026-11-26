@@ -2,6 +2,8 @@ using System;
 using HomelessPetHelper.Modules.Animals;
 using HomelessPetHelper.Modules.Animals.UI;
 using HomelessPetHelper.Modules.Approach;
+using HomelessPetHelper.Modules.Outing.UI;
+using HomelessPetHelper.Modules.WorldTime;
 using HomelessPetHelper.Framework.UI.Motion;
 using HomelessPetHelper.Framework.UI;
 using UnityEngine;
@@ -41,6 +43,18 @@ namespace HomelessPetHelper.Game.Field
             Weather = Layout == null ? default : weather;
             if (_weatherGraphic != null)
                 _weatherGraphic.Show(Layout?.IllustratedInterior == true ? default : Weather, _motion);
+        }
+
+        public void SetLighting(WorldTimeSnapshot time)
+        {
+            var tint = Color.white;
+            if (Layout != null)
+            {
+                var worldTint = CityMapDayNight.ArtworkTintAtTime(time.MinuteOfDay, time.MinutesPerDay);
+                tint = Color.Lerp(Color.white, worldTint, Layout.IllustratedInterior ? .25f : .65f);
+            }
+            _background.color = tint;
+            if (_foreground != null) _foreground.color = tint;
         }
 
         public void Configure(OutingFieldLayout layout, Sprite background, bool dog, ApproachSession opening,

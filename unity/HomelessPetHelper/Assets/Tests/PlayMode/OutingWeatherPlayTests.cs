@@ -11,9 +11,11 @@ using HomelessPetHelper.Modules.Siege.UI;
 using HomelessPetHelper.Modules.Station.UI;
 using HomelessPetHelper.Tests.Support;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace HomelessPetHelper.Tests.PlayMode
@@ -43,11 +45,18 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(presenter.WorldWeather.Kind, Is.EqualTo(OutingWeatherKind.Rain));
             yield return VerifyMapWeather(map, presenter);
             var start = presenter.WorldWeather;
+            var clock = presenter.Session.Clock;
+            var originalTime = clock.Current;
+            Assert.That(clock.TryAdvance(originalTime.Version, originalTime.MinutesPerDay * 7L / 12,
+                out _, out _), Is.True);
             MainApproachDriver.Click(map, "Yard");
             MainApproachDriver.Click(map, "Primary"); yield return null;
             var opening = Object.FindObjectOfType<ApproachPanelView>();
             var scene = opening.FieldScene;
             Assert.That(scene.Weather, Is.EqualTo(start));
+            var nightTint = Background(scene).color;
+            Assert.That(nightTint.r, Is.LessThan(nightTint.b));
+            Assert.That(nightTint.r, Is.LessThan(.8f));
             presenter.SetWorldWeather(new OutingWeather(OutingWeatherKind.Fog, OutingWeatherIntensity.Heavy));
             Assert.That(scene.Weather, Is.EqualTo(start));
             yield return VerifyEffects(opening.GetComponent<Canvas>(), scene);
@@ -59,6 +68,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             var battle = Object.FindObjectOfType<SiegeTrialView>();
             var field = battle.GetComponent<OutingFieldView>();
             Assert.That(field.Weather, Is.EqualTo(start), "Opening and rescue must share the departure snapshot.");
+            Assert.That(Background(field).color, Is.EqualTo(nightTint));
             Assert.That(scene.GetComponentInChildren<OutingWeatherGraphic>(true).isActiveAndEnabled, Is.False);
             Assert.That(field.GetComponentInChildren<OutingWeatherGraphic>().raycastTarget, Is.False);
             yield return VerifyBattleFog(battle.GetComponent<Canvas>(), field);
@@ -81,7 +91,11 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(scene, Is.Not.Null);
             Assert.That(scene.Layout.PointId, Is.EqualTo("parking"));
             Assert.That(scene.Weather, Is.EqualTo(state));
+            Assert.That(Background(scene).color, Is.EqualTo(Color.white));
         }
+
+        private static Image Background(OutingFieldView scene) =>
+            (Image)new SerializedObject(scene).FindProperty("_background").objectReferenceValue;
 
         private static IEnumerator VerifyMapWeather(CityMapView map, MainLoopPresenter presenter)
         {

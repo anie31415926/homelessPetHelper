@@ -437,6 +437,7 @@ namespace HomelessPetHelper.Game
             _approach.ConfigureField(_activeField, artwork.Background, encounter.DogArtwork, opening,
                 artwork.Props, artwork);
             _approach.FieldScene.SetWeather(_outingWeather.Value);
+            _approach.FieldScene.SetLighting(Session.Clock.Current);
             _approach.Bind(opening, _content.ApproachText, encounter.DogArtwork, EnterSiege,
                 ReturnFromApproach, SetFieldSuspended);
             _approach.FieldScene.ShowAnimal(_outingAnimal.Current);
@@ -496,6 +497,7 @@ namespace HomelessPetHelper.Game
             _approach.ConfigureField(_explorationLayout, artwork.Background, false, _explorationOpening,
                 artwork.Props, artwork, exploring: true);
             _approach.FieldScene.SetWeather(_outingWeather ?? WorldWeather);
+            _approach.FieldScene.SetLighting(Session.Clock.Current);
             _approach.Bind(_explorationOpening, _content.ApproachText, false, CloseExplorationActivity,
                 HandleBack, SetFieldSuspended, exploring: true);
             _approach.gameObject.SetActive(true);
@@ -639,6 +641,7 @@ namespace HomelessPetHelper.Game
             _battleScene.Configure(_activeField, artwork.Background, encounter.DogArtwork, null, fieldSnapshot,
                 artwork.Props, artwork);
             _battleScene.SetWeather(_outingWeather ?? WorldWeather);
+            _battleScene.SetLighting(Session.Clock.Current);
             _battleScene.ShowAnimal(_outingAnimal.Current);
             _siege.Battlefield.ShowAnimal(_outingAnimal.Current);
             _petMotion.ShowAnimal(_outingAnimal.Current);

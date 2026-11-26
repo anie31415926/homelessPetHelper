@@ -82,9 +82,15 @@ namespace HomelessPetHelper.Modules.Outing.UI
 
         internal void RenderTime(int minuteOfDay, int minutesPerDay)
         {
-            _worldMinute = Mathf.Repeat(OpeningMinute + minuteOfDay / (float)minutesPerDay * DayMinutes, DayMinutes);
+            _worldMinute = DisplayMinute(minuteOfDay, minutesPerDay);
             if (isActiveAndEnabled) Advance(0);
         }
+
+        public static Color ArtworkTintAtTime(int minuteOfDay, int minutesPerDay) =>
+            AtMinute(DisplayMinute(minuteOfDay, minutesPerDay)).Art;
+
+        private static float DisplayMinute(int minuteOfDay, int minutesPerDay) =>
+            Mathf.Repeat(OpeningMinute + minuteOfDay / (float)minutesPerDay * DayMinutes, DayMinutes);
 
         internal void Advance(float elapsed)
         {
