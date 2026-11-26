@@ -174,6 +174,37 @@ namespace HomelessPetHelper.Framework.Persistence
             }
         }
 
+        /// <summary>
+        /// Removes both copies of one profile without requiring a readable checkpoint: each original is
+        /// archived first, then deleted and read back. Used for damaged or unopenable slots that
+        /// <see cref="TryDelete"/> cannot observe. Callers must reopen before writing a new save.
+        /// </summary>
+        public static bool TryReset(ISaveStorage storage, out SaveError error)
+        {
+            error = null;
+            if (storage == null) throw new ArgumentNullException(nameof(storage));
+            if (!(storage is IDeletableSaveStorage deletable))
+                return Fail(SaveErrorCode.NotOpen, "This storage cannot remove checkpoints.", out error);
+            try
+            {
+                for (int slot = 0; slot < 2; slot++)
+                {
+                    if (storage.Read(slot) == null) continue;
+                    storage.Archive(slot);
+                    deletable.Delete(slot);
+                    if (storage.Read(slot) != null)
+                        throw new IOException("Checkpoint still exists after deletion.");
+                }
+                return true;
+            }
+            catch (Exception cause)
+            {
+                error = new SaveError(SaveErrorCode.WriteUncertain,
+                    "Reset could not remove every checkpoint; archived copies are kept.", cause);
+                return false;
+            }
+        }
+
         private void DeleteObservedCopy(IDeletableSaveStorage storage, int slot)
         {
             if (_observed[slot] == null) return;

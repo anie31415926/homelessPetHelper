@@ -61,8 +61,8 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Assert.That(clock.TryAdvance(clock.Current.Version, 9, out _, out _), Is.True);
                 Save();
                 yield return WaitForSave();
-                Click("小小救助站");
-                yield return WaitForCover();
+                Click("回到开始");
+                yield return WaitForLoading();
                 Click("加载存档");
                 var first = Slot(1).GetComponentInChildren<Text>().text;
                 Assert.That(first, Does.Contain("累计救助：0").And.Contain("保存时间："));
@@ -113,10 +113,43 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Assert.That(_root.Presenter.Progress.PersistenceError, Is.Not.Null);
                 Assert.That(HasText("存档完成！"), Is.False);
                 Assert.That(_slots[0].Slots, Is.EqualTo(originals));
-                Click("返回");
-                Click("加载存档");
-                Click("选择此档");
+                Click("回到开始");
+                yield return WaitForLoading();
+                Click("继续游戏");
+                yield return WaitForMain();
                 Assert.That(_root.Presenter.Progress.CanContinue, Is.True);
+            }
+            finally { SceneManager.sceneLoaded -= Configure; }
+        }
+
+        [UnityTest]
+        public IEnumerator StationMenuReturnsHomeAfterSavingAndCancelKeepsPlay()
+        {
+            SceneManager.sceneLoaded += Configure;
+            try
+            {
+                yield return SceneManager.LoadSceneAsync(LoadingSceneRoot.ScenePath);
+                yield return null;
+                Click("进入救助站");
+                yield return WaitForMain();
+                var before = _slots[0].Slots.ToArray();
+                var station = Object.FindObjectOfType<Modules.Station.UI.StationPanelView>();
+                station.RequestSettings();
+                Assert.That(HasText("回到开始"), Is.True);
+
+                Click("回到开始");
+                Assert.That(HasText("会先保存当前进度，再回到开始。"), Is.True);
+                Click("继续游戏");
+                Assert.That(HasText("手动存档"), Is.False);
+                Assert.That(_slots[0].Slots, Is.EqualTo(before));
+
+                station.RequestSettings();
+                Click("回到开始");
+                Click("回到开始");
+                yield return WaitForLoading();
+                yield return WaitForCover();
+                Assert.That(HasText("继续游戏"), Is.True);
+                Assert.That(_slots[0].Slots, Is.Not.EqualTo(before));
             }
             finally { SceneManager.sceneLoaded -= Configure; }
         }
@@ -261,6 +294,16 @@ namespace HomelessPetHelper.Tests.PlayMode
         {
             float deadline = Time.realtimeSinceStartup + 25f;
             while (SceneManager.GetActiveScene().path != LoadingSceneRoot.MainScenePath || _root.Presenter == null)
+            {
+                Assert.That(Time.realtimeSinceStartup, Is.LessThan(deadline));
+                yield return null;
+            }
+        }
+
+        private static IEnumerator WaitForLoading()
+        {
+            float deadline = Time.realtimeSinceStartup + 25f;
+            while (SceneManager.GetActiveScene().path != LoadingSceneRoot.ScenePath)
             {
                 Assert.That(Time.realtimeSinceStartup, Is.LessThan(deadline));
                 yield return null;
