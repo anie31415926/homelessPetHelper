@@ -19,29 +19,37 @@ namespace HomelessPetHelper.Game.Loading
         [SerializeField] private UnityEngine.UI.Text _enterLabel;
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Button _loadSave, _newGame, _closeSlots;
-        [SerializeField] private Button[] _slots;
+        [SerializeField] private Button[] _slots, _deleteSlots;
+        [SerializeField] private Button _confirmDelete;
+        [SerializeField] private UnityEngine.UI.Text _deleteWarning;
         [SerializeField] private GameObject _savePage, _saveBackdrop;
-        [SerializeField] private UnityEngine.UI.Text _saveHeading, _saveFeedback;
+        [SerializeField] private UnityEngine.UI.Text _saveHeading, _saveFeedback, _entryFeedback;
         private LoadingText _strings;
         private StartupSaveSlots.Info[] _slotInfo;
         private bool _choicesAvailable;
+        private Action _confirmDeletion;
         private int _lastPercent = -1;
         public float Progress { get; private set; }
         public event Action EnterRequested;
 
         public event Action<bool> SaveListRequested;
         public event Action<int, bool> SlotRequested;
+        internal event Action<int> DeleteRequested;
+
+        internal enum SlotFeedback { None, Deleted, DeleteFailed }
 
         private void Awake()
         {
             _loadSave.onClick.AddListener(() => SaveListRequested?.Invoke(false));
             _newGame.onClick.AddListener(() => SaveListRequested?.Invoke(true));
             _closeSlots.onClick.AddListener(CloseSlots);
+            _confirmDelete.onClick.AddListener(ConfirmDelete);
             for (int i = 0; i < _slots.Length; i++)
             {
                 int slot = i;
                 _slots[i].onClick.AddListener(() => SlotRequested?.Invoke(slot,
                     _slotInfo[slot].Status == StartupSaveSlots.State.Empty));
+                _deleteSlots[i].onClick.AddListener(() => DeleteRequested?.Invoke(slot));
             }
         }
 
@@ -60,17 +68,23 @@ namespace HomelessPetHelper.Game.Loading
             _newGame.gameObject.SetActive(!_savePage.activeSelf);
         }
 
-        internal void ShowSlots(StartupSaveSlots.Info[] slots, bool newOnly, bool failed = false)
+        internal void ShowSlots(StartupSaveSlots.Info[] slots, bool newOnly, bool failed = false,
+            SlotFeedback feedback = SlotFeedback.None)
         {
             _slotInfo = slots;
             HideEntry();
             _saveBackdrop.SetActive(true);
             _savePage.SetActive(true);
             _saveHeading.text = newOnly ? _strings.create : _strings.load;
+            _confirmDelete.gameObject.SetActive(false);
+            _deleteWarning.gameObject.SetActive(false);
             bool anyEmpty = false;
             for (int i = 0; i < slots.Length; i++)
             {
                 var slot = slots[i];
+                _slots[i].gameObject.SetActive(true);
+                _deleteSlots[i].gameObject.SetActive(!newOnly && slot.CanDelete);
+                Label(_deleteSlots[i], _strings.delete);
                 var name = string.Format(_strings.slotName, i + 1);
                 anyEmpty |= slot.Status == StartupSaveSlots.State.Empty;
                 var date = slot.SavedAt?.ToLocalTime().ToString(_strings.dateFormat, CultureInfo.InvariantCulture)
@@ -82,8 +96,37 @@ namespace HomelessPetHelper.Game.Loading
                 _slots[i].interactable = slot.Status == StartupSaveSlots.State.Empty ||
                     !newOnly && slot.Status == StartupSaveSlots.State.Saved;
             }
-            _saveFeedback.text = failed ? _strings.slotFailed : newOnly && !anyEmpty ? _strings.slotFull : string.Empty;
+            _saveFeedback.text = feedback switch
+            {
+                SlotFeedback.Deleted => _strings.slotDeleted,
+                SlotFeedback.DeleteFailed => _strings.deleteFailed,
+                _ => failed ? _strings.slotFailed : newOnly && !anyEmpty ? _strings.slotFull : string.Empty
+            };
             Label(_closeSlots, _strings.back);
+        }
+
+        internal void ShowDeleteConfirmation(int slot, Action confirmed)
+        {
+            _confirmDeletion = confirmed;
+            _saveHeading.text = _strings.deleteTitle;
+            _saveFeedback.text = string.Empty;
+            _deleteWarning.text = string.Format(_strings.deleteWarning, string.Format(_strings.slotName, slot + 1));
+            _deleteWarning.gameObject.SetActive(true);
+            for (int i = 0; i < _slots.Length; i++)
+            {
+                _slots[i].gameObject.SetActive(false);
+                _deleteSlots[i].gameObject.SetActive(false);
+            }
+            Label(_closeSlots, _strings.cancel);
+            Label(_confirmDelete, _strings.deleteConfirm);
+            _confirmDelete.gameObject.SetActive(true);
+        }
+
+        private void ConfirmDelete()
+        {
+            var confirmed = _confirmDeletion;
+            _confirmDeletion = null;
+            confirmed?.Invoke();
         }
 
         private void Update()
@@ -93,6 +136,11 @@ namespace HomelessPetHelper.Game.Loading
 
         private void CloseSlots()
         {
+            if (_confirmDeletion != null)
+            {
+                ShowSlots(_slotInfo, false);
+                return;
+            }
             _saveBackdrop.SetActive(false);
             _savePage.SetActive(false);
             _enter.gameObject.SetActive(true);
@@ -123,11 +171,13 @@ namespace HomelessPetHelper.Game.Loading
 
         public void HideEntry()
         {
+            _confirmDeletion = null;
             _enter.gameObject.SetActive(false);
             _loadSave.gameObject.SetActive(false);
             _newGame.gameObject.SetActive(false);
             _savePage.SetActive(false);
             _saveBackdrop.SetActive(false);
+            _entryFeedback.gameObject.SetActive(false);
         }
 
         public void SetOpacity(float opacity) => _canvasGroup.alpha = opacity;
@@ -144,6 +194,12 @@ namespace HomelessPetHelper.Game.Loading
                 _percent.text = percent.ToString(System.Globalization.CultureInfo.InvariantCulture) + "%";
             }
             _label.text = _strings.loading;
+        }
+
+        internal void ShowEntryFailure()
+        {
+            _entryFeedback.text = _strings.slotFailed;
+            _entryFeedback.gameObject.SetActive(true);
         }
 
         public void ShowFailure()
@@ -175,6 +231,7 @@ namespace HomelessPetHelper.Game.Loading
             public string failed;
             public string enter, resume, load, create, back;
             public string slotName, slotSaved, slotEmpty, slotUnavailable, slotFailed, slotFull, unknown, dateFormat;
+            public string delete, deleteTitle, deleteWarning, deleteConfirm, cancel, slotDeleted, deleteFailed;
         }
     }
 }

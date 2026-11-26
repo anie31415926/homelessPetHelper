@@ -12,6 +12,13 @@
   "slotUnavailable": "{0} · 暂时无法读取",
   "slotFailed": "无法打开所选存档，请重试或选择其他档位。",
   "slotFull": "存档已满，已有进度会保留。",
+  "delete": "删除",
+  "deleteTitle": "删除存档",
+  "deleteWarning": "确定删除{0}？\n救助进度将无法恢复。",
+  "deleteConfirm": "确认删除",
+  "cancel": "取消",
+  "slotDeleted": "存档已删除。",
+  "deleteFailed": "未能确认删除，请检查后重试。",
   "unknown": "未记录",
   "dateFormat": "yyyy-MM-dd HH:mm"
 }

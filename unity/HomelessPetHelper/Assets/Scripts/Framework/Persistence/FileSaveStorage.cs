@@ -5,7 +5,7 @@ using System.Text;
 namespace HomelessPetHelper.Framework.Persistence
 {
     /// <summary>Desktop/native storage. Not a claim of durable browser or WeChat filesystem support.</summary>
-    public sealed class FileSaveStorage : ISaveStorage
+    public sealed class FileSaveStorage : IDeletableSaveStorage
     {
         private static readonly Encoding Utf8 = new UTF8Encoding(false, true);
         private readonly string _directory;
@@ -40,6 +40,12 @@ namespace HomelessPetHelper.Framework.Persistence
                 stream.Write(bytes, 0, bytes.Length);
                 stream.Flush(true);
             }
+        }
+
+        public void Delete(int slot)
+        {
+            try { File.Delete(GetPath(slot)); }
+            catch (DirectoryNotFoundException) { } // The checkpoint is already absent.
         }
 
         public void Archive(int slot)

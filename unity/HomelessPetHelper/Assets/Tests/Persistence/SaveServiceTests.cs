@@ -76,6 +76,36 @@ namespace HomelessPetHelper.Tests.Persistence
         }
 
         [Test]
+        public void DeleteRemovesBothFileCheckpointsAndAllowsTheProfileToBeReused()
+        {
+            string parent = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            try
+            {
+                var storage = new FileSaveStorage(Path.Combine(parent, "target"));
+                var other = new FileSaveStorage(Path.Combine(parent, "other"));
+                other.Write(0, "unrelated profile");
+                var section = Section();
+                var save = Service(storage, section);
+                Open(save, SaveOpenStatus.New);
+                Commit(save, section, 1);
+                Commit(save, section, 2);
+
+                Open(save, SaveOpenStatus.Loaded);
+                Assert.That(save.TryDelete(out var error), Is.True, error?.ToString());
+                Assert.That(storage.Read(0), Is.Null);
+                Assert.That(storage.Read(1), Is.Null);
+                Assert.That(other.Read(0), Is.EqualTo("unrelated profile"));
+                Open(save, SaveOpenStatus.New);
+                Commit(save, section, 3);
+                Assert.That(save.Revision, Is.EqualTo(1));
+            }
+            finally
+            {
+                if (Directory.Exists(parent)) Directory.Delete(parent, true);
+            }
+        }
+
+        [Test]
         public void NewProfileDoesNotWriteUntilExplicitCommitAndSurvivesNewService()
         {
             var storage = new MemoryStorage();

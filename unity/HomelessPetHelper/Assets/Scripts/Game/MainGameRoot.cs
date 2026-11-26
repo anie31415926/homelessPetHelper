@@ -106,10 +106,11 @@ namespace HomelessPetHelper.Game
                 _activeSlot = launch.slot;
                 if (!StartGame(launch.storage, launch.create))
                 {
-                    StartupSaveSlots.EntryFailed = true;
+                    StartupSaveSlots.FailedEntrySlot = launch.slot;
                     SceneManager.LoadSceneAsync(LoadingSceneRoot.ScenePath);
                     return;
                 }
+                StartupSaveSlots.RecordLastPlayed(launch.history, launch.slot);
             }
             else ShowSaveMenu(); // Direct Main entry remains available for Editor previews.
             Music = new MainMusicSession(Audio.Playback, _content.MusicCatalog);
@@ -207,6 +208,7 @@ namespace HomelessPetHelper.Game
                 expectedNewGame.HasValue ? (Action)ShowStationSaveMenu : null, expectedNewGame);
             if (expectedNewGame.HasValue && !Presenter.AcceptedSaveSelection)
             {
+                Debug.LogWarning("Save selection failed: " + Presenter.Progress.PersistenceError, this);
                 Presenter.Dispose();
                 Presenter = null;
                 return false;

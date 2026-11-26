@@ -26,6 +26,18 @@ mergeInto(LibraryManager.library, {
             return HPHSaveResponse({ ok: false, code: 'read_failed' });
         }
     },
+    HPHSaveDelete__deps: ['$HPHSaveResponse'],
+    HPHSaveDelete: function (keyPointer) {
+        if (typeof wx === 'undefined' || !wx.removeStorageSync) {
+            return HPHSaveResponse({ ok: false, code: 'unsupported_runtime' });
+        }
+        try {
+            wx.removeStorageSync(UTF8ToString(keyPointer));
+            return HPHSaveResponse({ ok: true });
+        } catch (error) {
+            return HPHSaveResponse({ ok: false, code: 'delete_failed' });
+        }
+    },
     HPHSaveWrite__deps: ['$HPHSaveResponse'],
     HPHSaveWrite: function (keyPointer, contentPointer) {
         if (typeof wx === 'undefined' || !wx.setStorageSync) {

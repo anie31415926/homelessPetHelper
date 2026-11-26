@@ -115,7 +115,13 @@ namespace HomelessPetHelper.Tests.EditMode
                         Assert.That(property.objectReferenceValue, Is.Not.Null, property.propertyPath);
             }
             var buttons = prefab.GetComponentsInChildren<Button>(true);
-            Assert.That(buttons.Length, Is.EqualTo(7));
+            Assert.That(buttons.Length, Is.EqualTo(11));
+            foreach (var name in new[] { "DeleteSlot1", "DeleteSlot2", "DeleteSlot3", "ConfirmDelete" })
+            {
+                var button = buttons.Single(candidate => candidate.name == name);
+                Assert.That(button.gameObject.activeSelf, Is.False);
+                Assert.That(button.GetComponentInParent<SafeAreaView>(true), Is.Not.Null);
+            }
             foreach (Image image in prefab.GetComponentsInChildren<Image>(true))
             {
                 bool backdrop = image.name == "SaveBackdrop";
