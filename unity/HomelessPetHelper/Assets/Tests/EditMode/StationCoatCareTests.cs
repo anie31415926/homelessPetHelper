@@ -143,7 +143,7 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [Test]
-        public void FinishedWashBlocksBothToolsForOneGameDayAcrossRestore()
+        public void FinishedWashOnlyBlocksWashingForOneGameDayAcrossRestore()
         {
             var f = new Fixture();
             f.Check();
@@ -158,8 +158,13 @@ namespace HomelessPetHelper.Tests.EditMode
                 state, (_, amount) => Fixture.Field(amount));
             Assert.That(restored.TryBegin(false, out var wash), Is.False);
             Assert.That(wash, Is.EqualTo(StationCoatCareFailure.AlreadyClean));
-            Assert.That(restored.TryBegin(true, out var groom), Is.False);
-            Assert.That(groom, Is.EqualTo(StationCoatCareFailure.AlreadyTidy));
+            long fur = restored.Fur.RemainingAmount;
+            Assert.That(fur, Is.Positive, "Washing must leave loose fur to groom.");
+            Assert.That(restored.TryBegin(true, out _), Is.True);
+            Assert.That(restored.TryEnd(out long emptyGroom, out _), Is.True);
+            Assert.That(emptyGroom, Is.Zero);
+            Assert.That(restored.Fur.RemainingAmount, Is.EqualTo(fur));
+            Assert.That(restored.Capture().LastGroomCompletedMinute, Is.Null);
             f.Clock.TryAdvance(f.Clock.Current.Version, 360, out _, out _);
             restored.RefreshAccumulation();
             Assert.That(f.Animal.Current.Coat.Dirtiness, Is.EqualTo(5));
@@ -171,7 +176,7 @@ namespace HomelessPetHelper.Tests.EditMode
             restored.RefreshAccumulation();
             Assert.That(f.Animal.Current.Coat.Dirtiness, Is.EqualTo(15));
             Assert.That(restored.CanBegin(false), Is.False);
-            Assert.That(restored.CanBegin(true), Is.False);
+            Assert.That(restored.CanBegin(true), Is.True, "Wash cooldown must not block grooming.");
             f.Clock.TryAdvance(f.Clock.Current.Version, 1, out _, out _);
             restored.RefreshAccumulation();
             Assert.That(f.Animal.Current.Coat.Dirtiness, Is.EqualTo(20));
@@ -187,6 +192,45 @@ namespace HomelessPetHelper.Tests.EditMode
             restored.RefreshAccumulation();
             Assert.That(f.Animal.Current.Coat.Dirtiness, Is.EqualTo(65));
             Assert.That(restored.Dirt.RemainingAmount, Is.EqualTo(6500));
+        }
+
+        [Test]
+        public void WashAndGroomCooldownsExpireAtTheirOwnCompletionTimesAfterRestore()
+        {
+            var f = new Fixture();
+            f.Check();
+            var care = f.CreateCare(f.Id);
+            Assert.That(care.TryBegin(false, out _), Is.True);
+            SweepCoat(care);
+            Assert.That(care.TryEnd(out _, out _), Is.True);
+            long washedAt = f.Clock.Current.ElapsedMinutes;
+            Assert.That(f.Animal.Current.Coat.LooseFur, Is.EqualTo(50));
+            Assert.That(care.TryBegin(true, out _), Is.True);
+            SweepCoat(care);
+            Assert.That(care.TryEnd(out long groomingMinutes, out _), Is.True);
+            Assert.That(groomingMinutes, Is.EqualTo(12));
+            long groomedAt = f.Clock.Current.ElapsedMinutes;
+            Assert.That(f.Animal.Current.Coat.Dirtiness, Is.Zero);
+            Assert.That(f.Animal.Current.Coat.LooseFur, Is.Zero);
+            var state = care.Capture();
+            Assert.That(state.LastWashCompletedMinute, Is.EqualTo(washedAt));
+            Assert.That(state.LastGroomCompletedMinute, Is.EqualTo(groomedAt));
+            var restored = new StationCoatCare(f.Station, f.Id, f.Animal.Current.AnimalId, f.Clock,
+                state, (_, amount) => Fixture.Field(amount));
+            long justBeforeWashReady = washedAt + f.Clock.Current.MinutesPerDay - 1;
+            Assert.That(f.Clock.TryAdvance(f.Clock.Current.Version,
+                justBeforeWashReady - groomedAt, out _, out _), Is.True);
+            restored.RefreshAccumulation();
+            Assert.That(restored.GetBeginFailure(false), Is.EqualTo(StationCoatCareFailure.AlreadyClean));
+            Assert.That(restored.GetBeginFailure(true), Is.EqualTo(StationCoatCareFailure.AlreadyTidy));
+            Assert.That(f.Clock.TryAdvance(f.Clock.Current.Version, 1, out _, out _), Is.True);
+            restored.RefreshAccumulation();
+            Assert.That(restored.CanBegin(false), Is.True);
+            Assert.That(restored.CanBegin(true), Is.False, "Grooming completed later and stays on its own timer.");
+            Assert.That(f.Clock.TryAdvance(f.Clock.Current.Version, groomingMinutes, out _, out _), Is.True);
+            restored.RefreshAccumulation();
+            Assert.That(restored.CanBegin(false), Is.True);
+            Assert.That(restored.CanBegin(true), Is.True);
         }
 
         [Test]

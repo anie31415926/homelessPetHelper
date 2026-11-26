@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261126-恢复Loading小动物-01a1f897.md",
+  "sessionId": "01a1f897-81cd-74e2-94ec-687a2431ee42",
+  "phase": "start",
+  "readAt": "2026-11-26T08:15:50.236Z",
+  "writePaths": [
+    "art-source/resource-catalog.json",
+    "docs/Loading场景与拆层动效.md",
+    "docs/协作任务/20261126-恢复Loading小动物-01a1f897.md",
+    "docs/协作执行记录/20261126-恢复Loading小动物-01a1f897/",
+    "test-results/loading-animals-restore-20261126-01a1f897/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_Loading.prefab",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/LoadingTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/LoadingPlayTests.cs"
+  ],
+  "contextDigest": "0dfe75ab1f699c242a1ec94000c1ab237b4e2575b2696dab229453c62134855f",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "d4ae4e329bccb11f1085ec29657ae15290f3ba0785cc642cfd2fa9845df9f479"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261126-恢复Loading小动物-01a1f897.md",
+      "sha256": "a265c4dc091f40a82d325edc026dcb31c6a0c8e9d7df9c2f33109147e450099e"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}

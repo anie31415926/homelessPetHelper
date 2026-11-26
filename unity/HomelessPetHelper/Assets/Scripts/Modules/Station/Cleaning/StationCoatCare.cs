@@ -140,7 +140,7 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
             if (grooming && !animal.CarePermissions.AcceptsGroom) return StationCoatCareFailure.GroomNotAccepted;
             if (!grooming && !animal.CarePermissions.AcceptsWash) return StationCoatCareFailure.WashNotAccepted;
             long? completedMinute = grooming ? _lastGroomCompletedMinute : _lastWashCompletedMinute;
-            if (IsCoolingDown(_lastWashCompletedMinute) || (grooming && IsCoolingDown(completedMinute)) ||
+            if (IsCoolingDown(completedMinute) ||
                 ((_createField != null || completedMinute.HasValue) &&
                     (grooming ? Fur : Dirt).RemainingAmount == 0))
                 return grooming ? StationCoatCareFailure.AlreadyTidy : StationCoatCareFailure.AlreadyClean;

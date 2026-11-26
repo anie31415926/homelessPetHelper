@@ -25,9 +25,12 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             vh.Clear();
             if (string.IsNullOrEmpty(_visual)) return;
-            SiegeTokenArt.Draw(vh, _visual, rectTransform.rect.center,
-                Mathf.Min(rectTransform.rect.width, rectTransform.rect.height) * .43f,
-                0, palette: _spritePalette);
+            var rect = rectTransform.rect;
+            float size = Mathf.Min(rect.width, rect.height) * .43f;
+            if (_visual == "paw") SiegeTokenArt.Paw(vh, rect.center, size, _spritePalette);
+            else if (SiegeTokenArt.SupportsTower(_visual))
+                SiegeTokenArt.Tower(vh, _visual, rect.center, size, false, _spritePalette);
+            else SiegeTokenArt.Draw(vh, _visual, rect.center, size, 0, palette: _spritePalette);
         }
     }
 }

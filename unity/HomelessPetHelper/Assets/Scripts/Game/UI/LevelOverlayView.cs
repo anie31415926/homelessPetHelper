@@ -37,6 +37,8 @@ namespace HomelessPetHelper.Game.UI
         [SerializeField] private GameObject _handbookPage;
         [SerializeField] private Button _openHandbook, _handbookUnits, _handbookDefense, _closeHandbook;
         [SerializeField] private RectTransform _handbookRow;
+        [SerializeField] private Button _handbookExplain;
+        [SerializeField] private UiText _handbookLegend;
         private readonly List<RectTransform> _handbookRows = new List<RectTransform>();
         [SerializeField] private ScrollRect _handbookScroll;
         private LevelOverlaySession _session;
@@ -63,6 +65,9 @@ namespace HomelessPetHelper.Game.UI
             _defaultConfirm = _confirmLabel.text;
             _defaultCancel = _cancelLabel.text;
             _stationKeyboardError = text.Get("station.keyboardUnavailable");
+            _handbookLegend.text = text.Get("handbook.legend");
+            _handbookExplain.GetComponentInChildren<UiText>(true).text = text.Get("handbook.explain");
+            _handbookLegend.gameObject.SetActive(false);
             _defaultConfirmationAlignment = _confirmationText.alignment;
             SetConfirmation(string.Empty);
             _noticeUntil = 0;
@@ -102,14 +107,23 @@ namespace HomelessPetHelper.Game.UI
                     _handbookRows.Add(Instantiate(_handbookRow, _handbookRow.parent, false));
                 var row = _handbookRows[i];
                 var entry = entries[i];
-                row.GetComponentInChildren<UiText>(true).text = entry.Text;
+                var body = row.Find("EntryBody");
+                body.Find("Description").GetComponent<UiText>().text = entry.Text;
                 row.GetComponentInChildren<Modules.Siege.UI.SiegePropIcon>(true).Show(entry.Icon);
-                row.GetComponentInChildren<Modules.Siege.UI.SiegeResourceGraphic>(true).gameObject.SetActive(entry.UsesSupply);
+                var cost = row.Find("Portrait/SupplyCost");
+                cost.gameObject.SetActive(entry.Cost > 0);
+                cost.Find("Amount").GetComponent<UiText>().text = entry.Cost.ToString();
+                var attributes = body.Find("Attributes");
+                attributes.gameObject.SetActive(entry.Attributes != null);
+                if (entry.Attributes != null)
+                    for (int index = 0; index < entry.Attributes.Length; index++)
+                        attributes.GetChild(index).GetComponentInChildren<UiText>(true).text = entry.Attributes[index];
                 row.gameObject.SetActive(true);
             }
             for (int i = entries.Count; i < _handbookRows.Count; i++) _handbookRows[i].gameObject.SetActive(false);
             _handbookUnits.interactable = defense;
             _handbookDefense.interactable = !defense;
+            _handbookLegend.gameObject.SetActive(false);
             _handbookScroll.verticalNormalizedPosition = 1;
         }
 
@@ -224,6 +238,7 @@ namespace HomelessPetHelper.Game.UI
             _handbookUnits.onClick.AddListener(HandbookUnits);
             _handbookDefense.onClick.AddListener(HandbookDefense);
             _closeHandbook.onClick.AddListener(CloseHandbook);
+            _handbookExplain.onClick.AddListener(ToggleHandbookLegend);
             _saveSettings.onClick.AddListener(SaveSettings);
             _cancelSettings.onClick.AddListener(CancelSettings);
             _resetSettings.onClick.AddListener(ResetSettings);
@@ -248,6 +263,7 @@ namespace HomelessPetHelper.Game.UI
             _handbookUnits.onClick.RemoveListener(HandbookUnits);
             _handbookDefense.onClick.RemoveListener(HandbookDefense);
             _closeHandbook.onClick.RemoveListener(CloseHandbook);
+            _handbookExplain.onClick.RemoveListener(ToggleHandbookLegend);
             _saveSettings.onClick.RemoveListener(SaveSettings);
             _cancelSettings.onClick.RemoveListener(CancelSettings);
             _resetSettings.onClick.RemoveListener(ResetSettings);
@@ -279,6 +295,8 @@ namespace HomelessPetHelper.Game.UI
         private void HandbookUnits() => _session?.SelectHandbookTab(false);
         private void HandbookDefense() => _session?.SelectHandbookTab(true);
         private void CloseHandbook() => _session?.CloseHandbook();
+        private void ToggleHandbookLegend() =>
+            _handbookLegend.gameObject.SetActive(!_handbookLegend.gameObject.activeSelf);
         private void Replay() => _session?.ReplayGuidance();
         private void SaveSettings() => _session?.SaveSettings();
         private void CancelSettings() => _session?.CancelSettings();

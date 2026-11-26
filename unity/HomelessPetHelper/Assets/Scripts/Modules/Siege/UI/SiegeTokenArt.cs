@@ -23,6 +23,50 @@ namespace HomelessPetHelper.Modules.Siege.UI
         internal static bool SupportsTower(string visual) => visual == "paper" || visual == "thread"
             || visual == "scratch" || visual == "kennel" || visual == "bubbles" || visual == "slippers";
 
+        internal static void DrawSymbol(VertexHelper mesh, SiegeResourceGraphic.Symbol symbol,
+            Vector2 center, float size, Color ink)
+        {
+            var paint = new Paint(mesh, center, size);
+            switch (symbol)
+            {
+                case SiegeResourceGraphic.Symbol.Supply:
+                    paint.Ellipse(0, .30f, .84f, .51f, ink);
+                    paint.Ellipse(0, .30f, .72f, .40f, BoneColor);
+                    paint.Ellipse(0, -.17f, .88f, .58f, ink);
+                    paint.Ellipse(0, -.17f, .76f, .45f, FishColor);
+                    paint.Ellipse(0, .17f, .85f, .20f, ink);
+                    paint.Ellipse(0, .21f, .72f, .12f, BoneColor);
+                    paint.Box(0, -.75f, .65f, .14f, ink);
+                    break;
+                case SiegeResourceGraphic.Symbol.Damage:
+                    paint.Line(-.55f, -.62f, .43f, .36f, .24f, ink);
+                    var hammer = paint.Child(.35f, .42f, 1, -.78f);
+                    hammer.Box(0, 0, 1.16f, .64f, ink);
+                    hammer.Box(0, 0, .95f, .42f, FishColor);
+                    break;
+                case SiegeResourceGraphic.Symbol.Cadence:
+                    paint.Disc(0, 0, .78f, ink);
+                    paint.Disc(0, 0, .62f, BoneColor);
+                    paint.Box(0, .84f, .48f, .20f, ink);
+                    paint.Line(0, 0, 0, .40f, .13f, ink);
+                    paint.Line(0, 0, .29f, -.10f, .13f, ink);
+                    break;
+                case SiegeResourceGraphic.Symbol.Range:
+                    paint.Line(-.83f, 0, .83f, 0, .17f, ink);
+                    paint.Line(-.83f, 0, -.44f, .38f, .17f, ink);
+                    paint.Line(-.83f, 0, -.44f, -.38f, .17f, ink);
+                    paint.Line(.83f, 0, .44f, .38f, .17f, ink);
+                    paint.Line(.83f, 0, .44f, -.38f, .17f, ink);
+                    break;
+                case SiegeResourceGraphic.Symbol.Durability:
+                    paint.Box(0, .26f, 1.40f, .95f, ink);
+                    paint.Triangle(-.70f, -.20f, .70f, -.20f, 0, -.86f, ink);
+                    paint.Box(0, .24f, 1.10f, .67f, FeatherColor);
+                    paint.Triangle(-.55f, -.09f, .55f, -.09f, 0, -.65f, FeatherColor);
+                    break;
+            }
+        }
+
         internal static void Paw(VertexHelper mesh, Vector2 center, float size, SceneSpritePalette palette = null)
         {
             if (palette != null && palette.TryDraw(mesh, "paw", center, Vector2.one * size * 2)) return;

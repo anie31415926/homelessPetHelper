@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261126-洗梳独立冷却修复-01a1f897.md",
+  "sessionId": "01a1f897-81cd-74e2-94ec-687a2431ee42",
+  "phase": "start",
+  "readAt": "2026-11-26T08:46:12.628Z",
+  "writePaths": [
+    "docs/协作任务/20261126-洗梳独立冷却修复-01a1f897.md",
+    "docs/协作执行记录/20261126-洗梳独立冷却修复-01a1f897/",
+    "docs/救助站模块实现记录.md",
+    "test-results/care-cooldowns-20261126-01a1f897/",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/Cleaning/StationCoatCare.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/StationPreviewText.json",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/StationCoatCareTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/MainContinuityPlayTests.cs"
+  ],
+  "contextDigest": "546950f2054c3565cbcf01474c98df4e198d0e54e9797dd4300d8aad76b2e446",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "d4ae4e329bccb11f1085ec29657ae15290f3ba0785cc642cfd2fa9845df9f479"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261126-洗梳独立冷却修复-01a1f897.md",
+      "sha256": "db7c31bf7c763c6619f819548c6f5e221a7d115f6018959e7740c6b26bcd8a3c"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}

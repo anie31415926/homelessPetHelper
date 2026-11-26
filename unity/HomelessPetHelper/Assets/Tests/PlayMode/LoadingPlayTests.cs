@@ -327,6 +327,31 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator OriginalIllustrationRendersWhileOnlyTheTitleCoverUsesPortraits()
+        {
+            yield return LoadPreview();
+            var view = Object.FindObjectOfType<LoadingView>();
+            var motion = Object.FindObjectOfType<LoadingArtworkMotion>();
+            Assert.That(motion.OrbitAnimalCount, Is.EqualTo(13));
+            Assert.That(motion.DoorAnimalCount, Is.EqualTo(2));
+            Assert.That(view.GetComponentsInChildren<PetPortraitView>(), Is.Empty);
+            var sprites = view.GetComponentsInChildren<Image>().Where(image => image.sprite != null)
+                .Select(image => image.sprite.name).ToArray();
+            Assert.That(sprites, Does.Contain("OrbitTurtle"));
+            Assert.That(sprites, Does.Contain("OrbitRabbitPair"));
+            Assert.That(sprites, Does.Contain("ProgressCat"));
+            Assert.That(view.GetComponentsInChildren<RawImage>(), Is.Empty);
+            view.ShowCover();
+            yield return null;
+            Assert.That(view.GetComponentsInChildren<PetPortraitView>().Length, Is.EqualTo(2));
+            view.ShowLoading();
+            yield return null;
+            Assert.That(view.GetComponentsInChildren<PetPortraitView>(), Is.Empty);
+            Assert.That(motion.OrbitAnimalCount, Is.EqualTo(13));
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator MotionRunsWhileTimeScaleIsZeroAndResetsOnReuse()
         {
             yield return LoadPreview();

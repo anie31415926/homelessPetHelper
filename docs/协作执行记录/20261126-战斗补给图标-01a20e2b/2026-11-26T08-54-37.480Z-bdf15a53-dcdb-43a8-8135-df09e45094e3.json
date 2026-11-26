@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261126-战斗补给图标-01a20e2b.md",
+  "sessionId": "01a20e2b-b3e5-7d91-97ca-ee833a285dd8",
+  "phase": "scope-change",
+  "readAt": "2026-11-26T08:54:37.480Z",
+  "writePaths": [
+    "docs/协作任务/20261126-战斗补给图标-01a20e2b.md",
+    "docs/协作执行记录/20261126-战斗补给图标-01a20e2b/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_SiegeTrial.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeFieldView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeHandLayout.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Siege/SiegeTrialText.json",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/RealtimeSiegePlayTests.cs"
+  ],
+  "contextDigest": "3ecb05dac0b650e3b7ff7aa461b6074820799ba6a9d633fc171b8499691cb07f",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "d4ae4e329bccb11f1085ec29657ae15290f3ba0785cc642cfd2fa9845df9f479"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261126-战斗补给图标-01a20e2b.md",
+      "sha256": "3b8af5d2e7f8d14d5446c3962dba0bce1661be7b2a908381e06ae22c2b1cdc3a"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}

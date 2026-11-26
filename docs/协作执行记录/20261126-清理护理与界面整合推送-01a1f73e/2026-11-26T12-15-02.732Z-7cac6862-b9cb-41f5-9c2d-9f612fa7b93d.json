@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261126-清理护理与界面整合推送-01a1f73e.md",
+  "sessionId": "01a1f73e-aef3-7dc0-bc1a-9f850afd1d31",
+  "phase": "start",
+  "readAt": "2026-11-26T12:15:02.732Z",
+  "writePaths": [
+    "art-source/resource-catalog.json",
+    "docs/Loading场景与拆层动效.md",
+    "docs/协作任务/20261126-微信导出上传-01a1f897.md",
+    "docs/协作任务/20261126-恢复Loading小动物-01a1f897.md",
+    "docs/协作任务/20261126-战斗补给图标-01a20e2b.md",
+    "docs/协作任务/20261126-洗梳独立冷却修复-01a1f897.md",
+    "docs/协作任务/20261126-清理护理与界面整合推送-01a1f73e.md",
+    "docs/协作任务/20261126-清理解谜返回可选地图-01a1f73e.md",
+    "docs/协作任务/20261126-道具机关图鉴-01a20e2b.md",
+    "docs/协作执行记录/20261126-微信导出上传-01a1f897/2026-11-26T07-57-11.569Z-3d17dfda-ef53-4cfd-8672-8a5e0f5f1307.json",
+    "docs/协作执行记录/20261126-微信导出上传-01a1f897/2026-11-26T08-07-33.590Z-f4c577cb-bb53-4511-97c4-12527d43294e.json",
+    "docs/协作执行记录/20261126-微信导出上传-01a1f897/2026-11-26T09-39-04.545Z-5bc20536-5fd7-4acc-a480-a912cf270d09.json",
+    "docs/协作执行记录/20261126-微信导出上传-01a1f897/2026-11-26T09-47-45.644Z-11aa97dd-3f44-4c63-9bd8-28446c775052.json",
+    "docs/协作执行记录/20261126-恢复Loading小动物-01a1f897/2026-11-26T08-15-50.236Z-e0f0b7ec-4ea2-4ac4-9f55-2563d5d11614.json",
+    "docs/协作执行记录/20261126-恢复Loading小动物-01a1f897/2026-11-26T08-28-47.296Z-fce1c121-141f-4c36-9d78-85360f79538b.json",
+    "docs/协作执行记录/20261126-战斗补给图标-01a20e2b/2026-11-26T08-47-56.172Z-e995d11c-6279-47ba-96de-66bad91d718a.json",
+    "docs/协作执行记录/20261126-战斗补给图标-01a20e2b/2026-11-26T08-54-37.480Z-bdf15a53-dcdb-43a8-8135-df09e45094e3.json",
+    "docs/协作执行记录/20261126-战斗补给图标-01a20e2b/2026-11-26T08-56-05.782Z-3026d72b-b4b7-4247-a80d-c2313e3e1954.json",
+    "docs/协作执行记录/20261126-洗梳独立冷却修复-01a1f897/2026-11-26T08-46-12.628Z-5fe48a36-4834-4532-97c4-caf250d6a255.json",
+    "docs/协作执行记录/20261126-洗梳独立冷却修复-01a1f897/2026-11-26T08-51-06.679Z-a2501cc2-7491-414c-a4a6-43d5a7475fbf.json",
+    "docs/协作执行记录/20261126-洗梳独立冷却修复-01a1f897/2026-11-26T08-53-43.488Z-4c46088f-e348-4fb5-997c-c8116b8ea4cc.json",
+    "docs/协作执行记录/20261126-清理护理与界面整合推送-01a1f73e/",
+    "docs/协作执行记录/20261126-清理解谜返回可选地图-01a1f73e/2026-11-26T10-12-20.123Z-3e517ced-d9f7-4620-867d-acc837ba956b.json",
+    "docs/协作执行记录/20261126-清理解谜返回可选地图-01a1f73e/2026-11-26T10-18-47.840Z-cf1d36da-2bac-4dfa-a7c9-976bc32361bf.json",
+    "docs/协作执行记录/20261126-道具机关图鉴-01a20e2b/2026-11-26T08-25-07.601Z-946b1c6f-71b3-41d1-b4e9-8f2b32c87c1b.json",
+    "docs/协作执行记录/20261126-道具机关图鉴-01a20e2b/2026-11-26T08-37-52.237Z-be39df6f-2e11-4e51-96a0-13d49efe1712.json",
+    "docs/救助站模块实现记录.md",
+    "test-results/submit-opening-ui-20261126/",
+    "test-results/unity/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_Loading.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_SiegeTrial.prefab",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_LevelOverlays.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainLoopPresenter.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/UI/LevelOverlayView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/UI/SiegeHandbook.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeFieldView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeHandLayout.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegePropIcon.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeResourceGraphic.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeTokenArt.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Station/Cleaning/StationCoatCare.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/LevelUiText.json",
+    "unity/HomelessPetHelper/Assets/Settings/Game/StationPreviewText.json",
+    "unity/HomelessPetHelper/Assets/Settings/Siege/SiegeTrialText.json",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/LoadingTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/StationCoatCareTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/CityMapUiRefinementTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/LoadingPlayTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/MainContinuityPlayTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/RealtimeSiegePlayTests.cs"
+  ],
+  "contextDigest": "dbdac1e500662a3dd7b689b9f0790dfbc998977fd3faefb63aba662a8e8afc25",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "d4ae4e329bccb11f1085ec29657ae15290f3ba0785cc642cfd2fa9845df9f479"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261126-清理护理与界面整合推送-01a1f73e.md",
+      "sha256": "b970f493f3bd1f48a411dd4e9e979fb5c03655aa6abbc17d66db03df2da06dbf"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}

@@ -221,108 +221,260 @@
       "value": "返回目标"
     },
     {
-      "key": "handbook.tower",
-      "value": "<b>{0}</b>\n{1}"
+      "key": "handbook.explain",
+      "value": "属性说明"
+    },
+    {
+      "key": "handbook.legend",
+      "value": "<b>攻击力</b>：每次命中造成的伤害。\n<b>攻击速度</b>：两次攻击之间的间隔；越快，出手越频繁。\n<b>作用范围</b>：能从多远开始攻击或触发机关。\n<b>耐久度</b>：失效前能承受多少伤害。\n米饭图标旁的数字表示部署道具消耗的补给。"
     },
     {
       "key": "handbook.attack.single",
-      "value": "自动投球机专盯一件道具。让耐打的道具走前面，或先拆掉它。"
+      "value": "锁定一件进入范围的道具，持续对其发动攻击。"
     },
     {
       "key": "handbook.attack.slow",
-      "value": "在路上留一片减速区。用跑得快的道具穿过去，也可以换一路。"
+      "value": "在目标位置铺开一片减速区域，经过的道具会暂时放慢脚步。"
     },
     {
       "key": "handbook.attack.push",
-      "value": "先亮出预警，再把范围内的道具推出去。等这一击过去再集中出发。"
+      "value": "先标记落点，短暂蓄力后将标记范围内的道具击退。"
+    },
+    {
+      "key": "handbook.animalTitle",
+      "value": "动物的防备"
     },
     {
       "key": "handbook.animal",
-      "value": "<b>动物的防备</b>\n{0}：它会盯住靠近门口的道具。\n{1}：留意场上预警，别把道具放得太近。{2}"
-    },
-    {
-      "key": "handbook.attributes",
-      "value": "速度 {0} · 耐久 {1}\n威力 {2} · 射程 {3}"
-    },
-    {
-      "key": "handbook.unit",
-      "value": "<b>{0}</b>\n{1}\n{2}"
-    },
-    {
-      "key": "handbook.merge",
-      "value": "合体后：{0}"
-    },
-    {
-      "key": "handbook.rank.low",
-      "value": "轻巧"
-    },
-    {
-      "key": "handbook.rank.medium",
-      "value": "均衡"
-    },
-    {
-      "key": "handbook.rank.high",
-      "value": "出众"
-    },
-    {
-      "key": "handbook.copy.fish",
-      "value": "猫记慢烘小鱼干，香味沿着路一路跑。"
-    },
-    {
-      "key": "handbook.copy.yarn",
-      "value": "毛线铺的招牌小团，滚到哪儿，暖到哪儿。"
-    },
-    {
-      "key": "handbook.copy.feather",
-      "value": "逗猫杆的轻巧配件，风一吹就先出发。"
-    },
-    {
-      "key": "handbook.copy.bone",
-      "value": "老手艺磨出的圆边小骨头，狗狗老远就能闻到。"
-    },
-    {
-      "key": "handbook.copy.disc",
-      "value": "玩具铺的远投款，转得欢，落得稳。"
-    },
-    {
-      "key": "handbook.copy.rope",
-      "value": "结实的水手结，越咬越紧，落地还会弹两下。"
-    },
-    {
-      "key": "handbook.copy.bouquet",
-      "value": "红绳一扎，小鱼干变成了猫咪的豪华礼盒。"
-    },
-    {
-      "key": "handbook.copy.yarnLion",
-      "value": "抖开暖暖的鬃毛，身边的伙伴都想靠过来。"
-    },
-    {
-      "key": "handbook.copy.pinwheel",
-      "value": "轻羽一转，路口也跟着转了个弯。"
-    },
-    {
-      "key": "handbook.copy.boneWheel",
-      "value": "骨头铺的发条新品，见到机关就敲起鼓点。"
-    },
-    {
-      "key": "handbook.copy.triDisc",
-      "value": "三片飞盘叠成一朵小花，越转越带劲。"
-    },
-    {
-      "key": "handbook.copy.ropeOctopus",
-      "value": "绳结铺的护送队长，伸出短短的手扶住同伴。"
-    },
-    {
-      "key": "handbook.ability",
-      "value": "能力：{0}"
+      "value": "{0}会阻挡靠近的道具；{1}会先标记范围，再击退范围内的道具。"
     },
     {
       "key": "handbook.hold",
-      "value": "\n{0}：被按住的道具暂时停下，其他道具还能前进。"
+      "value": "<b>{0}</b>：按住一件道具，使它暂时无法继续前进。"
     },
     {
       "key": "handbook.carry",
-      "value": "\n{0}：它会把一件道具叼回去，避免只派一件领头。"
+      "value": "<b>{0}</b>：叼起一件道具，将它带回后方。"
+    },
+    {
+      "key": "handbook.merge",
+      "value": "<b>合体</b>：{0} 件{1}可合为{2}。"
+    },
+    {
+      "key": "handbook.ability",
+      "value": "<b>特殊能力</b>：{0}"
+    },
+    {
+      "key": "handbook.copy.fish",
+      "value": "猫鲜食品社精选碧湾海域鲜鱼，经十八道工序慢烘，并由美食品鉴团的猫咪逐批试吃。迄今没有一只猫能抵挡这缕鲜香。"
+    },
+    {
+      "key": "handbook.copy.yarn",
+      "value": "冬青街织物社将细纱染成暖红色，再手工绕成掌心大小的毛线球。每团末端都留着一段便于牵引的软线。"
+    },
+    {
+      "key": "handbook.copy.feather",
+      "value": "来自晴港玩具社的轻羽系列。羽梗覆以薄纸，边缘经过柔化处理，掠过地面时几乎不留声响。"
+    },
+    {
+      "key": "handbook.copy.bouquet",
+      "value": "猫鲜食品社的节庆礼束。成品用暗红缎带束紧，外层鱼干交错排列，保留了刚出炉时的鲜香。"
+    },
+    {
+      "key": "handbook.copy.yarnLion",
+      "value": "冬青街织物社的展柜珍品。手工打结的层叠鬃毛藏着备用软线，自绣好的第一日起便被编入护送队。"
+    },
+    {
+      "key": "handbook.copy.pinwheel",
+      "value": "晴港玩具社以轻羽为叶、细木为轴制成的风车。平衡校正须在无风室内完成，合格的风车方可编号出厂。"
+    },
+    {
+      "key": "handbook.copy.bone",
+      "value": "牧铃工坊的磨牙玩具。匠人逐件磨圆两端，再以淡淡的肉香封存，作为新手训练套装的开箱礼。"
+    },
+    {
+      "key": "handbook.copy.disc",
+      "value": "晴港飞盘社的练习用远投盘。圆边经过多次打磨，盘面的蓝色标记源于港口指示风向的旧旗。"
+    },
+    {
+      "key": "handbook.copy.rope",
+      "value": "白帆绳艺社沿用旧港船工的编结法，将多股软绳锁成一枚紧实的绳结。外层缠线便于抓握。"
+    },
+    {
+      "key": "handbook.copy.boneWheel",
+      "value": "牧铃工坊受老式报信铃启发，为骨形外壳装入发条。出厂时须通过三连敲检验，确保击声清晰。"
+    },
+    {
+      "key": "handbook.copy.triDisc",
+      "value": "晴港飞盘社的竞赛款，由三片飞盘围绕同一盘心装配。部件沿用初代标色，方便训练员识别。"
+    },
+    {
+      "key": "handbook.copy.ropeOctopus",
+      "value": "白帆绳艺社为护送工作编制的章鱼形绳具。中央绳结压得紧实，多余的绳端编成一束束短臂。"
+    },
+    {
+      "key": "handbook.copy.clip",
+      "value": "冬青街工坊以硬木和弹簧制成的夹具，最初用来固定烘干架上的布片。救助站在夹口加装软垫后，将它编入工具箱。"
+    },
+    {
+      "key": "handbook.power.yarn",
+      "value": "为附近同伴提供一层护套，吸收伤害。"
+    },
+    {
+      "key": "handbook.power.bouquet",
+      "value": "抵消一次击退，保留原来的位置。"
+    },
+    {
+      "key": "handbook.power.yarnLion",
+      "value": "为较远的同伴提供护套；护套消耗后可更快补上。"
+    },
+    {
+      "key": "handbook.power.pinwheel",
+      "value": "可主动改道一次，从当前位置移向另一条路线。"
+    },
+    {
+      "key": "handbook.power.rope",
+      "value": "以绳结稳住自身，抵消一次击退。"
+    },
+    {
+      "key": "handbook.power.boneWheel",
+      "value": "首次攻击机关时启动发条，接连敲击三次。"
+    },
+    {
+      "key": "handbook.power.triDisc",
+      "value": "可主动改道一次，从当前位置移向另一条路线。"
+    },
+    {
+      "key": "handbook.power.ropeOctopus",
+      "value": "自身可抵消一次击退，并为附近最多两件道具各提供一次击退保护。"
+    },
+    {
+      "key": "handbook.power.clip",
+      "value": "命中尚未开始蓄力的机关时，可推迟它的下一次攻击。"
+    },
+    {
+      "key": "handbook.copy.paper",
+      "value": "巡场手作部用纸管和折叠纸座装配的发射器，是猫舍演练最早采用的警戒装置。"
+    },
+    {
+      "key": "handbook.copy.thread",
+      "value": "由绕线轮改装而成的布防装置。线头以便于收拾的方式预先打结，拉开后可在通路上铺展。"
+    },
+    {
+      "key": "handbook.copy.scratch",
+      "value": "巡场手作部为猫舍制作的弹力拍板。软垫装在长柄一侧，蓄力时会先在地面留下醒目标记。"
+    },
+    {
+      "key": "handbook.copy.kennel",
+      "value": "牧铃工坊将巡场发射器装进犬舍造型外壳，并为底座加装软垫，便于在训练场搬运布置。"
+    },
+    {
+      "key": "handbook.copy.bubbles",
+      "value": "晴港玩具社制作的泡泡装置，容器周边设有接液槽。演练时会将泡沫送到目标所在的位置。"
+    },
+    {
+      "key": "handbook.copy.slippers",
+      "value": "犬舍巡场员以旧拖鞋和弹簧改装的摆臂。鞋底质地柔软，摆动前的标记则沿用了演练场的通用图案。"
+    },
+    {
+      "key": "handbook.rank.damage.zero",
+      "value": "无伤害"
+    },
+    {
+      "key": "handbook.stat.damage",
+      "value": "攻击力：{0}"
+    },
+    {
+      "key": "handbook.rank.damage.1",
+      "value": "微弱"
+    },
+    {
+      "key": "handbook.rank.damage.2",
+      "value": "较弱"
+    },
+    {
+      "key": "handbook.rank.damage.3",
+      "value": "普通"
+    },
+    {
+      "key": "handbook.rank.damage.4",
+      "value": "较强"
+    },
+    {
+      "key": "handbook.rank.damage.5",
+      "value": "强劲"
+    },
+    {
+      "key": "handbook.stat.cadence",
+      "value": "攻击速度：{0}"
+    },
+    {
+      "key": "handbook.rank.cadence.1",
+      "value": "极慢"
+    },
+    {
+      "key": "handbook.rank.cadence.2",
+      "value": "较慢"
+    },
+    {
+      "key": "handbook.rank.cadence.3",
+      "value": "普通"
+    },
+    {
+      "key": "handbook.rank.cadence.4",
+      "value": "较快"
+    },
+    {
+      "key": "handbook.rank.cadence.5",
+      "value": "极快"
+    },
+    {
+      "key": "handbook.stat.range",
+      "value": "作用范围：{0}"
+    },
+    {
+      "key": "handbook.rank.range.1",
+      "value": "极近"
+    },
+    {
+      "key": "handbook.rank.range.2",
+      "value": "较近"
+    },
+    {
+      "key": "handbook.rank.range.3",
+      "value": "适中"
+    },
+    {
+      "key": "handbook.rank.range.4",
+      "value": "较远"
+    },
+    {
+      "key": "handbook.rank.range.5",
+      "value": "极远"
+    },
+    {
+      "key": "handbook.stat.durability",
+      "value": "耐久度：{0}"
+    },
+    {
+      "key": "handbook.rank.durability.1",
+      "value": "脆弱"
+    },
+    {
+      "key": "handbook.rank.durability.2",
+      "value": "较低"
+    },
+    {
+      "key": "handbook.rank.durability.3",
+      "value": "普通"
+    },
+    {
+      "key": "handbook.rank.durability.4",
+      "value": "较高"
+    },
+    {
+      "key": "handbook.rank.durability.5",
+      "value": "坚固"
     },
     {
       "key": "guide.siege.defense",

@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261126-道具机关图鉴-01a20e2b.md",
+  "sessionId": "01a20e2b-b3e5-7d91-97ca-ee833a285dd8",
+  "phase": "delivery",
+  "readAt": "2026-11-26T08:37:52.237Z",
+  "writePaths": [
+    "docs/协作任务/20261126-道具机关图鉴-01a20e2b.md",
+    "docs/协作执行记录/20261126-道具机关图鉴-01a20e2b/",
+    "unity/HomelessPetHelper/Assets/Prefabs/Widgets/Widget_LevelOverlays.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/UI/LevelOverlayView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/UI/SiegeHandbook.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegePropIcon.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeResourceGraphic.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeTokenArt.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/LevelUiText.json",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/RealtimeSiegePlayTests.cs"
+  ],
+  "contextDigest": "fc2fbc96c008f5607294993710bc21d00d2854ab35b327b854ad298e4e316ddd",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "d4ae4e329bccb11f1085ec29657ae15290f3ba0785cc642cfd2fa9845df9f479"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261126-道具机关图鉴-01a20e2b.md",
+      "sha256": "4f620759131f23c6a14413731d9e496319d6dadde5260a04c10ff38de7593f45"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}

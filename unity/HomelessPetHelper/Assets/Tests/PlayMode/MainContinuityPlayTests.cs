@@ -440,7 +440,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator CompletedWashBlocksBothButtonsAndKeepsTheCooldownAfterReload()
+        public IEnumerator CompletedWashStillAllowsGroomingAndKeepsSeparateCooldownsAfterReload()
         {
             yield return Load();
             Click(_station, "Restart"); Click(_map, "Primary"); MainApproachDriver.Complete();
@@ -460,6 +460,14 @@ namespace HomelessPetHelper.Tests.PlayMode
             long minutes = _root.Presenter.Session.Clock.Current.ElapsedMinutes;
 
             Assert.That(care.Dirt.RemainingAmount, Is.Zero);
+            long looseFur = care.Fur.RemainingAmount;
+            Assert.That(looseFur, Is.Positive, "Washing must not count as grooming.");
+            Click(_station, "Groom");
+            Assert.That(care.IsActive, Is.True, "The animal can be groomed immediately after washing.");
+            Click(_station, "Finish");
+            Assert.That(care.Fur.RemainingAmount, Is.EqualTo(looseFur));
+            Assert.That(care.Capture().LastGroomCompletedMinute, Is.Null);
+            Assert.That(_root.Presenter.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(minutes));
             Click(_station, "Back");
             Click(_station, "Restart");
             var clock = _root.Presenter.Session.Clock;
@@ -483,10 +491,34 @@ namespace HomelessPetHelper.Tests.PlayMode
             var toast = _station.GetComponentInChildren<ToastView>();
             Click(_station, "Clean");
             Assert.That(toast.CurrentLine, Is.EqualTo("已经很干净啦。"));
+            Assert.That(care.IsActive, Is.False);
+            Assert.That(_root.Presenter.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(returnedMinutes));
+            Click(_station, "Groom");
+            Assert.That(care.IsActive, Is.True, "Reloading retains wash cooldown without blocking grooming.");
+            var fur = care.Fur;
+            for (int y = 0; y < fur.Height; y++)
+                for (int x = 0; x < fur.Width; x++)
+                    if (fur.Sample(y * fur.Width + x) != 0)
+                        care.TryStroke((float)x / (fur.Width - 1), (float)y / (fur.Height - 1), 255);
+            Assert.That(fur.RemainingAmount, Is.Zero);
+            Click(_station, "Finish");
+            long groomedAt = _root.Presenter.Session.Clock.Current.ElapsedMinutes;
+            Assert.That(groomedAt, Is.GreaterThan(returnedMinutes));
+            Assert.That(care.Capture().LastGroomCompletedMinute, Is.EqualTo(groomedAt));
+            Assert.That(care.Dirt.RemainingAmount, Is.EqualTo(regrown), "Grooming must not wash the animal.");
+
+            yield return Load();
+            care = _root.Presenter.Progress.Care.Get(arrival.AnimalId);
+            Assert.That(care.Capture().LastWashCompletedMinute, Is.EqualTo(minutes));
+            Assert.That(care.Capture().LastGroomCompletedMinute, Is.EqualTo(groomedAt));
+            Click(_station, "Animal0");
+            toast = _station.GetComponentInChildren<ToastView>();
+            Click(_station, "Clean");
+            Assert.That(toast.CurrentLine, Is.EqualTo("已经很干净啦。"));
             Click(_station, "Groom");
             Assert.That(toast.CurrentLine, Is.EqualTo("已经很整洁啦。"));
             Assert.That(care.IsActive, Is.False);
-            Assert.That(_root.Presenter.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(returnedMinutes));
+            Assert.That(_root.Presenter.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(groomedAt));
         }
 
         [UnityTest]

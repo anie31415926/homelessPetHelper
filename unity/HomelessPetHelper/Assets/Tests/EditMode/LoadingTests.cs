@@ -13,6 +13,29 @@ namespace HomelessPetHelper.Tests.EditMode
     public sealed class LoadingTests
     {
         [Test]
+        public void LoadingIllustrationRetainsEveryReviewedAnimalSlice()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Panels/Panel_Loading.prefab");
+            var data = new SerializedObject(prefab.GetComponent<LoadingView>());
+            var artwork = (GameObject)data.FindProperty("_previewArtwork").objectReferenceValue;
+            var progress = (GameObject)data.FindProperty("_progress").objectReferenceValue;
+            Assert.That(artwork.GetComponentsInChildren<PetPortraitView>(true), Is.Empty,
+                "Loading is a multi-species illustration, not a main-story pet portrait surface.");
+            Assert.That(progress.GetComponentsInChildren<PetPortraitView>(true), Is.Empty);
+            string[] expected = AssetDatabase.LoadAllAssetsAtPath("Assets/Art/Loading/T_Loading_Elements.png")
+                .OfType<Sprite>().Select(sprite => sprite.name)
+                .Where(name => name.StartsWith("Orbit", StringComparison.Ordinal) ||
+                    name.StartsWith("Door", StringComparison.Ordinal) || name == "ProgressCat").ToArray();
+            Assert.That(expected.Length, Is.EqualTo(16));
+            var images = artwork.GetComponentsInChildren<Image>(true)
+                .Concat(progress.GetComponentsInChildren<Image>(true)).ToArray();
+            Assert.That(images.Where(image => image.sprite != null && expected.Contains(image.sprite.name))
+                .Select(image => image.sprite.name), Is.EquivalentTo(expected));
+            Assert.That(prefab.GetComponentsInChildren<PetPortraitView>(true).Length, Is.EqualTo(2),
+                "Only the two title-cover pets keep the current animated portraits.");
+        }
+
+        [Test]
         public void DemoTaskUsesExplicitTimeClampsAndReleasesIdempotently()
         {
             var task = new DemoLoadingTask(2f);
@@ -69,7 +92,7 @@ namespace HomelessPetHelper.Tests.EditMode
         }
 
         [Test]
-        public void ArtworkUsesOnlyAnimatedPetPortraitsAndKeepsSafeArea()
+        public void ArtworkKeepsMultiSpeciesLoadingAndAnimatedCoverWithSafeArea()
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Panels/Panel_Loading.prefab");
             Assert.That(prefab, Is.Not.Null);
@@ -79,9 +102,9 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(entry.gameObject.activeSelf, Is.False);
             Assert.That(entry.GetComponentInParent<SafeAreaView>(true), Is.Not.Null);
             Assert.That(prefab.GetComponent<GraphicRaycaster>(), Is.Not.Null);
-            Assert.That(motion.OrbitAnimalCount, Is.EqualTo(4));
+            Assert.That(motion.OrbitAnimalCount, Is.EqualTo(13));
             Assert.That(motion.DoorAnimalCount, Is.EqualTo(2));
-            Assert.That(prefab.GetComponentsInChildren<PetPortraitView>(true).Length, Is.EqualTo(9));
+            Assert.That(prefab.GetComponentsInChildren<PetPortraitView>(true).Length, Is.EqualTo(2));
             Assert.That(prefab.GetComponentInChildren<SafeAreaView>(true), Is.Not.Null);
             Assert.That(prefab.GetComponent<CanvasScaler>().referenceResolution, Is.EqualTo(new Vector2(1080, 1920)));
             foreach (var component in new MonoBehaviour[] { motion, prefab.GetComponent<LoadingView>() })

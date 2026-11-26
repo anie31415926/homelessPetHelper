@@ -166,42 +166,42 @@ namespace HomelessPetHelper.Tests.PlayMode
         [UnityTest]
         public IEnumerator VisitWithoutRequestEntersSceneWithDefaultFieldAndReturnsThroughMap()
         {
-            yield return Load();
+            yield return LoadWithOutingSeed(0);
             var root = Object.FindObjectOfType<MainGameRoot>();
             var session = root.Presenter.Session;
             Button("Park").onClick.Invoke();
             Assert.That(Label("PrimaryLabel").text, Is.EqualTo("去探索"));
             Button("Primary").onClick.Invoke();
-            var field = Object.FindObjectOfType<ApproachPanelView>();
+            var field = Object.FindObjectOfType<ApproachPanelView>(true);
             float deadline = Time.realtimeSinceStartup + 7;
             while (Time.realtimeSinceStartup < deadline &&
                 (field == null || !field.isActiveAndEnabled || field.Session == null)) yield return null;
             Assert.That(field.isActiveAndEnabled, Is.True, "A visit must enter the scene, not stay on the map.");
             Assert.That(field.FieldScene.Layout, Is.Not.Null,
                 "An unconfigured point still shows a default field scene, not the bare map.");
-            Assert.That(field.Session.Template.Mode, Is.EqualTo(ApproachMode.Cleanup).Or.EqualTo(ApproachMode.Puzzle),
-                "The activity is picked deterministically, never left as a player choice.");
+            Assert.That(field.Session.Template.Mode, Is.EqualTo(ApproachMode.Puzzle));
             Assert.That(_view.gameObject.activeSelf, Is.False, "The map is hidden while the scene is shown.");
             Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero, "Opening a scene alone costs no time.");
 
-            // Field back steps up to the map, keeping the outing alive and free of leftover popups.
+            var visitOuting = session.Outing.Session;
             root.Presenter.HandleBack();
-            deadline = Time.realtimeSinceStartup + 7;
-            while (Time.realtimeSinceStartup < deadline && !_view.gameObject.activeSelf) yield return null;
-            Assert.That(_view.gameObject.activeSelf, Is.True);
+            yield return WaitForMapReturn();
             Assert.That(root.Presenter.Overlays, Is.Null, "Returning to the map leaves no popup behind.");
-            Assert.That(_view.IsDetailsOpen, Is.False);
-            Assert.That(Button("Cancel").isActiveAndEnabled, Is.True);
-            Assert.That(session.Outing.Session.IsSettled, Is.False, "Field back keeps the outing alive.");
-
-            // Only the map's own back settles and returns to the station.
-            Button("Cancel").onClick.Invoke();
-            deadline = Time.realtimeSinceStartup + 7;
-            while (Time.realtimeSinceStartup < deadline && session.Outing.LastSummary == null) yield return null;
+            Assert.That(visitOuting.IsSettled, Is.True);
+            Assert.That(session.Outing.Session.Stage, Is.EqualTo(OutingStage.MapSelecting));
+            Assert.That(session.Outing.Session.SelectedPointId, Is.Null);
             var content = Resources.FindObjectsOfTypeAll<GameContent>().Single(item => item.name == "GameContent");
             Assert.That(content.CreateMapConfig().TimePolicy.TryGetDuration(
                 OutingReturnProgress.Exploring, out long visit, out _), Is.True);
-            Assert.That(session.Outing.LastSummary.ElapsedMinutes, Is.EqualTo(visit));
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(visit));
+            Assert.That(Button("Parking").IsInteractable(), Is.True, "Another point can be selected.");
+            Button("Parking").onClick.Invoke();
+            Assert.That(_view.IsDetailsOpen, Is.True);
+            Assert.That(Button("Primary").IsInteractable(), Is.True);
+            Button("MapModalBackdrop").onClick.Invoke();
+            Button("Cancel").onClick.Invoke();
+            Assert.That(Object.FindObjectOfType<StationPanelView>(), Is.Not.Null);
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(visit), "Map back does not charge twice.");
             Assert.That(session.Station.Animals, Is.Empty);
         }
 
@@ -211,26 +211,30 @@ namespace HomelessPetHelper.Tests.PlayMode
             _storage.Dispose();
             var saves = new MemorySaveStorage();
             _storage = new MainSceneStorageScope(() => saves);
-            yield return Load();
+            yield return LoadWithOutingSeed(1);
             var root = Object.FindObjectOfType<MainGameRoot>();
             var session = root.Presenter.Session;
             var request = session.Requests.Requests.First(item => item.PointId == "parking");
             var requestState = request.State;
             Button("Parking").onClick.Invoke();
             Button("Explore").onClick.Invoke();
-            var field = Object.FindObjectOfType<ApproachPanelView>();
+            var field = Object.FindObjectOfType<ApproachPanelView>(true);
             float deadline = Time.realtimeSinceStartup + 7;
             while (Time.realtimeSinceStartup < deadline &&
                 (field == null || !field.isActiveAndEnabled || field.Session == null)) yield return null;
             Assert.That(field.isActiveAndEnabled, Is.True, "A pure visit enters a scene even at a help point.");
-            Assert.That(field.Session.Template.Mode, Is.EqualTo(ApproachMode.Cleanup).Or.EqualTo(ApproachMode.Puzzle),
-                "The activity is seeded, not chosen by the player.");
+            Assert.That(field.Session.Template.Mode, Is.EqualTo(ApproachMode.Cleanup));
             Assert.That(session.Outing.Session.AcceptedRequestId, Is.EqualTo(System.Guid.Empty),
                 "A pure visit never takes the request.");
             Assert.That(request.State, Is.EqualTo(requestState), "The help request stays open.");
 
-            var otherMode = field.Session.Template.Mode == ApproachMode.Cleanup
-                ? ApproachMode.Puzzle : ApproachMode.Cleanup;
+            var visited = session.Outing.Session;
+            var opening = field.Session;
+            int workIndex = Enumerable.Range(0, opening.Template.Debris.Count).First(opening.CanReachDebris);
+            var debris = opening.Template.Debris[workIndex];
+            double effort = System.Math.Min(opening.MaxStepSeconds, opening.RemainingWork(workIndex) / 2);
+            Assert.That(opening.TryClean(debris.Cell, debris.Tool, effort, out _), Is.True);
+            double remaining = opening.RemainingWork(workIndex);
             var overlays = root.Presenter.Overlays;
             Assert.That(overlays, Is.Not.Null);
             overlays.OpenObjectives();
@@ -245,36 +249,63 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(overlays.Top, Is.EqualTo(LevelPopupKind.Pause));
             overlays.RequestReturn();
             overlays.Confirm();
-            deadline = Time.realtimeSinceStartup + 7;
-            while (Time.realtimeSinceStartup < deadline && !_view.gameObject.activeSelf) yield return null;
-            Assert.That(_view.gameObject.activeSelf, Is.True, "Field back returns to the map.");
+            yield return WaitForMapReturn();
             Assert.That(root.Presenter.Overlays, Is.Null, "No popup survives the return.");
-            Assert.That(_view.IsDetailsOpen, Is.False);
-            Assert.That(Button("Parking").IsInteractable(), Is.True);
-            Button("Parking").onClick.Invoke();
-            Assert.That(_view.IsDetailsOpen, Is.True, "An explicit click opens the visited location.");
-            Assert.That(Button("Primary").GetComponentInChildren<Text>().text, Is.EqualTo("返回救助站"));
-            var otherActivity = Button(otherMode == ApproachMode.Cleanup ? "Explore" : "Puzzle");
-            Assert.That(otherActivity.isActiveAndEnabled && otherActivity.IsInteractable(), Is.True);
-            otherActivity.onClick.Invoke();
-            Assert.That(field.isActiveAndEnabled, Is.True);
-            Assert.That(field.Session.Template.Mode, Is.EqualTo(otherMode));
-            root.Presenter.Overlays.RequestReturn();
-            root.Presenter.Overlays.Confirm();
-            deadline = Time.realtimeSinceStartup + 7;
-            while (Time.realtimeSinceStartup < deadline && !_view.gameObject.activeSelf) yield return null;
-            Assert.That(_view.gameObject.activeSelf, Is.True);
-            Assert.That(_view.IsDetailsOpen, Is.False, "Both cleanup and puzzle exit to the bare map.");
-            Assert.That(Button("Cancel").isActiveAndEnabled, Is.True);
-            Button("Cancel").onClick.Invoke();
-            deadline = Time.realtimeSinceStartup + 7;
-            while (Time.realtimeSinceStartup < deadline && session.Outing.LastSummary == null) yield return null;
-            var content = Resources.FindObjectsOfTypeAll<GameContent>().Single(item => item.name == "GameContent");
-            Assert.That(content.CreateMapConfig().TimePolicy.TryGetDuration(
-                OutingReturnProgress.Exploring, out long visit, out _), Is.True);
-            Assert.That(session.Outing.LastSummary.ElapsedMinutes, Is.EqualTo(visit));
+            Assert.That(visited.IsSettled, Is.True);
+            Assert.That(session.Outing.Session.Stage, Is.EqualTo(OutingStage.MapSelecting));
+            Assert.That(Button("Park").IsInteractable(), Is.True);
+            Button("Park").onClick.Invoke();
+            Assert.That(_view.IsDetailsOpen, Is.True, "Another point opens its normal detail popup.");
+            Assert.That(Label("PrimaryLabel").text, Is.EqualTo("去探索"));
             Assert.That(root.Presenter.Progress.CanContinue, Is.True);
+            long savedMinutes = session.Clock.Current.ElapsedMinutes;
+            yield return LoadWithOutingSeed(1);
+            Assert.That(Object.FindObjectOfType<MainGameRoot>().Presenter.Session.Clock.Current.ElapsedMinutes,
+                Is.EqualTo(savedMinutes));
+            Button("Parking").onClick.Invoke();
+            Button("Explore").onClick.Invoke();
+            field = Object.FindObjectOfType<ApproachPanelView>(true);
+            deadline = Time.realtimeSinceStartup + 7;
+            while (!field.isActiveAndEnabled && Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.That(field.isActiveAndEnabled, Is.True);
+            Assert.That(field.Session.RemainingWork(workIndex), Is.EqualTo(remaining),
+                "Returning to another point's map does not discard the previous site's partial work.");
             LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator LeavingRescueOpeningReleasesRequestAndAllowsAnotherLocation()
+        {
+            yield return Load();
+            var presenter = Object.FindObjectOfType<MainGameRoot>().Presenter;
+            Button("Parking").onClick.Invoke();
+            Button("Primary").onClick.Invoke();
+            var field = Object.FindObjectOfType<ApproachPanelView>(true);
+            float deadline = Time.realtimeSinceStartup + 7;
+            while (!field.isActiveAndEnabled && Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.That(field.isActiveAndEnabled, Is.True);
+            var outgoing = presenter.Session.Outing.Session;
+            var request = presenter.Session.Requests.Requests.Single(item =>
+                item.RequestId == outgoing.AcceptedRequestId);
+            Assert.That(request.State, Is.EqualTo(RequestState.Accepted));
+
+            presenter.HandleBack();
+            yield return WaitForMapReturn();
+            Assert.That(outgoing.IsSettled, Is.True);
+            Assert.That(presenter.Progress.CanContinue, Is.True);
+            Assert.That(request.State, Is.EqualTo(RequestState.Available));
+            Button("Park").onClick.Invoke();
+            Assert.That(_view.IsDetailsOpen, Is.True);
+            Assert.That(Label("PrimaryLabel").text, Is.EqualTo("去探索"));
+        }
+
+        private IEnumerator WaitForMapReturn()
+        {
+            float deadline = Time.realtimeSinceStartup + 7;
+            while (!_view.isActiveAndEnabled && Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.That(_view.isActiveAndEnabled, Is.True);
+            Assert.That(_view.IsDetailsOpen, Is.False, "Field return shows the bare map.");
+            Assert.That(Button("Cancel").isActiveAndEnabled, Is.True);
         }
 
         [UnityTest]
@@ -519,6 +550,19 @@ namespace HomelessPetHelper.Tests.PlayMode
             _view.SendMessage("OnApplicationFocus", true);
             Assert.That(Button("Primary").IsInteractable(), Is.True);
             LogAssert.NoUnexpectedReceived();
+        }
+
+        private IEnumerator LoadWithOutingSeed(int seed)
+        {
+            void Configure(Scene scene, LoadSceneMode mode)
+            {
+                foreach (var root in scene.GetRootGameObjects().SelectMany(item =>
+                    item.GetComponentsInChildren<MainGameRoot>(true)))
+                    root.ConfigureOutingSeedSource(() => seed);
+            }
+            SceneManager.sceneLoaded += Configure;
+            try { yield return Load(); }
+            finally { SceneManager.sceneLoaded -= Configure; }
         }
 
         private IEnumerator Load()

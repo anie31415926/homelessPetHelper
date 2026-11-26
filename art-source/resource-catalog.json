@@ -5400,7 +5400,7 @@
       "status": "temporary",
       "loadTiming": "first-play",
       "availability": "启动Loading场景使用",
-      "use": "ComfyUI逐体复核16动物，32切片/1024×864透明页，保留纸绘进度条/小屋/装饰原像素与切片身份",
+      "use": "ComfyUI逐体复核16动物，32切片/1024×864透明页；2026-11-26恢复加载圆环13节点、门边2节点和进度猫原切片绑定，标题封面仍用现有猫狗动态头像；PNG/meta未换图",
       "plannedBytes": 131072,
       "files": [
         {

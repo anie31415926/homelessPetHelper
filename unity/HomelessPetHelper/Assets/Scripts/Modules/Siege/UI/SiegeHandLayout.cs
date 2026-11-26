@@ -39,6 +39,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private bool _hintVisible;
         private float _contextWidth;
         private readonly List<Text> _contextLabels = new List<Text>(4);
+        private readonly List<HorizontalLayoutGroup> _contextContentRows = new List<HorizontalLayoutGroup>();
         public float CardWidth => _grid.cellSize.x;
         public int Revision { get; private set; }
         public void SetCapacity(int capacity)
@@ -141,6 +142,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 child.GetComponentsInChildren(false, _contextLabels);
                 foreach (var label in _contextLabels)
                     itemWidth = Mathf.Max(itemWidth, label.preferredWidth + _metrics.margin);
+                child.GetComponentsInChildren(false, _contextContentRows);
+                foreach (var row in _contextContentRows)
+                    itemWidth = Mathf.Max(itemWidth, row.preferredWidth + _metrics.margin);
                 var element = child.GetComponent<LayoutElement>();
                 element.minWidth = element.preferredWidth = itemWidth;
                 width += itemWidth; count++;

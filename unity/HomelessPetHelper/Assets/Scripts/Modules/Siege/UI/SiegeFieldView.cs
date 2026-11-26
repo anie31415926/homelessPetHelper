@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Globalization;
 using HomelessPetHelper.Framework.UI;
 using HomelessPetHelper.Framework.UI.Motion;
 using UnityEngine;
@@ -24,6 +25,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
         [SerializeField]
         private Button _top, _mid, _bottom, _submit, _pause, _retry, _resume,
             _merge, _reroute, _clear, _discard;
+        [SerializeField] private Text _mergeCostAmount;
         [SerializeField] private GameObject _pauseMenu, _detailBacking;
         [SerializeField] private Text _status, _intent, _hint, _detail, _pauseInfo;
         [SerializeField] private Slider _playerBar, _animalBar, _resourceBar;
@@ -177,6 +179,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 "field.ready", "unity.resume", "field.pauseInfo", "field.reroute", "field.cancel",
                     "field.discard", "field.materials", "field.menu", "field.help" })
                 _text.Get(key);
+            if (_mergeCostAmount != null)
+                _mergeCostAmount.text = _catalog.Rules.MergeCost.ToString(CultureInfo.InvariantCulture);
             _completed = completed; _returnRequested = returnRequested; _suspend = suspend;
             _rescueResultPresented = false;
             _plan.Clear(); _reported = _paused = _backgrounded = false; _focused = true;
@@ -585,7 +589,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _reroute.gameObject.SetActive(focused && _plan.CanReroute(state));
             _discard.gameObject.SetActive(CanAct && !_session.Realtime && _plan.SelectedCard.HasValue);
             _clear.gameObject.SetActive(CanAct && (_plan.HasAction || focused || _plan.SelectedCard.HasValue));
-            Label(_merge, _text.Format("unity.mergeCost", _catalog.Rules.MergeCost));
+            Label(_merge, _mergeCostAmount != null ? _text.Get("field.merge") :
+                _text.Format("unity.mergeCost", _catalog.Rules.MergeCost));
             Label(_reroute, _text.Get("field.reroute")); Label(_clear, _text.Get("field.cancel"));
             Label(_discard, _text.Get("field.discard"));
             _merge.interactable = Allows("siege.merge");

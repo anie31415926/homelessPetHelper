@@ -59,7 +59,7 @@
     { "key": "help.title", "value": "帮助手册" },
     { "key": "help.close", "value": "关闭" },
     { "key": "help.firstDeparture", "value": "点地图上的地点，查看可做的事。" },
-    { "key": "help.body", "value": "外出：点地点，查看求助或探索。\n现场：清开障碍，再沿通路派出单位。\n护理：先检查，洗完一天后再洗梳。\n存档：现场自动保存，护理结束后保存。" },
+    { "key": "help.body", "value": "外出：点地点，查看求助或探索。\n现场：清开障碍，再沿通路派出单位。\n护理：先检查，洗完可梳；洗完一天后再洗，梳完一天后再梳。\n存档：现场自动保存，护理结束后保存。" },
     { "key": "save.outingBoundary", "value": "现场操作会自动保存，重进可继续本次救助。" },
     { "key": "save.careBoundary", "value": "{0}结束本次后保存，中途退出恢复上次成果。" },
     { "key": "save.contentUpdated", "value": "已按当前玩法整理旧记录，救助站进度已保留。" },

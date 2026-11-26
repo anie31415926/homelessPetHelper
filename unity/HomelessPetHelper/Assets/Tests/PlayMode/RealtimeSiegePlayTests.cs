@@ -66,7 +66,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             LogAssert.NoUnexpectedReceived();
         }
 
-        private static IEnumerator CaptureHierarchy(Component owner, string name)
+        private static IEnumerator CaptureHierarchy(Component owner, string name, System.Action verifyLayout = null)
         {
             var canvas = owner.GetComponent<Canvas>();
             var oldMode = canvas.renderMode; var oldCamera = canvas.worldCamera;
@@ -79,6 +79,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                     camera.targetTexture = null; target.Release(); Object.Destroy(target);
                     target = new RenderTexture(size.x, size.y, 24); camera.targetTexture = target;
                     yield return null; yield return null; Canvas.ForceUpdateCanvases(); camera.Render();
+                    verifyLayout?.Invoke();
                     var previous = RenderTexture.active; RenderTexture.active = target;
                     var picture = new Texture2D(size.x, size.y, TextureFormat.RGB24, false);
                     picture.ReadPixels(new Rect(0, 0, size.x, size.y), 0, 0); picture.Apply();
@@ -339,16 +340,62 @@ namespace HomelessPetHelper.Tests.PlayMode
             Canvas.ForceUpdateCanvases(); yield return null;
             Canvas.ForceUpdateCanvases();
             Assert.That(scroll.content.rect.height, Is.GreaterThan(scroll.viewport.rect.height));
-            Assert.That(scroll.content.GetComponentsInChildren<SiegePropIcon>().Length,
-                Is.EqualTo(battle.Catalog.Units.Count));
+            var encounter = battle.Catalog.Content.Encounter(battle.Snapshot.EncounterId);
+            var unitIds = new System.Collections.Generic.HashSet<string>();
+            foreach (var id in encounter.UnitIds)
+                for (var unit = battle.Catalog.Unit(id); unit != null && unitIds.Add(unit.Id);
+                    unit = battle.Catalog.Unit(unit.UpgradeId)) { }
+            var unitRows = scroll.content.GetComponentsInChildren<SiegePropIcon>();
+            Assert.That(unitRows.Length, Is.EqualTo(unitIds.Count));
+            Assert.That(scroll.content.GetComponentsInChildren<Text>().Any(label =>
+                label.text.Contains("猫鲜食品社") && label.text.Contains("3 件小鱼干可合为鱼干花束")), Is.True);
+            Assert.That(scroll.content.GetComponentsInChildren<Text>()
+                .Any(label => label.text.Contains("补给小车")), Is.False);
+            Assert.That(scroll.content.GetComponentsInChildren<Text>()
+                .Any(label => label.text.StartsWith("攻击速度：")), Is.True);
+            var costs = scroll.content.GetComponentsInChildren<Text>().Where(label => label.name == "Amount").ToArray();
+            Assert.That(costs.Length, Is.EqualTo(encounter.UnitIds.Count));
+            Assert.That(costs.All(label => int.TryParse(label.text, out int cost) && cost > 0), Is.True);
+            var attributeIcons = scroll.content.GetComponentsInChildren<SiegeResourceGraphic>()
+                .Where(icon => icon.name == "Icon").ToArray();
+            Assert.That(attributeIcons.Length, Is.EqualTo(unitIds.Count * 4));
+            void VerifyHandbookLayout()
+            {
+                foreach (var icon in scroll.content.GetComponentsInChildren<SiegeResourceGraphic>())
+                    Assert.That(icon.rectTransform.rect.size.sqrMagnitude, Is.GreaterThan(0), icon.name);
+                foreach (var label in scroll.content.GetComponentsInChildren<Text>())
+                {
+                    Assert.That(label.rectTransform.rect.width, Is.GreaterThan(0), label.name);
+                    Assert.That(label.rectTransform.rect.height + 2,
+                        Is.GreaterThanOrEqualTo(label.preferredHeight), label.text);
+                    Assert.That(label.text.Where(character => character >= '\u3400' && character <= '\u9fff')
+                        .All(label.font.HasCharacter), Is.True, label.text);
+                }
+            }
+            yield return CaptureHierarchy(siege, "handbook-units", VerifyHandbookLayout);
+            Named("HandbookExplain").onClick.Invoke();
+            Assert.That(scroll.content.GetComponentsInChildren<Text>().Single(label => label.name == "HandbookLegend")
+                .text, Does.Contain("两次攻击之间的间隔"));
+            yield return CaptureHierarchy(siege, "handbook-legend", VerifyHandbookLayout);
             int deployed = battle.Snapshot.Stats.Deployed;
             Named("HandbookDefense").onClick.Invoke();
             Assert.That(scroll.content.GetComponentsInChildren<Text>().Any(label => label.text.Contains("动物的防备")), Is.True);
+            Assert.That(scroll.content.GetComponentsInChildren<SiegePropIcon>().Length,
+                Is.EqualTo(encounter.InitialTowerIds.Concat(encounter.BuildTowerIds).Distinct().Count() + 1));
+            Assert.That(scroll.content.GetComponentsInChildren<Text>().Any(label => label.name == "Amount"), Is.False);
+            Assert.That(scroll.content.GetComponentsInChildren<Text>()
+                .Any(label => label.name == "HandbookLegend"), Is.False);
+            yield return CaptureHierarchy(siege, "handbook-defense", VerifyHandbookLayout);
             overlay.Back();
             Assert.That(overlay.Top.ToString(), Is.EqualTo("Objectives"));
             Assert.That(battle.Snapshot.Stats.Deployed, Is.EqualTo(deployed));
             overlay.Back(); yield return null;
             var card = siege.Scene.GetComponentsInChildren<SiegeChoiceCell>().First(cell => cell.IsClickable);
+            var handCost = card.GetComponentsInChildren<Text>().Single(label => label.name == "Cost");
+            var handIcon = card.GetComponentInChildren<SiegeResourceGraphic>();
+            var supplyIcon = siege.Scene.GetComponentsInChildren<SiegeResourceGraphic>()
+                .Single(icon => icon.name == "DockResourceIcon");
+            Assert.That(handIcon, Is.Not.Null);
             var input = new PointerEventData(EventSystem.current) { pointerId = 15, button = PointerEventData.InputButton.Left };
             var field = siege.Scene.Field;
             var corners = new Vector3[4];
@@ -372,11 +419,36 @@ namespace HomelessPetHelper.Tests.PlayMode
                 }
             Assert.That(drop.HasValue, Is.True);
             input.position = drop.Value;
+            int energy = battle.Snapshot.Energy;
+            int displayedCost = int.Parse(handCost.text);
             card.OnBeginDrag(input); card.OnEndDrag(input);
             Assert.That(overlay.Guide.IsComplete, Is.True);
+            Assert.That(battle.Snapshot.Energy, Is.EqualTo(energy - displayedCost));
             yield return null;
             Assert.That(root.Guidance.HasCompleted(overlay.Guide.MechanicId), Is.True);
             Assert.That(battle.Snapshot.Stats.Deployed, Is.EqualTo(deployed + 1));
+
+            var deployedUnit = battle.Snapshot.Units.Last();
+            Assert.That(battle.Catalog.MergeMaterialCount(deployedUnit.DefinitionId), Is.GreaterThan(0));
+            siege.Scene.SendMessage("SelectUnit", deployedUnit.Id);
+            var merge = Named("FieldMerge");
+            var mergeLabels = merge.GetComponentsInChildren<Text>();
+            var mergeCost = mergeLabels.Single(label => label.name == "MergeCostAmount");
+            var mergeIcon = merge.GetComponentInChildren<SiegeResourceGraphic>();
+            Assert.That(mergeLabels.Single(label => label.name == "FieldLabel").text, Is.EqualTo("合体"));
+            Assert.That(mergeCost.text, Is.EqualTo(battle.Catalog.Rules.MergeCost.ToString()));
+            Assert.That(mergeIcon, Is.Not.Null);
+            int SupplySymbol(SiegeResourceGraphic icon) =>
+                new SerializedObject(icon).FindProperty("_symbol").enumValueIndex;
+            Assert.That(SupplySymbol(mergeIcon),
+                Is.EqualTo(SupplySymbol(supplyIcon)).And.EqualTo(SupplySymbol(handIcon)));
+            Assert.That(mergeIcon.raycastTarget, Is.False);
+            yield return CaptureHierarchy(siege, "battle-supply", () =>
+            {
+                Assert.That(merge.gameObject.activeInHierarchy, Is.True);
+                var row = (RectTransform)mergeIcon.transform.parent;
+                Assert.That(LayoutUtility.GetPreferredWidth(row), Is.LessThanOrEqualTo(row.rect.width));
+            });
         }
 
         [UnityTest]
