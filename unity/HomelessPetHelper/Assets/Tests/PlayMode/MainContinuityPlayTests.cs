@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using HomelessPetHelper.Game;
 using HomelessPetHelper.Game.Text;
+using HomelessPetHelper.Framework.UI;
 using HomelessPetHelper.Modules.Animals.UI;
 using HomelessPetHelper.Modules.Outing;
 using HomelessPetHelper.Modules.Outing.UI;
@@ -32,7 +33,8 @@ namespace HomelessPetHelper.Tests.PlayMode
         [SetUp] public void SetUp()
         {
             _storage = new MemorySaveStorage();
-            _scope = new MainSceneStorageScope(() => _storage);
+            var guidance = new MemorySaveStorage();
+            _scope = new MainSceneStorageScope(() => _storage, createGuidanceStorage: () => guidance);
             SceneManager.sceneLoaded += Configure;
         }
         [TearDown] public void TearDown()
@@ -59,6 +61,25 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator StationHelpReplacesArrivalHistoryAndDepartureHintDoesNotRepeatAfterReload()
+        {
+            yield return Load();
+            Click(_station, "StationMenu");
+            var help = Button(_station, "History");
+            Assert.That(help.GetComponentInChildren<Text>().text, Is.EqualTo("帮助手册"));
+            Click(_station, "History");
+            Assert.That(_root.Presenter.Overlays.Top, Is.EqualTo(Game.UI.LevelPopupKind.Confirmation));
+            Assert.That(FeedbackContains("先检查"), Is.True);
+            _root.Presenter.Overlays.CancelConfirmation();
+            Click(_station, "Restart");
+            Assert.That(_map.GetComponentInChildren<ToastView>().CurrentLine, Does.Contain("点地图上的地点"));
+            Click(_map, "Cancel");
+            yield return Load();
+            Click(_station, "Restart");
+            Assert.That(_map.GetComponentInChildren<ToastView>().IsShowing, Is.False);
+        }
+
+        [UnityTest]
         public IEnumerator NewGameOpeningPointsAtExistingCatRequestAndDoesNotRepeatAfterReload()
         {
             UseOpening();
@@ -77,6 +98,78 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return Load();
             Assert.That(_root.Presenter.Progress.IsNewGame, Is.False);
             Assert.That(_root.Presenter.Session.Outing.Session.AcceptedRequestId, Is.EqualTo(request.RequestId));
+        }
+
+        [UnityTest]
+        public IEnumerator UnfinishedSiegeReturnsToMapThenStationWithAValidCheckpoint()
+        {
+            yield return Load();
+            var presenter = _root.Presenter;
+            var session = presenter.Session;
+            Click(_station, "Restart"); Click(_map, "Yard"); Click(_map, "Primary");
+            yield return WaitForPanel<Game.Approach.ApproachPanelView>();
+            MainApproachDriver.Complete();
+            yield return WaitForPanel<SiegeTrialView>();
+            yield return WaitForTravel();
+            var outing = session.Outing.Session;
+            var activity = session.Activity;
+            var request = session.Requests.Requests.Single(item => item.RequestId == outing.AcceptedRequestId);
+            long initialMinutes = session.Clock.Current.ElapsedMinutes;
+            MainApproachDriver.Click(_siege, "Pause");
+            MainApproachDriver.Click(_siege, "Return");
+            yield return WaitForPanel<CityMapView>();
+            yield return WaitForTravel();
+            Assert.That(_map.IsDetailsOpen, Is.False, "Leaving a battle should reveal the map directly.");
+            Assert.That(Button(_map, "Cancel").isActiveAndEnabled, Is.True);
+            Assert.That(Button(_map, "MapModalBackdrop").isActiveAndEnabled, Is.False);
+            Assert.That(session.Activity, Is.SameAs(activity));
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.EqualTo(initialMinutes));
+            Assert.That(request.State, Is.EqualTo(RequestState.Accepted));
+
+            ClickMapButton("Cancel");
+            yield return WaitForPanel<StationPanelView>();
+            Assert.That(presenter.Progress.CanContinue, Is.True, presenter.Progress.PersistenceError?.ToString());
+            Assert.That(session.Activity, Is.Null);
+            Assert.That(activity.IsClosed && outing.IsSettled, Is.True);
+            Assert.That(request.State, Is.EqualTo(RequestState.Available));
+            Assert.That(session.Station.Animals, Is.Empty);
+            long minutes = session.Clock.Current.ElapsedMinutes;
+            Assert.That(minutes, Is.GreaterThan(initialMinutes));
+
+            yield return Load();
+            Assert.That(_root.Presenter.Progress.CanContinue, Is.True,
+                _root.Presenter.Progress.PersistenceError?.ToString());
+            Assert.That(_station.isActiveAndEnabled, Is.True);
+            Assert.That(_root.Presenter.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(minutes));
+            Assert.That(_root.Presenter.Session.Requests.Requests.Single(item => item.RequestId == request.RequestId)
+                .State, Is.EqualTo(RequestState.Available));
+        }
+
+        private void ClickMapButton(string name)
+        {
+            var button = Button(_map, name);
+            Assert.That(button.isActiveAndEnabled && button.IsInteractable(), Is.True, name);
+            Canvas.ForceUpdateCanvases();
+            var rect = (RectTransform)button.transform;
+            var pointer = new PointerEventData(EventSystem.current)
+            {
+                position = RectTransformUtility.WorldToScreenPoint(null, rect.TransformPoint(rect.rect.center)),
+                button = PointerEventData.InputButton.Left
+            };
+            var hits = new System.Collections.Generic.List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointer, hits);
+            Assert.That(hits, Is.Not.Empty);
+            var target = ExecuteEvents.GetEventHandler<IPointerClickHandler>(hits[0].gameObject);
+            Assert.That(target, Is.SameAs(button.gameObject), "The map back button must receive the click.");
+            ExecuteEvents.Execute(target, pointer, ExecuteEvents.pointerClickHandler);
+        }
+
+        private static IEnumerator WaitForTravel()
+        {
+            var travel = UnityEngine.Object.FindObjectOfType<Game.CityMap.Travel.MapTravelView>();
+            float deadline = Time.realtimeSinceStartup + 5;
+            while (travel != null && travel.IsPlaying && Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.That(travel != null && travel.IsPlaying, Is.False);
         }
 
         [UnityTest]
@@ -344,6 +437,56 @@ namespace HomelessPetHelper.Tests.PlayMode
             while (UnityEngine.Object.FindObjectOfType<T>() == null && Time.realtimeSinceStartup < deadline)
                 yield return null;
             Assert.That(UnityEngine.Object.FindObjectOfType<T>(), Is.Not.Null, typeof(T).Name);
+        }
+
+        [UnityTest]
+        public IEnumerator CompletedWashBlocksBothButtonsAndKeepsTheCooldownAfterReload()
+        {
+            yield return Load();
+            Click(_station, "Restart"); Click(_map, "Primary"); MainApproachDriver.Complete();
+            yield return Win();
+            Click(_siege, "Retry"); Click(_station, "Enter"); Click(_station, "Animal0"); Click(_station, "Check");
+            var arrival = _root.Presenter.Session.Station.Animals.Single();
+            var care = _root.Presenter.Progress.Care.Get(arrival.AnimalId);
+            Click(_station, "Clean");
+            var dirt = care.Dirt;
+            for (int y = 0; y < dirt.Height; y++)
+                for (int x = 0; x < dirt.Width; x++)
+                    if (dirt.Sample(y * dirt.Width + x) != 0)
+                        care.TryStroke((float)x / (dirt.Width - 1), (float)y / (dirt.Height - 1), 255);
+            Assert.That(dirt.RemovedFraction, Is.GreaterThanOrEqualTo(.97));
+            Click(_station, "Finish");
+            Assert.That(care.Capture().LastWashCompletedMinute, Is.Not.Null);
+            long minutes = _root.Presenter.Session.Clock.Current.ElapsedMinutes;
+
+            Assert.That(care.Dirt.RemainingAmount, Is.Zero);
+            Click(_station, "Back");
+            Click(_station, "Restart");
+            var clock = _root.Presenter.Session.Clock;
+            int interval = clock.Current.MinutesPerDay / 4;
+            Assert.That(clock.TryAdvance(clock.Current.Version, interval, out _, out _), Is.True);
+            Assert.That(care.Dirt.RemainingAmount, Is.Zero, "Catch-up waits for a stable station boundary.");
+            Click(_map, "Cancel");
+            var session = _root.Presenter.Session;
+            Assert.That(session.Station.TryGetCurrentAnimal(arrival.AnimalId, out var cat), Is.True);
+            Assert.That(cat.Coat.Dirtiness, Is.EqualTo(5));
+            long regrown = care.Dirt.RemainingAmount;
+            Assert.That(regrown, Is.Positive);
+            long returnedMinutes = session.Clock.Current.ElapsedMinutes;
+
+            yield return Load();
+            Assert.That(Button(_station, "Enter").isActiveAndEnabled, Is.False, "Arrival should not reopen.");
+            care = _root.Presenter.Progress.Care.Get(arrival.AnimalId);
+            Assert.That(care.Capture().LastWashCompletedMinute, Is.EqualTo(minutes));
+            Assert.That(care.Dirt.RemainingAmount, Is.EqualTo(regrown));
+            Click(_station, "Animal0");
+            var toast = _station.GetComponentInChildren<ToastView>();
+            Click(_station, "Clean");
+            Assert.That(toast.CurrentLine, Is.EqualTo("已经很干净啦。"));
+            Click(_station, "Groom");
+            Assert.That(toast.CurrentLine, Is.EqualTo("已经很整洁啦。"));
+            Assert.That(care.IsActive, Is.False);
+            Assert.That(_root.Presenter.Session.Clock.Current.ElapsedMinutes, Is.EqualTo(returnedMinutes));
         }
 
         [UnityTest]

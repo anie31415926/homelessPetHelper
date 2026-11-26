@@ -15,6 +15,8 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
         AlreadyActive = 10,
         NotActive = 11,
         TimeVersionStale = 12,
-        TimeRejected = 13
+        TimeRejected = 13,
+        AlreadyClean = 14,
+        AlreadyTidy = 15
     }
 }

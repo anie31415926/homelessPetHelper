@@ -178,7 +178,6 @@ namespace HomelessPetHelper.Modules.Outing.UI
             _cancel.interactable = !paused;
             _detailsScroll.enabled = !paused;
             _toast.SetSuspended(paused);
-            if (!selecting && !IsDetailsOpen) OpenDetails();
             RefreshPopup();
         }
 
@@ -282,7 +281,7 @@ namespace HomelessPetHelper.Modules.Outing.UI
 
         private void DismissDetails()
         {
-            if (!_selecting || _inputPaused) return;
+            if (_inputPaused) return;
             CloseDetails();
         }
 
@@ -298,9 +297,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
         {
             _detailsRoot.SetActive(IsDetailsOpen);
             _backdrop.gameObject.SetActive(IsDetailsOpen);
-            // After arrival this panel is the only way to play an activity or return to the station.
-            _closeDetails.gameObject.SetActive(_selecting);
-            _closeDetails.interactable = _backdrop.interactable = _selecting && !_inputPaused;
+            _closeDetails.gameObject.SetActive(true);
+            _closeDetails.interactable = _backdrop.interactable = !_inputPaused;
             _cancel.gameObject.SetActive(!IsDetailsOpen);
             if (_stationStatus != null)
             {
@@ -342,9 +340,8 @@ namespace HomelessPetHelper.Modules.Outing.UI
         private void OnCancel()
         {
             if (!isActiveAndEnabled || !_cancel.IsInteractable()) return;
-            if (IsDetailsOpen && _selecting) CloseDetails();
-            else if (_selecting) CancelClicked?.Invoke();
-            else if (_primary.IsInteractable()) PrimaryClicked?.Invoke();
+            if (IsDetailsOpen) CloseDetails();
+            else CancelClicked?.Invoke();
         }
 
         private void OnApplicationFocus(bool focused)

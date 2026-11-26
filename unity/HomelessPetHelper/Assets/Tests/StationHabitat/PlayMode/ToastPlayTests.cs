@@ -27,7 +27,7 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
         [TearDown] public void TearDown() => Object.DestroyImmediate(_root);
 
         [UnityTest]
-        public IEnumerator NoticeFadesInAndOutWithoutBlockingAndRepeatedTextRestarts()
+        public IEnumerator NoticeFadesInAndOutAtFixedPositionWithoutBlockingOrRestarting()
         {
             _toast.Show("护理完成", .1f);
             Assert.That(_toast.Opacity, Is.Zero);
@@ -39,8 +39,13 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
             Assert.That(_toast.GetComponentsInChildren<Graphic>().All(graphic => !graphic.raycastTarget), Is.True);
             yield return new WaitForSecondsRealtime(.6f);
             Assert.That(_toast.Opacity, Is.InRange(0.001f, .999f));
+            float opacity = _toast.Opacity;
             _toast.Show("护理完成", .1f);
-            Assert.That(_toast.Opacity, Is.Zero);
+            Assert.That(_toast.Opacity, Is.EqualTo(opacity));
+            var rect = (RectTransform)_toast.transform;
+            Assert.That(rect.anchorMin, Is.EqualTo(new Vector2(.5f, .70f)));
+            Assert.That(rect.anchorMax, Is.EqualTo(rect.anchorMin));
+            Assert.That(rect.anchoredPosition, Is.EqualTo(Vector2.zero));
             yield return new WaitForSecondsRealtime(1.2f);
             Assert.That(_toast.IsShowing, Is.False);
         }

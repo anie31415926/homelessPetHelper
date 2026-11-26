@@ -28,7 +28,12 @@ namespace HomelessPetHelper.Game.Progress
                     Dirt = CaptureField(coat.CopyDirt()), Fur = CaptureField(coat.CopyFur()),
                     InitialDirtiness = coat.InitialCoat.Dirtiness, InitialLooseFur = coat.InitialCoat.LooseFur,
                     WashMinutes = coat.WashMinutes, GroomMinutes = coat.GroomMinutes,
-                    WashSettled = coat.WashSettledMinutes, GroomSettled = coat.GroomSettledMinutes
+                    WashSettled = coat.WashSettledMinutes, GroomSettled = coat.GroomSettledMinutes,
+                    LastWashCompletedMinute = coat.LastWashCompletedMinute,
+                    LastGroomCompletedMinute = coat.LastGroomCompletedMinute,
+                    EarlierCyclesMinutes = coat.EarlierCyclesMinutes,
+                    DirtGrowthMinute = coat.DirtGrowthMinute, FurGrowthMinute = coat.FurGrowthMinute,
+                    DirtBaseline = coat.DirtBaseline, FurBaseline = coat.FurBaseline
                 }
             };
         }
@@ -57,7 +62,9 @@ namespace HomelessPetHelper.Game.Progress
             if (data == null) throw new ArgumentException("Missing coat state.");
             return new StationCoatCareState(RestoreField(data.Dirt), RestoreField(data.Fur),
                 new AnimalCoatCondition(data.InitialDirtiness, data.InitialLooseFur),
-                data.WashMinutes, data.GroomMinutes, data.WashSettled, data.GroomSettled);
+                data.WashMinutes, data.GroomMinutes, data.WashSettled, data.GroomSettled,
+                data.LastWashCompletedMinute, data.LastGroomCompletedMinute, data.EarlierCyclesMinutes,
+                data.DirtGrowthMinute, data.FurGrowthMinute, data.DirtBaseline, data.FurBaseline);
         }
 
         internal static void ValidateMask(StationCoatCareState state, string definitionId,

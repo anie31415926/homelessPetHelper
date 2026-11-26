@@ -71,6 +71,26 @@ namespace HomelessPetHelper.Modules.Station.Cleaning
         internal DirtField Copy() => new DirtField(this);
         internal IReadOnlyDirtField AsReadOnly() => new ReadOnlyView(this);
 
+        internal DirtField WithAccumulation(DirtField pattern, int condition, int target, int cap)
+        {
+            if (pattern.Width != Width || pattern.Height != Height)
+                throw new ArgumentException("Coat accumulation pattern size does not match the field.");
+            var samples = CopySamples();
+            bool changed = false;
+            for (int index = 0; index < samples.Length; index++)
+            {
+                if (_allowedMask[index] == 0) continue;
+                int room = pattern.Sample(index) * cap / 100 - samples[index];
+                if (room <= 0) continue;
+                int increase = room * (target - condition) / (cap - condition);
+                if (increase == 0) continue;
+                samples[index] += (byte)increase;
+                changed = true;
+            }
+            // Use the new workload as the baseline; adding samples must not settle any work.
+            return changed ? new DirtField(Width, Height, _allowedMask, samples) : null;
+        }
+
         public byte Sample(int index)
         {
             return _samples[index];

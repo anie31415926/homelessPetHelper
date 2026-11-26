@@ -32,15 +32,17 @@ namespace HomelessPetHelper.Framework.UI
             _bounds = bounds; _width = -1;
         }
 
-        /// <summary>Replaces the notice. Repeated text restarts its lifetime; empty text dismisses it.</summary>
+        /// <summary>Replaces the notice. Identical pending text is shown once; empty text dismisses it.</summary>
         public void Show(string message, float holdSeconds = 2.4f)
         {
             if (float.IsNaN(holdSeconds) || float.IsInfinity(holdSeconds) || holdSeconds <= 0)
                 throw new ArgumentOutOfRangeException(nameof(holdSeconds));
+            if (string.IsNullOrWhiteSpace(message) || !isActiveAndEnabled) { Clear(); return; }
+            string line = message.Replace('\r', ' ').Replace('\n', ' ').Trim();
+            if (_message == line) return;
             Clear();
-            if (string.IsNullOrWhiteSpace(message) || !isActiveAndEnabled) return;
             if (_bounds == null) throw new InvalidOperationException("Toast needs explicit safe-area bounds.");
-            _message = message.Replace('\r', ' ').Replace('\n', ' ').Trim();
+            _message = line;
             _elements = StringInfo.ParseCombiningCharacters(_message);
             _holdSeconds = holdSeconds;
             FitLine();
@@ -55,16 +57,17 @@ namespace HomelessPetHelper.Framework.UI
 
         public void SetSuspended(bool suspended) => _suspended = suspended;
 
-        public void SetBottomInset(float inset)
-        {
-            var rect = (RectTransform)transform;
-            float bottom = Mathf.Clamp(inset, _metrics.margin,
-                Mathf.Max(_metrics.margin, _bounds.rect.height - Height - _metrics.margin));
-            rect.anchoredPosition = new Vector2(0, bottom);
-        }
-
         private void OnEnable()
-        { _suspended = false; Clear(); Canvas.willRenderCanvases += RefreshLayout; }
+        {
+            // Shared placement inside the owning safe area, including existing prefab overrides.
+            var rect = (RectTransform)transform;
+            rect.anchorMin = rect.anchorMax = new Vector2(.5f, .70f);
+            rect.pivot = new Vector2(.5f, .5f);
+            rect.anchoredPosition = Vector2.zero;
+            _suspended = false;
+            Clear();
+            Canvas.willRenderCanvases += RefreshLayout;
+        }
         private void OnDisable()
         { Canvas.willRenderCanvases -= RefreshLayout; Clear(); }
         private void OnApplicationFocus(bool focused) { if (!focused) Clear(); }

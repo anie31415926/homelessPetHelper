@@ -32,7 +32,12 @@ namespace HomelessPetHelper.Game.Guidance
         public bool TryRecordCompleted(GuideSession guide)
         {
             if (guide == null || !guide.IsComplete) return false;
-            if (_completed.Contains(guide.MechanicId)) return true;
+            return TryRecordShown(guide.MechanicId);
+        }
+
+        internal bool TryRecordShown(string mechanicId)
+        {
+            if (_completed.Contains(mechanicId)) return true;
             if (!_loaded) return false;
             if (!_saves.CanWrite)
             {
@@ -40,14 +45,14 @@ namespace HomelessPetHelper.Game.Guidance
                     !_saves.TryRead(_section, out var restored, out reloadError))
                 { PersistenceError = reloadError; return false; }
                 foreach (string id in restored.Completed) _completed.Add(id);
-                if (_completed.Contains(guide.MechanicId)) { PersistenceError = null; return true; }
+                if (_completed.Contains(mechanicId)) { PersistenceError = null; return true; }
             }
-            var staged = new List<string>(_completed) { guide.MechanicId };
+            var staged = new List<string>(_completed) { mechanicId };
             staged.Sort(StringComparer.Ordinal);
             var data = new GuidanceProgressData { Completed = staged.ToArray() };
             if (!_saves.TryCommit(writer => writer.Set(_section, data), out var error))
             { PersistenceError = error; return false; }
-            _completed.Add(guide.MechanicId);
+            _completed.Add(mechanicId);
             PersistenceError = null;
             return true;
         }

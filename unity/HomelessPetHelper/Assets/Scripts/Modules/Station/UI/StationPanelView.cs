@@ -88,6 +88,8 @@ namespace HomelessPetHelper.Modules.Station.UI
             _restart.interactable = interactive;
         }
 
+        public void SetStationMenuActionLabel(string label) => _history.GetComponentInChildren<Text>(true).text = label;
+
         public void SetHistoryAvailable(bool available) => _history.interactable = available;
         public void SetRenameLabel(string label)
         {
@@ -197,8 +199,8 @@ namespace HomelessPetHelper.Modules.Station.UI
             _groom.gameObject.SetActive(_chrome == null || !cleaning);
             _quietSpace.gameObject.SetActive(_chrome == null);
             _quietSpace.interactable = !cleaning;
-            _clean.interactable = care.CanWash && !suspended;
-            _groom.interactable = care.CanGroom && !suspended;
+            _clean.interactable = (care.CanWash || care.ExplainWashOnClick) && !suspended;
+            _groom.interactable = (care.CanGroom || care.ExplainGroomOnClick) && !suspended;
             _finish.gameObject.SetActive(_chrome == null || cleaning);
             _finish.interactable = cleaning && canFinish && !suspended;
         }

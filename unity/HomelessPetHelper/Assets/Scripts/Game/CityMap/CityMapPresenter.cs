@@ -99,7 +99,7 @@ namespace HomelessPetHelper.Game.CityMap
             _view.SecondaryClicked += ExploreOrClean;
             _view.TertiaryClicked += SolvePuzzle;
             _view.StationOpened += Refresh;
-            _view.CancelClicked += Cancel;
+            _view.CancelClicked += LeaveToStation;
             _view.PauseChanged += Pause;
             Pause(_view.IsSuspended);
         }
@@ -113,7 +113,7 @@ namespace HomelessPetHelper.Game.CityMap
             _view.SecondaryClicked -= ExploreOrClean;
             _view.TertiaryClicked -= SolvePuzzle;
             _view.StationOpened -= Refresh;
-            _view.CancelClicked -= Cancel;
+            _view.CancelClicked -= LeaveToStation;
             _view.PauseChanged -= Pause;
         }
 
@@ -149,7 +149,7 @@ namespace HomelessPetHelper.Game.CityMap
 
         internal void Select(string pointId)
         {
-            if (_disposed || _paused || _travelling || _outing.Session.Stage != OutingStage.MapSelecting) return;
+            if (_disposed || _paused || _travelling || !CanInspect(pointId)) return;
             MapPointView point = _rules.BuildSnapshot().Points.SingleOrDefault(item => item.PointId == pointId);
             if (point == null || point.DisplayState == PointDisplayState.Locked) return;
             _selection = pointId;
@@ -157,6 +157,13 @@ namespace HomelessPetHelper.Game.CityMap
             _externalFeedback = null;
             Refresh();
             _view.OpenDetails();
+        }
+
+        private bool CanInspect(string pointId)
+        {
+            var session = _outing.Session;
+            return session.Stage == OutingStage.MapSelecting ||
+                (_loop != null && session.Stage == OutingStage.Departed && session.SelectedPointId == pointId);
         }
 
         private void Act()
@@ -221,7 +228,7 @@ namespace HomelessPetHelper.Game.CityMap
 
             bool success = session.Stage == OutingStage.MapSelecting ?
                 Depart(session.SessionId, _selection, exploration, out var failure) :
-                _outing.TryEndUnresolved(session.SessionId, out _, out failure);
+                TryEndUnresolved(out failure);
             _feedbackKey = success ? "ready" :
                 failure == OutingAssemblyFailure.StationFull ? "full" : "failure";
             Refresh();
@@ -268,11 +275,15 @@ namespace HomelessPetHelper.Game.CityMap
         {
             if (_disposed || _paused || _travelling || _outing.Session.Stage != OutingStage.MapSelecting) return;
             _externalFeedback = null;
-            if (!_outing.TryEndUnresolved(_outing.Session.SessionId, out _, out _))
+            if (!TryEndUnresolved(out _))
                 _feedbackKey = "failure";
             Refresh();
             if (_loop != null && _outing.Session.IsSettled) _returned?.Invoke();
         }
+
+        private bool TryEndUnresolved(out OutingAssemblyFailure failure) => _loop != null
+            ? _loop.TryReturnUnresolved(out failure)
+            : _outing.TryEndUnresolved(_outing.Session.SessionId, out _, out failure);
 
         /// <summary>Map-level back settles the outing and returns to the station.</summary>
         internal void LeaveToStation()
@@ -286,7 +297,7 @@ namespace HomelessPetHelper.Game.CityMap
             }
             // Arrived (still unsettled): fold in any exploration progress, then settle through the
             // same command the Primary back button uses.
-            if (session.Stage == OutingStage.Departed)
+            if (session.Stage == OutingStage.Departed || (_loop == null && session.IsSettled))
                 Act();
         }
 
@@ -310,45 +321,48 @@ namespace HomelessPetHelper.Game.CityMap
             bool canDepart = CanDepart(_selection, out MapDeparturePlan plan, out string restriction);
             bool openExploration = _returnExploration != null;
             bool canExplore = openExploration && CanDepart(_selection, true, out _, out _);
-            bool arrivedExploration = !selecting && !session.IsSettled && openExploration &&
-                session.DeparturePlan?.EntryKind == MapEntryKind.Exploration;
+            bool arrived = session.Stage == OutingStage.Departed;
             string feedback = selecting && !canDepart ? restriction :
                 _externalFeedback ?? (_feedbackKey == "ready" ? string.Empty : _text.Get(_feedbackKey));
             WorldTimeSnapshot time = _clock.Current;
             _view.RenderTimeOfDay(time.MinuteOfDay, time.MinutesPerDay);
             if (openExploration)
             {
-                RenderExploration(currentPoint, selecting, canDepart, canExplore, arrivedExploration, plan, time);
-                RenderPoints(snapshot, selecting);
+                bool exploring = arrived && session.DeparturePlan?.EntryKind == MapEntryKind.Exploration;
+                RenderExploration(currentPoint, selecting, canDepart, canExplore, arrived, exploring, plan, time);
+                RenderPoints(snapshot);
                 return;
             }
             _view.Render(_text.Get("status", _station.AvailableTemporaryPlaces, GameTimeText.FormatClock(time)),
                 heading, details, selecting ? GetDeparturePreview(plan) : string.Empty,
                 _paused ? _text.Get("paused") : feedback, _text.Get(command),
                 selecting, _paused || _travelling, !selecting || canDepart);
-            RenderPoints(snapshot, selecting);
+            // The standalone preview uses its card as the arrival/settlement screen.
+            if (_loop == null && !selecting && !_view.IsDetailsOpen) _view.OpenDetails();
+            RenderPoints(snapshot);
         }
 
-        private void RenderPoints(MapViewSnapshot snapshot, bool selecting)
+        private void RenderPoints(MapViewSnapshot snapshot)
         {
             foreach (MapPointView point in snapshot.Points)
                 _view.RenderPoint(point.PointId, _text.Get(point.DisplayNameKey),
                     _text.Get("point." + point.DisplayState), point.DisplayState, point.PointId == _selection,
-                    selecting && !_paused && !_travelling && point.DisplayState != PointDisplayState.Locked);
+                    CanInspect(point.PointId) && !_paused && !_travelling &&
+                    point.DisplayState != PointDisplayState.Locked);
         }
 
         private void RenderExploration(MapPointView point, bool selecting, bool canRescue, bool canExplore,
-            bool arrived, MapDeparturePlan rescue, WorldTimeSnapshot time)
+            bool arrived, bool exploring, MapDeparturePlan rescue, WorldTimeSnapshot time)
         {
             string pointName = point == null ? string.Empty : _text.Get(point.DisplayNameKey);
             bool station = _view.IsStationOpen;
-            string cleanup = arrived ? _describeActivity?.Invoke(ApproachMode.Cleanup) : null;
-            string puzzle = arrived ? _describeActivity?.Invoke(ApproachMode.Puzzle) : null;
+            string cleanup = exploring ? _describeActivity?.Invoke(ApproachMode.Cleanup) : null;
+            string puzzle = exploring ? _describeActivity?.Invoke(ApproachMode.Puzzle) : null;
             _config.TimePolicy.TryGetDuration(OutingReturnProgress.Exploring, out long visit, out _);
             string details = station ? _text.Get("station.counts",
                     _station.TemporaryCapacity - _station.AvailableTemporaryPlaces, _station.AvailableTemporaryPlaces) :
                 GetDetails(point, compact: true);
-            if (arrived && cleanup == null && puzzle == null) details += "\n" + _text.Get("visit.quiet");
+            if (exploring && cleanup == null && puzzle == null) details += "\n" + _text.Get("visit.quiet");
             if (selecting && !station && point != null && _hasActivities?.Invoke(point.PointId) == true)
                 details += "\n" + _text.Get("visit.activities");
             string departure = !station && selecting && canExplore ?

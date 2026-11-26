@@ -60,7 +60,9 @@ namespace HomelessPetHelper.Game
         private int _savedOpeningVersion = -1, _savedBattleRevision = -1;
         private readonly MainAudioSession _audioSession;
         private readonly Settings.PlaySettingsSession _playSettings;
+        private const string DepartureHintId = "map.firstDeparture";
         private readonly GuidanceProgressSession _guidance;
+        private bool _departureHintShown;
         private readonly LevelGuideCatalog _guides;
         private readonly OptionPreviewText _uiText;
         private LevelOverlaySession _overlays;
@@ -237,8 +239,8 @@ namespace HomelessPetHelper.Game
                 }
                 else if (Progress.Fields.HasActive)
                 {
-                    Progress.Fields.Capture(Session);
                     FlushFieldProgress();
+                    if (!Progress.CanContinue) return;
                 }
                 _approach.gameObject.SetActive(false);
                 _approach.Unbind();
@@ -286,8 +288,13 @@ namespace HomelessPetHelper.Game
             _map.gameObject.SetActive(true);
             Session.SetSuspended(false);
             CreateMapPresenter();
-            _mapPresenter.ShowFeedback(_text.Get("save.outingBoundary"));
             if (noticePoint != null) _mapPresenter.Select(noticePoint);
+            else if (!_departureHintShown && _guidance?.HasCompleted(DepartureHintId) != true)
+            {
+                _departureHintShown = true;
+                _map.ShowNotice(_text.Get("help.firstDeparture"));
+                _guidance?.TryRecordShown(DepartureHintId);
+            }
         }
 
         internal void PresentPendingRescueNotice()
@@ -772,7 +779,7 @@ namespace HomelessPetHelper.Game
             bool firstRescue = arrival && Session.Requests.Requests.Count(request => request.State == RequestState.Resolved) == 1;
             _stationPresenter.ShowSharedStation(arrival, firstRescue);
             _station.gameObject.SetActive(true);
-            if (Checkpoint() && arrival) _stationPresenter.ShowSharedStation(true, firstRescue);
+            Checkpoint();
         }
 
         public void Dispose()
@@ -822,7 +829,7 @@ namespace HomelessPetHelper.Game
                     _returnTravelling = false;
                     Session.SetSuspended(_fieldSuspendedRequested);
                     commit();
-                    return Session.Outing.Session.IsSettled;
+                    return Progress.CanContinue && (Session.Outing.Session.IsSettled || _map.isActiveAndEnabled);
                 }, _ => FinishFieldReturn());
             if (!accepted) FinishFieldReturn();
         }

@@ -387,7 +387,7 @@ namespace HomelessPetHelper.Game.UI
                 {
                     _completionHandled = true;
                     bool saved = _progress == null || _progress.TryRecordCompleted(_guide);
-                    _view.ShowNotice(_text.Get(saved ? "guide.complete" : "guide.saveFailed"));
+                    if (!saved) _view.ShowNotice(_text.Get("guide.saveFailed"));
                 }
                 return;
             }

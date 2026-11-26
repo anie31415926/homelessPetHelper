@@ -101,6 +101,13 @@ namespace HomelessPetHelper.Game.Progress
         [Preserve, JsonProperty(Required = Required.Always)] public int GroomMinutes;
         [Preserve, JsonProperty(Required = Required.Always)] public long WashSettled;
         [Preserve, JsonProperty(Required = Required.Always)] public long GroomSettled;
+        [Preserve, JsonProperty] public long? LastWashCompletedMinute;
+        [Preserve, JsonProperty] public long? LastGroomCompletedMinute;
+        [Preserve, JsonProperty] public long EarlierCyclesMinutes;
+        [Preserve, JsonProperty] public long? DirtGrowthMinute;
+        [Preserve, JsonProperty] public long? FurGrowthMinute;
+        [Preserve, JsonProperty] public int? DirtBaseline;
+        [Preserve, JsonProperty] public int? FurBaseline;
         [Preserve] public CoatData() { }
     }
 

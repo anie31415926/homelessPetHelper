@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HomelessPetHelper.Bootstrap;
 using HomelessPetHelper.Game.CityMap;
 using HomelessPetHelper.Modules.Station.Cleaning;
+using HomelessPetHelper.Modules.Rescue;
 
 namespace HomelessPetHelper.Game.Station
 {
@@ -37,9 +38,18 @@ namespace HomelessPetHelper.Game.Station
             care = new StationCoatCare(_session.Station, _session.StationSessionId, animalId, _session.Clock,
                 StationCoatFields.Create(mask, seed, false, animal.Coat.Dirtiness),
                 StationCoatFields.Create(mask, seed, true, animal.Coat.LooseFur),
-                    definition.WashMinutes, definition.GroomMinutes);
+                definition.WashMinutes, definition.GroomMinutes,
+                (grooming, amount) => StationCoatFields.Create(mask, seed, grooming, amount));
             _care.Add(animalId, care);
             return care;
+        }
+
+        internal void RefreshAccumulation()
+        {
+            if (_session.Flow.Stage is not (RescueStage.Station or RescueStage.Care) ||
+                _session.Station.IsSuspended) return;
+            foreach (var arrival in _session.Station.Animals)
+                Get(arrival.AnimalId).RefreshAccumulation();
         }
 
         internal void Forget(Guid animalId) => _care.Remove(animalId);
@@ -47,8 +57,12 @@ namespace HomelessPetHelper.Game.Station
         public void Restore(Guid animalId, StationCoatCareState state)
         {
             if (_care.ContainsKey(animalId)) throw new ArgumentException("Duplicate care state.");
+            if (!_session.Station.TryGetCurrentAnimal(animalId, out var animal))
+                throw new ArgumentException("Animal is not admitted.");
+            _artwork.Get(UsesDogArtwork(animal.DefinitionId), out var mask);
+            int seed = Modules.Animals.UI.AnimalCoatPattern.Seed(animalId);
             _care.Add(animalId, new StationCoatCare(_session.Station, _session.StationSessionId, animalId,
-                _session.Clock, state));
+                _session.Clock, state, (grooming, amount) => StationCoatFields.Create(mask, seed, grooming, amount)));
         }
     }
 }

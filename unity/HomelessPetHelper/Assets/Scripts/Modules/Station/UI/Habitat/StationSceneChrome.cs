@@ -118,26 +118,6 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
                 _careStageSize.minHeight = _careStageSize.preferredHeight = height;
         }
 
-        private void AlignToast()
-        {
-            if (!_notice.IsShowing) return;
-            var parent = (RectTransform)_notice.transform.parent;
-            float bottom = parent.rect.height - _metrics.margin - _metrics.touchSize -
-                _metrics.gap - _notice.Height;
-            if (_detail.gameObject.activeSelf)
-            {
-                Vector3 detailTop = _detail.TransformPoint(new Vector3(0, _detail.rect.yMax));
-                bottom = parent.InverseTransformPoint(detailTop).y - parent.rect.yMin + _metrics.gap;
-                if (bottom + _notice.Height > parent.rect.height - _metrics.margin)
-                {
-                    Vector3 detailBottom = _detail.TransformPoint(new Vector3(0, _detail.rect.yMin));
-                    bottom = parent.InverseTransformPoint(detailBottom).y - parent.rect.yMin -
-                        _metrics.gap - _notice.Height;
-                }
-            }
-            _notice.SetBottomInset(bottom);
-        }
-
         public void Feedback(string message, bool repeat = false)
         {
             if (_message == message && !repeat) return;
@@ -149,7 +129,6 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
 
         private void OnEnable()
         {
-            Canvas.willRenderCanvases += AlignToast;
             _menuButton.onClick.AddListener(ToggleMenu);
             _menuClose.onClick.AddListener(CloseMenu);
             _history.onClick.AddListener(CloseMenu);
@@ -160,7 +139,6 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         }
         private void OnDisable()
         {
-            Canvas.willRenderCanvases -= AlignToast;
             _menuButton.onClick.RemoveListener(ToggleMenu);
             _menuClose.onClick.RemoveListener(CloseMenu);
             _history.onClick.RemoveListener(CloseMenu);

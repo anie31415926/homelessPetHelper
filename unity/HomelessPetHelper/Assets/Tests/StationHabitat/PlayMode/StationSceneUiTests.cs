@@ -55,6 +55,21 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
             yield return null; Canvas.ForceUpdateCanvases(); yield return null;
         }
 
+        private static void AssertFixedToast(ToastView toast)
+        {
+            var rect = (RectTransform)toast.transform;
+            var safe = (RectTransform)rect.parent;
+            var corners = new Vector3[4];
+            rect.GetWorldCorners(corners);
+            foreach (var corner in corners)
+            {
+                Vector3 local = safe.InverseTransformPoint(corner);
+                Assert.That(local.x, Is.InRange(safe.rect.xMin - 1, safe.rect.xMax + 1));
+                Assert.That(local.y, Is.InRange(safe.rect.yMin - 1, safe.rect.yMax + 1));
+            }
+            Assert.That(rect.anchorMin, Is.EqualTo(new Vector2(.5f, .70f)));
+        }
+
         [UnityTest]
         public IEnumerator SceneUsesSeveralIdsAndCagedAnimalOpensItsOwnCompactSheet()
         {
@@ -86,12 +101,7 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
             yield return null;
             Canvas.ForceUpdateCanvases();
             var toast = _view.GetComponentInChildren<ToastView>();
-            var toastCorners = new Vector3[4];
-            var detailCorners = new Vector3[4];
-            ((RectTransform)toast.transform).GetWorldCorners(toastCorners);
-            sheet.GetWorldCorners(detailCorners);
-            Assert.That(toastCorners[0].y >= detailCorners[1].y || toastCorners[1].y <= detailCorners[0].y, Is.True,
-                "Feedback must stay above the animal detail sheet, not cover its condition.");
+            AssertFixedToast(toast);
             Button("DismissAnimal").onClick.Invoke();
             Assert.That(Detail.activeSelf, Is.False);
             Assert.That(cells[2].Observing, Is.True, "Looking does not assess or release an animal.");
@@ -472,16 +482,7 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
                         Is.GreaterThanOrEqualTo(message.preferredHeight - 1));
                 }
                 if (state.EndsWith("detail", StringComparison.Ordinal))
-                {
-                    var feedback = _view.GetComponentInChildren<ToastView>();
-                    var feedbackCorners = new Vector3[4];
-                    var sheetCorners = new Vector3[4];
-                    ((RectTransform)feedback.transform).GetWorldCorners(feedbackCorners);
-                    ((RectTransform)Detail.transform).GetWorldCorners(sheetCorners);
-                    Assert.That(feedbackCorners[0].y >= sheetCorners[1].y ||
-                        feedbackCorners[1].y <= sheetCorners[0].y, Is.True,
-                        state + " " + size + " feedback must not overlap the sheet after resize.");
-                }
+                    AssertFixedToast(_view.GetComponentInChildren<ToastView>());
                 if (state == "home")
                     foreach (var cell in _view.Scene.Cells.Where(cell => cell.gameObject.activeSelf))
                         Assert.That(((RectTransform)cell.SelectButton.transform).rect.width,

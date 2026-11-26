@@ -107,7 +107,7 @@ namespace HomelessPetHelper.Editor.StationHabitat
                 var toast = Rect("Widget_Toast", null);
                 try
                 {
-                    toast.anchorMin = toast.anchorMax = new Vector2(.5f, 0); toast.pivot = new Vector2(.5f, 0);
+                    toast.anchorMin = toast.anchorMax = new Vector2(.5f, .70f); toast.pivot = new Vector2(.5f, .5f);
                     toast.sizeDelta = new Vector2(600, 120);
                     var group = toast.gameObject.AddComponent<CanvasGroup>();
                     group.alpha = 0; group.blocksRaycasts = group.interactable = false;

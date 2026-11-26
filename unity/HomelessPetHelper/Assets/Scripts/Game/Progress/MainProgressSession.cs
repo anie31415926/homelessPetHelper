@@ -85,6 +85,7 @@ namespace HomelessPetHelper.Game.Progress
                 if (resident.CustomName != null) _customNames.Add(animalId, resident.CustomName);
             }
             Fields.RestoreActive(Session);
+            Care.RefreshAccumulation();
             _dispatch = new RequestDispatch(config, fieldContent, Session, data.Dispatch);
             _dispatch.Refresh(Fields.HasActive);
         }
@@ -163,6 +164,7 @@ namespace HomelessPetHelper.Game.Progress
             try
             {
                 _dispatch.Refresh(Fields.HasActive);
+                Care.RefreshAccumulation();
                 var data = Capture();
                 if (_saves == null) { PublishEconomy(data.Economy); return true; }
                 var battle = (Session.Activity as SiegeRescueActivity)?.Battle;

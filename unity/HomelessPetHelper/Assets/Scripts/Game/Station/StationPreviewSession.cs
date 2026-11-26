@@ -79,6 +79,7 @@ namespace HomelessPetHelper.Game.Station
                 _view.EconomyRequested += OpenEconomy;
                 _view.SetEconomyLabel(_text.Get("economy.menu"));
             }
+            if (progress != null && showDialog != null) _view.SetStationMenuActionLabel(_text.Get("help.title"));
             if (progress != null) _view.SetMemorialLabel(_text.Get("adoption.memorial"));
             if (progress != null) _view.SetRenameLabel(_text.Get("petName.edit"));
             if (loop == null) Restart();
@@ -143,7 +144,8 @@ namespace HomelessPetHelper.Game.Station
             _firstRescueSummary = firstRescue;
             _selected = -1;
             _showSummary = showReturn && _summary != null;
-            _feedback = _text.Get(_station.Animals.Count == 0 ? "loop.empty" : "stationReady");
+            _feedback = _progress != null ? string.Empty :
+                _text.Get(_station.Animals.Count == 0 ? "loop.empty" : "stationReady");
             Refresh();
         }
 
@@ -190,10 +192,16 @@ namespace HomelessPetHelper.Game.Station
                 case StationCommand.Enter:
                     if (!_showSummary) return;
                     _showSummary = false;
-                    _feedback = _text.Get("stationReady");
+                    _feedback = _progress == null ? _text.Get("stationReady") : string.Empty;
                     break;
                 case StationCommand.History:
-                    if (_selected >= 0 || _showSummary || _summary == null) return;
+                    if (_selected >= 0 || _showSummary) return;
+                    if (_progress != null)
+                    {
+                        OpenHelp();
+                        return;
+                    }
+                    if (_summary == null) return;
                     _showSummary = true;
                     break;
                 case StationCommand.Back:
@@ -213,6 +221,15 @@ namespace HomelessPetHelper.Game.Station
         private void OpenEconomy()
         {
             if (CanPresentRescueNotice && _progress.CanContinue) _economyMenu?.Open();
+        }
+
+        private void OpenHelp()
+        {
+            _showDialog?.Invoke(new StationDialog
+            {
+                Title = _text.Get("help.title"), Body = _text.Get("help.body"),
+                CancelLabel = _text.Get("help.close")
+            });
         }
 
         private void HandleCare(StationCommand command)
@@ -271,6 +288,7 @@ namespace HomelessPetHelper.Game.Station
                 if (failure != StationCoatCareFailure.None)
                 {
                     _feedback = _text.Get("care.failure." + failure);
+                    if (IsCleanFeedback(failure)) _view.SetFeedback(_feedback);
                     return;
                 }
             }
@@ -284,7 +302,6 @@ namespace HomelessPetHelper.Game.Station
             _tool = next;
             _cleaningVersion = _clock.Current.Version;
             _feedback = _text.Get(grooming ? "grooming" : "cleaning", Resident(_selected).Name);
-            if (_checkpoint != null) _feedback = _text.Get("save.careBoundary", _feedback);
         }
 
         private void OpenAdoption()
@@ -487,8 +504,8 @@ namespace HomelessPetHelper.Game.Station
                 var groom = care.GetBeginFailure(true);
                 return new StationCareAvailability(wash == StationCoatCareFailure.None,
                     groom == StationCoatCareFailure.None, DescribeCareAvailability(
-                        wash == StationCoatCareFailure.None ? null : _text.Get("care.failure." + wash),
-                        groom == StationCoatCareFailure.None ? null : _text.Get("care.failure." + groom)));
+                        DescribeCareRestriction(wash), DescribeCareRestriction(groom)),
+                    IsCleanFeedback(wash), IsCleanFeedback(groom));
             }
             bool available = CanCleanSample(index);
             string reason = available ? null : _text.Get(
@@ -498,6 +515,13 @@ namespace HomelessPetHelper.Game.Station
                     Resident(index).Contact.CoatRestricted ? "careRestricted" : "careSpace");
             return new StationCareAvailability(available, available, DescribeCareAvailability(reason, reason));
         }
+
+        private static bool IsCleanFeedback(StationCoatCareFailure failure) =>
+            failure == StationCoatCareFailure.AlreadyClean || failure == StationCoatCareFailure.AlreadyTidy;
+
+        private string DescribeCareRestriction(StationCoatCareFailure failure) =>
+            failure == StationCoatCareFailure.None || IsCleanFeedback(failure) ?
+                null : _text.Get("care.failure." + failure);
 
         private string DescribeCareAvailability(string wash, string groom)
         {
@@ -583,8 +607,8 @@ namespace HomelessPetHelper.Game.Station
             }
 
             _selected = index;
-            _feedback = _text.Get(Care(index).BasicAssessment == StationHealthAssessment.Unchecked ?
-                "checkFirst" : "stationReady");
+            _feedback = _progress != null ? string.Empty : _text.Get(
+                Care(index).BasicAssessment == StationHealthAssessment.Unchecked ? "checkFirst" : "stationReady");
             Refresh();
         }
 
@@ -597,7 +621,8 @@ namespace HomelessPetHelper.Game.Station
 
             IReadOnlyDirtField field = ActiveField();
             if (!field.ContainsCoat(point.x, point.y)) return;
-            IReadOnlyDirtField blocker = _tool == StationCareTool.Groom ? Resident(_selected).Dirt : null;
+            IReadOnlyDirtField blocker = _tool != StationCareTool.Groom ? null :
+                _loop == null ? Resident(_selected).Dirt : SharedCare().GroomingBlocker;
             bool changed = _loop == null ?
                 Resident(_selected).TrySampleStroke(_tool == StationCareTool.Groom, point.x, point.y, strength) :
                 SharedCare().TryStroke(point.x, point.y, strength);
@@ -607,7 +632,7 @@ namespace HomelessPetHelper.Game.Station
                 _view.RefreshDirt(selected.Art, selected.Dirt, Progress(field), true, selected.Fur);
                 if (_tool == StationCareTool.Wash) _view.Surface.ShowCleaningContact(point);
             }
-            else if (_tool == StationCareTool.Groom && blocker.HasResidueAt(point.x, point.y))
+            else if (_tool == StationCareTool.Groom && blocker?.HasResidueAt(point.x, point.y) == true)
             {
                 _feedback = _text.Get("groomBlocked");
                 _view.SetFeedback(_feedback);
@@ -649,6 +674,7 @@ namespace HomelessPetHelper.Game.Station
 
         private void Refresh()
         {
+            if (!_suspended && !_persistenceBlocked) _careRoster?.RefreshAccumulation();
             _view.ShowPage(_showSummary, _selected >= 0, _tool != StationCareTool.None);
             _view.SetSuspended(_suspended || _persistenceBlocked);
             RefreshScene();
@@ -657,8 +683,8 @@ namespace HomelessPetHelper.Game.Station
                 bool canLeave = _tool == StationCareTool.None && !_showSummary && _selected < 0 &&
                     _loop.Flow.Stage == RescueStage.Station && _leaveStation != null;
                 _view.SetSessionCommand(_text.Get("loop.outing"), !_suspended && !_persistenceBlocked && canLeave);
-                _view.SetHistoryAvailable(_summary != null && !_suspended && !_persistenceBlocked
-                    && _selected < 0 && !_showSummary);
+                _view.SetHistoryAvailable((_progress != null ? _showDialog != null : _summary != null) &&
+                    !_suspended && !_persistenceBlocked && _selected < 0 && !_showSummary);
             }
             WorldTimeSnapshot time = _clock.Current;
             _view.SetStatus(_text.Get("clock", GameTimeText.FormatClock(time)),

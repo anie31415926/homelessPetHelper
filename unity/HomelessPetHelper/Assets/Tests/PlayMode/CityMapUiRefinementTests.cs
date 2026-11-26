@@ -190,6 +190,8 @@ namespace HomelessPetHelper.Tests.PlayMode
             while (Time.realtimeSinceStartup < deadline && !_view.gameObject.activeSelf) yield return null;
             Assert.That(_view.gameObject.activeSelf, Is.True);
             Assert.That(root.Presenter.Overlays, Is.Null, "Returning to the map leaves no popup behind.");
+            Assert.That(_view.IsDetailsOpen, Is.False);
+            Assert.That(Button("Cancel").isActiveAndEnabled, Is.True);
             Assert.That(session.Outing.Session.IsSettled, Is.False, "Field back keeps the outing alive.");
 
             // Only the map's own back settles and returns to the station.
@@ -227,6 +229,8 @@ namespace HomelessPetHelper.Tests.PlayMode
                 "A pure visit never takes the request.");
             Assert.That(request.State, Is.EqualTo(requestState), "The help request stays open.");
 
+            var otherMode = field.Session.Template.Mode == ApproachMode.Cleanup
+                ? ApproachMode.Puzzle : ApproachMode.Cleanup;
             var overlays = root.Presenter.Overlays;
             Assert.That(overlays, Is.Not.Null);
             overlays.OpenObjectives();
@@ -245,6 +249,23 @@ namespace HomelessPetHelper.Tests.PlayMode
             while (Time.realtimeSinceStartup < deadline && !_view.gameObject.activeSelf) yield return null;
             Assert.That(_view.gameObject.activeSelf, Is.True, "Field back returns to the map.");
             Assert.That(root.Presenter.Overlays, Is.Null, "No popup survives the return.");
+            Assert.That(_view.IsDetailsOpen, Is.False);
+            Assert.That(Button("Parking").IsInteractable(), Is.True);
+            Button("Parking").onClick.Invoke();
+            Assert.That(_view.IsDetailsOpen, Is.True, "An explicit click opens the visited location.");
+            Assert.That(Button("Primary").GetComponentInChildren<Text>().text, Is.EqualTo("返回救助站"));
+            var otherActivity = Button(otherMode == ApproachMode.Cleanup ? "Explore" : "Puzzle");
+            Assert.That(otherActivity.isActiveAndEnabled && otherActivity.IsInteractable(), Is.True);
+            otherActivity.onClick.Invoke();
+            Assert.That(field.isActiveAndEnabled, Is.True);
+            Assert.That(field.Session.Template.Mode, Is.EqualTo(otherMode));
+            root.Presenter.Overlays.RequestReturn();
+            root.Presenter.Overlays.Confirm();
+            deadline = Time.realtimeSinceStartup + 7;
+            while (Time.realtimeSinceStartup < deadline && !_view.gameObject.activeSelf) yield return null;
+            Assert.That(_view.gameObject.activeSelf, Is.True);
+            Assert.That(_view.IsDetailsOpen, Is.False, "Both cleanup and puzzle exit to the bare map.");
+            Assert.That(Button("Cancel").isActiveAndEnabled, Is.True);
             Button("Cancel").onClick.Invoke();
             deadline = Time.realtimeSinceStartup + 7;
             while (Time.realtimeSinceStartup < deadline && session.Outing.LastSummary == null) yield return null;

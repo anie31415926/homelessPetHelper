@@ -93,7 +93,7 @@ namespace HomelessPetHelper.Game.Progress
                     MainResidentCodec.ValidateMask(state, residents[i].Arrival.AnimalDefinitionId, artwork, config);
                     care.Restore(residents[i].Arrival.AnimalId, state);
                     minimumMinutes = checked(minimumMinutes + state.WashSettledMinutes +
-                        state.GroomSettledMinutes);
+                        state.GroomSettledMinutes + state.EarlierCyclesMinutes);
                 }
                 if (data.ElapsedMinutes < minimumMinutes)
                     throw new ArgumentException("Checkpoint time is earlier than its settled work.");
