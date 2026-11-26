@@ -54,11 +54,11 @@
   ],
   "dispatch": {
     "enabled": true,
-    "fullIntervalMinutes": 240,
-    "lowIntervalMinutes": 180,
-    "highIntervalMinutes": 150,
+    "fullIntervalMinutes": 300,
+    "lowIntervalMinutes": 240,
+    "highIntervalMinutes": 180,
     "highCapacityThreshold": 3,
-    "lifetimeMinutes": 120,
+    "lifetimeMinutes": 360,
     "candidates": [
       { "templateId": "ordinary", "pointId": "parking", "templateVersion": 1 },
       { "templateId": "ordinary-dog", "pointId": "yard", "templateVersion": 1 },

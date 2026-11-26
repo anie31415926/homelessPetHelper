@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261126-事件调度按救助时长校准-38455937.md",
+  "sessionId": "38455937651353858",
+  "phase": "start",
+  "readAt": "2026-11-26T14:48:30.998Z",
+  "writePaths": [
+    "docs/协作任务/20261126-事件调度按救助时长校准-38455937.md",
+    "docs/协作执行记录/20261126-事件调度按救助时长校准-38455937/",
+    "docs/地图配置与扩展.md",
+    "test-results/unity/",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Progress/RequestDispatch.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/CityMapConfig.json",
+    "unity/HomelessPetHelper/Assets/Tests/EditMode/MainContinuityTests.cs"
+  ],
+  "contextDigest": "96e6996eb48dc3a6b073ba9c1e361d4b0d4f11e6cf2086e43ab1d6deaafbf665",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "828e9e702ae5c0a02de89f49865adf95590f3db115ab5f6e3c2a42aca4bcdef6"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261126-事件调度按救助时长校准-38455937.md",
+      "sha256": "dbed5994b8d9eb48f75169a5e9128e9f6baf031c72b490f56af2e30676a637c0"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}
