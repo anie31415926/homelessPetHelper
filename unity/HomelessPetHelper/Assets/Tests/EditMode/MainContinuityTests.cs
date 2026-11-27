@@ -45,13 +45,13 @@ namespace HomelessPetHelper.Tests.EditMode
                 Assert.That(session.Requests.TryTransition(initial.RequestId, RequestSignal.HelpedElsewhere, out _),
                     Is.True);
                 AdvanceDispatchTime(progress, waitMinutes - 1);
-                Assert.That(session.Requests.Requests.Count, Is.EqualTo(4));
+                Assert.That(session.Requests.Requests.Count, Is.EqualTo(5));
                 if (capacity == 0)
                 {
                     Assert.That(session.Station.TryExpandTemporaryCapacity(session.StationSessionId, 1, out _),
                         Is.True);
                     Assert.That(progress.TryCheckpoint(), Is.True);
-                    Assert.That(session.Requests.Requests.Count, Is.EqualTo(4), "Expansion must not send a notice.");
+                    Assert.That(session.Requests.Requests.Count, Is.EqualTo(5), "Expansion must not send a notice.");
                 }
                 AdvanceDispatchTime(progress, 1);
                 noticeId = session.Requests.Requests.Last().RequestId;
@@ -61,7 +61,7 @@ namespace HomelessPetHelper.Tests.EditMode
 
             using var restored = OpenDispatch(storage, capacity);
             Assert.That(restored.TryCheckpoint(), Is.True, restored.PersistenceError?.ToString());
-            Assert.That(restored.Session.Requests.Requests.Count, Is.EqualTo(5));
+            Assert.That(restored.Session.Requests.Requests.Count, Is.EqualTo(6));
             Assert.That(restored.Session.Map.TrySelectPoint("parking", out var same, out _), Is.True);
             Assert.That(same.RequestId, Is.EqualTo(noticeId));
         }
@@ -81,7 +81,7 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(blocked, Is.EqualTo(OutingFailure.CapacityNotAvailable));
             Assert.That(session.Station.TryExpandTemporaryCapacity(session.StationSessionId, 5, out _), Is.True);
             Assert.That(progress.TryCheckpoint(), Is.True);
-            Assert.That(session.Requests.Requests.Count, Is.EqualTo(5));
+            Assert.That(session.Requests.Requests.Count, Is.EqualTo(6));
 
             AdvanceDispatchTime(progress, 120);
             Assert.That(notice.State, Is.EqualTo(RequestState.HelpedElsewhere));
@@ -95,6 +95,37 @@ namespace HomelessPetHelper.Tests.EditMode
         private MainProgressSession OpenDispatch(ISaveStorage storage, int capacity) =>
             new MainProgressSession(WithInitialCapacity(capacity), _content.Artwork, storage,
                 _content.CreateFieldProgressContent(_content.CreateFields()));
+
+        [Test]
+        public void ExistingSaveReceivesDoudouThroughDispatchWithoutReplacingRequests()
+        {
+            var storage = new MemorySaveStorage();
+            var fields = _content.CreateFieldProgressContent(_content.CreateFields());
+            var data = JObject.Parse(AssetDatabase.LoadAssetAtPath<TextAsset>(
+                "Assets/Settings/Game/CityMapConfig.json").text);
+            foreach (var list in new[] { data["initialRequests"], data["dispatch"]["candidates"] })
+                list.Single(item => (string)item["templateId"] == "park-doudou").Remove();
+            var source = new TextAsset(data.ToString());
+            var previous = new CityMapPreviewConfig(source);
+            UnityEngine.Object.DestroyImmediate(source);
+            Guid[] originalRequests;
+            using (var old = new MainProgressSession(previous, _content.Artwork, storage, fields))
+            {
+                originalRequests = old.Session.Requests.Requests.Select(item => item.RequestId).ToArray();
+                Assert.That(old.TryCheckpoint(), Is.True);
+            }
+
+            using var progress = new MainProgressSession(_config, _content.Artwork, storage, fields);
+            Assert.That(progress.CanContinue, Is.True, progress.PersistenceError?.ToString());
+            var requests = progress.Session.Requests;
+            Assert.That(requests.Requests.Select(item => item.RequestId), Is.EqualTo(originalRequests));
+            AdvanceDispatchTime(progress, 180);
+            Assert.That(requests.Requests.Take(originalRequests.Length).Select(item => item.RequestId),
+                Is.EqualTo(originalRequests));
+            Assert.That(requests.Requests.Last().TemplateId, Is.EqualTo("park-doudou"));
+            Assert.That(progress.Session.Map.TrySelectPoint("park", out var notice, out _), Is.True);
+            Assert.That(notice.RequestId, Is.EqualTo(requests.Requests.Last().RequestId));
+        }
 
         private static void AdvanceDispatchTime(MainProgressSession progress, long minutes)
         {
@@ -251,9 +282,9 @@ namespace HomelessPetHelper.Tests.EditMode
             _content.Validate();
             var requests = _config.CreateRequestPool().Requests;
             var ordinary = requests.Where(request => request.ReunionPlan == null).ToArray();
-            Assert.That(ordinary.Length, Is.EqualTo(3));
+            Assert.That(ordinary.Length, Is.EqualTo(4));
             Assert.That(ordinary.Select(request => _config.GetRescue(request.TemplateId).EncounterId),
-                Is.EquivalentTo(new[] { "cat", "cat", "dog" }));
+                Is.EquivalentTo(new[] { "cat", "cat", "dog", "dog" }));
             Assert.That(requests.Single(request => request.ReunionPlan != null).TemplateId, Is.EqualTo("reunion"));
             var badSource = new TextAsset(AssetDatabase.LoadAssetAtPath<TextAsset>(
                 "Assets/Settings/Game/CityMapConfig.json").text.Replace(

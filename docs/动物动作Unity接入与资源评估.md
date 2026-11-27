@@ -2,6 +2,20 @@
 
 2026-11-19。用户授权“先把这些已有的加进 Unity 工程，然后分析资源大小”。本页为该批次接续入口，替代此前 HTML 记录中的“未接 Unity”；不是正式美术或跨姿态过渡验收。
 
+## 2026-11-27 柴犬 idle 与黑柴换色候选
+
+柴犬此前在现场只有“走动”一种采样：`ShibaWalkUv` 取第 16–31 帧，按 20fps 循环。这 16 帧本身是不同姿态的图集，静止等待时按走动播会显得在滑步。现补 idle：`PetPortraitSet.ShibaIdleUv` 取第 0–7 帧站姿，4fps 乒乓循环（约 3.5 秒一轮）；`FieldPetMotion` 默认 idle，保留 `SetDogWalking(true)` 切回原走动帧。猫的骨骼 rig、动作选择、脏污 UV 同步与暂停行为不变。
+
+- 现场：进门、开路、逆塔防里柴犬默认站姿微动；走动仍可用但当前没有移动状态驱动，不假装已接步态切换。
+- 站内：柴犬仍是单帧 Sprite（`_stationDog`），本次未做站内 idle。站内要帧动画需换成 RawImage + 脏污遮罩对齐，属另一工作包。
+- 第三只：只做到换色素材。`tools/pet-shiba-variant.mjs` 把 40 帧图集里的暖色像素压成炭灰、保留白色胸毛与描边，alpha 与原图 0 差异像素，RGB 变化 39.4%。产物在 `art-source/pet-shiba-variants-20261127/black-shiba/`，台账登记为 candidate、preview-only，未导入 Unity。
+- 为什么没直接接进游戏：外观仍是 `DogArtwork` 布尔（`GameContent._cat/_dog`、`StationArtwork`、`RescueEncounterDefinition`、站内居民与存档校验都按它取图）。要放第三只，得把布尔升级成外观枚举并补求助模板、文案、派发与站内 Sprite/遮罩绑定，属于独立工作包，不能只丢一张图就算完成。
+
+验证：`node tools/check-unity.mjs` 521 脚本/37 程序集，35 项均为既有基线，本次文件 0 命中；隔离 PlayMode 目标用例
+`OpeningCatHasChangingPixelsFrozenClockCoatAndBoundedResourcesOnReuse` 通过（idle 行高 0.8、走动离开该行、暂停冻结）。
+同一夹具的 `MainParkingKeepsAnimatedCatAndCoatThroughOpeningBattleAndArrival` 在“战斗完成”断言失败——它仍按旧回合制点选推进，和 11-24 的实时救助不一致，属既有问题，本次未改该路径。素材 `--check` 复现哈希一致；`npm run assets:check` 退出 0（仅既有 WebGL 模板图未登记提示）。
+
+
 ## 2026-11-24 新版现场小猫动画补接
 
 已修复新版清障/解谜与逆塔防现场只显示静态猫图、旧动画RawImage随旧布局隐藏的问题。两阶段静态Prefab在原Animal位置增加明确绑定的RawImage与`FieldPetMotion`，复用现有`Widget_PetMotion`的张望/摆尾动作；不重建面板、不导入新图片或未认可的同骨架坐姿试验。救助站原有自主动作继续保留，护理操作仍沿用护理Sprite/Mask。
@@ -189,3 +203,8 @@ node tools/check-unity.mjs
 - 一次性 Editor 资产制作与测试编排有超过 40 有效行的方法；按复杂度规则复核后保留线性结构装配，网格/曲线/控件/审计已分别归属，没有为凑行数机械拆转发层。运行时类型职责单一，热路径无查找、IO 或分配式采样表。
 
 微信/真机、Player 实际发布包、全帧 Profiler、生产状态转换、最长语言和正式许可仍未验证；本次不是全工程玩法回归或发版验收。
+
+## 2026-11-27 柴犬骨骼蒙皮可行性
+
+柴犬当前只有 8×5 姿态图集（每帧 128×128），没有分层图与关节标注。已用 `tools/dog-rig-prototype.mjs` 做离线原型：第 0 帧 → 6px 网格（1,849 顶点）+ 19 骨 LBS + 自有 CPU 光栅，输出 5 个 idle 姿态、循环 GIF 与极限对照。结论：小幅 idle（头颈 ≤5°、尾 ≤10°）可用且四脚不离地；头颈超过约 7° 时颈部/胸口接缝与尾卷曲高光出现 1–2px 撕裂，空洞率最高 1.4%。单帧 128px 无法支撑 walk 与前后腿遮挡，正式做需要拆 7 层 + 补 3 张遮挡 + 单帧 ≥256px + 犬类专用骨架。详见[柴犬骨骼蒙皮原型](柴犬骨骼蒙皮原型-20261127.md)。
+

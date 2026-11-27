@@ -119,11 +119,21 @@ namespace HomelessPetHelper.Tests.PlayMode
             view.FieldScene.SetPresentationPaused(false);
             yield return null; yield return null;
             var shibaUv = motion.Surface.uvRect;
-            yield return new WaitForSecondsRealtime(.15f);
+            Assert.That(shibaUv.y, Is.EqualTo(.8f).Within(.001f), "Idle uses the authored standing row.");
+            yield return new WaitForSecondsRealtime(.4f);
             Assert.That(motion.Surface.uvRect, Is.Not.EqualTo(shibaUv));
+            // Walking must leave the idle row; idle is the default standing wait.
+            clock.SendMessage("OnApplicationFocus", false);
+            motion.SetDogWalking(true);
+            SampleAt(clock, motion, .2f);
+            Assert.That(motion.Surface.uvRect.y, Is.LessThan(.8f));
+            motion.SetDogWalking(false);
+            SampleAt(clock, motion, .2f);
+            Assert.That(motion.Surface.uvRect.y, Is.EqualTo(.8f).Within(.001f));
+            clock.SendMessage("OnApplicationFocus", true);
             view.FieldScene.SetPresentationPaused(true);
             shibaUv = motion.Surface.uvRect;
-            yield return new WaitForSecondsRealtime(.15f);
+            yield return new WaitForSecondsRealtime(.4f);
             Assert.That(motion.Surface.uvRect, Is.EqualTo(shibaUv));
             _ownedPanel.SetActive(false);
             view.ConfigureField(field, content.GetOutingBackground("parking"), false, opening);

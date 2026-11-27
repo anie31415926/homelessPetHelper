@@ -45,7 +45,7 @@ namespace HomelessPetHelper.Game.Station
         {
             if (!station.TryGetCurrentAnimal(arrival.AnimalId, out var animal) || animal.Coat == null)
                 throw new InvalidOperationException("A shared resident needs explicit animal and coat data.");
-            Sprite art = artwork.Get(dogArtwork, out var mask);
+            Sprite art = artwork.Get(animal.DefinitionId, dogArtwork, out var mask);
             return new StationResidentPresentation
             {
                 Art = art,

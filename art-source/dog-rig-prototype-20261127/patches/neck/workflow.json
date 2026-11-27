@@ -1,0 +1,111 @@
+{
+  "server": "http://127.0.0.1:8188",
+  "seed": 2026112721,
+  "prompt": "柴犬颈后与肩胛部位的暖橙色水彩被毛近景，画面被毛皮铺满，手绘水彩笔触、细褐色毛边与自然的毛流分束，奶油白与蜜桃橙过渡。不要出现头、眼睛、耳朵、腿、爪、尾巴，不要整只动物，不要背景元素或文字。",
+  "negative": "整只狗，全身像，头部，脸，眼睛，耳朵，腿，爪子，尾巴，地面，背景，文字，水印，写实照片，3D渲染，厚涂油画，深色描边",
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "柴犬颈后与肩胛部位的暖橙色水彩被毛近景，画面被毛皮铺满，手绘水彩笔触、细褐色毛边与自然的毛流分束，奶油白与蜜桃橙过渡。不要出现头、眼睛、耳朵、腿、爪、尾巴，不要整只动物，不要背景元素或文字。 参考图只用于学习画风：儿童绘本手绘水彩、块状色斑与细褐色铅笔边，不要复制参考图中的柴犬、头部、四肢或背景。",
+        "negative_prompt": "整只狗，全身像，头部，脸，眼睛，耳朵，腿，爪子，尾巴，地面，背景，文字，水印，写实照片，3D渲染，厚涂油画，深色描边，照片级毛发，细致毛丝，真实摄影纹理",
+        "resolution": 768,
+        "images.image_1": [
+          "10",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "5",
+          2
+        ],
+        "seed": 2026112721,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "8",
+          0
+        ],
+        "filename_prefix": "dog-patch-neck"
+      }
+    },
+    "10": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "dog-patch-style-neck.png"
+      }
+    }
+  }
+}

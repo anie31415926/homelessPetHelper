@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261127-柴犬idle与黑柴变体-38456056.md",
+  "sessionId": "38456056294531586",
+  "phase": "start",
+  "readAt": "2026-11-27T04:02:58.796Z",
+  "writePaths": [
+    "art-source/pet-shiba-variants-20261127/",
+    "art-source/resource-catalog.json",
+    "docs/动物动作Unity接入与资源评估.md",
+    "docs/协作任务/20261127-柴犬idle与黑柴变体-38456056.md",
+    "docs/协作执行记录/20261127-柴犬idle与黑柴变体-38456056/",
+    "test-results/unity/PlayMode-isolated-ShibaIdle.log",
+    "test-results/unity/PlayMode-isolated-ShibaIdle.xml",
+    "tools/pet-shiba-variant.mjs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Field/FieldPetMotion.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Animals/UI/PetPortraitSet.cs",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/FieldPetMotionPlayTests.cs"
+  ],
+  "contextDigest": "9a668527d9aa0254578671ccd0dcb1a6a818566597bf76ae142699631496e4ea",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "868a7e666dea8ff80ebadea3768de5a90207e83ec442363244ab103b7852f7ac"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261127-柴犬idle与黑柴变体-38456056.md",
+      "sha256": "ba1dfb556d4a6ac3f2046123e0fdd3972f0d8a67b176a69ca64be0cdf73134ef"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}

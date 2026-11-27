@@ -26,5 +26,10 @@ namespace HomelessPetHelper.Modules.Animals.UI
 
         public static Rect ShibaWalkUv(float seconds) =>
             ShibaFrameUv(16 + Mathf.Min(15, (int)(Mathf.Repeat(seconds, .8f) * 20)));
+
+        /// <summary>Standing idle: eight authored poses ping-pong at 4 fps, two seconds per cycle.</summary>
+        public static Rect ShibaIdleUv(float seconds) =>
+            ShibaFrameUv(Mathf.Min(7, Mathf.FloorToInt(Mathf.PingPong(seconds * 4, 8))));
+
     }
 }

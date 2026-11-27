@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261127-萌宠素材盘点去水印-38456056.md",
+  "sessionId": "38456056294531586",
+  "phase": "delivery",
+  "readAt": "2026-11-27T07:41:35.033Z",
+  "writePaths": [
+    "art-source/pet-assets-wx-20261127/",
+    "docs/协作任务/20261127-萌宠素材盘点去水印-38456056.md",
+    "docs/协作执行记录/20261127-萌宠素材盘点去水印-38456056/",
+    "tools/pet-assets-clean-watermark.mjs",
+    "tools/pet-assets-contact-sheet.mjs"
+  ],
+  "contextDigest": "d9628acf2f8a2b163557fd0f1bea3ac354f6ca1f443779ed4602f65be721e7b3",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "868a7e666dea8ff80ebadea3768de5a90207e83ec442363244ab103b7852f7ac"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261127-萌宠素材盘点去水印-38456056.md",
+      "sha256": "e10e9851cfda4a60f40ef0b28bf66dfae197d4c681a7813f47fe6e0da73e65fe"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}

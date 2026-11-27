@@ -119,11 +119,12 @@ namespace HomelessPetHelper.Game.Approach
         }
 
         public void ConfigureField(OutingFieldLayout layout, Sprite background, bool dog, ApproachSession opening,
-            SceneSpritePalette props = null, OutingArtwork artwork = null, bool exploring = false)
+            SceneSpritePalette props = null, OutingArtwork artwork = null, bool exploring = false,
+            Sprite animalOverride = null)
         {
             if (gameObject.activeInHierarchy) throw new InvalidOperationException("Configure a closed approach view.");
             _scene.Configure(layout, background, dog, opening, props: props, artwork: artwork,
-                showAnimal: !exploring);
+                showAnimal: !exploring, animalOverride: animalOverride);
             _board.gameObject.SetActive(layout == null);
             _sceneChrome.Apply(layout != null);
             _dockStamp = -1;

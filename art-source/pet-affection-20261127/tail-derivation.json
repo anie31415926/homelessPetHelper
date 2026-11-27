@@ -1,0 +1,37 @@
+{
+  "tool": "Sharp; fitted curl, stationary root-fur overlay, and nearby fur clone for the rump",
+  "source": {
+    "file": "public/pet-affection/shiba.webp",
+    "sha256": "287c087a9b07e495d2bd09fb0410317cccf1ad242f6a59d35c0dc13716268e50"
+  },
+  "result": {
+    "file": "public/pet-affection/shiba-tail-layers.webp",
+    "bytes": 152030,
+    "sha256": "a72a74ad203075cdc73e2aec89416c169834b3ccb0e7562617071a6bff5a720a"
+  },
+  "layout": {
+    "size": 512,
+    "crop": {
+      "x": 320,
+      "y": 140,
+      "width": 144,
+      "height": 148
+    },
+    "atlas": {
+      "width": 656,
+      "height": 512,
+      "tailX": 512,
+      "rootY": 152
+    }
+  },
+  "hinge": {
+    "from": {
+      "x": 360,
+      "y": 231
+    },
+    "to": {
+      "x": 409,
+      "y": 265
+    }
+  }
+}

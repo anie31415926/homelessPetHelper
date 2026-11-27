@@ -1,0 +1,57 @@
+{
+  "source": "T_Station_ShibaMotion.png frame 0",
+  "crop": {
+    "left": 4,
+    "top": 2,
+    "width": 126,
+    "height": 126
+  },
+  "size": 252,
+  "grid": 6,
+  "nodes": 1849,
+  "triangles": 3528,
+  "bones": 19,
+  "poses": [
+    {
+      "pose": "idle-a",
+      "bottomY": 230,
+      "changedPixels": 128,
+      "holes": 0
+    },
+    {
+      "pose": "idle-b",
+      "bottomY": 230,
+      "changedPixels": 19871,
+      "holes": 247
+    },
+    {
+      "pose": "idle-c",
+      "bottomY": 230,
+      "changedPixels": 22878,
+      "holes": 415
+    },
+    {
+      "pose": "idle-d",
+      "bottomY": 230,
+      "changedPixels": 19536,
+      "holes": 101
+    },
+    {
+      "pose": "idle-e",
+      "bottomY": 230,
+      "changedPixels": 11073,
+      "holes": 173
+    },
+    {
+      "pose": "test-strong",
+      "bottomY": 229,
+      "changedPixels": 25585,
+      "holes": 589
+    }
+  ],
+  "limits": [
+    "single frame, no walk/transition",
+    "offscreen raster only",
+    "not imported into Unity"
+  ]
+}

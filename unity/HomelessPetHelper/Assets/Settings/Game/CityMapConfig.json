@@ -33,6 +33,7 @@
     { "id": "ordinary-dog", "textKey": "yard.rescue", "animalDefinitionId": "dog", "allowedPointIds": ["yard"] },
     { "id": "treehouse-kitten", "textKey": "treehouse.rescue", "animalDefinitionId": "cat.shy",
       "allowedPointIds": ["treehouse"] },
+    { "id": "park-doudou", "textKey": "park.doudou", "animalDefinitionId": "dog.doudou", "allowedPointIds": ["park"] },
     { "id": "reunion", "textKey": "porch.reunion", "animalDefinitionId": "dog", "allowedPointIds": ["porch"] }
   ],
   "rescueEncounters": [
@@ -50,6 +51,11 @@
       "knownHealthy": true, "dirtiness": 65, "looseFur": 50, "rescueProfile": "calm", "isHungry": true,
       "acceptsTouch": true, "acceptsWash": true, "acceptsGroom": true, "washMinutes": 60, "groomMinutes": 36,
       "initialDisposition": { "emotion": 0, "stress": 0, "behavior": 0 },
+      "rescuedDisposition": { "emotion": 2, "stress": 0, "behavior": 9 } },
+    { "templateId": "park-doudou", "animalDefinitionId": "dog.doudou", "encounterId": "dog", "dogArtwork": true,
+      "knownHealthy": true, "dirtiness": 65, "looseFur": 50, "rescueProfile": "calm", "isHungry": true,
+      "acceptsTouch": true, "acceptsWash": true, "acceptsGroom": true, "washMinutes": 60, "groomMinutes": 36,
+      "initialDisposition": { "emotion": 0, "stress": 0, "behavior": 0 },
       "rescuedDisposition": { "emotion": 2, "stress": 0, "behavior": 9 } }
   ],
   "dispatch": {
@@ -62,13 +68,15 @@
     "candidates": [
       { "templateId": "ordinary", "pointId": "parking", "templateVersion": 1 },
       { "templateId": "ordinary-dog", "pointId": "yard", "templateVersion": 1 },
-      { "templateId": "treehouse-kitten", "pointId": "treehouse", "templateVersion": 1 }
+      { "templateId": "treehouse-kitten", "pointId": "treehouse", "templateVersion": 1 },
+      { "templateId": "park-doudou", "pointId": "park", "templateVersion": 1 }
     ]
   },
   "initialRequests": [
     { "templateId": "ordinary", "pointId": "parking", "templateVersion": 1 },
     { "templateId": "ordinary-dog", "pointId": "yard", "templateVersion": 1 },
     { "templateId": "treehouse-kitten", "pointId": "treehouse", "templateVersion": 1 },
+    { "templateId": "park-doudou", "pointId": "park", "templateVersion": 1 },
     { "templateId": "reunion", "pointId": "porch", "templateVersion": 1, "hasDirectReception": true,
       "reunion": { "ownerId": "owner", "receivingArrangementId": "safe-receiving" } }
   ]

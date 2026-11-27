@@ -72,7 +72,7 @@ namespace HomelessPetHelper.Game.Progress
         {
             var presentation = config.GetAnimalPresentation(definitionId) ??
                 throw new ArgumentException("Unknown resident presentation.");
-            artwork.Get(presentation.DogArtwork, out var mask);
+            artwork.Get(definitionId, presentation.DogArtwork, out var mask);
             foreach (var field in new[] { state.CopyDirt(), state.CopyFur() })
                 if (field.Width != 128 || field.Height != 128 || !field.CopyMask().SequenceEqual(mask))
                     throw new ArgumentException("Coat mask is incompatible with current content.");

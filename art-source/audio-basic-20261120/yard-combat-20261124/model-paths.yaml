@@ -1,0 +1,4 @@
+shared:
+  base_path: C:/Users/Admin/ComfyUI-Shared/models
+  checkpoints: checkpoints
+  text_encoders: text_encoders

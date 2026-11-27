@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261127-摸摸反馈网页-01a21bfc.md",
+  "sessionId": "01a21bfc-87ea-72d1-8070-4accb2fa7247",
+  "phase": "start",
+  "readAt": "2026-11-27T07:56:13.166Z",
+  "writePaths": [
+    "art-source/pet-affection-20261127/",
+    "art-source/resource-catalog.json",
+    "docs/协作任务/20261127-摸摸反馈网页-01a21bfc.md",
+    "docs/协作执行记录/20261127-摸摸反馈网页-01a21bfc/",
+    "docs/抚摸反馈网页试做.md",
+    "pet-affection.html",
+    "public/pet-affection/",
+    "src/pet-affection/",
+    "test-results/pet-affection/",
+    "tests/pet-affection-browser.mjs",
+    "tests/pet-affection.test.mjs",
+    "tools/pet-affection-assets.mjs",
+    "tools/pet-affection-comfy.mjs",
+    "vite.config.js"
+  ],
+  "contextDigest": "f9d6e3527f0623a40ac3a11c65eb5198e9c7e0ba31d5fc5cc289a167684cfb47",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "868a7e666dea8ff80ebadea3768de5a90207e83ec442363244ab103b7852f7ac"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261127-摸摸反馈网页-01a21bfc.md",
+      "sha256": "d53aa9bac46aa58bf0e1ef5bd4e142883d696c84154de6fb60a329915c45abff"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HomelessPetHelper.Modules.Station.Cleaning;
 using HomelessPetHelper.Framework.UI;
+using HomelessPetHelper.Modules.Station.UI.Affection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -145,13 +146,14 @@ namespace HomelessPetHelper.Modules.Station.UI
             if (_chrome != null) _chrome.SetPage(summary, detail, caring);
         }
 
-        public void ShowSummary(string body, Sprite art, AnimalSnapshot animal = null)
+        public void ShowSummary(string body, Sprite art, AnimalSnapshot animal = null, bool staticPortrait = false)
         {
             _summaryBody.text = body;
             _summaryAnimal.sprite = art;
-            if (_arrivalPortrait == null) _arrivalPortrait = PetPortraitView.Attach(_summaryAnimal, _portraits);
-            if (_arrivalPortrait != null) _arrivalPortrait.Show(_portraits.IsStationDog(art), animal);
-            else _summaryCoat.Show(animal);
+            if (!staticPortrait && _arrivalPortrait == null)
+                _arrivalPortrait = PetPortraitView.Attach(_summaryAnimal, _portraits);
+            if (_arrivalPortrait != null) _arrivalPortrait.Show(_portraits.IsStationDog(art), animal, !staticPortrait);
+            if (_arrivalPortrait == null || staticPortrait) _summaryCoat.Show(animal);
         }
 
         public void SetStatus(string clock, string capacity, string feedback)
@@ -172,7 +174,7 @@ namespace HomelessPetHelper.Modules.Station.UI
 
         public void ShowDetail(string name, string condition, string progress, Sprite art, IReadOnlyDirtField dirt,
             bool cleaning, bool canFinish, StationCareAvailability care, bool suspended, IReadOnlyDirtField fur = null,
-            AnimalSnapshot animal = null)
+            AnimalSnapshot animal = null, DoudouAffectionView affection = null, bool acceptsAffection = false)
         {
             _name.text = name;
             if (_detailRename != null) _detailRename.gameObject.SetActive(!cleaning && _renameAvailable);
@@ -189,7 +191,9 @@ namespace HomelessPetHelper.Modules.Station.UI
             }
             _progress.text = progress;
             _surface.Refresh(art, dirt, fur);
-            _surface.ShowPortrait(_portraits, animal, !cleaning);
+            var interaction = cleaning ? null : affection;
+            _surface.ShowPortrait(_portraits, animal, !cleaning && interaction == null);
+            _surface.ShowAffection(interaction, acceptsAffection, suspended);
             _surface.SetCleaning(cleaning && !suspended);
             _check.gameObject.SetActive(_chrome == null || !cleaning);
             _pet.gameObject.SetActive(_chrome == null || !cleaning);

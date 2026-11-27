@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#f8fbf6">
+    <title>豆豆 · 抚摸与梳理</title>
+    <link rel="stylesheet" href="../pet-fur/style.css">
+    <link rel="stylesheet" href="./style.css">
+    <script type="module" src="./main.js"></script>
+  </head>
+  <body>
+    <main data-profile="./doudou.json">
+      <header>
+        <h1>豆豆</h1>
+        <button type="button" class="tune" aria-label="毛发参数" title="毛发参数" aria-expanded="false" aria-controls="editor" disabled>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 21v-7m0-4V3m8 18v-9m0-4V3m8 18v-5m0-4V3M2 14h4m4-6h4m4 8h4"/>
+          </svg>
+        </button>
+      </header>
+      <section class="scene" aria-label="豆豆的近景">
+        <div class="portrait">
+          <img src="../pet-affection/shiba.webp" alt="柴犬豆豆" width="512" height="512" draggable="false">
+          <canvas width="400" height="470" tabindex="0" role="button" aria-label="梳理豆豆" aria-keyshortcuts="Enter Space Shift+Enter Shift+Space"></canvas>
+          <svg class="region-guide" aria-hidden="true" preserveAspectRatio="none">
+            <polygon></polygon><polyline></polyline>
+          </svg>
+        </div>
+        <p role="status" hidden>此浏览器暂不能显示互动毛发。</p>
+      </section>
+      <aside id="editor" class="editor" aria-label="毛发参数" hidden>
+        <div class="editor-head">
+          <label>部位<select class="region-picker"></select></label>
+          <label class="guide-toggle"><input type="checkbox" checked> 显示范围</label>
+          <output class="patch-count" aria-label="总片数"></output>
+        </div>
+        <div class="editor-fields"></div>
+        <div class="editor-actions">
+          <button type="button" class="defaults">恢复参数</button>
+          <button type="button" class="download">导出配置</button>
+        </div>
+      </aside>
+      <footer>
+        <div class="toolbar">
+          <div class="compare" role="group" aria-label="互动方式">
+            <button type="button" data-mode="pet" aria-pressed="false" disabled>抚摸</button>
+            <button type="button" data-mode="brush" aria-pressed="true" disabled>梳理</button>
+          </div>
+          <button type="button" class="reset" aria-label="复位" title="复位" disabled>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 12a9 9 0 1 1 9 9 9.75 9.75 0 0 1-6.74-2.74L3 15"/>
+              <path d="M3 21v-6h6"/>
+            </svg>
+          </button>
+        </div>
+      </footer>
+    </main>
+  </body>
+</html>

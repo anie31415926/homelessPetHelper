@@ -25,7 +25,7 @@ namespace HomelessPetHelper.Game.Field
         private PetMotionPlayer _player;
         private Camera _camera;
         private RenderTexture _target;
-        private bool _cat, _dog, _visible = true;
+        private bool _cat, _dog, _visible = true, _dogWalking;
         private float _renderedSeconds = -1;
         private static readonly ProfilerMarker RenderMarker = new ProfilerMarker("Field.AnimalMotion");
 
@@ -40,6 +40,10 @@ namespace HomelessPetHelper.Game.Field
             else _surface.uvRect = new Rect(0, 0, 1, 1);
             RefreshVisibility();
         }
+
+        /// <summary>Idle is the default standing wait; walking stays available for actual movement.</summary>
+        public void SetDogWalking(bool walking) => _dogWalking = walking;
+
 
         public void ShowAnimal(AnimalSnapshot snapshot)
         {
@@ -71,7 +75,9 @@ namespace HomelessPetHelper.Game.Field
             if (_dog)
             {
                 _surface.texture = _portraits.ShibaAtlas;
-                Rect uv = PetPortraitSet.ShibaWalkUv(_clock.SceneSeconds);
+                Rect uv = _dogWalking
+                    ? PetPortraitSet.ShibaWalkUv(_clock.SceneSeconds)
+                    : PetPortraitSet.ShibaIdleUv(_clock.SceneSeconds);
                 if (_surface.uvRect != uv) _motionCoat.SetFrameUv(_surface, uv);
                 return;
             }

@@ -14,6 +14,7 @@ export default defineConfig({
         siege: fileURLToPath(new URL('./siege.html', import.meta.url)),
         petRig: fileURLToPath(new URL('./pet-rig.html', import.meta.url)),
         petMesh: fileURLToPath(new URL('./pet-mesh.html', import.meta.url)),
+        petAffection: fileURLToPath(new URL('./pet-affection.html', import.meta.url)),
         petLayers: fileURLToPath(new URL('./pet-layers.html', import.meta.url)),
       },
     },

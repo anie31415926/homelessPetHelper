@@ -59,7 +59,7 @@ namespace HomelessPetHelper.Game.Field
 
         public void Configure(OutingFieldLayout layout, Sprite background, bool dog, ApproachSession opening,
             FieldSceneSnapshot snapshot = null, SceneSpritePalette props = null, OutingArtwork artwork = null,
-            bool showAnimal = true)
+            bool showAnimal = true, Sprite animalOverride = null)
         {
             Layout = layout;
             _showAnimal = showAnimal;
@@ -68,7 +68,8 @@ namespace HomelessPetHelper.Game.Field
             if (_petMotion != null)
             {
                 _petMotion.SetVisible(false);
-                _petMotion.Configure(layout != null && showAnimal && !dog, layout != null && showAnimal && dog);
+                bool legacy = layout != null && showAnimal && animalOverride == null;
+                _petMotion.Configure(legacy && !dog, legacy && dog);
             }
             _sceneRoot.SetActive(layout != null);
             _background.gameObject.SetActive(layout != null);
@@ -80,7 +81,7 @@ namespace HomelessPetHelper.Game.Field
                 background.rect.width / background.rect.height;
             ConfigureFrame(layout);
             ConfigureForeground(layout.IllustratedInterior ? artwork : null);
-            _animal.sprite = _petMotion == null ? (dog ? _dog : _cat) : null;
+            _animal.sprite = animalOverride != null ? animalOverride : _petMotion == null ? (dog ? _dog : _cat) : null;
             _animal.preserveAspect = true;
             var grid = layout.Grid;
             _grid.anchorMin = new Vector2(grid.x / layout.Width, 1 - grid.yMax / layout.Height);

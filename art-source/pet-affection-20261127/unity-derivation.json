@@ -1,0 +1,88 @@
+{
+  "inputs": [
+    {
+      "name": "shiba.webp",
+      "sha256": "287c087a9b07e495d2bd09fb0410317cccf1ad242f6a59d35c0dc13716268e50"
+    },
+    {
+      "name": "shiba-tail-layers.webp",
+      "sha256": "a72a74ad203075cdc73e2aec89416c169834b3ccb0e7562617071a6bff5a720a"
+    },
+    {
+      "name": "faces.webp",
+      "sha256": "232aae53f862897da37629bb226c01f85bfafee98f20830627503b6d5c73551e"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "T_Station_Doudou.png",
+      "bytes": 298316,
+      "sha256": "9f8763a7a1bd81388c5d6281b0a2c635439310be0f9f4ee592fbfa361bd22fdd"
+    },
+    {
+      "name": "T_Station_DoudouAffection.png",
+      "bytes": 428180,
+      "sha256": "14a25e3587a577ed69f3b005bd2ae9769e5b7f4c9e50c2983b8dcb8a39e54c64"
+    },
+    {
+      "name": "T_Station_DoudouCareMask.bytes",
+      "bytes": 16384,
+      "sha256": "61eff7f04e53f937b51b9b368aad642336a851cfe504ea4d9aedae15de7b354a"
+    },
+    {
+      "name": "DoudouLayout.json",
+      "bytes": 481,
+      "sha256": "968a5cc7c96f48c9bea8256545fe02abd95e00ca91697b7f5971b53575f8dbfa"
+    }
+  ],
+  "layout": {
+    "size": 512,
+    "tail": [
+      320,
+      140,
+      144,
+      148
+    ],
+    "tailCell": [
+      512,
+      0,
+      144,
+      148
+    ],
+    "rootCell": [
+      512,
+      152,
+      144,
+      148
+    ],
+    "face": [
+      108,
+      107,
+      181,
+      133
+    ],
+    "smileCell": [
+      658,
+      0,
+      181,
+      133
+    ],
+    "laughCell": [
+      839,
+      0,
+      181,
+      133
+    ],
+    "hingeFrom": [
+      360,
+      231
+    ],
+    "hingeTo": [
+      409,
+      265
+    ],
+    "restTilt": 0.41,
+    "swingLimit": 0.63,
+    "liftLimit": 0.29
+  }
+}

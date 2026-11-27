@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "variant": "dog.shiba.dark",
+  "source": {
+    "path": "unity/HomelessPetHelper/Assets/Art/PetSit/T_Station_ShibaMotion.png",
+    "width": 1024,
+    "height": 640,
+    "sheet": {
+      "columns": 8,
+      "rows": 5,
+      "frame": 128
+    },
+    "sha256": "605237272c7230d25b933e397307a6ab61cf390442f54f04c98fb3ba30c2d0c2"
+  },
+  "transform": {
+    "space": "HSV per pixel; warm pixels only; alpha untouched",
+    "hueMin": 8,
+    "hueMax": 55,
+    "saturationMin": 0.18,
+    "base": 0.3,
+    "lit": 0.35,
+    "r": 0.98,
+    "g": 0.93,
+    "b": 0.88
+  },
+  "atlas": {
+    "path": "art-source/pet-shiba-variants-20261127/black-shiba/atlas.png",
+    "bytes": 238768,
+    "sha256": "36525dea8405736ab856716984658af71d29787526f9e17f7c04538164ef148c"
+  },
+  "standing": {
+    "path": "art-source/pet-shiba-variants-20261127/black-shiba/standing.png",
+    "bytes": 10004,
+    "sha256": "56993586730d7027f10589420089f6960e97139c8b6a897a6b6fd0efd8b1744f"
+  },
+  "notes": "Candidate skin only. Silhouette, frame grid and alpha are byte-identical to the source layout; no new poses, no skeleton, not accepted art and not a third species."
+}

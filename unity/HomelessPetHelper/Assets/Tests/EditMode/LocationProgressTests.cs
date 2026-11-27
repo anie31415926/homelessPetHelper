@@ -99,7 +99,7 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(restored.CanContinue, Is.True, restored.PersistenceError?.ToString());
             Assert.That(restored.Session.Requests.TryGet(id, out var request), Is.True);
             Assert.That(request.State, Is.EqualTo(RequestState.Available));
-            Assert.That(restored.Session.Requests.Requests.Count, Is.EqualTo(5));
+            Assert.That(restored.Session.Requests.Requests.Count, Is.EqualTo(6));
         }
     }
 }

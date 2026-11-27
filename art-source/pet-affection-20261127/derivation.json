@@ -1,0 +1,43 @@
+{
+  "tool": "Sharp 0.35.5; resize, hand-fit alpha envelope, same-coordinate feathered RGBA patches",
+  "inputs": [
+    {
+      "role": "calm",
+      "file": "art-source/pet-assets-wx-20261127/clean/柴犬/宠物游戏操作界面背景设计 (26)-clean.png",
+      "sha256": "ee82983291038c0656e5c60e4fb7e04d949e238882b962bb144ab4a9e40b14c3"
+    },
+    {
+      "role": "soft",
+      "file": "art-source/pet-assets-wx-20261127/clean/柴犬/宠物游戏操作界面背景设计 (33)-clean.png",
+      "sha256": "2cc6826a2ea6776700e6dcb37b61ee0029e0f2ec58c028d34337074d166ccacc"
+    },
+    {
+      "role": "happy",
+      "file": "art-source/pet-assets-wx-20261127/clean/柴犬/宠物游戏操作界面背景设计 (34)-clean.png",
+      "sha256": "b321485d90af2a0707efdf9a1837524c9e674ac3853e6000cfd62d59b847f406"
+    }
+  ],
+  "size": 512,
+  "face": {
+    "x": 108,
+    "y": 107,
+    "width": 181,
+    "height": 133
+  },
+  "cells": [
+    "soft",
+    "happy"
+  ],
+  "outputs": [
+    {
+      "file": "shiba.webp",
+      "bytes": 147096,
+      "sha256": "287c087a9b07e495d2bd09fb0410317cccf1ad242f6a59d35c0dc13716268e50"
+    },
+    {
+      "file": "faces.webp",
+      "bytes": 51668,
+      "sha256": "232aae53f862897da37629bb226c01f85bfafee98f20830627503b6d5c73551e"
+    }
+  ]
+}

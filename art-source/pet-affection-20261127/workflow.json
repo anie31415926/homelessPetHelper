@@ -1,0 +1,172 @@
+{
+  "resolution": 512,
+  "seed": 2026112717,
+  "inputSha256": "98ed432e8e5c17e2a1440f05d55e1761be4108fc69cbff835d50be29cec6409e",
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "pet-affection-2026112717-base.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "只修改同一只水彩柴犬的眼睛、嘴和脸颊。被主人轻轻摸头时，双眼笑成弯弯的小月牙，嘴角自然扬起，轻微腮红，嘴巴微张露一点舌尖。保持鼻子位置、原来的脸宽和奶油白口鼻毛边，耳朵身体脚和尾巴、相机、纸纹、光线不变。不画手、特效或文字。",
+        "negative_prompt": "手，花，文字，水印，额外肢体，变换视角，卡通粗描边，3D，照片，夸张大嘴，露齿，脸型变化",
+        "resolution": 512,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "14",
+          0
+        ],
+        "seed": 2026112717,
+        "steps": 20,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 0.78
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "15",
+          0
+        ],
+        "filename_prefix": "pet-affection-2026112717"
+      }
+    },
+    "11": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "pet-affection-2026112717-mask.png"
+      }
+    },
+    "12": {
+      "class_type": "ImageToMask",
+      "inputs": {
+        "image": [
+          "11",
+          0
+        ],
+        "channel": "red"
+      }
+    },
+    "13": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "4",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "14": {
+      "class_type": "SetLatentNoiseMask",
+      "inputs": {
+        "samples": [
+          "13",
+          0
+        ],
+        "mask": [
+          "12",
+          0
+        ]
+      }
+    },
+    "15": {
+      "class_type": "ImageCompositeMasked",
+      "inputs": {
+        "destination": [
+          "4",
+          0
+        ],
+        "source": [
+          "8",
+          0
+        ],
+        "x": 0,
+        "y": 0,
+        "resize_source": false,
+        "mask": [
+          "12",
+          0
+        ]
+      }
+    }
+  }
+}

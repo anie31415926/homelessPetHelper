@@ -35,6 +35,7 @@
     { "key": "parking.detail", "value": "洞口闪着紫光，轨道上停着小矿车。" },
     { "key": "parking.rescue", "value": "居民提供了流浪猫线索。" },
     { "key": "yard.rescue", "value": "居民提供了流浪狗线索。" },
+    { "key": "park.doudou", "value": "公园里发现了一只卷尾小狗。" },
     { "key": "yard.detail", "value": "木篱笆围着菜园，番茄已经红了。" },
     { "key": "porch.detail", "value": "老橡树的树干上有扇圆木门。" },
     { "key": "porch.reunion", "value": "收到寻宠线索，已确认原主人可安全接回。" },

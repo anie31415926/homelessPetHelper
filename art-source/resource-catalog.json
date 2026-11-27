@@ -17,6 +17,119 @@
   },
   "assets": [
     {
+      "id": "pet-affection.shiba-base",
+      "name": "摸摸试做柴犬固定姿态",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "独立网页试做，未进入 Unity。",
+      "use": "512 档透明底图，统一足底和表情坐标。",
+      "plannedBytes": 204800,
+      "files": [
+        { "role": "runtime", "path": "public/pet-affection/shiba.webp" },
+        { "role": "workflow", "path": "art-source/pet-affection-20261127/derivation.json" }
+      ],
+      "generation": { "tool": "本地 Sharp；指定柴犬参考图 (26)" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-fur.unity-preview-doudou",
+      "name": "小撮毛 Unity 测试场景柴犬",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "独立 Unity Editor 测试场景专用；不进 Main、动物名录或玩家构建场景。",
+      "use": "512×512 透明彩图，底图和局部毛发着色器共用；与网页原图逐像素相同。",
+      "plannedBytes": 327680,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/PetFur/T_DoudouFurPreview.png" },
+        { "role": "workflow", "path": "tools/unity-fur-preview.mjs" }
+      ],
+      "generation": { "tool": "本地 Sharp，从 pet-affection.shiba-base 透明 WebP 无损解码转 PNG" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-affection.shiba-tail-layers",
+      "name": "摸摸试做柴犬卷尾拆层图集",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "仅用于独立网页试做的微动档，未进入 Unity。",
+      "use": "512×512 无尾身底及两个 144×148 透明格：离背摆动的卷尾与仅覆盖短尾根接点的固定根毛。",
+      "plannedBytes": 204800,
+      "files": [
+        { "role": "runtime", "path": "public/pet-affection/shiba-tail-layers.webp" },
+        { "role": "workflow", "path": "art-source/pet-affection-20261127/tail-derivation.json" }
+      ],
+      "generation": { "tool": "本地 Sharp，既有柴犬透明底图轮廓拆层、同源毛色补臀" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-affection.unity-doudou-stance",
+      "name": "Unity 豆豆第三种固定站姿",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "新独立公园求助与豆豆入站，Main 绑定随项目静态加载；不替换既有动物。",
+      "use": "512×512 独立透明站姿，现场、站内和护理预览。",
+      "plannedBytes": 307200,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/Art/Station/Doudou/T_Station_Doudou.png" },
+        { "role": "workflow", "path": "art-source/pet-affection-20261127/unity-derivation.json" }
+      ],
+      "generation": { "tool": "本地 Sharp，已确认网页原型的同源转档" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-affection.unity-doudou-interaction",
+      "name": "Unity 豆豆独立表情与卷尾图集",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "first-play",
+      "availability": "只在豆豆详情显示；GameContent 的 Prefab 静态引用，尚非实际按需下载。",
+      "use": "1024×512 RGBA 表情、固定身底、活动尾片及固定根毛，沿用网页原画。",
+      "plannedBytes": 409600,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/Art/Station/Doudou/T_Station_DoudouAffection.png" },
+        { "role": "workflow", "path": "art-source/pet-affection-20261127/unity-derivation.json" }
+      ],
+      "generation": { "tool": "本地 Sharp，已确认网页图集无损打包" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-affection.shiba-expressions",
+      "name": "摸摸试做柴犬局部表情",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "独立网页试做，未进入 Unity。",
+      "use": "同位置的表情局部补丁，不重画身体。",
+      "plannedBytes": 49152,
+      "files": [
+        { "role": "runtime", "path": "public/pet-affection/faces.webp" },
+        { "role": "workflow", "path": "art-source/pet-affection-20261127/derivation.json" }
+      ],
+      "generation": { "tool": "本地 Sharp；指定柴犬参考图 (33)(34)" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-affection.comfy-alternate",
+      "name": "柴犬闭眼笑本地生成对照",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "只用于表情改图与稳定性对照，未进入 Unity。",
+      "use": "以表情正脸为局部编辑目标，体型、毛色和视角不变。",
+      "plannedBytes": 1048576,
+      "files": [
+        { "role": "candidate", "path": "art-source/pet-affection-20261127/comfy-alternate.png" },
+        { "role": "workflow", "path": "art-source/pet-affection-20261127/workflow.json" },
+        { "role": "generation-record", "path": "art-source/pet-affection-20261127/history.json" }
+      ],
+      "generation": { "tool": "本机 ComfyUI / Qwen Image 2.1" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
       "id": "pet-motion.unity-atlas",
       "name": "动物动作共享裁边图集",
       "module": "Station",
@@ -6835,6 +6948,45 @@
         { "role": "workflow", "path": "unity/HomelessPetHelper/Assets/Scripts/Editor/PetMotion/PetPortraitBaker.cs" }
       ],
       "generation": { "tool": "Unity PetPortraitBaker.Bake" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-shiba-variants-20261127.black-atlas",
+      "name": "黑柴换色候选（第三只动物皮肤）",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "尚未导入 Unity、未接求助配置与站内外观；仅换色候选，不进 Main 或首批。",
+      "use": "柴犬 8×5 姿态图集逐像素换色，alpha、轮廓、帧格与原图完全一致；同一套 UV 可复用 idle 与走动的帧序。",
+      "plannedBytes": 253952,
+      "files": [
+        { "role": "master", "path": "art-source/pet-shiba-variants-20261127/black-shiba/atlas.png" },
+        { "role": "candidate", "path": "art-source/pet-shiba-variants-20261127/black-shiba/standing.png" },
+        { "role": "workflow", "path": "art-source/pet-shiba-variants-20261127/black-shiba/derivation.json" },
+        { "role": "workflow", "path": "tools/pet-shiba-variant.mjs" },
+        { "role": "generation-record", "path": "art-source/pet-shiba-variants-20261127/README.md" }
+      ],
+      "generation": { "tool": "本地 Sharp；tools/pet-shiba-variant.mjs（--check 复核哈希）" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "dog-rig-prototype-20261127.idle-loop",
+      "name": "柴犬骨骼蒙皮 idle 原型（离线预览）",
+      "module": "Station",
+      "status": "candidate",
+      "loadTiming": "preview-only",
+      "availability": "离线原型，未导入 Unity、未接 PetPortraitSet/FieldPetMotion；仅用于判断柴犬能否改骨骼蒙皮。",
+      "use": "取 T_Station_ShibaMotion 第 0 帧，19 骨 + 6px 网格 LBS 输出 idle 循环；单帧 128px 无分层，只可小幅 idle，不能做 walk。",
+      "plannedBytes": 201283,
+      "files": [
+        { "role": "candidate", "path": "art-source/dog-rig-prototype-20261127/idle-loop.gif" },
+        { "role": "reference", "path": "art-source/dog-rig-prototype-20261127/board.png" },
+        { "role": "reference", "path": "art-source/dog-rig-prototype-20261127/compare-strong.png" },
+        { "role": "workflow", "path": "art-source/dog-rig-prototype-20261127/report.json" },
+        { "role": "workflow", "path": "tools/dog-rig-prototype.mjs" },
+        { "role": "generation-record", "path": "docs/柴犬骨骼蒙皮原型-20261127.md" }
+      ],
+      "generation": { "tool": "本地 Sharp；tools/dog-rig-prototype.mjs（可重复产出）" },
       "review": { "visual": "pending", "rights": "pending", "target": "pending" }
     }
   ]

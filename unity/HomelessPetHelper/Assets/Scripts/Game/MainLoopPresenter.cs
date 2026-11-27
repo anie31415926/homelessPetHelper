@@ -447,7 +447,8 @@ namespace HomelessPetHelper.Game
             var artwork = _content.GetOutingArtwork(outing.SelectedPointId);
             _approach.SetLocationBackground(artwork.Background);
             _approach.ConfigureField(_activeField, artwork.Background, encounter.DogArtwork, opening,
-                artwork.Props, artwork);
+                artwork.Props, artwork,
+                animalOverride: _content.Artwork.GetAffectionOverride(encounter.AnimalDefinitionId));
             _approach.FieldScene.SetWeather(_outingWeather.Value);
             _approach.FieldScene.SetLighting(Session.Clock.Current);
             _approach.Bind(opening, _content.ApproachText, encounter.DogArtwork, EnterSiege,
@@ -649,7 +650,8 @@ namespace HomelessPetHelper.Game
             var artwork = _content.GetOutingArtwork(outing.SelectedPointId);
             _siege.SetLocationBackground(artwork.Background);
             _battleScene.Configure(_activeField, artwork.Background, encounter.DogArtwork, null, fieldSnapshot,
-                artwork.Props, artwork);
+                artwork.Props, artwork,
+                animalOverride: _content.Artwork.GetAffectionOverride(encounter.AnimalDefinitionId));
             _battleScene.SetWeather(_outingWeather ?? WorldWeather);
             _battleScene.SetLighting(Session.Clock.Current);
             _battleScene.ShowAnimal(_outingAnimal.Current);
@@ -658,7 +660,7 @@ namespace HomelessPetHelper.Game
             _siege.SetFieldMode(_activeField != null);
             if (_activeField != null)
             {
-                var animalPose = _content.Artwork.Get(encounter.DogArtwork, out _);
+                var animalPose = _content.Artwork.Get(encounter.AnimalDefinitionId, encounter.DogArtwork, out _);
                 _siege.Scene.Configure(animalPose, _activeField.AnimalWidthFor(encounter.DogArtwork),
                     Enumerable.Range(0, _activeField.LaneCount).Select(_activeField.Portal).ToArray(),
                     _activeField.IllustratedInterior, artwork.Props);

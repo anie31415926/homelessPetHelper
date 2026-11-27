@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261127-柴犬拆层清单-38456056.md",
+  "sessionId": "38456056294531586",
+  "phase": "delivery",
+  "readAt": "2026-11-27T05:03:46.799Z",
+  "writePaths": [
+    "art-source/dog-rig-prototype-20261127/layer-plan.png",
+    "docs/协作任务/20261127-柴犬拆层清单-38456056.md",
+    "docs/协作执行记录/20261127-柴犬拆层清单-38456056/",
+    "docs/柴犬拆层与补绘清单-20261127.md",
+    "tools/dog-layer-plan.mjs"
+  ],
+  "contextDigest": "de4a0669135fa3e80e2d90a816e81d3c9cf7e41ad024e38599aea3a586bfa73b",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "868a7e666dea8ff80ebadea3768de5a90207e83ec442363244ab103b7852f7ac"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261127-柴犬拆层清单-38456056.md",
+      "sha256": "5b56f7038dd80685b06c4315075cf6a79d5b0a030623170913a6487672c15392"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}

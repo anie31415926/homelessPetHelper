@@ -6,6 +6,7 @@ using HomelessPetHelper.Game.CityMap;
 using HomelessPetHelper.Game.Station;
 using HomelessPetHelper.Modules.Siege;
 using HomelessPetHelper.Modules.Approach;
+using HomelessPetHelper.Modules.Station.UI.Affection;
 using UnityEngine;
 
 namespace HomelessPetHelper.Game
@@ -16,6 +17,9 @@ namespace HomelessPetHelper.Game
         [SerializeField] private TextAsset _mapConfig, _mapText, _stationText, _siegeData, _siegeText;
         [SerializeField] private Sprite _cat, _dog;
         [SerializeField] private TextAsset _catMask, _dogMask;
+        [SerializeField] private Sprite _doudou;
+        [SerializeField] private TextAsset _doudouMask;
+        [SerializeField] private DoudouAffectionView _doudouView;
         [SerializeField] private Font _font;
         [SerializeField] private OutingArtwork[] _outingArtwork = Array.Empty<OutingArtwork>();
         [SerializeField] private AudioCatalog _audioCatalog;
@@ -50,7 +54,8 @@ namespace HomelessPetHelper.Game
         public TextAsset StationText => _stationText;
         public TextAsset SiegeText => _siegeText;
         public Font Font => _font;
-        public StationArtwork Artwork => new StationArtwork(_cat, _catMask, _dog, _dogMask);
+        public StationArtwork Artwork => new StationArtwork(_cat, _catMask, _dog, _dogMask,
+            _doudou, _doudouMask, _doudouView);
         public CityMapPreviewConfig CreateMapConfig() => new CityMapPreviewConfig(_mapConfig);
         public SiegeCatalog CreateSiegeCatalog() => CreateSiegeCatalog(null);
         internal SiegeCatalog CreateSiegeCatalog(Progress.StationEconomyRules clip) =>
@@ -103,6 +108,12 @@ namespace HomelessPetHelper.Game
             Artwork.Get(false, out _);
             Artwork.Get(true, out _);
             var map = CreateMapConfig();
+            if (map.GetAnimalPresentation(StationArtwork.AffectionDefinitionId) != null)
+            {
+                Artwork.Get(StationArtwork.AffectionDefinitionId, true, out _);
+                if (_doudouView == null || !_doudouView.HasArt)
+                    throw new InvalidOperationException("Missing Doudou interaction art.");
+            }
             ValidateArtwork(map);
             map.ValidateText(new Text.OptionPreviewText(_mapText));
             map.ValidateRescues(CreateSiegeCatalog());

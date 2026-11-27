@@ -169,7 +169,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return LoadWithOutingSeed(0);
             var root = Object.FindObjectOfType<MainGameRoot>();
             var session = root.Presenter.Session;
-            Button("Park").onClick.Invoke();
+            Button("Riverside").onClick.Invoke();
             Assert.That(Label("PrimaryLabel").text, Is.EqualTo("去探索"));
             Button("Primary").onClick.Invoke();
             var field = Object.FindObjectOfType<ApproachPanelView>(true);
@@ -253,8 +253,8 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(root.Presenter.Overlays, Is.Null, "No popup survives the return.");
             Assert.That(visited.IsSettled, Is.True);
             Assert.That(session.Outing.Session.Stage, Is.EqualTo(OutingStage.MapSelecting));
-            Assert.That(Button("Park").IsInteractable(), Is.True);
-            Button("Park").onClick.Invoke();
+            Assert.That(Button("Riverside").IsInteractable(), Is.True);
+            Button("Riverside").onClick.Invoke();
             Assert.That(_view.IsDetailsOpen, Is.True, "Another point opens its normal detail popup.");
             Assert.That(Label("PrimaryLabel").text, Is.EqualTo("去探索"));
             Assert.That(root.Presenter.Progress.CanContinue, Is.True);
@@ -294,7 +294,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(outgoing.IsSettled, Is.True);
             Assert.That(presenter.Progress.CanContinue, Is.True);
             Assert.That(request.State, Is.EqualTo(RequestState.Available));
-            Button("Park").onClick.Invoke();
+            Button("Riverside").onClick.Invoke();
             Assert.That(_view.IsDetailsOpen, Is.True);
             Assert.That(Label("PrimaryLabel").text, Is.EqualTo("去探索"));
         }

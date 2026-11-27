@@ -249,6 +249,7 @@ namespace HomelessPetHelper.Game.Station
             {
                 string response = _loop == null ? Resident(_selected).Contact.Pet() :
                     Current(_selected).CarePermissions.AcceptsTouch && IsCalm(_selected) ? "petted" : "petQuiet";
+                if (response == "petted") _view.Surface.PreviewAffection();
                 _feedback = _text.Get(response, Resident(_selected).Name);
             }
             else if (_tool == StationCareTool.None && command == StationCommand.QuietSpace)
@@ -430,7 +431,7 @@ namespace HomelessPetHelper.Game.Station
                 Body = canBrowse ? _text.Get("adoption.memory", memorial.Name, _progress.MemorialCount - index,
                     _progress.MemorialCount) : memorial.Name,
                 CenterBody = true,
-                Portrait = _artwork.Get(_careRoster.UsesDogArtwork(memorial.Appearance), out _),
+                Portrait = _artwork.Get(memorial.Appearance, _careRoster.UsesDogArtwork(memorial.Appearance), out _),
                 CancelLabel = _text.Get("adoption.close"),
                 BrowseLabel = _text.Get("adoption.nextMemory"),
                 Browse = canBrowse ?
@@ -697,7 +698,8 @@ namespace HomelessPetHelper.Game.Station
                     _summary.Arrival.Condition.Dirtiness);
                 int award = _progress?.RescueAidFor(_summary.Arrival.OutingId) ?? 0;
                 if (award > 0) body += "\n" + _text.Get("economy.amount", award);
-                _view.ShowSummary(body, resident.Art, _summary.Arrival.AnimalAtArrival);
+                _view.ShowSummary(body, resident.Art, _summary.Arrival.AnimalAtArrival,
+                    _summary.Arrival.AnimalDefinitionId == StationArtwork.AffectionDefinitionId);
             }
             else if (_selected < 0)
             {
@@ -719,9 +721,12 @@ namespace HomelessPetHelper.Game.Station
                 IReadOnlyDirtField dirt = selected.Dirt;
                 string progress = _tool != StationCareTool.None ? Progress(ActiveField()) :
                     _text.Get("bothProgress", dirt.RemovedFraction * 100, selected.Fur.RemovedFraction * 100);
+                var current = Current(_selected);
+                bool doudou = current?.DefinitionId == StationArtwork.AffectionDefinitionId;
                 _view.ShowDetail(selected.Name, Condition(_selected), progress, selected.Art, dirt,
                     _tool != StationCareTool.None, true, CareAvailability(_selected), _suspended
-                        || _persistenceBlocked, selected.Fur, Current(_selected));
+                        || _persistenceBlocked, selected.Fur, current, doudou ? _artwork.AffectionView : null,
+                    doudou && current.CarePermissions.AcceptsTouch && IsCalm(_selected));
                 if (_progress != null && _tool == StationCareTool.None)
                     _view.SetAdoptionCommand(_text.Get(_progress.IsListed(_station.Animals[_selected].AnimalId)
                         ? "adoption.view" : "adoption.entry"), !_suspended && !_persistenceBlocked);
@@ -756,8 +761,9 @@ namespace HomelessPetHelper.Game.Station
                 bool observing = StationHabitatPlacement.NeedsObservation(Care(index).BasicAssessment, current);
                 bool dog = _careRoster?.UsesDogArtwork(arrival.AnimalDefinitionId) ??
                     arrival.AnimalDefinitionId == "dog";
+                bool doudou = arrival.AnimalDefinitionId == StationArtwork.AffectionDefinitionId;
                 _sceneResidents.Add(new StationSceneResident(arrival.AnimalId, index, Resident(index).Name,
-                    Resident(index).Art, !dog, observing, current, animatedShiba: dog));
+                    Resident(index).Art, !dog, observing, current, animatedShiba: dog && !doudou));
             }
             _view.Scene.Show(_sceneResidents, _selected);
         }

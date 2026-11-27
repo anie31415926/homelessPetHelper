@@ -33,7 +33,7 @@ namespace HomelessPetHelper.Game.Station
                 throw new ArgumentException("Animal is not admitted.");
             var definition = _config.GetAnimalPresentation(animal.DefinitionId) ??
                 throw new ArgumentException("Missing care configuration.");
-            _artwork.Get(definition.DogArtwork, out var mask);
+            _artwork.Get(animal.DefinitionId, definition.DogArtwork, out var mask);
             int seed = Modules.Animals.UI.AnimalCoatPattern.Seed(animal.AnimalId);
             care = new StationCoatCare(_session.Station, _session.StationSessionId, animalId, _session.Clock,
                 StationCoatFields.Create(mask, seed, false, animal.Coat.Dirtiness),
@@ -59,7 +59,7 @@ namespace HomelessPetHelper.Game.Station
             if (_care.ContainsKey(animalId)) throw new ArgumentException("Duplicate care state.");
             if (!_session.Station.TryGetCurrentAnimal(animalId, out var animal))
                 throw new ArgumentException("Animal is not admitted.");
-            _artwork.Get(UsesDogArtwork(animal.DefinitionId), out var mask);
+            _artwork.Get(animal.DefinitionId, UsesDogArtwork(animal.DefinitionId), out var mask);
             int seed = Modules.Animals.UI.AnimalCoatPattern.Seed(animalId);
             _care.Add(animalId, new StationCoatCare(_session.Station, _session.StationSessionId, animalId,
                 _session.Clock, state, (grooming, amount) => StationCoatFields.Create(mask, seed, grooming, amount)));

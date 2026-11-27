@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HomelessPetHelper.Game.Station;
 using HomelessPetHelper.Modules.Rescue;
 using HomelessPetHelper.Modules.Station;
 
@@ -24,6 +25,7 @@ namespace HomelessPetHelper.Game.Progress
             {
                 if (request.TemplateId == "ordinary" && request.PointId == "parking") return "petName.chestnut";
                 if (request.TemplateId == "ordinary-dog" && request.PointId == "yard") return "petName.wheat";
+                if (animal.AnimalDefinitionId == StationArtwork.AffectionDefinitionId) return "petName.doudou";
                 if (request.TemplateId == "treehouse-kitten" && request.PointId == "treehouse")
                     return "petName.pinecone";
             }

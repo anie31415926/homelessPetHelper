@@ -1,0 +1,178 @@
+{
+  "server": "http://127.0.0.1:8188",
+  "resolution": 768,
+  "seed": 2026112701,
+  "inputs": {
+    "plate": "dog-neck-plate-768.png",
+    "mask": "dog-neck-mask-768.png",
+    "plateSha256": "6ddb8b8bdc2568cdc609db58c2ab210351eeb4c52c05f57a4637931dfdd26291",
+    "maskSha256": "6a7f4df29066a82ef13d6eb7299c7f2f7603b1281cb7b9bbb1eaa5e912529a2b"
+  },
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "dog-neck-plate-768.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "prompt": "只补画这张水彩柴犬插画里被头部挡住的那一小块：颈后到肩胛的暖橙色被毛，带手绘水彩笔触和细褐色轮廓边缘，与周围毛发自然衔接。不要画头、眼睛、四肢、尾巴或任何背景，只填满白色区域。",
+        "negative_prompt": "写实照片，3D渲染，厚涂油画，黑色背景，地面阴影，文字，水印，多个动物，额外的头或腿，深色描边",
+        "resolution": 768,
+        "images.image_1": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "14",
+          0
+        ],
+        "seed": 2026112701,
+        "steps": 24,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "15",
+          0
+        ],
+        "filename_prefix": "dog-neck"
+      }
+    },
+    "11": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "dog-neck-mask-768.png"
+      }
+    },
+    "12": {
+      "class_type": "ImageToMask",
+      "inputs": {
+        "image": [
+          "11",
+          0
+        ],
+        "channel": "red"
+      }
+    },
+    "13": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "4",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "14": {
+      "class_type": "SetLatentNoiseMask",
+      "inputs": {
+        "samples": [
+          "13",
+          0
+        ],
+        "mask": [
+          "12",
+          0
+        ]
+      }
+    },
+    "15": {
+      "class_type": "ImageCompositeMasked",
+      "inputs": {
+        "destination": [
+          "4",
+          0
+        ],
+        "source": [
+          "8",
+          0
+        ],
+        "x": 0,
+        "y": 0,
+        "resize_source": false,
+        "mask": [
+          "12",
+          0
+        ]
+      }
+    }
+  }
+}

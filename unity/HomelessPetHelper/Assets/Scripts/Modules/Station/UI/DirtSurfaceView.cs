@@ -2,6 +2,7 @@ using System;
 using HomelessPetHelper.Modules.Animals;
 using HomelessPetHelper.Modules.Animals.UI;
 using HomelessPetHelper.Modules.Station.Cleaning;
+using HomelessPetHelper.Modules.Station.UI.Affection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -32,17 +33,38 @@ namespace HomelessPetHelper.Modules.Station.UI
         private IReadOnlyDirtField _field, _furField;
         private Rect _coatRect;
         private PetPortraitView _portrait;
+        private DoudouAffectionView _affection;
         private Vector3 _restScale;
         private float _breathTime;
 
         private void Awake() => _restScale = transform.localScale;
         internal void SetPortraitPaused(bool paused) => _portrait?.SetPaused(paused);
 
+        public void PreviewAffection()
+        {
+            if (_affection != null && _affection.isActiveAndEnabled) _affection.Preview();
+        }
+
+        public void ShowAffection(DoudouAffectionView prefab, bool acceptsTouch, bool suspended)
+        {
+            if (prefab == null)
+            {
+                if (_affection != null) _affection.gameObject.SetActive(false);
+                return;
+            }
+            if (_affection == null) _affection = Instantiate(prefab, _animal.rectTransform, false);
+            if (!_affection.gameObject.activeSelf) _affection.gameObject.SetActive(true);
+            _animal.enabled = false;
+            _dirt.enabled = _fur.enabled = false;
+            _affection.SetInput(acceptsTouch, suspended);
+        }
+
         public void ShowPortrait(PetPortraitSet art, AnimalSnapshot animal, bool visible)
         {
             if (art == null) return;
-            if (_portrait == null) _portrait = PetPortraitView.Attach(_animal, art);
-            _portrait.Show(art.IsStationDog(_inputArt), animal, visible);
+            if (_portrait == null && visible) _portrait = PetPortraitView.Attach(_animal, art);
+            if (_portrait != null) _portrait.Show(art.IsStationDog(_inputArt), animal, visible);
+            else _animal.enabled = true;
             _dirt.enabled = !visible;
             _fur.enabled = !visible;
         }

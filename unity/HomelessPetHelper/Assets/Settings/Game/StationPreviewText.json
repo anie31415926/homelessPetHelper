@@ -2,6 +2,7 @@
   "entries": [
     { "key": "petName.chestnut", "value": "栗子" },
     { "key": "petName.wheat", "value": "小麦" },
+    { "key": "petName.doudou", "value": "豆豆" },
     { "key": "petName.pinecone", "value": "松果" },
     { "key": "petName.pool.0", "value": "团团" },
     { "key": "petName.pool.1", "value": "糖豆" },

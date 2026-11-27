@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261127-豆包完整任务派工-01a2082b.md",
+  "sessionId": "01a2082b-0ed1-75a3-84f9-99a5ca93312d",
+  "phase": "start",
+  "readAt": "2026-11-27T08:12:42.866Z",
+  "writePaths": [
+    "AGENTS.md",
+    "docs/协作任务/20261127-豆包完整任务派工-01a2082b.md",
+    "docs/协作执行记录/20261127-豆包完整任务派工-01a2082b/",
+    "docs/外部Agent派工与验收.md"
+  ],
+  "contextDigest": "a0ee564ffeb422e8a90c57e309b8549e1b1438858e95ce2beca7167ef3b2b6f1",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "868a7e666dea8ff80ebadea3768de5a90207e83ec442363244ab103b7852f7ac"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261127-豆包完整任务派工-01a2082b.md",
+      "sha256": "002e1daa8f483fe8c94f106f5197c52ad62a675752160a49250889391419de31"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "74fd2181fe9a49c9d81bd24445d6432d800135e3226f60b6ae3e57b2b3a27af5"
+    }
+  ]
+}

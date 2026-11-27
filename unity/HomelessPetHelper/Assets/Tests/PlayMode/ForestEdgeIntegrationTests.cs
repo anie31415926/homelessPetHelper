@@ -34,7 +34,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         [TearDown] public void ReleaseStorage() => _storage.Dispose();
 
         [UnityTest]
-        public IEnumerator NewSitesDoNotCreateRequestsAndConsecutiveOutingsKeepTheirLocationArtwork()
+        public IEnumerator SitesWithoutRequestsAndConsecutiveOutingsKeepTheirLocationArtwork()
         {
             yield return SceneManager.LoadSceneAsync("Main");
             yield return null;
@@ -47,11 +47,12 @@ namespace HomelessPetHelper.Tests.PlayMode
             var content = AssetDatabase.LoadAssetAtPath<GameContent>("Assets/Settings/Game/GameContent.asset");
             var copy = new OptionPreviewText(content.MapText);
             MainApproachDriver.Click(station, "Restart");
-            Assert.That(session.Requests.Requests.Count, Is.EqualTo(4));
-            foreach (string site in new[] { "Park", "Market", "Riverside" })
+            Assert.That(session.Requests.Requests.Count, Is.EqualTo(5));
+            foreach (string site in new[] { "Market", "Riverside" })
             {
                 MainApproachDriver.Click(map, site);
-                Assert.That(MainApproachDriver.Button(map, "Primary").IsInteractable(), Is.False, site);
+                Assert.That(session.Requests.Requests.Any(request => request.PointId == site.ToLowerInvariant()),
+                    Is.False, site);
                 Assert.That(session.Clock.Current.ElapsedMinutes, Is.Zero);
                 Assert.That(session.Requests.Requests.All(request => request.State == RequestState.Available), Is.True);
                 Assert.That(map.GetComponentsInChildren<Text>().Single(label => label.name == "Heading").text,
@@ -74,6 +75,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                 AssertBackground(siege, picture);
                 yield return Capture(siege, site + "-siege");
                 MainApproachDriver.Click(siege, "Retry");
+                yield return ReturnFromMap(map);
                 Assert.That(station.gameObject.activeInHierarchy, Is.True);
                 Assert.That(session.Station.Animals, Is.Empty);
                 MainApproachDriver.Click(station, "Restart");
@@ -168,6 +170,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(approach.FieldScene.Snapshot.Remaining.All(value => value == 0), Is.True);
             MainApproachDriver.Click(approach, "Pause");
             MainApproachDriver.Click(approach, "Return");
+            yield return ReturnFromMap(Object.FindObjectOfType<CityMapView>(true));
             var clock = root.Presenter.Session.Clock;
             Assert.That(clock.TryAdvance(clock.Current.Version, 120, out _, out _), Is.True);
             Depart();
@@ -184,6 +187,14 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(approach.FieldScene.Snapshot.Remaining, Is.EqualTo(remaining));
             Assert.That(Object.FindObjectOfType<MainGameRoot>().Presenter.OutingAnimal.AnimalId, Is.EqualTo(id));
             LogAssert.NoUnexpectedReceived();
+        }
+
+        private static IEnumerator ReturnFromMap(CityMapView map)
+        {
+            float deadline = Time.realtimeSinceStartup + 5;
+            while (!map.isActiveAndEnabled && Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.That(map.isActiveAndEnabled, Is.True, "The field should return to the map.");
+            MainApproachDriver.Click(map, "Cancel");
         }
 
         private static void AssertCompactDock(SiegeTrialView siege, OutingFieldView field)
