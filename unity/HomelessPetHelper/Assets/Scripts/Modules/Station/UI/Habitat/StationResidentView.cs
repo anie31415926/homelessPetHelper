@@ -69,7 +69,8 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _stillCoat.Show(layered ? null : resident.Snapshot);
             _motionCoat.Show(layered ? null : resident.Snapshot);
             _stillImage.gameObject.SetActive(!animated);
-            _stillImage.enabled = !layered;
+            _stillImage.canvasRenderer.cullTransparentMesh = !layered;
+            _stillImage.canvasRenderer.SetAlpha(layered ? 0f : 1f);
             _motionImage.gameObject.SetActive(animated);
             BindExpression(resident);
             _cage.SetActive(resident.Observing);

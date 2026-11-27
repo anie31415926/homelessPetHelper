@@ -55,14 +55,14 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return WaitFor(station);
             Assert.That(session.Station.Animals.Single().AnimalId, Is.EqualTo(activity.Individual.Current.AnimalId));
             MainApproachDriver.Click(station, "Enter");
+            yield return null;
             var resident = station.Scene.Cells[0];
             var roomView = resident.GetComponentInChildren<DoudouAffectionView>();
             Assert.That(roomView, Is.Not.Null);
             Assert.That(roomView.raycastTarget, Is.False);
             Assert.That(roomView.CurrentFace, Is.EqualTo(AffectionFace.Calm));
-            var select = resident.SelectButton;
-            Assert.That(select.isActiveAndEnabled && select.IsInteractable(), Is.True);
-            select.onClick.Invoke();
+            yield return InPortraitViewport(roomView.canvas.rootCanvas,
+                camera => TapResident(roomView, resident.SelectButton, camera));
             var view = station.GetComponentInChildren<DoudouAffectionView>();
             Assert.That(view, Is.Not.Null);
             Assert.That(station.GetComponentsInChildren<Text>().Any(text => text.text == "\u8c46\u8c46"), Is.True);
@@ -133,6 +133,27 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return null;
         }
 
+        private static void TapResident(DoudouAffectionView view, Button select, Camera camera)
+        {
+            var world = view.rectTransform.TransformPoint(view.GetPixelAdjustedRect().center);
+            var data = new PointerEventData(EventSystem.current)
+            {
+                position = RectTransformUtility.WorldToScreenPoint(camera, world),
+                button = PointerEventData.InputButton.Left
+            };
+            var hits = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(data, hits);
+            Assert.That(hits, Is.Not.Empty, $"No hit at {data.position} in the portrait viewport.");
+            data.pointerPressRaycast = hits[0];
+            var target = hits[0].gameObject;
+            Assert.That(ExecuteEvents.GetEventHandler<IPointerDownHandler>(target), Is.SameAs(select.gameObject),
+                $"Expected a press on the resident, but hit {target.name}.");
+            Assert.That(ExecuteEvents.GetEventHandler<IPointerClickHandler>(target), Is.SameAs(select.gameObject));
+            ExecuteEvents.Execute(select.gameObject, data, ExecuteEvents.pointerDownHandler);
+            ExecuteEvents.Execute(select.gameObject, data, ExecuteEvents.pointerUpHandler);
+            ExecuteEvents.Execute(select.gameObject, data, ExecuteEvents.pointerClickHandler);
+        }
+
         private static IEnumerator Rub(DoudouAffectionView view, StationPanelView station, bool waitForCalm = true)
         {
             Canvas.ForceUpdateCanvases();
@@ -185,16 +206,19 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(view.HasRaisedFur, Is.False);
         }
 
-        private static IEnumerator Capture(StationPanelView station)
+        private static IEnumerator Capture(StationPanelView station) =>
+            InPortraitViewport(station.GetComponent<Canvas>(), CapturePortrait);
+
+        private static IEnumerator InPortraitViewport(Canvas canvas, System.Action<Camera> run)
         {
-            var canvas = station.GetComponent<Canvas>();
             var camera = new GameObject("DoudouCapture", typeof(Camera)).GetComponent<Camera>();
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = Color.white;
             camera.cullingMask = 1 << canvas.gameObject.layer;
             var target = new RenderTexture(390, 844, 24);
-            var pixels = new Texture2D(target.width, target.height, TextureFormat.RGB24, false);
-            var previous = RenderTexture.active;
+            var mode = canvas.renderMode;
+            var previousCamera = canvas.worldCamera;
+            float distance = canvas.planeDistance;
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
             canvas.worldCamera = camera;
             canvas.planeDistance = 10;
@@ -203,6 +227,27 @@ namespace HomelessPetHelper.Tests.PlayMode
             {
                 yield return null;
                 Canvas.ForceUpdateCanvases();
+                run(camera);
+            }
+            finally
+            {
+                canvas.renderMode = mode;
+                canvas.worldCamera = previousCamera;
+                canvas.planeDistance = distance;
+                camera.targetTexture = null;
+                target.Release();
+                Object.Destroy(target);
+                Object.Destroy(camera.gameObject);
+            }
+        }
+
+        private static void CapturePortrait(Camera camera)
+        {
+            var target = camera.targetTexture;
+            var pixels = new Texture2D(target.width, target.height, TextureFormat.RGB24, false);
+            var previous = RenderTexture.active;
+            try
+            {
                 camera.Render();
                 RenderTexture.active = target;
                 pixels.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0);
@@ -213,13 +258,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             finally
             {
                 RenderTexture.active = previous;
-                camera.targetTexture = null;
-                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                canvas.worldCamera = null;
-                target.Release();
-                Object.Destroy(target);
                 Object.Destroy(pixels);
-                Object.Destroy(camera.gameObject);
             }
         }
     }
