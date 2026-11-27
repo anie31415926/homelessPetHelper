@@ -2,6 +2,7 @@ using System;
 using HomelessPetHelper.Game.Text;
 using HomelessPetHelper.Modules.Station;
 using HomelessPetHelper.Modules.Station.Cleaning;
+using HomelessPetHelper.Modules.Station.UI.Affection;
 using HomelessPetHelper.Modules.WorldTime;
 using UnityEngine;
 
@@ -12,9 +13,11 @@ namespace HomelessPetHelper.Game.Station
     {
         private DirtField _sampleDirt;
         private DirtField _sampleFur;
+        private PetAffectionMood _mood;
 
         internal string Name { get; set; }
         internal Sprite Art { get; private set; }
+        internal PetAffectionMood Mood => _mood ??= new PetAffectionMood();
         internal IReadOnlyDirtField Dirt => SharedCare != null ? SharedCare.Dirt : _sampleDirt;
         internal IReadOnlyDirtField Fur => SharedCare != null ? SharedCare.Fur : _sampleFur;
         internal CareWorkMeter WashWork { get; private set; }

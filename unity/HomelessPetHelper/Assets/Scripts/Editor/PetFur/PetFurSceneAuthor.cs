@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using HomelessPetHelper.Modules.Animals.UI;
 using HomelessPetHelper.Preview.PetFur;
 using UnityEditor;
 using UnityEditor.Events;
@@ -27,7 +28,7 @@ namespace HomelessPetHelper.Editor.PetFur
         public static void Create()
         {
             ConfigurePortrait();
-            var data = Load<TextAsset>(Folder + "DoudouFurPreview.json");
+            var data = Load<TextAsset>("Assets/Art/Station/Doudou/DoudouFur.json");
             var profile = FurProfile.Read(data);
             var portrait = Load<Texture2D>(PortraitPath);
             var sprite = Load<Sprite>(PortraitPath);

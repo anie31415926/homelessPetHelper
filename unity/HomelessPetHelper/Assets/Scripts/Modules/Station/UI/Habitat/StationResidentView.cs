@@ -1,6 +1,7 @@
 using System;
 using HomelessPetHelper.Modules.Animals.UI;
 using HomelessPetHelper.Modules.Station.Habitat;
+using HomelessPetHelper.Modules.Station.UI.Affection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +20,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         [SerializeField] private Button _select;
         [SerializeField] private AnimalCoatView _stillCoat, _motionCoat;
         private StationHabitatRenderer _renderer;
+        private DoudouAffectionView _expressionView, _expressionPrefab;
         private StationSceneResident _resident;
         private bool _suspended;
         private bool _inspecting;
@@ -59,14 +61,17 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _name.text = resident.Name;
             _name.gameObject.SetActive(_room == null);
             _stillImage.sprite = resident.Art;
-            bool animated = resident.HasAnimation || HasShibaFrames;
-            if (changedKind || !resident.HasAnimation) Release();
-            if (HasShibaFrames) RenderShiba();
+            bool layered = resident.ExpressionView != null;
+            bool animated = !layered && (resident.HasAnimation || HasShibaFrames);
+            if (changedKind || !resident.HasAnimation || layered) Release();
+            if (!layered && HasShibaFrames) RenderShiba();
             else if (_motionImage.texture == _shibaAtlas) _motionImage.texture = null;
-            _stillCoat.Show(resident.Snapshot);
-            _motionCoat.Show(resident.Snapshot);
+            _stillCoat.Show(layered ? null : resident.Snapshot);
+            _motionCoat.Show(layered ? null : resident.Snapshot);
             _stillImage.gameObject.SetActive(!animated);
+            _stillImage.enabled = !layered;
             _motionImage.gameObject.SetActive(animated);
+            BindExpression(resident);
             _cage.SetActive(resident.Observing);
             _position.sizeDelta = _room != null ? new Vector2(210, 210) :
                 resident.Observing ? new Vector2(300, 300) : new Vector2(360, 360);
@@ -77,6 +82,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         {
             _suspended = suspended;
             _select.interactable = !suspended && _resident != null;
+            if (_expressionView != null) _expressionView.SetInput(false, suspended);
         }
 
         public void SetInspecting(bool inspecting)
@@ -99,7 +105,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             float seconds = Mathf.Min(Time.unscaledDeltaTime, .05f);
             if (Observing) _restSeconds += seconds;
             else Motion.Tick(seconds);
-            if (!_resident.HasAnimation || HasShibaFrames) return;
+            if (_resident.ExpressionView != null || !_resident.HasAnimation || HasShibaFrames) return;
             _expression = _expression.MoveTowards(_targetExpression, seconds / ExpressionBlendSeconds);
             var appearance = _resident.Appearance != null ? _resident.Appearance : _rendererPrefab;
             // Wrap whole cycles of this appearance; different tail periods must not jump at wrap.
@@ -111,6 +117,11 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         {
             if (_resident == null) return;
             Place();
+            if (_resident.ExpressionView != null)
+            {
+                RenderExpressionPose();
+                return;
+            }
             if (HasShibaFrames) { RenderShiba(); return; }
             if (!_resident.HasAnimation) return;
             if (_renderer == null)
@@ -124,6 +135,45 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
             _renderer.Render(Observing ? HabitatAction.Sit : Motion.Pose,
                 Observing ? _restSeconds : (float)Motion.PoseSeconds, Observing || Motion.FacingLeft,
                 !Observing && Motion.RisingFromRest, _expression, _expressionSeconds);
+        }
+
+        private void BindExpression(StationSceneResident resident)
+        {
+            var prefab = resident.ExpressionView;
+            if (_expressionView != null && prefab != null && _expressionPrefab != prefab)
+            {
+                _expressionView.gameObject.SetActive(false);
+                Destroy(_expressionView.gameObject);
+                _expressionView = null;
+            }
+            if (prefab == null)
+            {
+                if (_expressionView != null) _expressionView.gameObject.SetActive(false);
+                return;
+            }
+            if (_expressionView == null)
+            {
+                _expressionPrefab = prefab;
+                _expressionView = Instantiate(prefab, _stillImage.rectTransform, false);
+            }
+            _expressionView.SetMood(resident.Snapshot, resident.Mood, true);
+            _expressionView.SetInput(false, _suspended);
+            _expressionView.gameObject.SetActive(true);
+            RenderExpressionPose();
+        }
+
+        private void RenderExpressionPose()
+        {
+            var pose = _expressionView.rectTransform;
+            bool walking = !Observing && Motion.Pose == HabitatAction.Walk;
+            float phase = (float)Motion.PoseSeconds * (2 * Mathf.PI / .46f);
+            float sway = walking ? Mathf.Sin(phase) : 0;
+            var position = pose.rect.width * new Vector2(sway * .014f, Mathf.Abs(sway) * .020f);
+            var rotation = Quaternion.Euler(0, 0, sway * 4.5f);
+            var scale = new Vector3(Observing || Motion.FacingLeft ? 1 : -1, 1, 1);
+            if (pose.anchoredPosition != position) pose.anchoredPosition = position;
+            if (pose.localRotation != rotation) pose.localRotation = rotation;
+            if (pose.localScale != scale) pose.localScale = scale;
         }
 
         private void RenderShiba()

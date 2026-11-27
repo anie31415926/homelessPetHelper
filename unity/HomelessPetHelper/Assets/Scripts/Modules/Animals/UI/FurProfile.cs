@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace HomelessPetHelper.Preview.PetFur
+namespace HomelessPetHelper.Modules.Animals.UI
 {
     [Serializable]
     public sealed class FurProfile
@@ -29,7 +29,7 @@ namespace HomelessPetHelper.Preview.PetFur
             var result = JsonUtility.FromJson<FurProfile>(data.text);
             if (result?.crop == null || result.crop.width <= 0 || result.crop.height <= 0 || result.light == null ||
                 result.edge == null || result.patches == null || result.patches.Length == 0 || result.patches.Length > 72)
-                throw new ArgumentException("Invalid pet fur preview profile.", nameof(data));
+                throw new ArgumentException("Invalid pet fur profile.", nameof(data));
             return result;
         }
 

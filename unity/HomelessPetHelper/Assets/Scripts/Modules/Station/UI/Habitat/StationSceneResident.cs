@@ -1,5 +1,6 @@
 using System;
 using HomelessPetHelper.Modules.Animals;
+using HomelessPetHelper.Modules.Station.UI.Affection;
 using UnityEngine;
 
 namespace HomelessPetHelper.Modules.Station.UI.Habitat
@@ -16,16 +17,20 @@ namespace HomelessPetHelper.Modules.Station.UI.Habitat
         public bool Observing { get; }
         public AnimalSnapshot Snapshot { get; }
         public StationHabitatRenderer Appearance { get; }
+        public DoudouAffectionView ExpressionView { get; }
+        public PetAffectionMood Mood { get; }
 
         public StationSceneResident(Guid animalId, int index, string name, Sprite art,
             bool animatedCat, bool observing, AnimalSnapshot snapshot = null, StationHabitatRenderer appearance = null,
-            bool animatedShiba = false)
+            bool animatedShiba = false, DoudouAffectionView expressionView = null, PetAffectionMood mood = null)
         {
             if (animalId == Guid.Empty || index < 0 || string.IsNullOrWhiteSpace(name) || art == null)
                 throw new ArgumentException("Incomplete station scene resident.");
             if (snapshot != null && snapshot.AnimalId != animalId)
                 throw new ArgumentException("Resident snapshot identity mismatch.");
             Appearance = appearance;
+            ExpressionView = expressionView != null && expressionView.HasArt ? expressionView : null;
+            Mood = mood;
             Snapshot = snapshot;
             AnimalId = animalId;
             Index = index;

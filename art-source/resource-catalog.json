@@ -86,8 +86,8 @@
       "module": "Station",
       "status": "temporary",
       "loadTiming": "first-play",
-      "availability": "只在豆豆详情显示；GameContent 的 Prefab 静态引用，尚非实际按需下载。",
-      "use": "1024×512 RGBA 表情、固定身底、活动尾片及固定根毛，沿用网页原画。",
+      "availability": "豆豆近景和救助站房间显示；GameContent 的 Prefab 静态引用，尚非实际按需下载。",
+      "use": "1024×512 RGBA 身体、表情和卷尾；近景的实时毛束直接取样身体，无新增图片。",
       "plannedBytes": 409600,
       "files": [
         { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/Art/Station/Doudou/T_Station_DoudouAffection.png" },

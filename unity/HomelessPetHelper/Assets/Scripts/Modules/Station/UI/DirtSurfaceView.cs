@@ -40,14 +40,10 @@ namespace HomelessPetHelper.Modules.Station.UI
         private void Awake() => _restScale = transform.localScale;
         internal void SetPortraitPaused(bool paused) => _portrait?.SetPaused(paused);
 
-        public void PreviewAffection()
+        internal void ShowAffection(DoudouAffectionView prefab, AnimalSnapshot animal, PetAffectionMood mood,
+            bool acceptsTouch, bool suspended)
         {
-            if (_affection != null && _affection.isActiveAndEnabled) _affection.Preview();
-        }
-
-        public void ShowAffection(DoudouAffectionView prefab, bool acceptsTouch, bool suspended)
-        {
-            if (prefab == null)
+            if (prefab == null || !prefab.HasArt)
             {
                 if (_affection != null) _affection.gameObject.SetActive(false);
                 return;
@@ -56,6 +52,7 @@ namespace HomelessPetHelper.Modules.Station.UI
             if (!_affection.gameObject.activeSelf) _affection.gameObject.SetActive(true);
             _animal.enabled = false;
             _dirt.enabled = _fur.enabled = false;
+            _affection.SetMood(animal, mood);
             _affection.SetInput(acceptsTouch, suspended);
         }
 

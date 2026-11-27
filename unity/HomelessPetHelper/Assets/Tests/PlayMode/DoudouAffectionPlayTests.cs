@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using HomelessPetHelper.Framework.UI;
 using HomelessPetHelper.Game;
 using HomelessPetHelper.Game.Approach;
 using HomelessPetHelper.Game.Station;
 using HomelessPetHelper.Modules.Outing.UI;
 using HomelessPetHelper.Modules.Siege;
 using HomelessPetHelper.Modules.Siege.UI;
+using HomelessPetHelper.Modules.Station.Habitat;
 using HomelessPetHelper.Modules.Station.UI;
 using HomelessPetHelper.Modules.Station.UI.Affection;
 using HomelessPetHelper.Tests.Support;
@@ -53,17 +55,41 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return WaitFor(station);
             Assert.That(session.Station.Animals.Single().AnimalId, Is.EqualTo(activity.Individual.Current.AnimalId));
             MainApproachDriver.Click(station, "Enter");
-            var select = station.Scene.Cells[0].SelectButton;
+            var resident = station.Scene.Cells[0];
+            var roomView = resident.GetComponentInChildren<DoudouAffectionView>();
+            Assert.That(roomView, Is.Not.Null);
+            Assert.That(roomView.raycastTarget, Is.False);
+            Assert.That(roomView.CurrentFace, Is.EqualTo(AffectionFace.Calm));
+            var select = resident.SelectButton;
             Assert.That(select.isActiveAndEnabled && select.IsInteractable(), Is.True);
             select.onClick.Invoke();
             var view = station.GetComponentInChildren<DoudouAffectionView>();
             Assert.That(view, Is.Not.Null);
             Assert.That(station.GetComponentsInChildren<Text>().Any(text => text.text == "\u8c46\u8c46"), Is.True);
             Assert.That(view.raycastTarget, Is.True);
+            Assert.That(MainApproachDriver.Button(station, "Pet").gameObject.activeInHierarchy, Is.False);
+            var check = MainApproachDriver.Button(station, "Check");
+            var wash = MainApproachDriver.Button(station, "Clean");
+            var groom = MainApproachDriver.Button(station, "Groom");
+            Assert.That(check.transform.parent, Is.SameAs(wash.transform.parent));
+            Assert.That(wash.transform.parent, Is.SameAs(groom.transform.parent));
+            Assert.That(check.transform.GetSiblingIndex(), Is.LessThan(wash.transform.GetSiblingIndex()));
             yield return null;
             yield return Rub(view, station);
+            MainApproachDriver.Click(station, "Check");
+            yield return Rub(view, station, waitForCalm: false);
             MainApproachDriver.Click(station, "Back");
             Assert.That(view.gameObject.activeInHierarchy, Is.False);
+            Assert.That(roomView.CurrentFace, Is.EqualTo(AffectionFace.Smile));
+            Assert.That(resident.Observing, Is.False);
+            for (int step = 0; step < 2400 && resident.Motion.Pose != HabitatAction.Walk; step++)
+                resident.Motion.Tick(.05);
+            Assert.That(resident.Motion.Pose, Is.EqualTo(HabitatAction.Walk));
+            yield return null;
+            var first = roomView.rectTransform.localRotation;
+            resident.Motion.Tick(.10);
+            yield return null;
+            Assert.That(Quaternion.Angle(roomView.rectTransform.localRotation, first), Is.GreaterThan(.1f));
             var animalId = activity.Individual.Current.AnimalId;
             yield return SceneManager.LoadSceneAsync("Main");
             yield return null;
@@ -107,7 +133,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             yield return null;
         }
 
-        private static IEnumerator Rub(DoudouAffectionView view, StationPanelView station)
+        private static IEnumerator Rub(DoudouAffectionView view, StationPanelView station, bool waitForCalm = true)
         {
             Canvas.ForceUpdateCanvases();
             var canvas = view.canvas.rootCanvas;
@@ -124,14 +150,20 @@ namespace HomelessPetHelper.Tests.PlayMode
                 var world = view.rectTransform.TransformPoint(rect.center + new Vector2(x - .5f, .5f - y) * side);
                 return RectTransformUtility.WorldToScreenPoint(camera, world);
             }
-            data.position = At(.30f, .30f);
+            data.position = At(161f / 512, 331f / 512);
             var hits = new List<RaycastResult>();
             EventSystem.current.RaycastAll(data, hits);
             Assert.That(hits.Count, Is.GreaterThan(0));
             Assert.That(hits[0].gameObject, Is.SameAs(view.gameObject),
                 string.Join(", ", hits.Select(hit => hit.gameObject.name)));
             data.pointerPressRaycast = hits[0];
+            var toast = station.GetComponentInChildren<ToastView>(true);
+            string toastBefore = toast.CurrentLine;
             ExecuteEvents.Execute(hits[0].gameObject, data, ExecuteEvents.pointerDownHandler);
+            data.position = At(161f / 512, 243f / 512);
+            ExecuteEvents.Execute(view.gameObject, data, ExecuteEvents.dragHandler);
+            yield return null;
+            Assert.That(view.HasRaisedFur, Is.True);
             bool sawSmile = false;
             for (int i = 0; i < 30 && view.CurrentFace != AffectionFace.Laugh; i++)
             {
@@ -142,13 +174,15 @@ namespace HomelessPetHelper.Tests.PlayMode
             }
             Assert.That(sawSmile, Is.True, "Continuous rubbing should first produce a smile.");
             Assert.That(view.CurrentFace, Is.EqualTo(AffectionFace.Laugh));
-            yield return new WaitForSecondsRealtime(.17f);
-            yield return Capture(station);
+            if (waitForCalm) yield return Capture(station);
             ExecuteEvents.Execute(view.gameObject, data, ExecuteEvents.pointerUpHandler);
             Assert.That(view.CurrentFace, Is.EqualTo(AffectionFace.Smile));
+            Assert.That(toast.CurrentLine == toastBefore || string.IsNullOrEmpty(toast.CurrentLine), Is.True);
+            if (!waitForCalm) yield break;
             float deadline = Time.realtimeSinceStartup + 4;
             while (view.CurrentFace != AffectionFace.Calm && Time.realtimeSinceStartup < deadline) yield return null;
             Assert.That(view.CurrentFace, Is.EqualTo(AffectionFace.Calm));
+            Assert.That(view.HasRaisedFur, Is.False);
         }
 
         private static IEnumerator Capture(StationPanelView station)

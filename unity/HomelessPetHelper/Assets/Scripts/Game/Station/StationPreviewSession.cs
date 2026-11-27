@@ -247,11 +247,10 @@ namespace HomelessPetHelper.Game.Station
             {
                 CheckSelectedAnimal();
             }
-            else if (_tool == StationCareTool.None && command == StationCommand.Pet)
+            else if (_tool == StationCareTool.None && command == StationCommand.Pet && !_view.IsSceneLayout)
             {
                 string response = _loop == null ? Resident(_selected).Contact.Pet() :
                     Current(_selected).CarePermissions.AcceptsTouch && IsCalm(_selected) ? "petted" : "petQuiet";
-                if (response == "petted") _view.Surface.PreviewAffection();
                 _feedback = _text.Get(response, Resident(_selected).Name);
             }
             else if (_tool == StationCareTool.None && command == StationCommand.QuietSpace)
@@ -782,7 +781,8 @@ namespace HomelessPetHelper.Game.Station
                 _view.ShowDetail(selected.Name, Condition(_selected), progress, selected.Art, dirt,
                     _tool != StationCareTool.None, true, CareAvailability(_selected), _suspended
                         || _persistenceBlocked, selected.Fur, current, doudou ? _artwork.AffectionView : null,
-                    doudou && current.CarePermissions.AcceptsTouch && IsCalm(_selected));
+                    doudou && current.CarePermissions.AcceptsTouch && IsCalm(_selected),
+                    doudou ? selected.Mood : null);
                 if (_progress != null && _tool == StationCareTool.None)
                     _view.SetAdoptionCommand(_text.Get(_progress.IsListed(_station.Animals[_selected].AnimalId)
                         ? "adoption.view" : "adoption.entry"), !_suspended && !_persistenceBlocked);
@@ -818,8 +818,10 @@ namespace HomelessPetHelper.Game.Station
                 bool dog = _careRoster?.UsesDogArtwork(arrival.AnimalDefinitionId) ??
                     arrival.AnimalDefinitionId == "dog";
                 bool doudou = arrival.AnimalDefinitionId == StationArtwork.AffectionDefinitionId;
-                _sceneResidents.Add(new StationSceneResident(arrival.AnimalId, index, Resident(index).Name,
-                    Resident(index).Art, !dog, observing, current, animatedShiba: dog && !doudou));
+                var resident = Resident(index);
+                _sceneResidents.Add(new StationSceneResident(arrival.AnimalId, index, resident.Name,
+                    resident.Art, !dog, observing, current, animatedShiba: dog && !doudou,
+                    expressionView: doudou ? _artwork.AffectionView : null, mood: doudou ? resident.Mood : null));
             }
             _view.Scene.Show(_sceneResidents, _selected);
         }

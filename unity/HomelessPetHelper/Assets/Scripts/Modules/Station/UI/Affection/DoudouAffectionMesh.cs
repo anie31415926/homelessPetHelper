@@ -57,9 +57,10 @@ namespace HomelessPetHelper.Modules.Station.UI.Affection
             pixel.x / _art.size - .5f, .5f - pixel.y / _art.size) * Mathf.Min(view.width, view.height);
 
         internal void Draw(VertexHelper mesh, Rect view, float smile, float laugh, float lean, float head,
-            float wag, float flower, Color tint)
+            float wag, float flower, Color tint, DoudouTouchFur fur)
         {
             Layer(mesh, view, _body, _body, Divisions, lean, head, tint);
+            fur?.Draw(this, mesh, view, lean, head, tint);
             if (smile > 0)
                 Layer(mesh, view, _face, _smileUV, 6, lean, head, new Color(tint.r, tint.g, tint.b, tint.a * smile));
             if (laugh > 0)
@@ -70,6 +71,9 @@ namespace HomelessPetHelper.Modules.Station.UI.Affection
             Layer(mesh, view, _tail, _rootUV, 1, 0, 0, tint);
             if (flower >= 0 && flower < FlowerDuration) DrawFlowers(mesh, view, flower, tint.a);
         }
+
+        internal void AddFurVertex(VertexHelper mesh, Rect view, Vector2 pixel, float lean, float head, Color tint) =>
+            mesh.AddVert(Point(view, MoveHead(pixel, lean, head)), tint, Uv(pixel));
 
         private void Layer(VertexHelper mesh, Rect view, Rect draw, Rect sample, int divisions, float lean,
             float head, Color32 tint, Quaternion? tail = null)

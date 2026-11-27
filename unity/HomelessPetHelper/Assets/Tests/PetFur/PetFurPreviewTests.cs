@@ -1,6 +1,7 @@
 using System.Collections;
 using System.IO;
 using System.Linq;
+using HomelessPetHelper.Modules.Animals.UI;
 using HomelessPetHelper.Preview.PetFur;
 using NUnit.Framework;
 using UnityEditor;
@@ -16,6 +17,7 @@ namespace HomelessPetHelper.Tests.PetFur
     {
         private const string Folder = "Assets/EditorScenes/PetFur/";
         private const string Scene = Folder + "SC_PetFurPreview.unity";
+        private const string Profile = "Assets/Art/Station/Doudou/DoudouFur.json";
         private const int Width = 390, Height = 844;
 
         [Test]
@@ -26,7 +28,7 @@ namespace HomelessPetHelper.Tests.PetFur
                 Assert.That(builtScene.path, Is.Not.EqualTo(Scene));
                 Assert.That(AssetDatabase.GetDependencies(builtScene.path, true).Any(path => path.StartsWith(Folder)), Is.False, builtScene.path);
             }
-            var profile = FurProfile.Read(AssetDatabase.LoadAssetAtPath<TextAsset>(Folder + "DoudouFurPreview.json"));
+            var profile = FurProfile.Read(AssetDatabase.LoadAssetAtPath<TextAsset>(Profile));
             Assert.That(profile.patches.Length, Is.EqualTo(62));
             var source = AssetDatabase.LoadAssetAtPath<Texture2D>(Folder + "T_DoudouFurPreview.png");
             Assert.That((source.width, source.height), Is.EqualTo((profile.width, profile.height)));
@@ -38,7 +40,7 @@ namespace HomelessPetHelper.Tests.PetFur
         [Test]
         public void GroomingAndContinuousPettingRespectTheirSeparateState()
         {
-            var profile = FurProfile.Read(AssetDatabase.LoadAssetAtPath<TextAsset>(Folder + "DoudouFurPreview.json"));
+            var profile = FurProfile.Read(AssetDatabase.LoadAssetAtPath<TextAsset>(Profile));
             var pose = new FurPose(profile.patches);
             var root = new Vector2(161, 243);
             var tip = new Vector2(161, 331);

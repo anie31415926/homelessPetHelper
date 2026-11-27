@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using HomelessPetHelper.Modules.Animals.UI;
 using UnityEngine;
 
 namespace HomelessPetHelper.Preview.PetFur

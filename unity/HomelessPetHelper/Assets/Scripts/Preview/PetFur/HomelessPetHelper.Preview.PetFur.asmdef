@@ -1,5 +1,5 @@
 {
   "name": "HomelessPetHelper.Preview.PetFur",
-  "references": ["UnityEngine.UI"],
+  "references": ["HomelessPetHelper.Modules.Animals.UI", "UnityEngine.UI"],
   "autoReferenced": false
 }

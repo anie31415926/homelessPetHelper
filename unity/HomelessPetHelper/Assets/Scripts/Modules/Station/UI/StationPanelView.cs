@@ -175,7 +175,8 @@ namespace HomelessPetHelper.Modules.Station.UI
 
         public void ShowDetail(string name, string condition, string progress, Sprite art, IReadOnlyDirtField dirt,
             bool cleaning, bool canFinish, StationCareAvailability care, bool suspended, IReadOnlyDirtField fur = null,
-            AnimalSnapshot animal = null, DoudouAffectionView affection = null, bool acceptsAffection = false)
+            AnimalSnapshot animal = null, DoudouAffectionView affection = null, bool acceptsAffection = false,
+            PetAffectionMood mood = null)
         {
             _name.text = name;
             if (_detailRename != null) _detailRename.gameObject.SetActive(!cleaning && _renameAvailable);
@@ -192,14 +193,13 @@ namespace HomelessPetHelper.Modules.Station.UI
             }
             _progress.text = progress;
             _surface.Refresh(art, dirt, fur);
-            var interaction = cleaning ? null : affection;
+            var interaction = !cleaning && affection != null && affection.HasArt ? affection : null;
             _surface.ShowPortrait(_portraits, animal, !cleaning && interaction == null);
-            _surface.ShowAffection(interaction, acceptsAffection, suspended);
+            _surface.ShowAffection(interaction, animal, mood, acceptsAffection, suspended);
             _surface.SetCleaning(cleaning && !suspended);
             _check.gameObject.SetActive(_chrome == null || !cleaning);
-            _pet.gameObject.SetActive(_chrome == null || !cleaning);
             _check.interactable = !cleaning;
-            _pet.interactable = !cleaning;
+            if (_chrome == null) _pet.interactable = !cleaning;
             _clean.gameObject.SetActive(_chrome == null || !cleaning);
             _groom.gameObject.SetActive(_chrome == null || !cleaning);
             _quietSpace.gameObject.SetActive(_chrome == null);
@@ -239,7 +239,17 @@ namespace HomelessPetHelper.Modules.Station.UI
             if (_detailRename != null) _detailRename.onClick.AddListener(Rename);
             _back.onClick.AddListener(Back);
             _check.onClick.AddListener(Check);
-            _pet.onClick.AddListener(Pet);
+            if (_chrome == null) _pet.onClick.AddListener(Pet);
+            else
+            {
+                if (_pet != null) _pet.gameObject.SetActive(false);
+                var careRow = _clean.transform.parent;
+                if (_check.transform.parent != careRow)
+                {
+                    _check.transform.SetParent(careRow, false);
+                    _check.transform.SetAsFirstSibling();
+                }
+            }
             _clean.onClick.AddListener(Clean);
             _groom.onClick.AddListener(Groom);
             _quietSpace.onClick.AddListener(QuietSpace);
@@ -263,7 +273,7 @@ namespace HomelessPetHelper.Modules.Station.UI
             if (_detailRename != null) _detailRename.onClick.RemoveListener(Rename);
             _back.onClick.RemoveListener(Back);
             _check.onClick.RemoveListener(Check);
-            _pet.onClick.RemoveListener(Pet);
+            if (_chrome == null) _pet.onClick.RemoveListener(Pet);
             _clean.onClick.RemoveListener(Clean);
             _groom.onClick.RemoveListener(Groom);
             _quietSpace.onClick.RemoveListener(QuietSpace);

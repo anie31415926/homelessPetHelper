@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace HomelessPetHelper.Preview.PetFur
+namespace HomelessPetHelper.Modules.Animals.UI
 {
     public enum FurMode { Brush, Pet }
 

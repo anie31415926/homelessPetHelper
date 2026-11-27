@@ -23,6 +23,7 @@ const baked = {
 };
 
 await mkdir(output, { recursive: true });
-await writeFile(new URL('DoudouFurPreview.json', output), JSON.stringify(baked, null, 2) + '\n');
+await writeFile(new URL('../unity/HomelessPetHelper/Assets/Art/Station/Doudou/DoudouFur.json', import.meta.url),
+    JSON.stringify(baked, null, 2) + '\n');
 await writeFile(new URL('T_DoudouFurPreview.png', output), await sharp(portrait).png().toBuffer());
 console.log(`Baked ${baked.patches.length} tufts from ${profile.id}`);

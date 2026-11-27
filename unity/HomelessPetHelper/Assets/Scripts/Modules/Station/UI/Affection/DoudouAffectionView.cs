@@ -1,3 +1,4 @@
+using HomelessPetHelper.Modules.Animals;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,44 +10,63 @@ namespace HomelessPetHelper.Modules.Station.UI.Affection
     {
         [SerializeField] private Texture2D _atlas;
         [SerializeField] private TextAsset _layoutSource;
+        [SerializeField] private TextAsset _furSource;
         private readonly PetAffectionReaction _reaction = new PetAffectionReaction();
         private DoudouAffectionMesh _mesh;
-        private bool _acceptsTouch, _paused, _hasPoint;
+        private DoudouTouchFur _fur;
+        private PetAffectionMood _mood;
+        private AnimalDisposition _disposition;
+        private bool _showRecentTouch;
+        private bool _paused, _hasPoint;
         private int? _pointer;
         private Vector2 _lastPoint;
         private float _seconds, _smile, _laugh, _lean, _tilt, _amount, _bend, _wag;
         private float _flowerAt = -10;
         private AffectionFace _previousFace;
         public bool HasArt => _atlas != null && _layoutSource != null;
-        public AffectionFace CurrentFace => _reaction.Face(_seconds);
+        public bool HasRaisedFur => _fur?.Visible == true;
+        public AffectionFace CurrentFace
+        {
+            get
+            {
+                var face = _reaction.Face(_seconds);
+                return face != AffectionFace.Calm ? face :
+                    _mood?.Face(_disposition, Time.unscaledTimeAsDouble, _showRecentTouch) ?? AffectionFace.Calm;
+            }
+        }
         public override Texture mainTexture => _atlas != null ? _atlas : base.mainTexture;
 
         public void SetInput(bool acceptsTouch, bool paused)
         {
-            _acceptsTouch = acceptsTouch;
             _paused = paused;
             raycastTarget = acceptsTouch && !paused;
             if (!raycastTarget && _pointer.HasValue) EndContact();
         }
 
-        public void Preview()
+        internal void SetMood(AnimalSnapshot animal, PetAffectionMood mood, bool showRecentTouch = false)
         {
-            if (_acceptsTouch && !_paused && _reaction.Preview(_seconds))
-            {
-                _lean = .24f;
-                _amount = 1;
-            }
+            if (_mood != mood) ResetReaction();
+            _mood = mood;
+            _disposition = animal?.Disposition;
+            _showRecentTouch = showRecentTouch;
         }
 
         protected override void OnDisable()
         {
+            ResetReaction();
+            base.OnDisable();
+        }
+
+        private void ResetReaction()
+        {
             _reaction.Reset();
+            _fur?.Reset();
             _pointer = null;
             _hasPoint = false;
             _seconds = _smile = _laugh = _lean = _tilt = _amount = _bend = _wag = 0;
             _flowerAt = -10;
             _previousFace = AffectionFace.Calm;
-            base.OnDisable();
+            SetVerticesDirty();
         }
 
         private void Update()
@@ -65,6 +85,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Affection
             float strength = face == AffectionFace.Laugh ? 1 : face == AffectionFace.Smile ? .45f : 0;
             dirty |= Approach(ref _bend, strength * _amount, motionEase);
             dirty |= Approach(ref _wag, _reaction.Wag(_seconds), faceEase);
+            dirty |= _fur?.Advance(dt) == true;
             if (dirty || _wag != 0 || _seconds - _flowerAt <= DoudouAffectionMesh.FlowerDuration + dt)
                 SetVerticesDirty();
         }
@@ -88,6 +109,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Affection
             _hasPoint = true;
             _lastPoint = point;
             _reaction.Begin(_seconds);
+            if (_fur == null && _furSource != null) _fur = new DoudouTouchFur(_furSource);
         }
 
         public void OnDrag(PointerEventData data)
@@ -105,6 +127,8 @@ namespace HomelessPetHelper.Modules.Station.UI.Affection
                 _amount = head ? 1 : .36f;
                 _lean = head ? Mathf.Clamp((point.x - .388f) * 7, -1, 1) : 0;
                 if (_reaction.Stroke(_seconds, Vector2.Distance(point, _lastPoint) * 512)) _flowerAt = _seconds;
+                if (_reaction.Face(_seconds) != AffectionFace.Calm) _mood?.Enjoy(Time.unscaledTimeAsDouble);
+                _fur?.Stroke(_lastPoint * 512, point * 512);
             }
             _lastPoint = point;
             _hasPoint = true;
@@ -120,6 +144,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Affection
             _pointer = null;
             _hasPoint = false;
             _lean = _amount = 0;
+            if (_reaction.Face(_seconds) != AffectionFace.Calm) _mood?.Enjoy(Time.unscaledTimeAsDouble);
             _reaction.End(_seconds);
         }
 
@@ -144,7 +169,7 @@ namespace HomelessPetHelper.Modules.Station.UI.Affection
             if (!HasArt) return;
             _mesh ??= new DoudouAffectionMesh(_layoutSource, _atlas.width, _atlas.height);
             _mesh.Draw(helper, GetPixelAdjustedRect(), _smile, _laugh, _tilt, _bend,
-                Mathf.Sin(_seconds * 14) * _wag, _seconds - _flowerAt, color);
+                Mathf.Sin(_seconds * 14) * _wag, _seconds - _flowerAt, color, _fur);
         }
     }
 }
