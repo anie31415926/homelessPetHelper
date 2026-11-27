@@ -46,6 +46,21 @@ namespace HomelessPetHelper.Tests.Persistence
             }
         }
 
+        private sealed class ResettableStorage : IDeletableSaveStorage
+        {
+            public readonly string[] Slots = new string[2];
+            public readonly List<string> Archives = new List<string>();
+            public bool FailArchive;
+            public string Read(int slot) => Slots[slot];
+            public void Write(int slot, string content) => Slots[slot] = content;
+            public void Delete(int slot) => Slots[slot] = null;
+            public void Archive(int slot)
+            {
+                if (FailArchive) throw new IOException("Archive denied.");
+                Archives.Add(Slots[slot]);
+            }
+        }
+
         private static SaveSection<Progress> Section(string id = "progress", int version = 1,
             IDictionary<int, Func<JObject, JObject>> migrations = null) => new SaveSection<Progress>(id,
                 version, () => new Progress(), data => data.Completed < 0 ? "Negative progress." : null, migrations);
@@ -73,6 +88,73 @@ namespace HomelessPetHelper.Tests.Persistence
         {
             Assert.That(service.TryCommit(writer => writer.Set(section, new Progress { Completed = value }),
                 out var error), Is.True, error?.ToString());
+        }
+
+        [Test]
+        public void DeleteRemovesBothFileCheckpointsAndAllowsTheProfileToBeReused()
+        {
+            string parent = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            try
+            {
+                var storage = new FileSaveStorage(Path.Combine(parent, "target"));
+                var other = new FileSaveStorage(Path.Combine(parent, "other"));
+                other.Write(0, "unrelated profile");
+                var section = Section();
+                var save = Service(storage, section);
+                Open(save, SaveOpenStatus.New);
+                Commit(save, section, 1);
+                Commit(save, section, 2);
+
+                Open(save, SaveOpenStatus.Loaded);
+                Assert.That(save.TryDelete(out var error), Is.True, error?.ToString());
+                Assert.That(storage.Read(0), Is.Null);
+                Assert.That(storage.Read(1), Is.Null);
+                Assert.That(other.Read(0), Is.EqualTo("unrelated profile"));
+                Open(save, SaveOpenStatus.New);
+                Commit(save, section, 3);
+                Assert.That(save.Revision, Is.EqualTo(1));
+            }
+            finally
+            {
+                if (Directory.Exists(parent)) Directory.Delete(parent, true);
+            }
+        }
+
+        [Test]
+        public void ResetArchivesBothCopiesBeforeRemovingAnUnreadableProfile()
+        {
+            var storage = new ResettableStorage();
+            storage.Slots[0] = "first copy";
+            storage.Slots[1] = "torn copy";
+            Assert.That(SaveService.TryReset(storage, out var error), Is.True, error?.ToString());
+            Assert.That(storage.Slots, Is.All.Null);
+            Assert.That(storage.Archives, Is.EqualTo(new[] { "first copy", "torn copy" }));
+            var section = Section();
+            var service = Service(storage, section);
+            Open(service, SaveOpenStatus.New);
+            Commit(service, section, 5);
+            Assert.That(storage.Slots[0], Is.Not.Null);
+        }
+
+        [Test]
+        public void FailedResetArchiveKeepsBothOriginals()
+        {
+            var storage = new ResettableStorage { FailArchive = true };
+            storage.Slots[0] = "keep me";
+            storage.Slots[1] = "keep me too";
+            Assert.That(SaveService.TryReset(storage, out var error), Is.False);
+            Assert.That(error.Code, Is.EqualTo(SaveErrorCode.WriteUncertain));
+            Assert.That(storage.Slots, Is.EqualTo(new[] { "keep me", "keep me too" }));
+        }
+
+        [Test]
+        public void StorageWithoutDeletionSupportCannotReset()
+        {
+            var storage = new MemoryStorage();
+            storage.Slots[0] = "unremovable";
+            Assert.That(SaveService.TryReset(storage, out var error), Is.False);
+            Assert.That(error.Code, Is.EqualTo(SaveErrorCode.NotOpen));
+            Assert.That(storage.Slots[0], Is.EqualTo("unremovable"));
         }
 
         [Test]

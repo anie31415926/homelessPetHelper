@@ -70,18 +70,20 @@ namespace HomelessPetHelper.Game.Station
             _view.AnimalSelected += Select;
             _view.StrokeRequested += Stroke;
             _view.SuspensionChanged += Suspend;
-            _view.MemorialRequested += OpenMemorial;
             _view.RenameRequested += OpenRename;
-            if (progress?.EconomyRules != null && showDialog != null)
+            if (showDialog != null)
             {
-                _economyMenu = new StationEconomyMenu(progress, _text, showDialog, Refresh,
-                    ReportPersistenceFailure);
-                _view.EconomyRequested += OpenEconomy;
-                _view.SetEconomyLabel(_text.Get("economy.menu"));
+                _economyMenu = progress?.EconomyRules != null
+                    ? new StationEconomyMenu(progress, _text, showDialog, Refresh, ReportPersistenceFailure)
+                    : null;
             }
             if (progress != null && showDialog != null) _view.SetStationMenuActionLabel(_text.Get("help.title"));
-            if (progress != null) _view.SetMemorialLabel(_text.Get("adoption.memorial"));
             if (progress != null) _view.SetRenameLabel(_text.Get("petName.edit"));
+            _view.SetHandbookLabels(_text.Get("handbook.title"),
+                new[] { _text.Get("handbook.tab.station"), _text.Get("handbook.tab.economy"),
+                    _text.Get("handbook.tab.memorial"), _text.Get("handbook.tab.settings") },
+                new[] { _text.Get("handbook.page.station"), _text.Get("handbook.page.economy"),
+                    _text.Get("handbook.page.memorial"), _text.Get("handbook.page.settings") });
             if (loop == null) Restart();
             else
             {
@@ -218,9 +220,9 @@ namespace HomelessPetHelper.Game.Station
             Refresh();
         }
 
-        private void OpenEconomy()
+        private void OpenEconomy(int index)
         {
-            if (CanPresentRescueNotice && _progress.CanContinue) _economyMenu?.Open();
+            if (CanPresentRescueNotice && _progress.CanContinue) _economyMenu?.Open(index);
         }
 
         private void OpenHelp()
@@ -413,12 +415,63 @@ namespace HomelessPetHelper.Game.Station
             else ShowAdoptionMessage("adoption.entry", _text.Get("adoption.unavailable"));
         }
 
-        private void OpenMemorial()
+        private void OpenMemorialAt(int displayIndex)
         {
             if (_progress == null || _persistenceBlocked || _suspended || _showSummary || _selected >= 0) return;
-            if (_progress.MemorialCount == 0)
-            { ShowAdoptionMessage("adoption.memorial", _text.Get("adoption.empty")); return; }
-            ShowMemorial(_progress.MemorialCount - 1);
+            if (_progress.MemorialCount == 0) return;
+            int index = _progress.MemorialCount - 1 - displayIndex;
+            ShowMemorial(index < 0 || index >= _progress.MemorialCount ? 0 : index);
+        }
+
+        /// <summary>Fills the handbook pages from saved progress. Lists reuse cells; no per-frame allocation.</summary>
+        private void RefreshHandbook()
+        {
+            if (_view.IsSceneLayout == false || _progress == null) return;
+            RefreshBuildPage();
+            RefreshMemorialPage();
+        }
+
+        private void RefreshBuildPage()
+        {
+            if (_progress.EconomyRules == null)
+            {
+                _view.SetHandbookOffers(string.Empty, Array.Empty<HandbookOffer>(), null);
+                return;
+            }
+            var items = new[]
+            {
+                StationPurchase.Beds, StationPurchase.Cleaning, StationPurchase.Clip
+            };
+            var offers = new HandbookOffer[items.Length];
+            for (int index = 0; index < items.Length; index++)
+            {
+                StationPurchase item = items[index];
+                bool owned = _progress.Owns(item);
+                int price = _progress.EconomyRules.Price(item);
+                string key = "economy." + item;
+                string state = owned
+                    ? item == StationPurchase.Clip
+                        ? _text.Get(_progress.ClipEquipped ? "economy.equipped" : "economy.unequipped")
+                        : _text.Get("economy.owned")
+                    : _text.Get(_progress.AidBalance >= price ? "economy.price" : "economy.short", price);
+                offers[index] = new HandbookOffer(_text.Get(key + ".title"), state, null, owned);
+            }
+            _view.SetHandbookOffers(_text.Get("handbook.aid", _progress.AidBalance), offers, OpenEconomy);
+        }
+
+        private void RefreshMemorialPage()
+        {
+            int count = _progress.MemorialCount;
+            var memories = new HandbookMemory[count];
+            for (int index = 0; index < count; index++)
+            {
+                var memorial = _progress.GetMemorial(count - 1 - index);
+                bool dog = _careRoster != null
+                    ? _careRoster.UsesDogArtwork(memorial.Appearance)
+                    : memorial.Appearance == "dog";
+                memories[index] = new HandbookMemory(memorial.Name, _artwork.Get(dog, out _));
+            }
+            _view.SetHandbookMemories(memories, OpenMemorialAt);
         }
 
         private void ShowMemorial(int index)
@@ -688,9 +741,12 @@ namespace HomelessPetHelper.Game.Station
                     !_suspended && !_persistenceBlocked && _selected < 0 && !_showSummary);
             }
             WorldTimeSnapshot time = _clock.Current;
-            _view.SetStatus(_text.Get("clock", GameTimeText.FormatClock(time)),
-                _text.Get("capacity", _station.Animals.Count, _station.TemporaryCapacity),
+            string clock = _text.Get("clock", GameTimeText.FormatClock(time));
+            string capacity = _text.Get("capacity", _station.Animals.Count, _station.TemporaryCapacity);
+            _view.SetStatus(clock, capacity,
                 _suspended && !_persistenceBlocked ? _text.Get("paused") : _feedback);
+            _view.SetHandbookStatus(_text.Get("handbook.status", capacity, clock));
+            RefreshHandbook();
             if (_showSummary)
             {
                 StationResidentPresentation resident = _residents[_summary.Arrival.AnimalId];
@@ -774,9 +830,7 @@ namespace HomelessPetHelper.Game.Station
             _view.AnimalSelected -= Select;
             _view.StrokeRequested -= Stroke;
             _view.SuspensionChanged -= Suspend;
-            _view.MemorialRequested -= OpenMemorial;
             _view.RenameRequested -= OpenRename;
-            _view.EconomyRequested -= OpenEconomy;
             if (_loop == null)
             {
                 _station.Close();

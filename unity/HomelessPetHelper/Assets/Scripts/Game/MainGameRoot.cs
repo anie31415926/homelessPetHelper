@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Globalization;
 using System.IO;
 using HomelessPetHelper.Game.Loading;
 using UnityEngine.SceneManagement;
@@ -24,14 +25,24 @@ namespace HomelessPetHelper.Game
         private const int SaveSlotCount = StartupSaveSlots.Count;
         private const float SavingIndicatorSeconds = 0.45f;
         private const int SavingIndicatorSteps = 3;
-        private enum SlotState { Empty, Occupied, Unavailable }
+        private enum SlotState { Empty, Occupied, Damaged, Unavailable }
+
+        private sealed class SlotInfo
+        {
+            public SlotState State;
+            public int Rescued;
+            public string TimeText;
+            public DateTimeOffset? SavedAt;
+        }
 
         private Func<int, ISaveStorage> _saveSlotStorage = StartupSaveSlots.OpenStorage;
+        private Func<ISaveStorage> _historyStorageFactory = StartupSaveSlots.OpenHistoryStorage;
+        private ISaveStorage _historyStorage;
+        private bool _trackLastSlot = true;
         private LevelOverlaySession _titleOverlays;
         private Coroutine _manualSave;
         private OptionPreviewText _saveText;
         private int _activeSlot;
-        private bool _enteredFromLoading;
 
         [SerializeField] private GameBootstrap _bootstrap;
         [SerializeField] private GameContent _content;
@@ -102,14 +113,14 @@ namespace HomelessPetHelper.Game
             if (_progressStorage != null) StartGame(_progressStorage);
             else if (pending is { } launch)
             {
-                _enteredFromLoading = true;
                 _activeSlot = launch.slot;
                 if (!StartGame(launch.storage, launch.create))
                 {
-                    StartupSaveSlots.EntryFailed = true;
+                    StartupSaveSlots.FailedEntrySlot = launch.slot;
                     SceneManager.LoadSceneAsync(LoadingSceneRoot.ScenePath);
                     return;
                 }
+                StartupSaveSlots.RecordLastPlayed(launch.history, launch.slot);
             }
             else ShowSaveMenu(); // Direct Main entry remains available for Editor previews.
             Music = new MainMusicSession(Audio.Playback, _content.MusicCatalog);
@@ -192,10 +203,16 @@ namespace HomelessPetHelper.Game
 #endif
         }
 
-        public void ConfigureSaveSlots(Func<int, ISaveStorage> storage)
+        /// <summary>
+        /// Explicit composition hook for tests and alternate launch flows. Passing no history source
+        /// disables the last-slot pointer so an isolated test cannot read the developer's real history.
+        /// </summary>
+        public void ConfigureSaveSlots(Func<int, ISaveStorage> storage, Func<ISaveStorage> history = null)
         {
             if (_started) throw new InvalidOperationException("Configure save slots before Start.");
             _saveSlotStorage = storage ?? throw new ArgumentNullException(nameof(storage));
+            _trackLastSlot = history != null;
+            if (history != null) _historyStorageFactory = history;
         }
 
         private OptionPreviewText SaveText => _saveText ??= new OptionPreviewText(_content.StationText);
@@ -207,6 +224,7 @@ namespace HomelessPetHelper.Game
                 expectedNewGame.HasValue ? (Action)ShowStationSaveMenu : null, expectedNewGame);
             if (expectedNewGame.HasValue && !Presenter.AcceptedSaveSelection)
             {
+                Debug.LogWarning("Save selection failed: " + Presenter.Progress.PersistenceError, this);
                 Presenter.Dispose();
                 Presenter = null;
                 return false;
@@ -230,47 +248,138 @@ namespace HomelessPetHelper.Game
                     () => null, (overlay, guide) => _station.BindOverlay(overlay),
                     (action, targets) => false, target, target),
                 Audio, null, _content.CreateLevelUiText(), PlaySettings, settingsOnly: true);
-            _titleOverlays.ShowStationDialog(new StationDialog
+            int last = ReadLastSlot();
+            bool resumable = last >= 0 && InspectSlot(last).State == SlotState.Occupied;
+            var dialog = new StationDialog
             {
                 Title = SaveText.Get("slots.title"), Body = feedback ?? SaveText.Get("slots.welcome"),
-                ConfirmLabel = SaveText.Get("slots.new"), Accept = () => ShowSlotSelection(true),
-                BrowseLabel = SaveText.Get("slots.load"), Browse = () => ShowSlotSelection(false),
-                HideCancel = true, CenterBody = true
-            });
+                CenterBody = true, HideCancel = !resumable
+            };
+            if (resumable)
+            {
+                dialog.ConfirmLabel = SaveText.Get("slots.continueGame");
+                dialog.Accept = () => SelectSlot(last, false);
+                dialog.BrowseLabel = SaveText.Get("slots.new");
+                dialog.Browse = () => ShowSlotSelection(true);
+                dialog.CancelLabel = SaveText.Get("slots.load");
+                dialog.Cancel = () => ShowSlotSelection(false);
+            }
+            else
+            {
+                dialog.ConfirmLabel = SaveText.Get("slots.new");
+                dialog.Accept = () => ShowSlotSelection(true);
+                dialog.BrowseLabel = SaveText.Get("slots.load");
+                dialog.Browse = () => ShowSlotSelection(false);
+            }
+            _titleOverlays.ShowStationDialog(dialog);
         }
 
         private void ShowSlotSelection(bool newGame, int index = 0, string feedback = null)
         {
-            var states = Enumerable.Range(0, SaveSlotCount).Select(ReadSlotState).ToArray();
-            bool Matches(SlotState state) => newGame ? state == SlotState.Empty : state == SlotState.Occupied;
-            var candidates = Enumerable.Range(0, SaveSlotCount).Where(slot => Matches(states[slot])).ToArray();
+            var infos = Enumerable.Range(0, SaveSlotCount).Select(InspectSlot).ToArray();
+            var candidates = Enumerable.Range(0, SaveSlotCount)
+                .Where(slot => newGame ? infos[slot].State == SlotState.Empty : infos[slot].State != SlotState.Empty)
+                .ToArray();
             if (candidates.Length == 0)
             {
-                ShowSaveMenu(SaveText.Get(states.Contains(SlotState.Unavailable) ? "slots.readFailed" :
-                    newGame ? "slots.full" : "slots.empty"));
+                if (newGame) ShowReplaceOldest(infos);
+                else ShowSaveMenu(SaveText.Get("slots.empty"));
                 return;
             }
             index %= candidates.Length;
             int slot = candidates[index];
+            bool readable = newGame || infos[slot].State == SlotState.Occupied;
             _titleOverlays.ShowStationDialog(new StationDialog
             {
                 Title = SaveText.Get(newGame ? "slots.new" : "slots.load"),
-                Body = feedback ?? SaveText.Get(newGame ? "slots.emptySlot" : "slots.occupiedSlot", slot + 1),
-                ConfirmLabel = SaveText.Get("slots.select"), Accept = () => SelectSlot(slot, newGame),
-                BrowseLabel = SaveText.Get("slots.next"),
+                Body = feedback ?? DescribeSlot(slot, infos[slot]),
+                ConfirmLabel = SaveText.Get(readable ? "slots.select" : "slots.reset"),
+                Accept = readable ? (Action)(() => SelectSlot(slot, newGame)) : () => ConfirmReset(slot),
+                BrowseLabel = candidates.Length > 1 ? SaveText.Get("slots.next") : null,
                 Browse = candidates.Length > 1 ? (Action)(() => ShowSlotSelection(newGame, index + 1)) : null,
                 CancelLabel = SaveText.Get("slots.back"), Cancel = () => ShowSaveMenu(), CenterBody = true
             });
         }
 
-        private SlotState ReadSlotState(int slot)
+        private SlotInfo InspectSlot(int slot)
         {
+            var info = new SlotInfo { State = SlotState.Empty };
             try
             {
-                var storage = _saveSlotStorage(slot);
-                return storage.Read(0) == null && storage.Read(1) == null ? SlotState.Empty : SlotState.Occupied;
+                var inspected = StartupSaveSlots.Inspect(_saveSlotStorage(slot));
+                if (inspected.Status == StartupSaveSlots.State.Empty) return info;
+                info.State = inspected.Status == StartupSaveSlots.State.Saved
+                    ? SlotState.Occupied : SlotState.Damaged;
+                info.Rescued = inspected.Rescued ?? 0;
+                info.SavedAt = inspected.SavedAt;
+                info.TimeText = inspected.SavedAt?.ToLocalTime()
+                    .ToString("MM-dd HH:mm", CultureInfo.InvariantCulture)
+                    ?? SaveText.Get("slots.timeUnknown");
             }
-            catch (Exception) { return SlotState.Unavailable; }
+            catch (Exception) { info.State = SlotState.Unavailable; }
+            return info;
+        }
+
+        private string DescribeSlot(int slot, SlotInfo info)
+        {
+            switch (info.State)
+            {
+                case SlotState.Occupied:
+                    return SaveText.Get("slots.slotDetail", slot + 1, info.Rescued, info.TimeText);
+                case SlotState.Damaged: return SaveText.Get("slots.damagedSlot", slot + 1);
+                case SlotState.Unavailable: return SaveText.Get("slots.readFailed");
+                default: return SaveText.Get("slots.emptySlot", slot + 1);
+            }
+        }
+
+        private void ShowReplaceOldest(SlotInfo[] infos)
+        {
+            int oldest = -1;
+            foreach (int slot in Enumerable.Range(0, SaveSlotCount).Where(s => infos[s].State != SlotState.Empty))
+            {
+                if (oldest < 0) { oldest = slot; continue; }
+                var candidate = infos[slot].SavedAt;
+                var current = infos[oldest].SavedAt;
+                if (candidate.HasValue && (!current.HasValue || candidate.Value < current.Value)) oldest = slot;
+            }
+            if (oldest < 0) { ShowSaveMenu(SaveText.Get("slots.full")); return; }
+            _titleOverlays.ShowStationDialog(new StationDialog
+            {
+                Title = SaveText.Get("slots.fullTitle"),
+                Body = SaveText.Get("slots.fullBody", oldest + 1),
+                ConfirmLabel = SaveText.Get("slots.reset"), Accept = () => ConfirmReset(oldest),
+                CancelLabel = SaveText.Get("slots.back"), Cancel = () => ShowSaveMenu(), CenterBody = true
+            });
+        }
+
+        private void ConfirmReset(int slot)
+        {
+            _titleOverlays.ShowStationDialog(new StationDialog
+            {
+                Title = SaveText.Get("slots.current", slot + 1),
+                Body = SaveText.Get("slots.resetConfirm", slot + 1),
+                ConfirmLabel = SaveText.Get("slots.reset"), Accept = () => ResetSlot(slot),
+                CancelLabel = SaveText.Get("slots.back"), Cancel = () => ShowSaveMenu(), CenterBody = true
+            });
+        }
+
+        private void ResetSlot(int slot)
+        {
+            // Archiving happens inside the reset; a failed archive must leave the original untouched.
+            if (!SaveService.TryReset(_saveSlotStorage(slot), out var error))
+            {
+                Debug.LogWarning("Save reset failed: " + error, this);
+                ShowSaveMenu(SaveText.Get("slots.resetFailed"));
+                return;
+            }
+            CloseSaveMenu();
+            _activeSlot = slot;
+            if (!StartGame(_saveSlotStorage(slot), true))
+            {
+                ShowSaveMenu(SaveText.Get("slots.createFailed"));
+                return;
+            }
+            RememberLastSlot(slot);
         }
 
         private void SelectSlot(int slot, bool newGame)
@@ -278,7 +387,41 @@ namespace HomelessPetHelper.Game
             CloseSaveMenu();
             _activeSlot = slot;
             if (!StartGame(_saveSlotStorage(slot), newGame))
+            {
                 ShowSaveMenu(SaveText.Get(newGame ? "slots.createFailed" : "save.loadFailed"));
+                return;
+            }
+            RememberLastSlot(slot);
+        }
+
+        private int ReadLastSlot()
+        {
+            if (!_trackLastSlot) return -1;
+            try
+            {
+                _historyStorage ??= _historyStorageFactory();
+                int? slot = StartupSaveSlots.ReadLastPlayed(_historyStorage);
+                return slot.HasValue && slot.Value >= 0 && slot.Value < SaveSlotCount ? slot.Value : -1;
+            }
+            catch (Exception error)
+            {
+                Debug.LogWarning("Last played slot could not be read: " + error, this);
+                return -1;
+            }
+        }
+
+        private void RememberLastSlot(int slot)
+        {
+            if (!_trackLastSlot || slot < 0) return;
+            try
+            {
+                _historyStorage ??= _historyStorageFactory();
+                StartupSaveSlots.RecordLastPlayed(_historyStorage, slot);
+            }
+            catch (Exception error)
+            {
+                Debug.LogWarning("Last played slot could not be recorded: " + error, this);
+            }
         }
 
         private void CloseSaveMenu()
@@ -293,7 +436,8 @@ namespace HomelessPetHelper.Game
             var overlays = Presenter.StationSaveOverlays;
             overlays.ShowStationDialog(new StationDialog
             {
-                Title = SaveText.Get("slots.current", _activeSlot + 1), Body = SaveText.Get("slots.actions"),
+                Title = SaveText.Get("slots.current", _activeSlot + 1),
+                Body = SaveText.Get("slots.actions") + "\n" + SaveText.Get("slots.actionsHome"),
                 ConfirmLabel = SaveText.Get("slots.save"),
                 Accept = () => _manualSave = StartCoroutine(SaveManually(overlays)),
                 BrowseLabel = SaveText.Get("slots.settings"), Browse = () =>
@@ -301,8 +445,14 @@ namespace HomelessPetHelper.Game
                     overlays.DismissStationDialog();
                     overlays.OpenStandaloneSettings();
                 },
-                CancelLabel = SaveText.Get("slots.back")
+                CancelLabel = SaveText.Get("slots.back"), Cancel = () => CloseStationDialogs(overlays)
             });
+        }
+
+        private static void CloseStationDialogs(LevelOverlaySession overlays)
+        {
+            // One station dialog is replaced, not stacked: dismissing the confirmation returns to play.
+            overlays.DismissStationDialog();
         }
 
         private IEnumerator SaveManually(LevelOverlaySession overlays)
@@ -326,9 +476,18 @@ namespace HomelessPetHelper.Game
             {
                 Title = SaveText.Get("slots.save"),
                 Body = SaveText.Get(saved ? "slots.saved" : "save.writeFailed"), CenterBody = true,
-                CancelLabel = SaveText.Get("slots.back"), Cancel = saved ? (Action)null : ReturnToSaveMenu,
-                ConfirmLabel = SaveText.Get("slots.title"), Accept = saved ? (Action)ReturnToSaveMenu : null
+                ConfirmLabel = saved ? SaveText.Get("slots.home") : null,
+                Accept = saved ? (Action)(() => _manualSave = StartCoroutine(ReturnToTitle())) : null,
+                CancelLabel = SaveText.Get(saved ? "slots.continueGame" : "slots.home"),
+                Cancel = saved ? (Action)null : () => _manualSave = StartCoroutine(ReturnToTitle())
             }, replaceWhileInactive: true);
+        }
+
+        private IEnumerator ReturnToTitle()
+        {
+            yield return null;
+            _manualSave = null;
+            ReturnToSaveMenu();
         }
 
         private void ReturnToSaveMenu()
@@ -336,8 +495,9 @@ namespace HomelessPetHelper.Game
             _bootstrap.BindSession(null);
             Presenter.Dispose();
             Presenter = null;
-            if (_enteredFromLoading) SceneManager.LoadSceneAsync(LoadingSceneRoot.ScenePath);
-            else ShowSaveMenu();
+            // The loading scene owns the slot list, continue entry and deletion; Main keeps only the
+            // in-run menu so both entry points cannot drift apart.
+            SceneManager.LoadSceneAsync(LoadingSceneRoot.ScenePath);
         }
     }
 }

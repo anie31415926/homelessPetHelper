@@ -20,9 +20,11 @@ namespace HomelessPetHelper.Game.Loading
         private Coroutine _routine;
         private bool _started, _cancelled;
         private bool _entryRequested;
+        private int? _failedEntrySlot;
         private Func<int, ISaveStorage> _saveStorage = StartupSaveSlots.OpenStorage;
+        private Func<ISaveStorage> _historyStorage = StartupSaveSlots.OpenHistoryStorage;
         private StartupSaveSlots.Info[] _slots;
-        private (int slot, bool create, ISaveStorage storage) _selection;
+        private (int slot, bool create, ISaveStorage storage, ISaveStorage history) _selection;
         public bool HasFailed { get; private set; }
 
         private void Start()
@@ -35,19 +37,19 @@ namespace HomelessPetHelper.Game.Loading
             _view.ShowCover();
             _view.EnterRequested += Continue;
             _view.SaveListRequested += ShowSlots;
-            _view.SlotRequested += SelectSlot;
+            _view.SlotRequested += SelectFromList;
+            _view.DeleteRequested += RequestDelete;
             ReadSlots();
-            if (StartupSaveSlots.EntryFailed)
-            {
-                StartupSaveSlots.EntryFailed = false;
-                _view.ShowSlots(_slots, false, failed: true);
-            }
+            _failedEntrySlot = StartupSaveSlots.FailedEntrySlot;
+            StartupSaveSlots.FailedEntrySlot = null;
+            if (_failedEntrySlot.HasValue) _view.ShowEntryFailure();
         }
 
-        public void ConfigureSaveSlots(Func<int, ISaveStorage> storage)
+        public void ConfigureSaveSlots(Func<int, ISaveStorage> storage, Func<ISaveStorage> history = null)
         {
             EnsureConfigurable();
             _saveStorage = storage ?? throw new ArgumentNullException(nameof(storage));
+            _historyStorage = history;
         }
 
         public void ConfigurePreview()
@@ -92,13 +94,14 @@ namespace HomelessPetHelper.Game.Loading
         private void ReadSlots()
         {
             _slots ??= new StartupSaveSlots.Info[StartupSaveSlots.Count];
-            for (int i = 0; i < _slots.Length; i++) _slots[i] = InspectSlot(i);
+            for (int i = 0; i < _slots.Length; i++) _slots[i] = InspectSlot(i, out _);
             _view.SetContinue(FindSlot(StartupSaveSlots.State.Saved) >= 0);
         }
 
-        private StartupSaveSlots.Info InspectSlot(int slot)
+        private StartupSaveSlots.Info InspectSlot(int slot, out SaveService snapshot)
         {
-            try { return StartupSaveSlots.Inspect(_saveStorage(slot)); }
+            snapshot = null;
+            try { return StartupSaveSlots.Inspect(_saveStorage(slot), out snapshot); }
             catch (Exception) { return new StartupSaveSlots.Info(StartupSaveSlots.State.Unavailable); }
         }
 
@@ -123,32 +126,61 @@ namespace HomelessPetHelper.Game.Loading
         {
             if (_entryRequested || _cancelled) return;
             ReadSlots();
-            int slot = FindSlot(StartupSaveSlots.State.Saved);
-            if (slot < 0) slot = FindSlot(StartupSaveSlots.State.Empty);
-            if (slot < 0) _view.ShowSlots(_slots, false, failed: true);
-            else SelectSlot(slot, _slots[slot].Status == StartupSaveSlots.State.Empty);
+            int? remembered = StartupSaveSlots.ReadLastPlayed(_historyStorage?.Invoke());
+            if (remembered is int lastPlayed && _slots[lastPlayed].Status == StartupSaveSlots.State.Empty)
+                remembered = null;
+            int slot = remembered ?? FindSlot(StartupSaveSlots.State.Saved);
+            if (slot < 0 && FindSlot(StartupSaveSlots.State.Unavailable) < 0)
+                slot = FindSlot(StartupSaveSlots.State.Empty);
+            if (slot < 0 || slot == _failedEntrySlot || !SelectSlot(slot, !remembered.HasValue &&
+                _slots[slot].Status == StartupSaveSlots.State.Empty)) _view.ShowEntryFailure();
         }
 
-        private void SelectSlot(int slot, bool create)
+        private void RequestDelete(int slot)
         {
             if (_entryRequested || _cancelled) return;
+            if (InspectSlot(slot, out var snapshot).CanDelete)
+                _view.ShowDeleteConfirmation(slot, () => DeleteSlot(slot, snapshot));
+            else
+                RefreshAfterDelete(LoadingView.SlotFeedback.DeleteFailed);
+        }
+
+        private void DeleteSlot(int slot, SaveService snapshot)
+        {
+            if (_entryRequested || _cancelled) return;
+            bool deleted = snapshot.TryDelete(out _);
+            if (deleted && _failedEntrySlot == slot) _failedEntrySlot = null;
+            RefreshAfterDelete(deleted ? LoadingView.SlotFeedback.Deleted : LoadingView.SlotFeedback.DeleteFailed);
+        }
+
+        private void RefreshAfterDelete(LoadingView.SlotFeedback feedback)
+        {
+            ReadSlots();
+            _view.ShowSlots(_slots, false, feedback: feedback);
+        }
+
+        private void SelectFromList(int slot, bool create)
+        {
+            if (_entryRequested || _cancelled || SelectSlot(slot, create)) return;
+            ReadSlots();
+            _view.ShowSlots(_slots, create, failed: true);
+        }
+
+        private bool SelectSlot(int slot, bool create)
+        {
+            if (_entryRequested || _cancelled) return false;
             try
             {
                 var storage = _saveStorage(slot);
-                var state = StartupSaveSlots.Inspect(storage).Status;
-                if (state == (create ? StartupSaveSlots.State.Empty : StartupSaveSlots.State.Saved))
-                    _selection = (slot, create, storage);
+                if (StartupSaveSlots.Inspect(storage).Status !=
+                    (create ? StartupSaveSlots.State.Empty : StartupSaveSlots.State.Saved)) return false;
+                _selection = (slot, create, storage, _historyStorage?.Invoke());
             }
-            catch (Exception) { }
-            if (_selection.storage == null)
-            {
-                ReadSlots();
-                _view.ShowSlots(_slots, create, failed: true);
-                return;
-            }
+            catch (Exception) { return false; }
             _entryRequested = true;
             _view.HideEntry();
             _routine = StartCoroutine(LoadRoutine());
+            return true;
         }
 
         private IEnumerator FadeCover()
@@ -253,7 +285,8 @@ namespace HomelessPetHelper.Game.Loading
             {
                 _view.EnterRequested -= Continue;
                 _view.SaveListRequested -= ShowSlots;
-                _view.SlotRequested -= SelectSlot;
+                _view.SlotRequested -= SelectFromList;
+                _view.DeleteRequested -= RequestDelete;
                 _view.HideEntry();
             }
             if (_routine != null) StopCoroutine(_routine);

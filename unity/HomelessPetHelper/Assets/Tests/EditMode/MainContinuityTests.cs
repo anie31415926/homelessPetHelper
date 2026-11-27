@@ -31,9 +31,9 @@ namespace HomelessPetHelper.Tests.EditMode
         private MainProgressSession Open(ISaveStorage storage) => new MainProgressSession(_config,
             _content.Artwork, storage);
 
-        [TestCase(0, 240)]
-        [TestCase(1, 180)]
-        [TestCase(5, 150)]
+        [TestCase(0, 300)]
+        [TestCase(1, 240)]
+        [TestCase(5, 180)]
         public void DispatchWaitsForWorldTimeAndPersistsTheSameNotice(int capacity, int waitMinutes)
         {
             var storage = new MemorySaveStorage();
@@ -74,7 +74,7 @@ namespace HomelessPetHelper.Tests.EditMode
             foreach (var request in session.Requests.Requests.Where(request => request.ReunionPlan == null))
                 Assert.That(session.Requests.TryTransition(request.RequestId, RequestSignal.HelpedElsewhere, out _),
                     Is.True);
-            AdvanceDispatchTime(progress, 240);
+            AdvanceDispatchTime(progress, 300);
             var notice = session.Requests.Requests.Last();
             Assert.That(notice.State, Is.EqualTo(RequestState.Available));
             Assert.That(session.Map.TryPlanDeparture(notice.PointId, 0, out _, out var blocked), Is.False);
@@ -83,7 +83,7 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(progress.TryCheckpoint(), Is.True);
             Assert.That(session.Requests.Requests.Count, Is.EqualTo(6));
 
-            AdvanceDispatchTime(progress, 120);
+            AdvanceDispatchTime(progress, 360);
             Assert.That(notice.State, Is.EqualTo(RequestState.HelpedElsewhere));
             var fallback = session.Requests.Requests.Last();
             Assert.That(fallback.RequestId, Is.Not.EqualTo(notice.RequestId));
@@ -92,8 +92,49 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(session.Station.Animals, Is.Empty);
         }
 
-        private MainProgressSession OpenDispatch(ISaveStorage storage, int capacity) =>
-            new MainProgressSession(WithInitialCapacity(capacity), _content.Artwork, storage,
+        [Test]
+        public void DispatchNoticeSurvivesRescueTravelAndStillExpiresAtTheStation()
+        {
+            var storage = new MemorySaveStorage();
+            using var progress = OpenDispatch(storage, 2, 120);
+            var session = progress.Session;
+            var initial = session.Requests.Requests.Single(request => request.PointId == "parking");
+            Assert.That(session.Requests.TryTransition(initial.RequestId, RequestSignal.HelpedElsewhere, out _),
+                Is.True);
+            AdvanceDispatchTime(progress, 240);
+            var notice = session.Requests.Requests.Last();
+            Assert.That(notice.PointId, Is.EqualTo("parking"));
+            Assert.That(notice.State, Is.EqualTo(RequestState.Available));
+
+            Rescue(progress, "ordinary-dog");
+            Assert.That(progress.TryCheckpoint(), Is.True, progress.PersistenceError?.ToString());
+            Assert.That(session.Clock.Current.ElapsedMinutes, Is.GreaterThanOrEqualTo(390));
+            Assert.That(notice.State, Is.EqualTo(RequestState.Available),
+                "A long rescue must not age the offer it could not answer.");
+
+            AdvanceDispatchTime(progress, 120);
+            Assert.That(notice.State, Is.EqualTo(RequestState.HelpedElsewhere),
+                "Station time must still expire an unanswered offer.");
+        }
+
+        [Test]
+        public void DispatchPaysAtMostTwoNoticesAfterOneLongJump()
+        {
+            using var progress = OpenDispatch(new MemorySaveStorage(), 5);
+            var session = progress.Session;
+            foreach (var request in session.Requests.Requests.Where(request => request.ReunionPlan == null))
+                Assert.That(session.Requests.TryTransition(request.RequestId, RequestSignal.HelpedElsewhere,
+                    out _), Is.True);
+            AdvanceDispatchTime(progress, 361);
+            var created = session.Requests.Requests.Skip(4).ToArray();
+            Assert.That(created.Length, Is.EqualTo(2), "Two missed intervals, not an unbounded backlog.");
+            Assert.That(created[0].PointId, Is.Not.EqualTo(created[1].PointId));
+            AdvanceDispatchTime(progress, 1);
+            Assert.That(session.Requests.Requests.Count, Is.EqualTo(6));
+        }
+
+        private MainProgressSession OpenDispatch(ISaveStorage storage, int capacity, int lifetimeMinutes = 0) =>
+            new MainProgressSession(WithInitialCapacity(capacity, lifetimeMinutes), _content.Artwork, storage,
                 _content.CreateFieldProgressContent(_content.CreateFields()));
 
         [Test]
@@ -134,11 +175,12 @@ namespace HomelessPetHelper.Tests.EditMode
             Assert.That(progress.TryCheckpoint(), Is.True, progress.PersistenceError?.ToString());
         }
 
-        private CityMapPreviewConfig WithInitialCapacity(int capacity)
+        private CityMapPreviewConfig WithInitialCapacity(int capacity, int lifetimeMinutes = 0)
         {
             var data = JObject.Parse(AssetDatabase.LoadAssetAtPath<TextAsset>(
                 "Assets/Settings/Game/CityMapConfig.json").text);
             data["initialCapacity"] = capacity;
+            if (lifetimeMinutes > 0) data["dispatch"]["lifetimeMinutes"] = lifetimeMinutes;
             var source = new TextAsset(data.ToString());
             try { return new CityMapPreviewConfig(source); }
             finally { UnityEngine.Object.DestroyImmediate(source); }

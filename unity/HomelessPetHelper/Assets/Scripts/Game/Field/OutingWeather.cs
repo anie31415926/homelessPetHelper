@@ -5,7 +5,10 @@ namespace HomelessPetHelper.Game.Field
     public enum OutingWeatherKind { Clear, Rain, Snow, Fog }
     public enum OutingWeatherIntensity { Light, Medium, Heavy }
 
-    /// <summary>Initial field conditions; independent of the effect clock and battle rules.</summary>
+    /// <summary>
+    /// One world weather sample. The current value is derived by <see cref="WorldWeatherSchedule"/>
+    /// from the action clock; an outing keeps the sample it departed with.
+    /// </summary>
     public readonly struct OutingWeather
     {
         public OutingWeatherKind Kind { get; }
@@ -20,9 +23,5 @@ namespace HomelessPetHelper.Game.Field
             Kind = kind;
             Intensity = kind == OutingWeatherKind.Clear ? OutingWeatherIntensity.Light : intensity;
         }
-
-        // One fixed world sample until weather scheduling is designed.
-        internal static OutingWeather InitialWorld =>
-            new OutingWeather(OutingWeatherKind.Rain, OutingWeatherIntensity.Light);
     }
 }

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261126-开始界面按钮排版-38455757.md",
+  "sessionId": "38455757035822594",
+  "phase": "delivery",
+  "readAt": "2026-11-26T17:11:51.108Z",
+  "writePaths": [
+    "docs/协作任务/20261126-开始界面按钮排版-38455757.md",
+    "docs/协作执行记录/20261126-开始界面按钮排版-38455757/",
+    "test-results/loading-ui-20261126/",
+    "unity/HomelessPetHelper/Assets/Art/Loading/LoadingText.json",
+    "unity/HomelessPetHelper/Assets/Prefabs/Panels/Panel_Loading.prefab",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Loading/LoadingView.cs"
+  ],
+  "contextDigest": "b8e40c70898027f40d7cc59443c5b8c044ba006c60f9d9a2d153fadcbde6cf14",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "828e9e702ae5c0a02de89f49865adf95590f3db115ab5f6e3c2a42aca4bcdef6"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261126-世界天气调度-38456717.md",
+      "sha256": "d69bc0870eac577a20c6f207f6e7d2f136d58936661736c13829ba0b6e7309d4"
+    },
+    {
+      "path": "docs/协作任务/20261126-开始界面按钮排版-38455757.md",
+      "sha256": "ca9310d52555c7d68a2084f182d344906dbc21d481350c5c706569c2520e91ea"
+    },
+    {
+      "path": "docs/协作任务/20261126-站内菜单改版-38456717.md",
+      "sha256": "ebd959a7b5b91a0771bd985d2c5c350c32debcaeb9a34a7df2641ac5ecb26c21"
+    },
+    {
+      "path": "docs/协作任务/20261126-站内返回主界面与存档菜单-38455757.md",
+      "sha256": "a2505fa5c54eb9ad0d83ffee62c504a64b3ebdbb64844c176269e1fd2b66f22e"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "07815d51861403e386fa73048fee932418fce2900aec1f64ae68c13cf76da88d"
+    }
+  ]
+}

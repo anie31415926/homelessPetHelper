@@ -11,7 +11,7 @@ namespace HomelessPetHelper.Framework.Persistence.WeChat
     /// Uses native wx synchronous storage, not PlayerPrefs or the SDK's error-to-default getter.
     /// Actual device persistence, quota and hide/kill behavior still require channel validation.
     /// </summary>
-    public sealed class WeChatSaveStorage : ISaveStorage
+    public sealed class WeChatSaveStorage : IDeletableSaveStorage
     {
         private const int MaxValueBytes = 900 * 1024;
         private readonly string _prefix;
@@ -26,6 +26,16 @@ namespace HomelessPetHelper.Framework.Persistence.WeChat
         public string Read(int slot) => ReadKey(Key(slot));
 
         public void Write(int slot, string content) => WriteKey(Key(slot), content);
+
+        public void Delete(int slot)
+        {
+            string key = Key(slot);
+#if UNITY_WEBGL && !UNITY_EDITOR
+            RequireSuccess(SaveJson.Parse(HPHSaveDelete(key)));
+#else
+            throw new PlatformNotSupportedException("WeChat storage requires the converted WeChat runtime.");
+#endif
+        }
 
         public void Archive(int slot)
         {
@@ -81,6 +91,9 @@ namespace HomelessPetHelper.Framework.Persistence.WeChat
 
         [DllImport("__Internal")]
         private static extern string HPHSaveWrite(string key, string content);
+
+        [DllImport("__Internal")]
+        private static extern string HPHSaveDelete(string key);
 #endif
     }
 }

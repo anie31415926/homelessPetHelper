@@ -332,6 +332,9 @@ namespace HomelessPetHelper.Game.UI
         public void Back()
         {
             if (!CanInteract) return;
+            // A dialog without a cancel button owns an operation that must finish (for example a
+            // checkpoint write); back must not hide it while the write still commits.
+            if (_stationDialog != null && _stationDialog.HideCancel) return;
             if (!Top.HasValue) OpenPause();
             else if (Top == LevelPopupKind.Confirmation) CancelConfirmation();
             else if (Top == LevelPopupKind.Settings) CancelSettings();

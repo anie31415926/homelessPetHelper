@@ -20,20 +20,35 @@ namespace HomelessPetHelper.Editor.Field
             using (new EditorGUI.DisabledScope(_kind == OutingWeatherKind.Clear))
                 _intensity = (OutingWeatherIntensity)EditorGUILayout.EnumPopup("Intensity", _intensity);
             using (new EditorGUI.DisabledScope(!EditorApplication.isPlaying))
+            {
                 if (GUILayout.Button("Set World Weather")) Apply();
+                if (GUILayout.Button("Resume Schedule")) Resume();
+            }
             if (!string.IsNullOrEmpty(_status)) EditorGUILayout.HelpBox(_status, MessageType.Info);
+        }
+
+        private MainLoopPresenter Presenter()
+        {
+            var main = FindObjectOfType<MainGameRoot>();
+            if (main != null && main.Presenter != null) return main.Presenter;
+            _status = "Start Main in Play Mode first.";
+            return null;
         }
 
         private void Apply()
         {
-            var main = FindObjectOfType<MainGameRoot>();
-            if (main == null || main.Presenter == null)
-            {
-                _status = "Start Main in Play Mode first.";
-                return;
-            }
-            main.Presenter.SetWorldWeather(new OutingWeather(_kind, _intensity));
-            _status = "Map updated. An outing in progress keeps the weather it started with.";
+            var presenter = Presenter();
+            if (presenter == null) return;
+            presenter.SetWorldWeather(new OutingWeather(_kind, _intensity));
+            _status = "Debug override set. An outing in progress keeps the weather it started with.";
+        }
+
+        private void Resume()
+        {
+            var presenter = Presenter();
+            if (presenter == null) return;
+            presenter.ResampleWorldWeather();
+            _status = "Weather follows the world clock again.";
         }
     }
 }

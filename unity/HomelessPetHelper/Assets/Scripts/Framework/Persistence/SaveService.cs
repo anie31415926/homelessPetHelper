@@ -22,9 +22,12 @@ namespace HomelessPetHelper.Framework.Persistence
         private int _activeSlot = -1;
         private bool _started;
         private bool _busy;
+        private bool _hasStorageSnapshot;
         private bool _archiveBeforeCommit;
 
         public bool CanWrite { get; private set; }
+        public bool CanDelete => !_busy && _hasStorageSnapshot && _storage is IDeletableSaveStorage &&
+            (_observed[0] != null || _observed[1] != null);
         public IReadOnlyList<SaveError> RecoveryWarnings => _recoveryWarnings.AsReadOnly();
         public long Revision => _document == null ? 0 : SaveJson.Integer(_document, "revision");
 
@@ -54,6 +57,7 @@ namespace HomelessPetHelper.Framework.Persistence
             _busy = true;
             try
             {
+                ReadStorageSnapshot();
                 var candidates = ReadCandidates();
                 SelectCandidate(candidates);
                 var prepared = (JObject)(_document ?? SaveEnvelope.NewDocument()).DeepClone();
@@ -133,16 +137,100 @@ namespace HomelessPetHelper.Framework.Persistence
             _archiveBeforeCommit = true;
         }
 
-        private JObject[] ReadCandidates()
+        /// <summary>
+        /// Delete the exact copies observed by Open, including readable but invalid saves.
+        /// On an uncertain result, reopen before retrying. An older copy may already be gone.
+        /// </summary>
+        public bool TryDelete(out SaveError error)
         {
-            var candidates = new JObject[2];
-            for (int slot = 0; slot < 2; slot++)
+            if (_busy) return Fail(SaveErrorCode.Busy, "A save operation is already running.", out error);
+            if (!CanDelete)
+                return Fail(SaveErrorCode.NotOpen, "No observed checkpoint can be deleted.", out error);
+            _busy = true;
+            CanWrite = _hasStorageSnapshot = false;
+            try
+            {
+                for (int slot = 0; slot < _observed.Length; slot++)
+                    if (!string.Equals(_observed[slot], _storage.Read(slot), StringComparison.Ordinal))
+                        return Fail(SaveErrorCode.Conflict, "Storage changed; reopen before deleting.", out error);
+
+                // Remove the inactive copy first so a failed removal cannot roll a good profile back.
+                int first = _activeSlot == 0 ? 1 : 0;
+                var storage = (IDeletableSaveStorage)_storage;
+                DeleteObservedCopy(storage, first);
+                DeleteObservedCopy(storage, 1 - first);
+                error = null;
+                return true;
+            }
+            catch (Exception cause)
+            {
+                error = new SaveError(SaveErrorCode.WriteUncertain, "Reopen to resolve checkpoint deletion.", cause);
+                return false;
+            }
+            finally
+            {
+                _busy = false;
+                _document = null;
+            }
+        }
+
+        /// <summary>
+        /// Removes both copies of one profile without requiring a readable checkpoint: each original is
+        /// archived first, then deleted and read back. Used for damaged or unopenable slots that
+        /// <see cref="TryDelete"/> cannot observe. Callers must reopen before writing a new save.
+        /// </summary>
+        public static bool TryReset(ISaveStorage storage, out SaveError error)
+        {
+            error = null;
+            if (storage == null) throw new ArgumentNullException(nameof(storage));
+            if (!(storage is IDeletableSaveStorage deletable))
+                return Fail(SaveErrorCode.NotOpen, "This storage cannot remove checkpoints.", out error);
+            try
+            {
+                for (int slot = 0; slot < 2; slot++)
+                {
+                    if (storage.Read(slot) == null) continue;
+                    storage.Archive(slot);
+                    deletable.Delete(slot);
+                    if (storage.Read(slot) != null)
+                        throw new IOException("Checkpoint still exists after deletion.");
+                }
+                return true;
+            }
+            catch (Exception cause)
+            {
+                error = new SaveError(SaveErrorCode.WriteUncertain,
+                    "Reset could not remove every checkpoint; archived copies are kept.", cause);
+                return false;
+            }
+        }
+
+        private void DeleteObservedCopy(IDeletableSaveStorage storage, int slot)
+        {
+            if (_observed[slot] == null) return;
+            storage.Delete(slot);
+            if (storage.Read(slot) != null) throw new IOException("Checkpoint still exists after deletion.");
+        }
+
+        private void ReadStorageSnapshot()
+        {
+            _hasStorageSnapshot = false;
+            for (int slot = 0; slot < _observed.Length; slot++)
             {
                 try { _observed[slot] = _storage.Read(slot); }
                 catch (Exception cause)
                 {
                     throw new SaveError(SaveErrorCode.StorageReadFailed, "Save slot could not be read.", cause);
                 }
+            }
+            _hasStorageSnapshot = true;
+        }
+
+        private JObject[] ReadCandidates()
+        {
+            var candidates = new JObject[_observed.Length];
+            for (int slot = 0; slot < candidates.Length; slot++)
+            {
                 _damaged[slot] = false;
                 if (_observed[slot] == null) continue;
                 try { candidates[slot] = SaveEnvelope.Decode(_observed[slot]); }
