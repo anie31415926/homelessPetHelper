@@ -1,0 +1,6 @@
+{
+  "name": "HomelessPetHelper.Editor.PetFur",
+  "references": ["HomelessPetHelper.Preview.PetFur", "UnityEngine.UI"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": false
+}

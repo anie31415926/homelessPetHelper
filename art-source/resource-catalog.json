@@ -17,6 +17,38 @@
   },
   "assets": [
     {
+      "id": "pet-affection.shiba-base",
+      "name": "摸摸试做柴犬固定姿态",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "独立网页试做，未进入 Unity。",
+      "use": "512 档透明底图，统一足底和表情坐标。",
+      "plannedBytes": 204800,
+      "files": [
+        { "role": "runtime", "path": "public/pet-affection/shiba.webp" },
+        { "role": "workflow", "path": "art-source/pet-affection-20261127/derivation.json" }
+      ],
+      "generation": { "tool": "本地 Sharp；指定柴犬参考图 (26)" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
+      "id": "pet-fur.unity-preview-doudou",
+      "name": "小撮毛 Unity 测试场景柴犬",
+      "module": "Station",
+      "status": "temporary",
+      "loadTiming": "preview-only",
+      "availability": "独立 Unity Editor 测试场景专用；不进 Main、动物名录或玩家构建场景。",
+      "use": "512×512 透明彩图，底图和局部毛发着色器共用；与网页原图逐像素相同。",
+      "plannedBytes": 327680,
+      "files": [
+        { "role": "runtime", "path": "unity/HomelessPetHelper/Assets/EditorScenes/PetFur/T_DoudouFurPreview.png" },
+        { "role": "workflow", "path": "tools/unity-fur-preview.mjs" }
+      ],
+      "generation": { "tool": "本地 Sharp，从 pet-affection.shiba-base 透明 WebP 无损解码转 PNG" },
+      "review": { "visual": "pending", "rights": "pending", "target": "pending" }
+    },
+    {
       "id": "pet-motion.unity-atlas",
       "name": "动物动作共享裁边图集",
       "module": "Station",

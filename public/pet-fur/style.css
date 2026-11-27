@@ -1,0 +1,81 @@
+:root {
+    color-scheme: light;
+    font-family: "Yuanti SC", "Microsoft YaHei", system-ui, sans-serif;
+    color: #28483f;
+    background: #e6eee7;
+    --paper: #f8fbf6;
+    --edge: #c6d8cb;
+    --selected: #d3e7d8;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+main {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-block-size: 100svh;
+    max-inline-size: 570px;
+    margin-inline: auto;
+    background: var(--paper);
+}
+
+header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    padding: calc(14px + env(safe-area-inset-top)) 22px 13px;
+}
+h1 { margin: 0; font-size: 25px; }
+header span { color: #476258; font-size: 14px; }
+
+.scene {
+    position: relative;
+    display: grid;
+    place-items: center;
+    background: #d6e8da;
+    overflow: hidden;
+}
+canvas {
+    display: block;
+    position: relative;
+    inline-size: min(100%, 490px, max(206px, calc((100svh - 134px) * .851)));
+    block-size: auto;
+    aspect-ratio: 400 / 470;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: grab;
+}
+canvas:active { cursor: grabbing; }
+.scene p { position: absolute; margin: 16px; padding: 12px; background: var(--paper); }
+
+footer {
+    display: grid;
+    place-items: center;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+}
+.compare {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    inline-size: min(100%, 320px);
+    padding: 3px;
+    border: 1px solid var(--edge);
+    border-radius: 8px;
+    background: #edf3ed;
+}
+button {
+    min-block-size: 44px;
+    padding: 6px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 15px;
+    cursor: pointer;
+}
+button[aria-pressed="true"] { border-color: #aec8b5; background: var(--selected); font-weight: 700; }
+button:disabled { cursor: default; opacity: .6; }
+button:focus-visible, canvas:focus-visible { outline: 2px solid #326b54; outline-offset: -3px; }

@@ -1,0 +1,7 @@
+{
+  "name": "HomelessPetHelper.Tests.PetFur",
+  "references": ["HomelessPetHelper.Preview.PetFur", "UnityEngine.UI"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": false
+}
