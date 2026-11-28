@@ -32,6 +32,8 @@ namespace HomelessPetHelper.Game.UI
         private readonly OptionPreviewText _text;
         private readonly List<RectTransform> _targets = new List<RectTransform>(16);
         private GuideSession _guide;
+        private RectTransform _enemyTarget;
+        private string _enemyCaption;
         private AudioPreferences _settingsBefore;
         private Confirmation _confirmation;
         private StationDialog _stationDialog;
@@ -76,14 +78,14 @@ namespace HomelessPetHelper.Game.UI
 
         public void OpenPause()
         {
-            if (_settingsOnly || !CanInteract || _stack.Depth != 0) return;
+            if (_settingsOnly || !CanInteract || _stack.Depth != 0 || _enemyCaption != null) return;
             _stack.TryOpen(LevelPopupKind.Pause);
             Refresh();
         }
 
         public void OpenObjectives()
         {
-            if (_settingsOnly || !CanInteract || _stack.Depth != 0) return;
+            if (_settingsOnly || !CanInteract || _stack.Depth != 0 || _enemyCaption != null) return;
             _view.SetObjectives(_bindings.DescribeObjectives(), _bindings.CreateGuide() != null,
                 showReplay: !_returnToLocation, showHandbook: _bindings.DescribeHandbook != null);
             _stack.TryOpen(LevelPopupKind.Objectives);
@@ -335,7 +337,8 @@ namespace HomelessPetHelper.Game.UI
             // A dialog without a cancel button owns an operation that must finish (for example a
             // checkpoint write); back must not hide it while the write still commits.
             if (_stationDialog != null && _stationDialog.HideCancel) return;
-            if (!Top.HasValue) OpenPause();
+            if (!Top.HasValue && _enemyCaption != null) ContinueEnemyIntroduction();
+            else if (!Top.HasValue) OpenPause();
             else if (Top == LevelPopupKind.Confirmation) CancelConfirmation();
             else if (Top == LevelPopupKind.Settings) CancelSettings();
             else if (Top == LevelPopupKind.Handbook) CloseHandbook();
@@ -365,14 +368,44 @@ namespace HomelessPetHelper.Game.UI
             if (_disposed) return;
             // A won battle is already terminal. Keep the confirmed rescue queryable while the result is visible.
             bool modalPausesBattle = Top.HasValue && Top != LevelPopupKind.RescueResult;
-            _bindings.Suspend(modalPausesBattle || !_focused || _backgrounded);
+            _bindings.Suspend(modalPausesBattle || _enemyCaption != null || !_focused || _backgrounded);
             _view.Refresh(Top, CanInteract);
             _guideRevision = -1;
+            if (_enemyCaption != null && !Top.HasValue && CanInteract) ShowEnemyIntroduction();
+        }
+
+        internal bool TryShowEnemyIntroduction(string title, string nameKey, RectTransform target)
+        {
+            if (!CanInteract || Top.HasValue || _enemyCaption != null || _guide is { IsActive: true } ||
+                _guide is { IsComplete: true } && !_completionHandled) return false;
+            if (!_text.TryGet("guide.siege.enemy." + nameKey, out string role))
+                role = _text.Get("guide.siege.enemy.default");
+            _enemyTarget = target;
+            _enemyCaption = _text.Get("guide.siege.enemy.caption", title, role);
+            Refresh();
+            return true;
+        }
+
+        private void ShowEnemyIntroduction()
+        {
+            _targets.Clear();
+            _targets.Add(_enemyTarget);
+            _view.ShowGuide(_enemyCaption, _targets, ContinueEnemyIntroduction);
+        }
+
+        private void ContinueEnemyIntroduction()
+        {
+            if (_enemyCaption == null || !CanInteract || Top.HasValue) return;
+            _enemyCaption = null;
+            _enemyTarget = null;
+            _view.HideGuide();
+            Refresh();
         }
 
         internal bool TryShowBattleHint(string key)
         {
-            if (!CanInteract || Top.HasValue || _view.HasNotice || _guide is { IsActive: true } ||
+            if (!CanInteract || Top.HasValue || _enemyCaption != null || _view.HasNotice ||
+                _guide is { IsActive: true } ||
                 _guide is { IsComplete: true } && !_completionHandled) return false;
             _view.ShowNotice(_text.Get(key));
             return true;
@@ -380,7 +413,7 @@ namespace HomelessPetHelper.Game.UI
 
         public void RefreshGuidance()
         {
-            if (_disposed || _guide == null || Top.HasValue || !CanInteract) return;
+            if (_disposed || _guide == null || Top.HasValue || _enemyCaption != null || !CanInteract) return;
             if (_guide.Revision == _guideRevision) return;
             _guideRevision = _guide.Revision;
             if (!_guide.IsActive)

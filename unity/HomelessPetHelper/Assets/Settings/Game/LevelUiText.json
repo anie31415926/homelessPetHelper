@@ -149,20 +149,12 @@
       "value": "当前状态不适合演示这一步，请打开「目标」查看说明。"
     },
     {
-      "key": "guide.cleanup.tool",
-      "value": "先选择「拾杂物」。"
-    },
-    {
       "key": "guide.cleanup.clean",
-      "value": "按住高亮处的杂物，直到清理完成。"
-    },
-    {
-      "key": "guide.cleanup.weeds",
-      "value": "接下来选择「除杂草」。"
+      "value": "直接按住高亮的杂物，直到清理完成。"
     },
     {
       "key": "guide.cleanup.clearWeeds",
-      "value": "按住高亮处的杂草，清出通道。"
+      "value": "再按住高亮的杂草，清出通道。"
     },
     {
       "key": "guide.puzzle.box",
@@ -477,8 +469,44 @@
       "value": "坚固"
     },
     {
-      "key": "guide.siege.defense",
-      "value": "机关开始拦路了，手册里能查看它的招式。"
+      "key": "guide.siege.enemy.caption",
+      "value": "{0}\n{1}\n轻点继续"
+    },
+    {
+      "key": "guide.siege.enemy.default",
+      "value": "对方新增了一处防线，详情可在手册中查看。"
+    },
+    {
+      "key": "guide.siege.enemy.encounter.cat",
+      "value": "猫咪会拍打最前面的道具，也会按住单件或横扫一片。"
+    },
+    {
+      "key": "guide.siege.enemy.encounter.dog",
+      "value": "狗狗会把道具顶回去，也会叼走单件或蓄力扑向一片区域。"
+    },
+    {
+      "key": "guide.siege.enemy.tower.paper",
+      "value": "发射纸团，持续打击射程内最前面的道具。"
+    },
+    {
+      "key": "guide.siege.enemy.tower.thread",
+      "value": "毛线会铺成一片减速区，让经过的道具变慢。"
+    },
+    {
+      "key": "guide.siege.enemy.tower.scratch",
+      "value": "先在地面标出范围，再拍打并推开范围内的道具。"
+    },
+    {
+      "key": "guide.siege.enemy.tower.kennel",
+      "value": "连续发球，打击射程内最前面的道具。"
+    },
+    {
+      "key": "guide.siege.enemy.tower.bubbles",
+      "value": "泡泡会留下一片减速区，让经过的道具变慢。"
+    },
+    {
+      "key": "guide.siege.enemy.tower.slippers",
+      "value": "先标出落点，再用拖鞋拍打并推开范围内的道具。"
     },
     {
       "key": "guide.siege.merge",

@@ -115,6 +115,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             var activity = session.Activity;
             var request = session.Requests.Requests.Single(item => item.RequestId == outing.AcceptedRequestId);
             long initialMinutes = session.Clock.Current.ElapsedMinutes;
+            MainApproachDriver.AcknowledgeEnemyIntroduction();
             MainApproachDriver.Click(_siege, "Pause");
             MainApproachDriver.Click(_siege, "Return");
             yield return WaitForPanel<CityMapView>();
@@ -579,6 +580,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             for (int i = 0; i < 700 && activity.Battle.Phase != SiegeState.BattlePhase.Won &&
                 activity.Battle.Phase != SiegeState.BattlePhase.Timeout; i++)
             {
+                MainApproachDriver.AcknowledgeEnemyIntroduction();
                 if (activity.Battle.Realtime)
                 {
                     var state = activity.Battle.Snapshot;

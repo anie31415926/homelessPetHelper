@@ -704,6 +704,7 @@ namespace HomelessPetHelper.Game
                         scene.ResolveGuideTarget, scene.PauseTarget, scene.ObjectivesTarget, DescribeHandbook),
                     _audioSession, _guidance, _uiText, _playSettings);
                 scene.SetBattleHints(_overlays.TryShowBattleHint);
+                scene.SetEnemyIntroductions(_overlays.TryShowEnemyIntroduction);
             }
             if (!Checkpoint()) return;
         }

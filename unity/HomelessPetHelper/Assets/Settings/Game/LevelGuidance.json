@@ -6,24 +6,10 @@
       "mechanicId": "approach.cleanup.v1",
       "steps": [
         {
-          "captionKey": "guide.cleanup.tool",
-          "completionAction": "approach.tool.Litter",
-          "allowedActions": [
-            "approach.tool.Litter"
-          ]
-        },
-        {
           "captionKey": "guide.cleanup.clean",
           "completionAction": "approach.clean.43",
           "allowedActions": [
             "approach.clean.43"
-          ]
-        },
-        {
-          "captionKey": "guide.cleanup.weeds",
-          "completionAction": "approach.tool.Weeds",
-          "allowedActions": [
-            "approach.tool.Weeds"
           ]
         },
         {
@@ -129,24 +115,10 @@
       "mechanicId": "approach.cleanup.v1",
       "steps": [
         {
-          "captionKey": "guide.cleanup.tool",
-          "completionAction": "approach.tool.Litter",
-          "allowedActions": [
-            "approach.tool.Litter"
-          ]
-        },
-        {
           "captionKey": "guide.cleanup.clean",
           "completionAction": "approach.clean.45",
           "allowedActions": [
             "approach.clean.45"
-          ]
-        },
-        {
-          "captionKey": "guide.cleanup.weeds",
-          "completionAction": "approach.tool.Weeds",
-          "allowedActions": [
-            "approach.tool.Weeds"
           ]
         },
         {
@@ -218,24 +190,10 @@
       "mechanicId": "approach.cleanup.v1",
       "steps": [
         {
-          "captionKey": "guide.cleanup.tool",
-          "completionAction": "approach.tool.Litter",
-          "allowedActions": [
-            "approach.tool.Litter"
-          ]
-        },
-        {
           "captionKey": "guide.cleanup.clean",
           "completionAction": "approach.clean.45",
           "allowedActions": [
             "approach.clean.45"
-          ]
-        },
-        {
-          "captionKey": "guide.cleanup.weeds",
-          "completionAction": "approach.tool.Weeds",
-          "allowedActions": [
-            "approach.tool.Weeds"
           ]
         },
         {
@@ -246,7 +204,7 @@
           ]
         },
         {
-          "captionKey": "guide.cleanup.clearWeeds",
+          "captionKey": "guide.cleanup.clean",
           "completionAction": "approach.clean.33",
           "allowedActions": [
             "approach.clean.33"
@@ -293,13 +251,6 @@
       "mechanicId": "approach.cleanup.v1",
       "steps": [
         {
-          "captionKey": "guide.cleanup.tool",
-          "completionAction": "approach.tool.Litter",
-          "allowedActions": [
-            "approach.tool.Litter"
-          ]
-        },
-        {
           "captionKey": "guide.cleanup.clean",
           "completionAction": "approach.clean.45",
           "allowedActions": [
@@ -307,24 +258,10 @@
           ]
         },
         {
-          "captionKey": "guide.cleanup.weeds",
-          "completionAction": "approach.tool.Weeds",
-          "allowedActions": [
-            "approach.tool.Weeds"
-          ]
-        },
-        {
           "captionKey": "guide.cleanup.clearWeeds",
           "completionAction": "approach.clean.40",
           "allowedActions": [
             "approach.clean.40"
-          ]
-        },
-        {
-          "captionKey": "guide.cleanup.tool",
-          "completionAction": "approach.tool.Litter",
-          "allowedActions": [
-            "approach.tool.Litter"
           ]
         },
         {

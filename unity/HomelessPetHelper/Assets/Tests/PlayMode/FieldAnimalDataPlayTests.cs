@@ -97,6 +97,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                         new[] { "Top", "Mid", "Bottom" }[activity.Battle.Snapshot.Turn % 3]);
                     MainApproachDriver.Click(siege, "Submit");
                 }
+                MainApproachDriver.AcknowledgeEnemyIntroduction();
                 activity.Battle.Advance(1000); yield return null;
             }
             yield return null;

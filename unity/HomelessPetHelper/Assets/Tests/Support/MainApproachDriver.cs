@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using HomelessPetHelper.Framework.UI;
 using HomelessPetHelper.Game.Approach;
 using HomelessPetHelper.Modules.Approach;
 using NUnit.Framework;
@@ -69,11 +70,7 @@ namespace HomelessPetHelper.Tests.Support
 
         public static void Clean(ApproachPanelView view, int cell)
         {
-            int index = view.Session.DebrisAt(cell);
-            if (index < 0) return;
-            var tool = view.Session.Template.Debris[index].Tool;
-            var button = Button(view, tool.ToString());
-            if (button.IsInteractable()) Click(view, tool.ToString());
+            if (view.Session.DebrisAt(cell) < 0) return;
             var pointer = Pointer(view, cell);
             view.Board.OnPointerDown(pointer);
             for (int sample = 0; sample < 120 && view.Session.DebrisAt(cell) >= 0; sample++)
@@ -82,6 +79,15 @@ namespace HomelessPetHelper.Tests.Support
             // UI refresh follows the same rule version path as Update, without waiting real seconds.
             view.SendMessage("Update");
             Assert.That(view.Session.DebrisAt(cell), Is.EqualTo(-1), "clean cell " + cell);
+        }
+
+        public static bool AcknowledgeEnemyIntroduction()
+        {
+            var mask = UnityEngine.Object.FindObjectOfType<GuideMaskGraphic>();
+            if (mask == null || !mask.WaitsForAcknowledgement) return false;
+            var pointer = new PointerEventData(EventSystem.current) { button = PointerEventData.InputButton.Left };
+            ExecuteEvents.Execute(mask.gameObject, pointer, ExecuteEvents.pointerClickHandler);
+            return true;
         }
 
         public static void Drag(ApproachPanelView view, int from, int to)

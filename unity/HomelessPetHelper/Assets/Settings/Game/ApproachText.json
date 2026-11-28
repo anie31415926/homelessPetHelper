@@ -1,7 +1,7 @@
 {
   "entries": [
     { "key": "explore.back", "value": "返回地点" },
-    { "key": "explore.instruction.Cleanup", "value": "选择工具，按住清理路上的障碍。" },
+    { "key": "explore.instruction.Cleanup", "value": "直接按住路上的障碍，也可以滑到下一处继续清理。" },
     { "key": "explore.instruction.Puzzle", "value": "移动木箱，必要时放下木板，打通道路。" },
     { "key": "treehouse.title.Puzzle", "value": "挪箱让路" },
     { "key": "treehouse.instruction.Puzzle", "value": "拖动木箱，让出楼梯口。点撤回可以重来。" },
@@ -23,7 +23,7 @@
     },
     {
       "key": "instruction.Cleanup",
-      "value": "选对工具，按住并拖动清理，从入口逐步向里开路。泥斑不挡路，清出安全通道就好。"
+      "value": "从入口开始，直接按住障碍清理，也可以滑到下一处。泥斑不挡路，清出安全通道就好。"
     },
     {
       "key": "tool.Move",
@@ -203,7 +203,7 @@
     },
     {
       "key": "field.instruction.Cleanup",
-      "value": "选工具，按住前沿杂物向里清理"
+      "value": "直接按住障碍，从入口向里清理"
     },
     {
       "key": "field.menu",

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "task": "docs/协作任务/20261128-敌方单位指引与直接清障-01a21d8d.md",
+  "sessionId": "01a21d8d-e3c0-7883-b7d0-5e68858cb9e7",
+  "phase": "start",
+  "readAt": "2026-11-28T09:15:42.606Z",
+  "writePaths": [
+    "docs/协作任务/20261128-敌方单位指引与直接清障-01a21d8d.md",
+    "docs/协作执行记录/20261128-敌方单位指引与直接清障-01a21d8d/",
+    "test-results/unity/",
+    "unity/HomelessPetHelper/Assets/Scripts/Framework/UI/GuideMaskGraphic.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/Approach/ApproachPanelView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/MainLoopPresenter.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/UI/LevelOverlaySession.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Game/UI/LevelOverlayView.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeBattlefield.cs",
+    "unity/HomelessPetHelper/Assets/Scripts/Modules/Siege/UI/SiegeFieldView.cs",
+    "unity/HomelessPetHelper/Assets/Settings/Game/ApproachText.json",
+    "unity/HomelessPetHelper/Assets/Settings/Game/LevelGuidance.json",
+    "unity/HomelessPetHelper/Assets/Settings/Game/LevelUiText.json",
+    "unity/HomelessPetHelper/Assets/Tests/PlayMode/",
+    "unity/HomelessPetHelper/Assets/Tests/StationHabitat/PlayMode/StationHabitatMainTests.cs",
+    "unity/HomelessPetHelper/Assets/Tests/Support/MainApproachDriver.cs"
+  ],
+  "contextDigest": "8a00ad70f0d1da6073830dc9c822c31c47aeb8bddcd2156ed99bddc6fd6f1d45",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "7a302b9c6703258e095a8036c355bf78e605a2a61799187e61a949344c4251cc"
+    },
+    {
+      "path": "docs/协作任务/20261120-协作同步-01a1f74d.md",
+      "sha256": "71cf5198b8a23f1e875d8dd793c4d0427002fe0db6b3874d926d7b46b71aa896"
+    },
+    {
+      "path": "docs/协作任务/20261126-世界天气调度-38456717.md",
+      "sha256": "277ae640d328d6fecceb7e2b2156f423c81780a3c628a19660559a995a2fe2c9"
+    },
+    {
+      "path": "docs/协作任务/20261126-开始界面按钮排版-38455757.md",
+      "sha256": "66e736e3bc754568ceec4d630181e4a51d0f94d9745b84b6bdeeb3028d5fa3c1"
+    },
+    {
+      "path": "docs/协作任务/20261126-站内菜单改版-38456717.md",
+      "sha256": "9ceb8d14a7ee461f259f76f3073c0a479f014f1eadf3c13deca925cbc592a0bf"
+    },
+    {
+      "path": "docs/协作任务/20261126-站内返回主界面与存档菜单-38455757.md",
+      "sha256": "78c2111716343feda8b3f3544cd27b696db09a5f0ec245f1500357989f535f34"
+    },
+    {
+      "path": "docs/协作任务/20261128-敌方单位指引与直接清障-01a21d8d.md",
+      "sha256": "c75aa6607fff99e0447baebec54bf74990de7177823c5f77ab10c3e9ebc651f9"
+    },
+    {
+      "path": "docs/协作任务/README.md",
+      "sha256": "e5b9cd026728a496256f996a1f5f7d4af12cd64197ad490103dfc7a3447f797a"
+    },
+    {
+      "path": "docs/协作执行记录/README.md",
+      "sha256": "0619952fe9e7e45785ac7ac81c26a630ae4ecd4d3867dfc7e9412565752faaae"
+    },
+    {
+      "path": "docs/当前协作状态.md",
+      "sha256": "74fd2181fe9a49c9d81bd24445d6432d800135e3226f60b6ae3e57b2b3a27af5"
+    }
+  ]
+}

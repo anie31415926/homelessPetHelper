@@ -79,14 +79,6 @@ namespace HomelessPetHelper.Game.Approach
 
         public bool ResolveGuideTarget(string action, List<RectTransform> targets)
         {
-            if (action.StartsWith("approach.tool.", StringComparison.Ordinal))
-            {
-                string tool = action.Substring("approach.tool.".Length);
-                var button = tool == "Litter" ? _litter : tool == "Weeds" ? _weeds : tool == "Mud" ? _mud : null;
-                if (button == null || !GuideTargetRules.IsClickable(button.Button)) return false;
-                targets.Add((RectTransform)button.transform);
-                return true;
-            }
             int separator = action.LastIndexOf('.');
             if (separator < 0 || !int.TryParse(action.Substring(separator + 1), out int cell) ||
                 cell < 0 || cell >= Board.CellCount) return false;
@@ -152,7 +144,7 @@ namespace HomelessPetHelper.Game.Approach
             _completed = completed ?? throw new ArgumentNullException(nameof(completed));
             _returnRequested = returnRequested ?? throw new ArgumentNullException(nameof(returnRequested));
             _suspensionChanged = suspensionChanged ?? throw new ArgumentNullException(nameof(suspensionChanged));
-            _tool = session.Template.Mode == ApproachMode.Puzzle ? ApproachTool.Move : ApproachTool.Litter;
+            _tool = ApproachTool.Move;
             _paused = _backgrounded = false;
             _hasFocus = true;
             _renderedVersion = -1;
@@ -199,9 +191,6 @@ namespace HomelessPetHelper.Game.Approach
             Board.Released += Release;
             _move.Button.onClick.AddListener(MoveTool);
             _bridge.Button.onClick.AddListener(BridgeTool);
-            _litter.Button.onClick.AddListener(LitterTool);
-            _weeds.Button.onClick.AddListener(WeedsTool);
-            _mud.Button.onClick.AddListener(MudTool);
             _undo.Button.onClick.AddListener(Undo);
             _continue.Button.onClick.AddListener(Continue);
             _return.Button.onClick.AddListener(Return);
@@ -218,9 +207,6 @@ namespace HomelessPetHelper.Game.Approach
             Board.Released -= Release;
             _move.Button.onClick.RemoveListener(MoveTool);
             _bridge.Button.onClick.RemoveListener(BridgeTool);
-            _litter.Button.onClick.RemoveListener(LitterTool);
-            _weeds.Button.onClick.RemoveListener(WeedsTool);
-            _mud.Button.onClick.RemoveListener(MudTool);
             _undo.Button.onClick.RemoveListener(Undo);
             _continue.Button.onClick.RemoveListener(Continue);
             _return.Button.onClick.RemoveListener(Return);
@@ -248,11 +234,12 @@ namespace HomelessPetHelper.Game.Approach
                 return;
             int cell = Board.ContactCell;
             if (!Allows("approach.clean." + cell)) { Board.CancelContact(); return; }
-            int before = _session.DebrisAt(cell);
-            if (_session.TryClean(cell, _tool, seconds, out var failure))
+            int debris = _session.DebrisAt(cell);
+            if (debris < 0) return;
+            if (_session.TryClean(cell, _session.Template.Debris[debris].Tool, seconds, out var failure))
             {
                 SetFeedback("cleaning");
-                if (before >= 0 && _session.DebrisAt(cell) < 0)
+                if (_session.DebrisAt(cell) < 0)
                 { Succeeded("approach.clean." + cell); CheckpointRequested?.Invoke(); }
             }
             else SetFeedback("failure." + failure);
@@ -262,7 +249,7 @@ namespace HomelessPetHelper.Game.Approach
         private void Press(int cell)
         {
             if (!CanAct) { Board.CancelContact(); return; }
-            if (_tool == ApproachTool.Move && _session.HasBox(cell))
+            if (_session.Template.Mode == ApproachMode.Puzzle && _tool == ApproachTool.Move && _session.HasBox(cell))
             {
                 if (!Allows("approach.box." + cell)) { Board.CancelContact(); return; }
                 _selectedBox = cell;
@@ -297,15 +284,10 @@ namespace HomelessPetHelper.Game.Approach
 
         private void MoveTool() => Tool(ApproachTool.Move);
         private void BridgeTool() => Tool(ApproachTool.Bridge);
-        private void LitterTool() => Tool(ApproachTool.Litter);
-        private void WeedsTool() => Tool(ApproachTool.Weeds);
-        private void MudTool() => Tool(ApproachTool.Mud);
         private void Tool(ApproachTool tool)
         {
-            if (!CanAct) return;
+            if (!CanAct || _session.Template.Mode != ApproachMode.Puzzle) return;
             if (!Allows("approach.tool." + tool)) return;
-            if (_session.Template.Mode == ApproachMode.Puzzle ? tool > ApproachTool.Bridge : tool < ApproachTool.Litter)
-                return;
             Board.CancelContact();
             _selectedBox = -1;
             _tool = tool;
@@ -414,9 +396,9 @@ namespace HomelessPetHelper.Game.Approach
             if (!SceneMode) _sceneNotice.gameObject.SetActive(false);
             RenderTool(_move, ApproachTool.Move, puzzle, enabled);
             RenderTool(_bridge, ApproachTool.Bridge, puzzle, enabled);
-            RenderTool(_litter, ApproachTool.Litter, !puzzle, enabled);
-            RenderTool(_weeds, ApproachTool.Weeds, !puzzle, enabled);
-            RenderTool(_mud, ApproachTool.Mud, !puzzle, enabled);
+            _litter.gameObject.SetActive(false);
+            _weeds.gameObject.SetActive(false);
+            _mud.gameObject.SetActive(false);
             _undo.gameObject.SetActive(puzzle);
             Label(_undo, "undo", enabled && _session.CanUndo && Allows("approach.undo"));
             Label(_continue, _exploring ? "explore.back" : "continue",
@@ -433,13 +415,6 @@ namespace HomelessPetHelper.Game.Approach
             _scene.Refresh(_session);
             _move.gameObject.SetActive(false);
             _bridge.gameObject.SetActive(false);
-            bool cleanup = _session.Template.Mode == ApproachMode.Cleanup && !_session.IsSuspended &&
-                (!_session.IsComplete || _scene.Layout.AllowsOptionalCleanup);
-            bool indoor = _scene.Layout.IllustratedInterior;
-            _litter.gameObject.SetActive(cleanup);
-            _weeds.gameObject.SetActive(cleanup && !indoor);
-            _mud.gameObject.SetActive(cleanup && !indoor);
-            if (cleanup && indoor) _litter.Show(_text.Get("treehouse.tool"), false);
             _continue.gameObject.SetActive(_session.IsComplete && !_session.IsSuspended);
             _return.gameObject.SetActive(false);
             if (_overlay == null) Label(_pause, "field.menu", !_session.IsClosed);

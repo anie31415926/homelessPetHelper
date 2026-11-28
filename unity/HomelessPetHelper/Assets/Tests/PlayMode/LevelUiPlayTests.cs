@@ -170,31 +170,18 @@ namespace HomelessPetHelper.Tests.PlayMode
             var guide = root.Presenter.Overlays.Guide;
             Assert.That(guide, Is.Not.Null);
             Assert.That(guide.StepIndex, Is.Zero);
-            var blocked = MainApproachDriver.Pointer(view, 43);
+            var blocked = MainApproachDriver.Pointer(view, 36);
             Assert.That(TopHit(blocked).GetComponent<GuideMaskGraphic>(), Is.Not.Null,
-                "Debris stays blocked until the player selects the tool.");
+                "Debris beyond the current step stays blocked.");
 
-            var tools = new[] { ApproachTool.Litter, ApproachTool.Weeds };
+            foreach (string name in new[] { "Litter", "Weeds", "Mud" })
+                Assert.That(MainApproachDriver.Button(view, name).gameObject.activeInHierarchy, Is.False);
             var cells = new[] { 43, 36 };
-            for (int index = 0; index < tools.Length; index++)
+            for (int index = 0; index < cells.Length; index++)
             {
-                var tool = MainApproachDriver.Button(view, tools[index].ToString());
-                var rect = (RectTransform)tool.transform;
-                var click = new PointerEventData(EventSystem.current)
-                {
-                    position = RectTransformUtility.WorldToScreenPoint(null, rect.TransformPoint(rect.rect.center))
-                };
-                var hit = TopHit(click);
-                Assert.That(ExecuteEvents.GetEventHandler<IPointerClickHandler>(hit), Is.SameAs(tool.gameObject),
-                    $"{tool.name} at {click.position} must receive input; top hit: {hit.name}");
-                Assert.That(tool.IsInteractable(), Is.True, $"{tool.name} is the current guide target.");
-                ExecuteEvents.ExecuteHierarchy(hit, click, ExecuteEvents.pointerClickHandler);
-                Assert.That(guide.StepIndex, Is.EqualTo(index * 2 + 1));
-                yield return null;
-                yield return null;
-
+                Assert.That(guide.StepIndex, Is.EqualTo(index));
                 var contact = MainApproachDriver.Pointer(view, cells[index]);
-                hit = TopHit(contact);
+                var hit = TopHit(contact);
                 Assert.That(ExecuteEvents.ExecuteHierarchy(hit, contact, ExecuteEvents.pointerDownHandler),
                     Is.SameAs(view.Board.gameObject), $"Debris {cells[index]} hit {hit.name}");
                 float deadline = Time.realtimeSinceStartup + 8;
@@ -217,6 +204,75 @@ namespace HomelessPetHelper.Tests.PlayMode
             Assert.That(hits, Is.Not.Empty, $"No uGUI target at {pointer.position}");
             pointer.pointerPressRaycast = pointer.pointerCurrentRaycast = hits[0];
             return hits[0].gameObject;
+        }
+
+        [UnityTest]
+        public IEnumerator EnemyIntroductionsPauseAndFrameEachNewTypeOnlyOnce()
+        {
+            yield return SceneManager.LoadSceneAsync("Main");
+            yield return null;
+            Depart();
+            yield return null;
+            MainApproachDriver.Complete();
+            yield return null;
+            var root = Object.FindObjectOfType<MainGameRoot>();
+            var siege = Object.FindObjectOfType<SiegeTrialView>();
+            var battle = ((SiegeRescueActivity)root.Presenter.Session.Activity).Battle;
+            var overlay = root.Presenter.Overlays;
+            overlay.Guide?.Cancel();
+            overlay.CloseObjectives();
+
+            var seen = new HashSet<string>();
+            var names = new SiegeText(UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>(
+                "Assets/Settings/Siege/SiegeTrialText.json"));
+            for (int frame = 0; frame < 110; frame++)
+            {
+                yield return null;
+                var mask = siege.GetComponentInChildren<GuideMaskGraphic>();
+                if (mask == null || !mask.WaitsForAcknowledgement)
+                {
+                    battle.Advance(250);
+                    continue;
+                }
+                var caption = siege.GetComponentsInChildren<Text>().Single(item => item.text.EndsWith("轻点继续"));
+                string title = caption.text.Split('\n')[0];
+                Assert.That(seen.Add(title), Is.True, title + " was shown twice.");
+                Assert.That(battle.Paused, Is.True);
+                int stoppedAt = battle.ElapsedMs;
+                battle.Advance(1000);
+                Assert.That(battle.ElapsedMs, Is.EqualTo(stoppedAt));
+                if (seen.Count == 1)
+                {
+                    overlay.SetApplicationFocus(false);
+                    overlay.SetApplicationFocus(true);
+                    overlay.Resume();
+                    Assert.That(battle.Paused, Is.True, "Resuming from focus loss restores the introduction.");
+                }
+                if (seen.Count <= 2) yield return Capture(siege, seen.Count == 1 ? "enemy-introduction" :
+                    "tower-introduction");
+                yield return null;
+                Canvas.ForceUpdateCanvases();
+                var point = ((RectTransform)mask.transform).rect.center;
+                var data = new PointerEventData(EventSystem.current)
+                {
+                    position = RectTransformUtility.WorldToScreenPoint(null, mask.rectTransform.TransformPoint(point)),
+                    button = PointerEventData.InputButton.Left
+                };
+                Assert.That(mask.Raycast(data.position, null), Is.True, "Acknowledgement intercepts field taps.");
+                Assert.That(TopHit(data), Is.SameAs(mask.gameObject),
+                    $"{title}: mask depth {mask.depth}, culled {mask.canvasRenderer.cull}");
+                ExecuteEvents.Execute(mask.gameObject, data, ExecuteEvents.pointerClickHandler);
+                Assert.That(battle.Paused, Is.False);
+            }
+            var state = battle.Snapshot;
+            var encounter = battle.Catalog.Content.Encounter(state.EncounterId);
+            Assert.That(seen, Does.Contain(names.Get(encounter.NameKey)));
+            var present = state.Towers.Where(tower => tower.DefinitionId != null)
+                .Select(tower => names.Get(battle.Catalog.Defense(tower).NameKey)).Distinct().ToArray();
+            Assert.That(present.Length, Is.GreaterThanOrEqualTo(2));
+            Assert.That(seen, Is.SupersetOf(present));
+            foreach (string builtType in encounter.BuildTowerIds)
+                Assert.That(seen, Does.Contain(names.Get(battle.Catalog.Content.Tower(builtType).NameKey)));
         }
 
         [UnityTest]
@@ -328,6 +384,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                         var rect = (RectTransform)view.transform;
                         rect.anchorMin = new Vector2(0, .045f); rect.anchorMax = new Vector2(1, .91f);
                     }
+                    yield return null;
                     Canvas.ForceUpdateCanvases();
                 }
                 var corners = new Vector3[4];
@@ -347,7 +404,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                 AssertDimLayer(owner, canvas, camera);
                 camera.Render(); var previous = RenderTexture.active; RenderTexture.active = target;
                 var guideMask = owner.GetComponentInChildren<GuideMaskGraphic>();
-                if (guideMask != null)
+                if (guideMask != null && !guideMask.WaitsForAcknowledgement)
                 {
                     var pause = owner is ApproachPanelView opening ? opening.PauseTarget :
                         ((SiegeTrialView)owner).Scene.PauseTarget;

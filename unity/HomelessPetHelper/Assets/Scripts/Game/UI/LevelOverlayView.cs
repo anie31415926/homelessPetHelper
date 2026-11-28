@@ -201,9 +201,9 @@ namespace HomelessPetHelper.Game.UI
             _settingsStatus.text = text;
             _settingsStatus.gameObject.SetActive(!string.IsNullOrEmpty(text));
         }
-        public void ShowGuide(string caption, IReadOnlyList<RectTransform> targets)
+        public void ShowGuide(string caption, IReadOnlyList<RectTransform> targets, Action continuation = null)
         {
-            _guideMask.SetTargets(targets);
+            _guideMask.SetTargets(targets, continuation);
             _guideMask.gameObject.SetActive(true);
             _guideCaption.SetActive(true);
             _guideText.text = caption;
@@ -282,7 +282,8 @@ namespace HomelessPetHelper.Game.UI
             _session?.RefreshGuidance();
             if (!_confirm.interactable && _session != null && _session.StationConfirmReady)
                 _confirm.interactable = true;
-            bool visible = Time.unscaledTime < _noticeUntil && !_modalRoot.activeSelf;
+            bool visible = Time.unscaledTime < _noticeUntil && !_modalRoot.activeSelf &&
+                !_guideMask.WaitsForAcknowledgement;
             if (_notice.gameObject.activeSelf != visible) _notice.gameObject.SetActive(visible);
             if (Input.GetKeyDown(KeyCode.Escape)) _session?.Back();
         }

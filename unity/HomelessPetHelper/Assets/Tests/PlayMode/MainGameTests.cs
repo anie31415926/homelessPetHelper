@@ -166,6 +166,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             var activity = Depart();
             for (int i = 0; i < 500 && activity.Battle.Phase != SiegeState.BattlePhase.Timeout; i++)
             {
+                MainApproachDriver.AcknowledgeEnemyIntroduction();
                 if (activity.Battle.Phase == SiegeState.BattlePhase.Decision) Click(_siege, "Submit");
                 activity.Battle.Advance(1000);
                 yield return null;
@@ -236,6 +237,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         {
             for (int i = 0; i < 700 && activity.Battle.Phase != SiegeState.BattlePhase.Won; i++)
             {
+                MainApproachDriver.AcknowledgeEnemyIntroduction();
                 if (activity.Battle.Realtime)
                 {
                     var state = activity.Battle.Snapshot;

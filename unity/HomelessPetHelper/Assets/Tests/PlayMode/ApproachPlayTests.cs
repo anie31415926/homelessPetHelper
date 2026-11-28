@@ -120,24 +120,18 @@ namespace HomelessPetHelper.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator CleanupUsesCapturedPointerCorrectToolAndStopsAtBackgroundBeforeDogSiege()
+        public IEnumerator CleanupUsesCapturedPointerWithoutToolsAndStopsAtBackgroundBeforeDogSiege()
         {
             yield return Load(0);
             Depart(true);
             Assert.That(_view.Session.Template.Mode, Is.EqualTo(ApproachMode.Cleanup));
             var route = _view.Session;
-            MainApproachDriver.Click(_view, "Weeds");
             var blocked = MainApproachDriver.Pointer(_view, 36);
             _view.Board.OnPointerDown(blocked);
             _view.AdvanceContact(.05);
             _view.Board.OnPointerUp(blocked);
             Assert.That(route.RemainingWork(route.DebrisAt(36)), Is.EqualTo(1.1));
             var entry = MainApproachDriver.Pointer(_view, 43);
-            _view.Board.OnPointerDown(entry);
-            _view.AdvanceContact(.05);
-            _view.Board.OnPointerUp(entry);
-            Assert.That(route.RemainingWork(route.DebrisAt(43)), Is.EqualTo(.8), "Wrong tool has no effect.");
-            MainApproachDriver.Click(_view, "Litter");
             _view.Board.OnPointerDown(entry);
             _view.Board.OnPointerDown(MainApproachDriver.Pointer(_view, 36, 8));
             _view.AdvanceContact(.05);

@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace HomelessPetHelper.Framework.UI
 {
     /// <summary>One dim layer with explicit input holes, including drag paths between permitted targets.</summary>
     [RequireComponent(typeof(CanvasRenderer))]
-    public sealed class GuideMaskGraphic : MaskableGraphic, ICanvasRaycastFilter
+    public sealed class GuideMaskGraphic : MaskableGraphic, ICanvasRaycastFilter, IPointerClickHandler
     {
         [SerializeField] private Color _highlight = new Color32(247, 214, 116, 255);
         [SerializeField] private float _outlineWidth = 4;
@@ -15,11 +16,14 @@ namespace HomelessPetHelper.Framework.UI
         private readonly List<Rect> _holes = new List<Rect>(16);
         private readonly List<float> _xs = new List<float>(34), _ys = new List<float>(34);
         private readonly Vector3[] _corners = new Vector3[4];
+        private Action _continue;
+        public bool WaitsForAcknowledgement => _continue != null;
 
-        public void SetTargets(IReadOnlyList<RectTransform> targets)
+        public void SetTargets(IReadOnlyList<RectTransform> targets, Action continuation = null)
         {
             if (targets == null || targets.Count == 0 || targets.Count > 16)
                 throw new ArgumentException("A guide mask supports 1 to 16 explicit targets.");
+            _continue = continuation;
             _targets.Clear();
             foreach (var target in targets)
             {
@@ -56,10 +60,22 @@ namespace HomelessPetHelper.Framework.UI
 
         public bool IsRaycastLocationValid(Vector2 screenPoint, Camera eventCamera)
         {
+            if (_continue != null) return true;
             RefreshHoles(true);
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, screenPoint,
                 eventCamera, out var point)) return true;
             return !InsideHole(point);
+        }
+
+        public void OnPointerClick(PointerEventData data)
+        {
+            if (isActiveAndEnabled && data.button == PointerEventData.InputButton.Left) _continue?.Invoke();
+        }
+
+        protected override void OnDisable()
+        {
+            _continue = null;
+            base.OnDisable();
         }
 
         private bool InsideHole(Vector2 point)

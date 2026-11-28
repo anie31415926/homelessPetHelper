@@ -178,6 +178,7 @@ namespace HomelessPetHelper.Tests.StationHabitat.PlayMode
             for (int i = 0; i < 700 && activity.Battle.Phase != SiegeState.BattlePhase.Won &&
                 activity.Battle.Phase != SiegeState.BattlePhase.Timeout; i++)
             {
+                MainApproachDriver.AcknowledgeEnemyIntroduction();
                 if (activity.Battle.Realtime)
                     DeployRealtime(activity.Battle);
                 else if (activity.Battle.Phase == SiegeState.BattlePhase.Decision)

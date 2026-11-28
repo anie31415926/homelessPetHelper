@@ -74,10 +74,15 @@ namespace HomelessPetHelper.Modules.Siege.UI
         private string _shownDetail;
         private float _handWidth = -1;
         private readonly HashSet<string> _shownBattleHints = new HashSet<string>();
+        private readonly HashSet<string> _introducedEnemies = new HashSet<string>();
         private Func<string, bool> _showBattleHint;
+        private Func<string, string, RectTransform, bool> _showEnemyIntroduction;
+        private CanvasGroup _overlayInput;
         private int _hintThrough;
 
         public void SetBattleHints(Func<string, bool> show) => _showBattleHint = show;
+        public void SetEnemyIntroductions(Func<string, string, RectTransform, bool> show) =>
+            _showEnemyIntroduction = show;
         public SiegeFieldPlan Plan => _plan;
         public SiegeBattlefield Field => _field;
         public void SetPresentationAudio(Action<string> play) => _field.SetPresentationAudio(play);
@@ -130,6 +135,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
             if (this == null) return;
             CancelHandInput();
             _paused = suspended;
+            if (_overlayInput == null && !TryGetComponent(out _overlayInput))
+                _overlayInput = gameObject.AddComponent<CanvasGroup>();
+            _overlayInput.blocksRaycasts = !suspended;
             _suspend?.Invoke(suspended);
             if (_overlay != null) _pauseMenu.SetActive(false);
             if (isActiveAndEnabled) Render();
@@ -160,6 +168,8 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _field.ResetPresentation();
             _showBattleHint = null;
             _shownBattleHints.Clear();
+            _showEnemyIntroduction = null;
+            _introducedEnemies.Clear();
             _hintThrough = session.Snapshot.LatestEffectSequence;
             _catalog = session.Catalog;
             _compact = session.Realtime && _dockResource != null && _resourceBar != null;
@@ -184,6 +194,7 @@ namespace HomelessPetHelper.Modules.Siege.UI
             _completed = completed; _returnRequested = returnRequested; _suspend = suspend;
             _rescueResultPresented = false;
             _plan.Clear(); _reported = _paused = _backgrounded = false; _focused = true;
+            if (_overlayInput != null) _overlayInput.blocksRaycasts = true;
             _error = _tower = _externalFeedback = null; _turn = -1;
             _nextCardId = _nextCardHint = null;
         }
@@ -241,16 +252,19 @@ namespace HomelessPetHelper.Modules.Siege.UI
         {
             if (_session == null) return;
             _session.SetDecisionHold(_guide != null && _guide.IsActive);
+            ObserveEnemyIntroductions(_presentation);
             _session.Advance(Math.Min(100, Time.unscaledDeltaTime * 1000));
             if (!_paused && !_backgrounded && _focused)
                 _field.AdvanceTerminalEffects(Time.unscaledDeltaTime * 1000);
             if (!_reported && !_paused && _session.Phase == SiegeState.BattlePhase.Won)
             { _reported = true; _completed?.Invoke(); }
             _refreshIn -= Time.unscaledDeltaTime;
-            if (_session != null && (_refreshIn <= 0 || _session.Phase != _renderedPhase))
+            if (_session != null && (_refreshIn <= 0 || _session.Phase != _renderedPhase ||
+                _showEnemyIntroduction != null && _session.ElapsedMs != _presentation.ElapsedMs))
             {
                 _refreshIn = .05f;
                 Render();
+                ObserveEnemyIntroductions(_presentation);
             }
         }
 
@@ -392,6 +406,31 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 Render();
         }
 
+        private void ObserveEnemyIntroductions(SiegeState state)
+        {
+            if (_showEnemyIntroduction == null || !state.Realtime || state.Paused ||
+                state.Phase != SiegeState.BattlePhase.Running || _guide?.IsActive == true) return;
+            var encounter = _catalog.Content.Encounter(state.EncounterId);
+            if (!_introducedEnemies.Contains(encounter.NameKey) && _field.DefenderGuideTarget != null)
+            {
+                IntroduceEnemy(encounter.NameKey, _field.DefenderGuideTarget);
+                return;
+            }
+            foreach (var tower in state.Towers)
+            {
+                if (tower.Status == SiegeState.TowerStatus.Destroyed || tower.DefinitionId == null) continue;
+                string nameKey = _catalog.Defense(tower).NameKey;
+                if (_introducedEnemies.Contains(nameKey)) continue;
+                IntroduceEnemy(nameKey, _field.AimTowerGuide(tower));
+                return;
+            }
+        }
+
+        private void IntroduceEnemy(string nameKey, RectTransform target)
+        {
+            if (_showEnemyIntroduction(_text.Get(nameKey), nameKey, target)) _introducedEnemies.Add(nameKey);
+        }
+
         private void ObserveBattleHints(SiegeState state)
         {
             if (_showBattleHint == null || !state.Realtime || state.Paused || _guide?.IsActive == true) return;
@@ -400,7 +439,6 @@ namespace HomelessPetHelper.Modules.Siege.UI
                 if (effect.Sequence <= _hintThrough) continue;
                 string hint = effect.Kind switch
                 {
-                    SiegeState.EffectKind.TowerShot => "guide.siege.defense",
                     "merge" => "guide.siege.merge",
                     _ => null
                 };

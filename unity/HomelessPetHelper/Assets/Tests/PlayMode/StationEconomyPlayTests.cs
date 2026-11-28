@@ -223,6 +223,7 @@ namespace HomelessPetHelper.Tests.PlayMode
         {
             for (int tick = 0; tick < 700 && battle.Phase != SiegeState.BattlePhase.Won; tick++)
             {
+                MainApproachDriver.AcknowledgeEnemyIntroduction();
                 var state = battle.Snapshot;
                 var card = state.Hand.FirstOrDefault(item =>
                     battle.Catalog.Unit(item.DefinitionId).Cost <= state.Energy);

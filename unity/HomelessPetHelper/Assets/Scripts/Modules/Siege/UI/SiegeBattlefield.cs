@@ -18,6 +18,9 @@ namespace HomelessPetHelper.Modules.Siege.UI
         public override Texture mainTexture => _spritePalette == null ? base.mainTexture : _spritePalette.Texture;
         [SerializeField]
         private Image _cat;
+        private RectTransform _towerGuideTarget;
+        private SiegePoint _towerGuidePoint;
+        public RectTransform DefenderGuideTarget => _cat != null ? _cat.rectTransform : null;
         [SerializeField] private AnimalCoatView _coat;
         public void ShowAnimal(AnimalSnapshot snapshot) => _coat.Show(snapshot);
         [SerializeField] private SiegeCarryOverlay _carryOverlay;
@@ -186,9 +189,29 @@ namespace HomelessPetHelper.Modules.Siege.UI
             return tower ? SiegeTokenArt.SupportsTower(id) : SiegeTokenArt.Supports(id);
         }
 
+        public RectTransform AimTowerGuide(SiegeState.Tower tower)
+        {
+            if (_towerGuideTarget == null)
+            {
+                _towerGuideTarget = new GameObject("EnemyGuideTarget", typeof(RectTransform))
+                    .GetComponent<RectTransform>();
+                _towerGuideTarget.SetParent(rectTransform, false);
+            }
+            _towerGuidePoint = SiegeGeometry.Position(_catalog, tower);
+            PlaceTowerGuide();
+            return _towerGuideTarget;
+        }
+
+        private void PlaceTowerGuide()
+        {
+            _towerGuideTarget.localPosition = Local(_towerGuidePoint);
+            _towerGuideTarget.sizeDelta = Vector2.one * (32 * PropScale);
+        }
+
         private void LateUpdate()
         {
             if (_catalog == null || _cat == null) return;
+            if (_towerGuideTarget != null && _state?.Paused == true) PlaceTowerGuide();
             if (_animalOnSeparateFloor)
             {
                 RefreshRescueBar();

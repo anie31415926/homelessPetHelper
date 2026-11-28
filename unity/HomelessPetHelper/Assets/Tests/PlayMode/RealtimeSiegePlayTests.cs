@@ -430,6 +430,7 @@ namespace HomelessPetHelper.Tests.PlayMode
 
             var deployedUnit = battle.Snapshot.Units.Last();
             Assert.That(battle.Catalog.MergeMaterialCount(deployedUnit.DefinitionId), Is.GreaterThan(0));
+            while (MainApproachDriver.AcknowledgeEnemyIntroduction()) yield return null;
             siege.Scene.SendMessage("SelectUnit", deployedUnit.Id);
             var merge = Named("FieldMerge");
             var mergeLabels = merge.GetComponentsInChildren<Text>();
@@ -461,6 +462,7 @@ namespace HomelessPetHelper.Tests.PlayMode
             MainApproachDriver.Complete(); yield return null;
             var activity = (SiegeRescueActivity)root.Presenter.Session.Activity;
             var battle = activity.Battle;
+            MainApproachDriver.AcknowledgeEnemyIntroduction();
             var animal = activity.Individual.Current.AnimalId;
             var state = battle.Snapshot;
             var card = state.Hand.First(item => battle.Catalog.Unit(item.DefinitionId).Cost <= state.Energy);

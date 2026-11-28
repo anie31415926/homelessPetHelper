@@ -181,6 +181,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                 Assert.That(coat.Snapshot, Is.SameAs(initial));
             yield return CaptureCanvas(siege.GetComponent<Canvas>(), "main-parking-siege");
             MeasureRendering(siege.GetComponent<MotionScope>(), motion);
+            MainApproachDriver.AcknowledgeEnemyIntroduction();
             MainApproachDriver.Click(siege, "Pause"); yield return null;
             int revision = motion.Player.Revision;
             yield return null; yield return null;
@@ -198,6 +199,7 @@ namespace HomelessPetHelper.Tests.PlayMode
                         activity.Battle.Snapshot.Turn % 3]);
                     MainApproachDriver.Click(siege, "Submit");
                 }
+                MainApproachDriver.AcknowledgeEnemyIntroduction();
                 activity.Battle.Advance(1000); yield return null;
             }
             yield return null;
